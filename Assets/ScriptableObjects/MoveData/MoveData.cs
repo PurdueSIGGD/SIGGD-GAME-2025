@@ -24,4 +24,7 @@ public class MoveData : ScriptableObject
     [Tooltip("Deceleration rate for stopping movement.")]
     public float runDecelAmount = 7f;
 
+    [Tooltip("How smoothly to interpolate between speeds. 1 is instant, 0 is no movement.")]
+    public float movementInterpolation = 1;
+
 }

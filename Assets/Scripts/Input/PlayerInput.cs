@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerInput : MonoBehaviour
+public class PlayerInput : Singleton<PlayerInput>
 {
     // input variable
-    private InputSystem_Actions inputActions = null;
+    private PlayerInputActions inputActions = null;
 
     ////// publically readable variables for getting input ///////////
     /// NOTE: please use these
@@ -17,9 +17,10 @@ public class PlayerInput : MonoBehaviour
     public bool crouchInput = false;
 
     ////////
-    private void Awake()
+    protected override void Awake()
     {
-        inputActions = new InputSystem_Actions();
+        base.Awake();
+        inputActions = new PlayerInputActions();
     }
 
     ////// when enabled, activate inputs
@@ -28,7 +29,9 @@ public class PlayerInput : MonoBehaviour
         inputActions.Enable();
 
         inputActions.Player.Move.performed += InputOnMove;
+        inputActions.Player.Move.canceled += InputOnMove; // stop moving when input is canceled
         inputActions.Player.Look.performed += InputOnLook;
+        inputActions.Player.Look.canceled += InputOnLook; // stop looking when input is canceled
 
         inputActions.Player.Attack.performed += InputAttack;
         inputActions.Player.Interact.performed += InputInteract;
@@ -48,7 +51,9 @@ public class PlayerInput : MonoBehaviour
         inputActions.Disable();
 
         inputActions.Player.Move.performed -= InputOnMove;
+        inputActions.Player.Move.canceled -= InputOnMove;
         inputActions.Player.Look.performed -= InputOnLook;
+        inputActions.Player.Look.canceled -= InputOnLook;
 
         inputActions.Player.Attack.performed -= InputAttack;
         inputActions.Player.Interact.performed -= InputInteract;
@@ -62,11 +67,25 @@ public class PlayerInput : MonoBehaviour
 
     ////////////// input methods. Performed When inputing stuff ////////////
     private void InputOnMove(InputAction.CallbackContext callbackValue) {
-        movementInput = callbackValue.ReadValue<Vector2>();
+        if (callbackValue.performed)
+        {
+            movementInput = callbackValue.ReadValue<Vector2>();
+        }
+        else if (callbackValue.canceled)
+        {
+            movementInput = Vector2.zero; // stop moving when input is canceled
+        }
     }
 
     private void InputOnLook(InputAction.CallbackContext callbackValue) {
-        lookInput = callbackValue.ReadValue<Vector2>();
+        if (callbackValue.performed)
+        {
+            lookInput = callbackValue.ReadValue<Vector2>();
+        }
+        else if (callbackValue.canceled)
+        {
+            lookInput = Vector2.zero; // stop looking when input is canceled
+        }
     }
 
 

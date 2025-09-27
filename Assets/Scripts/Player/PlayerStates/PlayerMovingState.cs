@@ -9,6 +9,7 @@ using UnityEngine;
 public class PlayerMovingState : StateMachineBehaviour
 {
     private PlayerStateMachine playerStateMachine;
+    
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
@@ -18,15 +19,14 @@ public class PlayerMovingState : StateMachineBehaviour
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateUpdate(animator, stateInfo, layerIndex);
-        
-        // TODO: Integrate with input manager (just read the move input from there)
-        
-        Vector2 moveInput = Vector2.one;   // moveDirection field from InputManager
-        bool isSprinting = false;           // isSprinting field from InputManager
+
+        Vector2 moveInput = PlayerInput.Instance.movementInput;
+        bool isSprinting = PlayerInput.Instance.sprintInput;
         
         float speed = isSprinting ? playerStateMachine.moveData.sprintSpeed : 
             playerStateMachine.moveData.walkSpeed;
         
         PlayerID.Instance.stateMachine.Run(moveInput, speed);
     }
+    
 }

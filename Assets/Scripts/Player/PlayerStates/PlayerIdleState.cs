@@ -8,5 +8,27 @@ using UnityEngine;
  */
 public class PlayerIdleState : StateMachineBehaviour
 {
-    // literally do nothing for now lmao
+    private PlayerID playerID;
+    
+    // currently the idle state just does what the moving state does, but maybe there needs to be something special
+    // for when the player is idle so this state should still exist.
+    
+    public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        base.OnStateEnter(animator, stateInfo, layerIndex);
+        playerID = PlayerID.Instance;
+    }
+
+    public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        base.OnStateUpdate(animator, stateInfo, layerIndex);
+        
+        Vector2 moveInput = PlayerInput.Instance.movementInput;
+        bool isSprinting = PlayerInput.Instance.sprintInput;
+        
+        float speed = isSprinting ? playerID.stateMachine.moveData.sprintSpeed : 
+            playerID.stateMachine.moveData.walkSpeed;
+        
+        PlayerID.Instance.stateMachine.Run(moveInput, speed);
+    }
 }

@@ -29,7 +29,7 @@ public class PlayerStateMachine : MonoBehaviour
     #region Movement Attributes
     
     [HideInInspector] public Vector3 moveDirection; // The 3D direction the player is currently moving in.
-    public bool IsMoving => true; // TODO: Replace with InputManager check
+    public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f; // Whether the player is currently moving.
     
     #endregion
     
@@ -81,7 +81,7 @@ public class PlayerStateMachine : MonoBehaviour
         Vector3 direction = moveInput.x * cam.right.SetY(0).normalized + 
                                moveInput.y * cam.forward.SetY(0).normalized;
         
-        MoveInDirectionWithSpeed(direction, speed);
+        MoveInDirectionWithSpeed(direction, speed, moveData.movementInterpolation);
     }
     
     /**
