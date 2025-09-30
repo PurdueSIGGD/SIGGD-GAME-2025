@@ -33,7 +33,7 @@ public class SpiderBodyScript : MonoBehaviour
                 StartCoroutine(LerpTarget(legs[i], targets[i]));
 
             // used to show the raycast directions
-                // this is controlled by the raycast dir transform under each leg 
+            // this is controlled by the raycast dir transform under each leg 
             if (showRaycastDirs)
                 Gizmos.DrawLine(legs[i].origin.position, legs[i].origin.position + legs[i].raycastDir.up * maxRaycastDist);
         }
