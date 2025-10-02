@@ -22,11 +22,6 @@ public class AudioManager : MonoBehaviour
         RuntimeManager.PlayOneShot(sound, worldPos);
     }
 
-    public static void playSound(string sound, Vector3 pos)
-    {
-        //EventReference event = 
-    }
-
     // when you want a sound to play continuously until it's told to stop
     public EventInstance CreateEventInstance(EventReference eventReference)
     {

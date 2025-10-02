@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
 
     private EventInstance footsteps;
 
-    Rigidbody rb;
+    public Rigidbody rb;
 
     private void Start()
     {
