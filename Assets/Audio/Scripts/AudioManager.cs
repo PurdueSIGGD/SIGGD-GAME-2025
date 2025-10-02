@@ -18,7 +18,13 @@ public class AudioManager : MonoBehaviour
     // when you just want to play a sound once on a trigger
     public void PlayOneShot(EventReference sound, Vector3 worldPos)
     {
+        
         RuntimeManager.PlayOneShot(sound, worldPos);
+    }
+
+    public static void playSound(string sound, Vector3 pos)
+    {
+        //EventReference event = 
     }
 
     // when you want a sound to play continuously until it's told to stop

@@ -15,12 +15,14 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 moveDirection;
 
-    private EventInstance playerFootSteps;
+    private EventInstance footsteps;
 
     Rigidbody rb;
 
     private void Start()
     {
+        footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.footsteps);
+
         rb = GetComponent<Rigidbody>();
     }
 
@@ -29,6 +31,8 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.E))
         {
             AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
+
+            //AudioManager.playSound("enemyDeath", this.transform.position);
         }
     }
 
@@ -49,16 +53,16 @@ public class PlayerMovement : MonoBehaviour
         {
             Debug.Log("can play sound");
             PLAYBACK_STATE playbackState;
-            playerFootSteps.getPlaybackState(out playbackState);
+            footsteps.getPlaybackState(out playbackState);
 
             if (playbackState.Equals(PLAYBACK_STATE.STOPPED))
             {
-                playerFootSteps.start();
+                footsteps.start();
             }
         }
         else
         {
-            playerFootSteps.stop(STOP_MODE.ALLOWFADEOUT);
+            footsteps.stop(STOP_MODE.ALLOWFADEOUT);
         }
     }
 }
