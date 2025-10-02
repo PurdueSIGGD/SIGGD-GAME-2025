@@ -44,7 +44,17 @@ public class PlayerStateMachine : MonoBehaviour
     {
         UpdateAnimatorParams();
     }
+
+    private void OnEnable()
+    {
+        PlayerInput.Instance.OnAttack += TriggerAttack;
+    }
     
+    private void OnDisable()
+    {
+        PlayerInput.Instance.OnAttack -= TriggerAttack;
+    }
+
     // Because the animator is our state machine, we update parameters there to control state transitions.
     #region Animator Methods
     
@@ -61,6 +71,19 @@ public class PlayerStateMachine : MonoBehaviour
 
     #endregion
     
+    #region Attack Methods
+
+    public void TriggerAttack()
+    {
+        animator.SetBool(Animator.StringToHash("isAttacking"), true);
+    }
+    public object GetEquippedWeapon()
+    {
+        // TODO: Once weapon scriptable objects are implemented, return the equipped weapon here.
+        return null;
+    }
+    
+    #endregion
     
     // This region contains public methods used to move the player. This can be refactored into 
     // each individual state if this gets too cumbersome, but I am leaving it here for now because multiple

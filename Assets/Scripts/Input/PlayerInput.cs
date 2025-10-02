@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,6 +16,8 @@ public class PlayerInput : Singleton<PlayerInput>
     // these variables are true when the player is HOLDING sprint or crouch
     public bool sprintInput = false;
     public bool crouchInput = false;
+    
+    public event Action OnAttack = delegate { };
 
     ////////
     protected override void Awake()
@@ -115,6 +118,8 @@ public class PlayerInput : Singleton<PlayerInput>
     }
 
     private void InputAttack(InputAction.CallbackContext callbackValue) {
-        // call something to attack (here)
+        if (callbackValue.performed) {
+            OnAttack?.Invoke();
+        }
     }
 }
