@@ -15,9 +15,7 @@ public class ItemInfo : ScriptableObject
     };
 
     public enum ItemName { // All possible names of items
-        Name1,
-        Name2,
-        Name3
+        Spear
     };
 
     [SerializeField] public ItemType itemType;// type of item
