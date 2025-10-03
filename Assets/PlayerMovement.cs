@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using FMOD.Studio;
+using FMOD;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveSpeed;
+    [SerializeField] private float moveSpeed;
 
     public Transform orientation;
 
@@ -15,21 +16,42 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 moveDirection;
 
-    private EventInstance playerFootSteps;
+    private EventInstance footsteps;
+    private EventInstance music;
 
-    Rigidbody rb;
+    private bool pauseMusic = false;
+
+    public Rigidbody rb;
 
     private void Start()
     {
+        footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.footsteps);
+        music = AudioManager.instance.CreateEventInstance(FMODEvents.instance.music);
+
+        music.start();
+
         rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
+
+            //AudioManager.playSound("enemyDeath", this.transform.position);
         }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            pauseMusic = !pauseMusic;
+            UnityEngine.Debug.Log("toggle music: " + pauseMusic);
+
+            music.setPaused(pauseMusic);
+        }
+
+        if (transform.position.y < -50)
+            transform.position = new Vector3 { x = 0, y = 5, z = 0 };
     }
 
     private void FixedUpdate()
@@ -47,18 +69,21 @@ public class PlayerMovement : MonoBehaviour
     {
         if (rb.linearVelocity.magnitude != 0)
         {
-            Debug.Log("can play sound");
+            // NOTE: 3d attributes need to be set in order to play instances in 3d
+            ATTRIBUTES_3D attr = AudioManager.instance.configAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, Vector3.up);
+            footsteps.set3DAttributes(attr);
+
             PLAYBACK_STATE playbackState;
-            playerFootSteps.getPlaybackState(out playbackState);
+            footsteps.getPlaybackState(out playbackState);
 
             if (playbackState.Equals(PLAYBACK_STATE.STOPPED))
             {
-                playerFootSteps.start();
+                footsteps.start();
             }
         }
         else
         {
-            playerFootSteps.stop(STOP_MODE.ALLOWFADEOUT);
+            footsteps.stop(STOP_MODE.ALLOWFADEOUT);
         }
     }
 }

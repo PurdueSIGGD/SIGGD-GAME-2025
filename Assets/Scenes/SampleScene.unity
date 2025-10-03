@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -261,7 +262,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nonRigidbodyVelocity: 0
-  attenuationObject: {fileID: 0}
+  attenuationObject: {fileID: 330585543}
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c0541fa76b73e6bf9a2aaa789a57a54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1094773800}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -671,6 +685,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2
   orientation: {fileID: 1232986410}
+  rb: {fileID: 1094773801}
 --- !u!1 &1232986409
 GameObject:
   m_ObjectHideFlags: 0
@@ -753,7 +768,7 @@ MonoBehaviour:
       Data2: 1146810873
       Data3: -2024132175
       Data4: 841946915
-    Path: event:/male death
+    Path: event:/maledeath
   <footsteps>k__BackingField:
     Guid:
       Data1: -838718119
@@ -761,6 +776,14 @@ MonoBehaviour:
       Data3: -801935183
       Data4: -247095348
     Path: event:/Footsteps
+  <music>k__BackingField:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  <sounds>k__BackingField: []
 --- !u!1 &1898736287
 GameObject:
   m_ObjectHideFlags: 0

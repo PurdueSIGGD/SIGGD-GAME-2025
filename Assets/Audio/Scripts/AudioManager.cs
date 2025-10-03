@@ -1,6 +1,7 @@
 using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
+using FMOD;
 
 public class AudioManager : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class AudioManager : MonoBehaviour
         if (instance != null)
         {
             // this hopefully will never be seen
-            Debug.Log("more than one audio manager in the scene");
+            UnityEngine.Debug.Log("more than one audio manager in the scene");
         }
         instance = this;
     }
@@ -26,5 +27,15 @@ public class AudioManager : MonoBehaviour
     {
         EventInstance eventInstance = RuntimeManager.CreateInstance(eventReference);
         return eventInstance;
+    }
+
+    // NOTE: 3d attributes need to be set in order to play instances in 3d
+    public ATTRIBUTES_3D configAttributes3D(Vector3 position, Vector3 velocity, Vector3 forward, Vector3 up)
+    {
+        VECTOR pos = new VECTOR { x = position.x, y = position.y, z = position.z };
+        VECTOR vel = new VECTOR { x = velocity.x, y = velocity.y, z = velocity.z };
+        VECTOR forw = new VECTOR { x = forward.x, y = forward.y, z = forward.z };
+        VECTOR upAttr = new VECTOR { x = up.x, y = up.y, z = up.z };
+        return new ATTRIBUTES_3D { position = pos, velocity = vel, forward = forw, up = upAttr };
     }
 }
