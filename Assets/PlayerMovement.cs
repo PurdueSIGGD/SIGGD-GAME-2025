@@ -7,7 +7,7 @@ using FMOD;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveSpeed;
+    [SerializeField] private float moveSpeed;
 
     public Transform orientation;
 
@@ -17,24 +17,41 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
 
     private EventInstance footsteps;
+    private EventInstance music;
+
+    private bool pauseMusic = false;
 
     public Rigidbody rb;
 
     private void Start()
     {
         footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.footsteps);
+        music = AudioManager.instance.CreateEventInstance(FMODEvents.instance.music);
+
+        music.start();
 
         rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
 
             //AudioManager.playSound("enemyDeath", this.transform.position);
         }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            pauseMusic = !pauseMusic;
+            UnityEngine.Debug.Log("toggle music: " + pauseMusic);
+
+            music.setPaused(pauseMusic);
+        }
+
+        if (transform.position.y < -50)
+            transform.position = new Vector3 { x = 0, y = 5, z = 0 };
     }
 
     private void FixedUpdate()
@@ -53,11 +70,7 @@ public class PlayerMovement : MonoBehaviour
         if (rb.linearVelocity.magnitude != 0)
         {
             // NOTE: 3d attributes need to be set in order to play instances in 3d
-            VECTOR pos = new VECTOR { x = rb.position.x, y = rb.position.y, z = rb.position.z };
-            VECTOR vel = new VECTOR { x = rb.linearVelocity.x, y = rb.linearVelocity.y, z = rb.linearVelocity.z };
-            VECTOR forward = new VECTOR { x = rb.linearVelocity.x / rb.linearVelocity.magnitude, y = rb.linearVelocity.y / rb.linearVelocity.magnitude, z = rb.linearVelocity.z / rb.linearVelocity.magnitude };
-            VECTOR up = new VECTOR { x = Vector3.up.x, y = Vector3.up.y, z = Vector3.up.z };
-            ATTRIBUTES_3D attr = new ATTRIBUTES_3D { position = pos, velocity = vel, forward = forward, up = up };
+            ATTRIBUTES_3D attr = AudioManager.instance.configAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, Vector3.up);
             footsteps.set3DAttributes(attr);
 
             PLAYBACK_STATE playbackState;

@@ -1,12 +1,18 @@
 using UnityEngine;
 using FMODUnity;
 using System.Collections.Generic;
+using System;
 
 public class FMODEvents : MonoBehaviour
 {
-    [field: SerializeField] public EventReference enemyDeath { get; private set; }
     [field: Header("Player SFX")] 
+    [field: SerializeField] public EventReference enemyDeath { get; private set; }
+
+    [field: Header("Footsteps")] 
     [field: SerializeField] public EventReference footsteps { get; private set; }
+
+    [field: Header("Background Music")] 
+    [field: SerializeField] public EventReference music { get; private set; }
 
     [field: SerializeField] public List<EventReference> sounds { get; private set; }
 
