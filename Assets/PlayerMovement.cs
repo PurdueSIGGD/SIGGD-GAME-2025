@@ -56,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
             VECTOR pos = new VECTOR { x = rb.position.x, y = rb.position.y, z = rb.position.z };
             VECTOR vel = new VECTOR { x = rb.linearVelocity.x, y = rb.linearVelocity.y, z = rb.linearVelocity.z };
             VECTOR forward = new VECTOR { x = rb.linearVelocity.x / rb.linearVelocity.magnitude, y = rb.linearVelocity.y / rb.linearVelocity.magnitude, z = rb.linearVelocity.z / rb.linearVelocity.magnitude };
-            VECTOR up = new VECTOR { x = 0, y = 1, z = 0 };
+            VECTOR up = new VECTOR { x = Vector3.up.x, y = Vector3.up.y, z = Vector3.up.z };
             ATTRIBUTES_3D attr = new ATTRIBUTES_3D { position = pos, velocity = vel, forward = forward, up = up };
             footsteps.set3DAttributes(attr);
 
