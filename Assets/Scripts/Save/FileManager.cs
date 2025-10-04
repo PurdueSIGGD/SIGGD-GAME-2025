@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class FileManager : Singleton<FileManager>
 {
-    private readonly string mainDirectory;
+    private static string mainDirectory;
 
-    public static string saveDirectory = "Save";
+    public static string savesDirectory = "Saves";
 
     private static string defaultExtension = ".json";
 
@@ -13,7 +13,12 @@ public class FileManager : Singleton<FileManager>
 
     public FileManager()
     {
-        mainDirectory = Application.persistentDataPath;
+
+    }
+
+    new public void Awake()
+    {
+        mainDirectory = Path.Combine(Application.persistentDataPath, "Data");
 
         InitializeDirectoryStructure();
     }
@@ -22,7 +27,7 @@ public class FileManager : Singleton<FileManager>
     {
         if (!Directory.Exists(mainDirectory)) Directory.CreateDirectory(mainDirectory);
 
-        if (!DirectoryExists(saveDirectory)) CreateDirectory(saveDirectory);
+        if (!DirectoryExists(savesDirectory)) CreateDirectory(savesDirectory);
     }
 
     #endregion
