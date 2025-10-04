@@ -1,12 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
+using FMODUnity;
+using Sirenix.OdinInspector;
 
 public abstract class UnitySerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
 {
-	[SerializeField, HideInInspector]
+	[SerializeField]
 	private List<TKey> keyData = new List<TKey>();
 
-	[SerializeField, HideInInspector]
+	[SerializeField]
 	private List<TValue> valueData = new List<TValue>();
 
 	void ISerializationCallbackReceiver.OnAfterDeserialize()
