@@ -1,0 +1,120 @@
+using System.IO;
+using UnityEngine;
+
+public class FileManager : Singleton<FileManager>
+{
+    private static string mainDirectory;
+
+    public static string savesDirectory = "Saves";
+
+    private static string defaultExtension = ".json";
+
+    #region Init
+
+    public FileManager()
+    {
+
+    }
+
+    new public void Awake()
+    {
+        mainDirectory = Path.Combine(Application.persistentDataPath, "Data");
+
+        InitializeDirectoryStructure();
+    }
+
+    private void InitializeDirectoryStructure()
+    {
+        if (!Directory.Exists(mainDirectory)) Directory.CreateDirectory(mainDirectory);
+
+        if (!DirectoryExists(savesDirectory)) CreateDirectory(savesDirectory);
+    }
+
+    #endregion
+
+    #region File Operations
+
+    public bool FileExists(string relativePath)
+    {
+        string path = GetFilePath(relativePath);
+
+        return File.Exists(path);
+    }
+
+    public string ReadFile(string relativePath)
+    {
+        string path = GetFilePath(relativePath);
+
+        return File.ReadAllText(path);
+    }
+
+    public void WriteFile(string relativePath, string content)
+    {
+        string path = GetFilePath(relativePath);
+
+        File.WriteAllText(path, content);
+    }
+
+    #endregion
+
+    #region Directory Operations
+
+    public bool DirectoryExists(string relativePath)
+    {
+        string path = GetDirectoryPath(relativePath);
+
+        return Directory.Exists(path);
+    }
+
+    public void CreateDirectory(string relativePath)
+    {
+        string path = GetDirectoryPath(relativePath);
+
+        Directory.CreateDirectory(path);
+    }
+
+    public void DeleteDirectory(string relativePath)
+    {
+        string path = GetDirectoryPath(relativePath);
+
+        Directory.Delete(path, true);
+    }
+
+    public void ClearDirectory(string relativePath)
+    {
+        DeleteDirectory(relativePath);
+        CreateDirectory(relativePath);
+    }
+
+    #endregion
+
+    #region Other Operations
+
+    public void ResetData()
+    {
+        Directory.Delete(mainDirectory, true);
+        InitializeDirectoryStructure();
+    }
+
+    #endregion
+
+    #region Helpers
+
+    private string GetFilePath(string relativePath)
+    {
+        string path = Path.Combine(mainDirectory, relativePath);
+
+        if (!path.Contains('.')) path += defaultExtension;
+
+        return path;
+    }
+
+    private string GetDirectoryPath(string relativePath)
+    {
+        string path = Path.Combine(mainDirectory, relativePath);
+
+        return path;
+    }
+
+    #endregion
+}
