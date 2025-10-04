@@ -1,5 +1,6 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Agent.Runtime;
+using CrashKonijn.Goap.Runtime;
 using UnityEngine;
 
 namespace SIGGD.Goap.Behaviours
@@ -64,6 +65,8 @@ namespace SIGGD.Goap.Behaviours
             if (this.currentTarget == null)
                 return;
 
+            //Add Navmesh
+            
             this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.currentTarget.Position.x, this.transform.position.y, this.currentTarget.Position.z), Time.deltaTime);
         }
 

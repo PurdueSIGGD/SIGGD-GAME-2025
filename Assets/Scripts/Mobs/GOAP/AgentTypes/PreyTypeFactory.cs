@@ -4,15 +4,15 @@ using SIGGD.Goap.Capabilities;
 using SIGGD.Mobs;
 using UnityEngine;
 
-namespace SIGGD.Goap.AgentTypes {
-    public class AgentTypeFactory : AgentTypeFactoryBase
+namespace SIGGD.Goap.AgentTypes
+{
+    public class PreyTypeFactory : AgentTypeFactoryBase
     {
         public override IAgentTypeConfig Create()
         {
-            var factory = new AgentTypeBuilder(MobIds.generic);
+            var factory = new AgentTypeBuilder(MobIds.prey);
             factory.AddCapability<HungerCapability>();
             factory.AddCapability<WanderCapability>();
-            factory.AddCapability<HuntPreyCapability>();
             return factory.Build();
         }
     }
