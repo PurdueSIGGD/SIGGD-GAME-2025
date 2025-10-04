@@ -31,6 +31,8 @@ public class ItemInfo : ScriptableObject
     [SerializeField] public bool isIngredient; // whether or not the item can be used as an ingredient for crafting
 
     [SerializeField] public string description; // description of the item
+    
+    [SerializeReference] public IPlayerActionStrategy playerActionStrategy; // strategy pattern for player actions with the item
 
     // Maybe include reference to gameobject for instantiating?
 

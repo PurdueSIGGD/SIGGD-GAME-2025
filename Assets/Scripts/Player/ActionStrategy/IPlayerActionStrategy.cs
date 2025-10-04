@@ -5,13 +5,17 @@ using UnityEngine;
  * The IPlayerActionStrategy interface defines the structure for player action strategies. All player action behaviors
  * will implement this interface, so the PlayerAttackState can use them interchangeably. This will be serialized in
  * a player weapon scriptable object to define different attack behaviors for different weapons.
+ *
+ * USAGE: Create concrete classes implementing this interface for each specific player action (e.g., AxeSwingStrategy,
+ * SpearThrowStrategy). Make sure to mark the class as [Serializable] and DO NOT define a constructor (or make sure
+ * to have a parameterless one), so Unity can serialize it properly.
  * </summary>
  */
 public abstract class IPlayerActionStrategy
 {
     protected PlayerStateMachine stateMachine;
     public AnimationClip animationClip;
-    public float ActionDuration => animationClip.length;
+    public float ActionDuration => animationClip != null ? animationClip.length : 0f;
     private float actionTimer = 0;
     
     /**
@@ -19,7 +23,8 @@ public abstract class IPlayerActionStrategy
      */
     protected virtual void OnEnter()
     {
-        stateMachine.animator.Play(animationClip.name);
+        if (animationClip != null)
+            stateMachine.animator.Play(animationClip.name);
     }
     
     /**
@@ -37,7 +42,11 @@ public abstract class IPlayerActionStrategy
      * corresponding protected methods. This allows subclasses to override the protected methods while keeping
      * the public interface consistent.
      */
-    public void Enter() => OnEnter();
+    public void Enter()
+    {
+        stateMachine = PlayerID.Instance.stateMachine;
+        OnEnter();
+    }
 
     /**
      * Template design pattern to always evaluate timing logic in the Update method, while letting subclasses define

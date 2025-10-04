@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerAttackState : StateMachineBehaviour
+public class PlayerItemActionState : StateMachineBehaviour
 {
     private PlayerStateMachine playerStateMachine;
     private IPlayerActionStrategy playerActionStrategy;
@@ -10,9 +10,9 @@ public class PlayerAttackState : StateMachineBehaviour
         base.OnStateEnter(animator, stateInfo, layerIndex);
         playerStateMachine = PlayerID.Instance.stateMachine;
 
-        var currentWeapon = playerStateMachine.GetEquippedWeapon();
-        
-        //playerActionStrategy = currentWeapon.actionStrategy;
+        var currentItem = playerStateMachine.GetEquippedItem();
+
+        playerActionStrategy = currentItem.playerActionStrategy;
         
         playerActionStrategy.Enter();
     }

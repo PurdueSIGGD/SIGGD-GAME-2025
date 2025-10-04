@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /**
@@ -5,17 +6,13 @@ using UnityEngine;
  * Strategy for axe swinging action.
  * </summary>
  */
+[Serializable]
 public class AxeSwingStrategy : IPlayerActionStrategy
 {
-    public AxeSwingStrategy(PlayerStateMachine stateMachine, AnimationClip animationClip)
-    {
-        this.stateMachine = stateMachine;
-        this.animationClip = animationClip;
-    }
-    
     protected override void OnEnter()
     {
         base.OnEnter();
+        Debug.Log("Axe Swing");
         // Additional logic for entering axe swing state
     }
 

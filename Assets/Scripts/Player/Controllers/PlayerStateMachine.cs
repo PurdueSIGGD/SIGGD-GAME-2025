@@ -24,6 +24,8 @@ public class PlayerStateMachine : MonoBehaviour
     [Header("Parameter SOs")]
     public MoveData moveData; // ScriptableObject containing movement parameters.
     
+    public ItemInfo defaultItem; // The default item the player starts with.
+    
     #endregion
     
     #region Movement Attributes
@@ -77,10 +79,9 @@ public class PlayerStateMachine : MonoBehaviour
     {
         animator.SetBool(Animator.StringToHash("isAttacking"), true);
     }
-    public object GetEquippedWeapon()
+    public ItemInfo GetEquippedItem()
     {
-        // TODO: Once weapon scriptable objects are implemented, return the equipped weapon here.
-        return null;
+        return defaultItem;
     }
     
     #endregion

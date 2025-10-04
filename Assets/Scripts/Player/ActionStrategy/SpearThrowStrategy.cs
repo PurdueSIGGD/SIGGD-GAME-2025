@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /**
@@ -5,17 +6,15 @@ using UnityEngine;
  * Strategy for spear throwing action.
  * </summary>
  */
+[Serializable]
 public class SpearThrowStrategy : IPlayerActionStrategy
 {
-    public SpearThrowStrategy(PlayerStateMachine stateMachine, AnimationClip animationClip)
-    {
-        this.stateMachine = stateMachine;
-        this.animationClip = animationClip;
-    }
+    public float throwDistance = 10f;
     
     protected override void OnEnter()
     {
         base.OnEnter();
+        Debug.Log("Spear throw");
         // Additional logic for entering spear throw state
     }
 
