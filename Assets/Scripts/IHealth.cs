@@ -7,7 +7,7 @@ public interface IHealth
     float MaxHealth { get; }
 
     // required methods for any creature using health system
-    void TakeDamage(float amount);
-    void Heal(float amount);
+    void TakeDamage(float amount, GameObject attacker, string extra);
+    void Heal(float amount, GameObject healer, string extra);
     void Die();
 }
