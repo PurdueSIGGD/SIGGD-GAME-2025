@@ -68,6 +68,19 @@ public class FileManager : Singleton<FileManager>
         Directory.CreateDirectory(path);
     }
 
+    public void DeleteDirectory(string relativePath)
+    {
+        string path = GetDirectoryPath(relativePath);
+
+        Directory.Delete(path, true);
+    }
+
+    public void ClearDirectory(string relativePath)
+    {
+        DeleteDirectory(relativePath);
+        CreateDirectory(relativePath);
+    }
+
     #endregion
 
     #region Other Operations
