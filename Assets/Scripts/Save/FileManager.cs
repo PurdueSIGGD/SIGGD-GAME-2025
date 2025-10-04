@@ -20,7 +20,9 @@ public class FileManager : Singleton<FileManager>
 
     private void InitializeDirectoryStructure()
     {
-        if(!DirectoryExists(saveDirectory)) CreateDirectory(saveDirectory);
+        if (!Directory.Exists(mainDirectory)) Directory.CreateDirectory(mainDirectory);
+
+        if (!DirectoryExists(saveDirectory)) CreateDirectory(saveDirectory);
     }
 
     #endregion
@@ -64,6 +66,16 @@ public class FileManager : Singleton<FileManager>
         string path = GetDirectoryPath(relativePath);
 
         Directory.CreateDirectory(path);
+    }
+
+    #endregion
+
+    #region Other Operations
+
+    public void ResetData()
+    {
+        Directory.Delete(mainDirectory, true);
+        InitializeDirectoryStructure();
     }
 
     #endregion
