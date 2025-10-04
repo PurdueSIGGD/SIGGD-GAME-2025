@@ -207,6 +207,7 @@ GameObject:
   - component: {fileID: 1991035894266045947}
   - component: {fileID: 6568691690603365253}
   - component: {fileID: 4631385605857827235}
+  - component: {fileID: 8125180874653259684}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -348,3 +349,32 @@ MonoBehaviour:
   sensY: 10
   minY: -30
   maxY: 30
+--- !u!114 &8125180874653259684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8008019615302813231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c4fc51b11426bd42b20444e52138ccf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableBobbing: 1
+  bobWalkingPattern:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bobUpdateSpeed: 75
+  bobPeriodRealMax: 0.2
+  bobPeriodMax: 0.3
+  bobPeriodMin: 0.7
+  swayPeriodDivisor: 4
+  bobWalkingAmplitude: 0.1
+  swayWalkingAmplitude: 0.2
+  rigidBodyMaxSpeed: 10
+  rigidBodySpeedOverflowSpeed: 5
+  airborneSpeedCutoff: 0.2
