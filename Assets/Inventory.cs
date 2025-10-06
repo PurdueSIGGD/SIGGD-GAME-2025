@@ -1,5 +1,6 @@
 using System.Runtime.ExceptionServices;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Inventory
 {
@@ -9,12 +10,18 @@ public class Inventory
     private int selected; // index of selected item in hotbar
     private Slot tempSlot; // temporary slot for holding item that is being moved
 
+    public Inventory() {
+        inventory = new Slot[27];
+        hotbar = new Slot[9];
+    }
+
     /// <summary>
-    /// Switches the selected item
+    /// Switches the selected item (limited to hotbar)
     /// </summary>
     /// <param name="index">Index to switch to</param>
     public void select(int index) {
         selected = index;
+        Debug.Log("Selected " + index + " index, containing " + hotbar[index].itemInfo.itemName);
     }
 
     /// <summary>
@@ -24,7 +31,8 @@ public class Inventory
     /// <returns>Index of the item or -1 if not found</returns>
     public int find(ItemInfo.ItemName itemName) {
         for (int i = 0; i < inventory.Length; i++) {
-            if (inventory[i].itemInfo.itemName == itemName) {
+            if (inventory[i].itemInfo.itemName == itemName)
+            {
                 return i;
             }
         }
