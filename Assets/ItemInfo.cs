@@ -13,7 +13,8 @@ public class ItemInfo : ScriptableObject
     public enum ItemType{ // All possible types of items
         Weapon,
         Resource,
-        Container
+        Container,
+        Empty
     };
 
     public enum ItemName { // All possible names of items
