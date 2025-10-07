@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 using static ItemInfo;
 /// <summary>
@@ -13,6 +14,11 @@ public class RecipeInfo : ScriptableObject
     [SerializeField] ItemInfo Ingredient2; // second ingredient used to craft item
     
     [SerializeField] ItemInfo Output; // item that is produced as a result of crafting; should be an existing item in ItemInfo
+
+    public static Dictionary<(ItemName, ItemInfo), ItemInfo> RecipeBook =
+    new Dictionary<(ItemInfo, ItemInfo), ItemInfo> {
+        { (a, b), c}
+    };
 
     public void log()
     {

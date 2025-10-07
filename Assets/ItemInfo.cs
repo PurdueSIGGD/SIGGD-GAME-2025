@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal.Internal;
 using UnityEngine.UI;
+using static ItemInfo;
 /// <summary>
 /// Scriptable Object that holds all of the item information
 /// </summary>
@@ -15,7 +17,9 @@ public class ItemInfo : ScriptableObject
     };
 
     public enum ItemName { // All possible names of items
-        Spear
+        Spear,
+        Rock,
+        RockSpear
     };
 
     [SerializeField] public ItemType itemType;// type of item
@@ -29,6 +33,11 @@ public class ItemInfo : ScriptableObject
     [SerializeField] public bool isIngredient; // whether or not the item can be used as an ingredient for crafting
 
     [SerializeField] public string description; // description of the item
+
+    public static Dictionary<(ItemName, ItemName), ItemName> RecipeBook = // dictionary containing all possible crafting combos
+    new Dictionary<(ItemName, ItemName), ItemName> {
+        { (ItemName.Spear, ItemName.Rock), ItemName.RockSpear}
+    };
 
     // Maybe include reference to gameobject for instantiating?
 
