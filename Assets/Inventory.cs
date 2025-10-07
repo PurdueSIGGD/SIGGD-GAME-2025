@@ -5,14 +5,12 @@ using UnityEngine.InputSystem;
 public class Inventory
 {
 
-    private Slot[] inventory; // array (or 2D-array) for entire inventory
-    private Slot[] hotbar; // array for hotbar
+    private Slot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
     private int selected; // index of selected item in hotbar
     private Slot tempSlot; // temporary slot for holding item that is being moved
 
     public Inventory() {
         inventory = new Slot[27];
-        hotbar = new Slot[9];
     }
 
     /// <summary>
@@ -21,7 +19,7 @@ public class Inventory
     /// <param name="index">Index to switch to</param>
     public void select(int index) {
         selected = index;
-        Debug.Log("Selected " + index + " index, containing " + hotbar[index].itemInfo.itemName);
+        Debug.Log("Selected " + index + " index, containing " + inventory[index].itemInfo.itemName);
     }
 
     /// <summary>
@@ -43,10 +41,31 @@ public class Inventory
     /// Adds item to inventory
     /// </summary>
     /// <param name="itemInfo">Item to add</param>
-    public void add(ItemInfo itemInfo) { // maybe change input type
-        // search for item in inventory
-        // add to current stack if it exists
-        // create new stack if needed
+    /// <param name="count">Amount of items</param>
+    public void add(ItemInfo itemInfo, int count) { // maybe change input type
+        // add to current stack
+        for (int i = 0; i < inventory.Length; i++) {
+            if (inventory[i].itemInfo.itemName == itemInfo.itemName)
+            {
+                inventory[i].count += count;
+                return;
+            }
+        }
+        // otherwise create new stack if possible
+        for (int i = 0; i < inventory.Length; i++)
+        {
+            if (inventory[i].count == 0)
+            {
+                inventory[i].count += count;
+                inventory[i].itemInfo = itemInfo;
+                return;
+            }
+        }
+        // otherwise replace current selected item
+        drop();
+        inventory[selected].itemInfo = itemInfo;
+        inventory[selected].count = 0;
+
     }
 
     /// <summary>
@@ -54,8 +73,13 @@ public class Inventory
     /// </summary>
     /// <param name="index">Index of item to drop</param>
     public void drop(int index) { // maybe create another method for dropping stacks of items
-        // remove item
         // instantiate physical item
+
+        // remove item
+        inventory[index].count--;
+        if (inventory[index].count <= 0) {
+            inventory[index].itemInfo = null;
+        }
     }
 
     /// <summary>
