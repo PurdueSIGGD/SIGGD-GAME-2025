@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity;
+using FMODUnity;
 using UnityEngine;
 using FMOD.Studio;
 using FMOD;
@@ -25,8 +27,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.footsteps);
-        music = AudioManager.instance.CreateEventInstance(FMODEvents.instance.music);
+        footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["Footsteps"]);
+        //music = AudioManager.instance.CreateEventInstance(FMODEvents.instance.");
 
         music.start();
 
@@ -35,9 +37,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (!footsteps.isValid())
+        {
+            footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["Footsteps"]);
+            UnityEngine.Debug.Log("footsteps made");
+        }
+
+
         if (Input.GetKeyDown(KeyCode.E))
         {
-            AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
+            //AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
 
             //AudioManager.playSound("enemyDeath", this.transform.position);
         }
