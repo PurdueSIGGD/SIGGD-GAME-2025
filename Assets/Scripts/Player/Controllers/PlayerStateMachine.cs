@@ -77,6 +77,7 @@ public class PlayerStateMachine : MonoBehaviour
      */
     public void Run(Vector2 moveInput, float speed)
     {
+        moveData.TEST();
         Transform cam = playerID.cam.transform;
         Vector3 direction = moveInput.x * cam.right.SetY(0).normalized + 
                                moveInput.y * cam.forward.SetY(0).normalized;
