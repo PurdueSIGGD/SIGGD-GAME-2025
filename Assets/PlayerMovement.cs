@@ -1,8 +1,7 @@
+using UnityEngine;
+using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
-using Unity;
-using FMODUnity;
-using UnityEngine;
 using FMOD.Studio;
 using FMOD;
 
@@ -28,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["Footsteps"]);
-        //music = AudioManager.instance.CreateEventInstance(FMODEvents.instance.");
+        music = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["backgroundMusic"]);
 
         music.start();
 
@@ -40,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
         if (!footsteps.isValid())
         {
             footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["Footsteps"]);
-            UnityEngine.Debug.Log("footsteps made");
+            UnityEngine.Debug.Log("footsteps are made they should work?");
         }
 
 
@@ -92,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            footsteps.stop(STOP_MODE.ALLOWFADEOUT);
+            footsteps.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
         }
     }
 }
