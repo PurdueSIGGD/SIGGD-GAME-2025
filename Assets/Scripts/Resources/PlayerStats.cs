@@ -7,16 +7,17 @@ public class PlayerStats : MonoBehaviour
     public float currentHunger;
     public float hungerDecayRate = 1f;
 
-    private GameObject player;
+    private float hungerDamageTimer = 0f;     // tracks time since last starvation tick
+    [SerializeField] private float hungerDamageInterval = 10f; // seconds between starvation damage
+
+    private EntityHealthManager playerHealth;
 
 
 
     void Start()
     {
         currentHunger = maxHunger;
-        player = GetComponent<GameObject>();
-
-
+        playerHealth = GetComponent<EntityHealthManager>();
     }
 
     void Update()
@@ -25,13 +26,23 @@ public class PlayerStats : MonoBehaviour
         if (currentHunger > 0)
         {
             currentHunger -= hungerDecayRate * Time.deltaTime;
+            hungerDamageTimer = 0f; // Reset timer if not starving
 
-            Debug.Log(currentHunger);
-        } else {
+            // Debug.Log(currentHunger);
+        } 
+        else 
+        {
+            //player is starving stuff
+            // Debug.Log("Starving");
+ 
+            hungerDamageTimer += Time.deltaTime;
 
-        //player is starving stuff
-            Debug.Log("Starving");
-            player.TakeDamage(10, this.gameObject, "");
+            if (hungerDamageTimer >= hungerDamageInterval)
+            {
+                hungerDamageTimer = 0f; // Reset timer
+                playerHealth.TakeDamage(1, gameObject, "Starving");
+                Debug.LogWarning("Starving - Took 1 damage");
+            }
         }
 
     }

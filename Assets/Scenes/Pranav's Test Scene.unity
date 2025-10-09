@@ -263,6 +263,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 512662131}
+  - {fileID: 869417976}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &869417971
@@ -300,8 +301,6 @@ MonoBehaviour:
   statToAffect: 0
   multiplier: 2
   duration: 3
-  targetStats: {fileID: 2095771137}
-  statToWatch: 0
 --- !u!65 &869417973
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -384,12 +383,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 869417971}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.77, y: 0.83, z: 2.63}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.54, y: 0.83, z: 6.74}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 719060612}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1039930516
 GameObject:
@@ -590,6 +589,7 @@ MonoBehaviour:
   maxHunger: 100
   currentHunger: 0
   hungerDecayRate: 5
+  hungerDamageInterval: 10
 --- !u!1001 &3817867253746941463
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -663,4 +663,3 @@ SceneRoots:
   - {fileID: 1039930518}
   - {fileID: 719060612}
   - {fileID: 1707018563}
-  - {fileID: 869417976}

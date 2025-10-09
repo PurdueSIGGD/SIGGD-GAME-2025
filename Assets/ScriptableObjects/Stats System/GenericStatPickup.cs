@@ -19,8 +19,8 @@ public class GenericStatPickup : MonoBehaviour
         if (stats != null)
         {
             stats.ApplyMultiplier(statToAffect, multiplier, duration);
-            // Destroy(gameObject);
             Debug.Log($"Picked up {statToAffect} multiplier of {multiplier} for {duration} seconds.");
+            Destroy(gameObject);
         }
     }
 
@@ -28,16 +28,17 @@ public class GenericStatPickup : MonoBehaviour
     #region DEBUGGING
 
     // TESTING ONLY
-    public Stat targetStats;   // drag the creature here
-    public StatType statToWatch = StatType.Attack;
 
-    void Update()
-    {
-        if (targetStats != null)
-        {
-            Debug.Log($"{targetStats.name}'s {statToWatch}: {targetStats.GetStat(statToWatch)}");
-        }
-    }
+    //public Stat targetStats;   // drag the creature here
+    //public StatType statToWatch = StatType.Attack;
+
+    //void Update()
+    //{
+    //    if (targetStats != null)
+    //    {
+    //        Debug.Log($"{targetStats.name}'s {statToWatch}: {targetStats.GetStat(statToWatch)}");
+    //    }
+    //}
 
     #endregion
 }

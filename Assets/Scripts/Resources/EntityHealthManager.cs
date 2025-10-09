@@ -23,7 +23,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     private void Awake()
     {
         CurrentHealth = maxHealth; // start at full health
-        
+
     }
 
     public void TakeDamage(float amount, GameObject attacker, string extra)
@@ -41,7 +41,6 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
 
         OnHealthChanged?.Invoke(attackContext); // return info about the damage
-        Debug.Log(CurrentHealth);
 
         if (CurrentHealth <= 0)
         {
@@ -73,4 +72,5 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         OnDeath?.Invoke();
         Destroy(gameObject);
     }
+
 }
