@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 
+[Serializable]
 public class PlayerSaveData
 {
-    Vector3 playerPos;
+    public Vector3 Position;
 }

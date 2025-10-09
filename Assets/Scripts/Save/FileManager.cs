@@ -7,7 +7,7 @@ public class FileManager : Singleton<FileManager>
 
     public static string savesDirectory = "Saves";
 
-    private static string defaultExtension = ".json";
+    private static string defaultExtension = ".data";
 
     #region Init
 
@@ -41,18 +41,18 @@ public class FileManager : Singleton<FileManager>
         return File.Exists(path);
     }
 
-    public string ReadFile(string relativePath)
+    public byte[] ReadFile(string relativePath)
     {
         string path = GetFilePath(relativePath);
 
-        return File.ReadAllText(path);
+        return File.ReadAllBytes(path);
     }
 
-    public void WriteFile(string relativePath, string content)
+    public void WriteFile(string relativePath, byte[] content)
     {
         string path = GetFilePath(relativePath);
 
-        File.WriteAllText(path, content);
+        File.WriteAllBytes(path, content);
     }
 
     #endregion

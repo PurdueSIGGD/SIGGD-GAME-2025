@@ -1,22 +1,38 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
 {
     public List<ISaveModule> modules = new List<ISaveModule>();
-    public void Load()
+
+    new private void Awake()
+    {
+        PlayerDataSaveModule.player = gameObject;
+        Load();
+    }
+
+    private void OnEnable()
+    {
+        Application.wantsToQuit += Save;
+    }
+
+    public bool Load()
     {
         foreach (ISaveModule i in modules)
         {
-            i.deserialize(null);
+            i.deserialize();
         }
+
+        return true;
     }
-    public void Save()
+
+    public bool Save()
     {
         foreach(ISaveModule i in modules)
         {
-            i.serialize(null);
+            i.serialize();
         }
+
+        return true;
     }
 }

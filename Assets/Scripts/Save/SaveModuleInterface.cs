@@ -1,13 +1,9 @@
-using System;
-using UnityEngine;
-
-//Creates a save module interface, ISaveModule, that can be used as a basis for Json serialization and deserialization
+// Creates a save module interface, ISaveModule, that can be used as a basis for binary serialization and deserialization
 public interface ISaveModule
 {
+    // Serializes this modules related data and saves it to a binary file and returns success.
+    bool serialize();
 
-    //Serializes an object and returns the Json script
-    string serialize(System.Object item);
-
-    //Deserializes an object from the Json script and returns the object
-    System.Object deserialize(string item);
+    // Deserializes this modules related data from the saved binary file and returns success.
+    bool deserialize();
 }
