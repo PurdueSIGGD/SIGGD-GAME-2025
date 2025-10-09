@@ -26,8 +26,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["Footsteps"]);
-        music = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["backgroundMusic"]);
+        //footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["Footsteps"]);
+        //music = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["backgroundMusic"]);
 
         music.start();
 
@@ -36,11 +36,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        /*
         if (!footsteps.isValid())
         {
             footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["Footsteps"]);
             UnityEngine.Debug.Log("footsteps are made they should work?");
         }
+        */
 
 
         if (Input.GetKeyDown(KeyCode.E))
