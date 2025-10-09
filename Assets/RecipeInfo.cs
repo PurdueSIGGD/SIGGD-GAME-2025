@@ -13,9 +13,6 @@ public class RecipeInfo : MonoBehaviour {
         { (ItemName.RockSpear, ItemName.RockSpear), ItemName.Empty },
     };
 
-    // Maybe include reference to gameobject for instantiating?
-
-    // Order matters right now, which might be bad in practice.
     public ItemInfo UseRecipe(ItemName item1, ItemName item2)
     {
         var key = (item1, item2);
@@ -40,12 +37,10 @@ public class RecipeInfo : MonoBehaviour {
     public void Start()
     {
         var items = Resources.LoadAll("", typeof(ItemInfo));
-        // Debug.Log(items.Length);
 
         foreach (var rawItemInfo in items)
         {
             var itemInfo = rawItemInfo as ItemInfo;
-            // itemInfo.log();
             namesToItemInfos[itemInfo.itemName] = itemInfo;
         }
     }

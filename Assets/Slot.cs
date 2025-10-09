@@ -16,10 +16,6 @@ public class Slot : MonoBehaviour
     void OnClick()
     {
         Debug.Log("This slot, containing " + count + "x " + ItemInfo.itemName + " was pressed.");
-        // Testing:
-
-        // ItemInfo item = RecipeInfo.Get().UseRecipe(ItemInfo.ItemName.Spear, ItemInfo.ItemName.Rock);
-        // item.log();
     }
 
     // Update is called once per frame
