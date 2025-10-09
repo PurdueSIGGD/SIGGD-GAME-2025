@@ -3,8 +3,8 @@ using UnityEngine.UI;
 
 public class Slot : MonoBehaviour
 {
-    [SerializeField]
-    private string ItemType;
+    public ItemInfo ItemInfo;
+    public int count;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -15,7 +15,11 @@ public class Slot : MonoBehaviour
 
     void OnClick()
     {
-        Debug.Log("This slot, containing " + ItemType + " was pressed.");
+        Debug.Log("This slot, containing " + count + "x " + ItemInfo.itemName + " was pressed.");
+        // Testing:
+
+        // ItemInfo item = RecipeInfo.Get().UseRecipe(ItemInfo.ItemName.Spear, ItemInfo.ItemName.Rock);
+        // item.log();
     }
 
     // Update is called once per frame

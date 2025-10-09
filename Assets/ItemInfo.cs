@@ -36,14 +36,6 @@ public class ItemInfo : ScriptableObject
 
     [SerializeField] public string description; // description of the item
 
-    public static Dictionary<(ItemName, ItemName), ItemName> RecipeBook = // dictionary containing all possible crafting combos
-    new Dictionary<(ItemName, ItemName), ItemName> {
-        { (ItemName.Spear, ItemName.Rock), ItemName.RockSpear}
-    };
-
-    // Maybe include reference to gameobject for instantiating?
-
-
     public void log() { 
         Debug.Log("Item Type: " +  itemType);
         Debug.Log("Item Name: " + itemName);

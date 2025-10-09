@@ -1,27 +1,62 @@
-using NUnit.Framework;
-using Unity.VisualScripting;
 using System.Collections.Generic;
 using UnityEngine;
 using static ItemInfo;
+
 /// <summary>
-/// *probably removing this entire class*
-/// Scriptable Object that holds all of the recipes
+/// Singleton object in the scene.
 /// </summary>
-[CreateAssetMenu(menuName = "Scriptable Objects/Recipe Info")]
-public class RecipeInfo : ScriptableObject
-{
-    [SerializeField] ItemInfo Ingredient1; // first ingredient used to craft item
-    
-    [SerializeField] ItemInfo Ingredient2; // second ingredient used to craft item
-    
-    [SerializeField] ItemInfo Output; // item that is produced as a result of crafting; should be an existing item in ItemInfo
-
-
-    public void log()
+public class RecipeInfo : MonoBehaviour {
+    // No, these combos don't really make any sense.
+    private Dictionary<(ItemName, ItemName), ItemName> recipeBook = new() // dictionary containing all possible crafting combos
     {
-        Debug.Log("First ingredient: " + Ingredient1);
-        Debug.Log("First ingredient: " + Ingredient2);
-        Debug.Log("Result: " + Output);
+        { (ItemName.Spear, ItemName.Rock), ItemName.RockSpear },
+        { (ItemName.RockSpear, ItemName.RockSpear), ItemName.Empty },
+    };
+
+    // Maybe include reference to gameobject for instantiating?
+
+    // Order matters right now, which might be bad in practice.
+    public ItemInfo UseRecipe(ItemName item1, ItemName item2)
+    {
+        var key = (item1, item2);
+        ItemName name;
+        if (!recipeBook.ContainsKey(key))
+        {
+            // Check the other order?
+            var revKey = (item2, item1);
+            if (!recipeBook.ContainsKey(revKey)) return null;
+            name = recipeBook[revKey];
+        }
+        else
+        {
+            name = recipeBook[key];
+        }
+        return namesToItemInfos[name];
+    }
+
+    private Dictionary<ItemName, ItemInfo> namesToItemInfos = new(); 
+    public RecipeInfo() {}
+
+    public void Start()
+    {
+        var items = Resources.LoadAll("", typeof(ItemInfo));
+        // Debug.Log(items.Length);
+
+        foreach (var rawItemInfo in items)
+        {
+            var itemInfo = rawItemInfo as ItemInfo;
+            // itemInfo.log();
+            namesToItemInfos[itemInfo.itemName] = itemInfo;
+        }
+    }
+    private static RecipeInfo instance;
+    public static RecipeInfo Get()
+    {
+        if (instance == null)
+        {
+            instance = FindFirstObjectByType<RecipeInfo>();
+        }
+        return instance;
     }
 }
 

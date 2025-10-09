@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,13 +9,45 @@ public class hotbar : MonoBehaviour
     [SerializeField]
     private Button[] Slots = new Button[3];
 
+    [SerializeField]
+    private Button[] InvSlots = new Button[9];
+
+    // For debug testing crafting.
+    private List<ItemInfo> lastClickedItems = new();
+
     void Start()
     {
         for (int i = 0; i < Slots.Length; i++)
         {
-            var button = Slots[i].GetComponent<Button>();
             var buttonIndex = i;
+            var button = Slots[buttonIndex].GetComponent<Button>();
             button.onClick.AddListener(() => OnSlotSelected(buttonIndex));
+        }
+
+        Debug.Log("Slot and their contents:");
+        // For debug testing crafting.
+        for (int i = 0; i < InvSlots.Length; i++)
+        {
+            var buttonIndex = i;
+            var button = InvSlots[buttonIndex].GetComponent<Button>();
+            button.onClick.AddListener(() => DebugOnInvSlotSelected(InvSlots[buttonIndex].GetComponent<Slot>()));
+            Debug.Log("Slot " + buttonIndex + " has " + InvSlots[buttonIndex].GetComponent<Slot>().ItemInfo.itemName);
+        }
+    }
+
+    void DebugOnInvSlotSelected(Slot slot)
+    {
+        ItemInfo item = slot.ItemInfo;
+        lastClickedItems.Add(item);
+        if (lastClickedItems.Count >= 2)
+        {
+            var combined = RecipeInfo.Get().UseRecipe(lastClickedItems[0].itemName, lastClickedItems[1].itemName);
+            if (combined != null)
+            {
+                Debug.Log("Combining " + lastClickedItems[0].itemName + " and " + lastClickedItems[1].itemName);
+                combined.log();
+                lastClickedItems.Clear();
+            }
         }
     }
 
