@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
  * </summary>
  */
 [CreateAssetMenu(fileName = "Move Data", menuName = "ScriptableObjects/Move Data", order = 2)]
-public class MoveData : StatData
+public class MoveData : ScriptableObject
 {
     [Header("Lateral Movement Parameters")]
     
