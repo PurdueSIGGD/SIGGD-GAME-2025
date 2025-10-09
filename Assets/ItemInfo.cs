@@ -28,6 +28,8 @@ public class ItemInfo : ScriptableObject
 
     [SerializeField] public bool isIngredient; // whether or not the item can be used as an ingredient for crafting
 
+    [SerializeField] public int maxStackCount; // max number of this item in a stack
+
     [SerializeField] public string description; // description of the item
 
     // Maybe include reference to gameobject for instantiating?
@@ -38,6 +40,7 @@ public class ItemInfo : ScriptableObject
         Debug.Log("Item Name: " + itemName);
         Debug.Log("Is Craftable: " + isCraftable);
         Debug.Log("Is Ingredient: " + isIngredient);
+        Debug.Log("Max Stack Count: " + maxStackCount);
         Debug.Log("Description: " + description);
     }
 }

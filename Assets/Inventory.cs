@@ -2,15 +2,20 @@ using System.Runtime.ExceptionServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Inventory
+public class Inventory : MonoBehaviour
 {
 
     private Slot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
     private int selected; // index of selected item in hotbar
     private Slot tempSlot; // temporary slot for holding item that is being moved
 
-    public Inventory() {
+    void Start()
+    {
         inventory = new Slot[27];
+        for (int i = 0; i < inventory.Length; i++)
+        {
+            inventory[i] = new Slot();
+        }
     }
 
     /// <summary>
@@ -29,7 +34,7 @@ public class Inventory
     /// <returns>Index of the item or -1 if not found</returns>
     public int find(ItemInfo.ItemName itemName) {
         for (int i = 0; i < inventory.Length; i++) {
-            if (inventory[i].itemInfo.itemName == itemName)
+            if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemName)
             {
                 return i;
             }
@@ -44,22 +49,39 @@ public class Inventory
     /// <param name="count">Amount of items</param>
     public void add(ItemInfo itemInfo, int count) { // maybe change input type
         // add to current stack
+        int emptyIndex = -1;
         for (int i = 0; i < inventory.Length; i++) {
-            if (inventory[i].itemInfo.itemName == itemInfo.itemName)
+            if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName)
             {
-                inventory[i].count += count;
-                return;
+                if (itemInfo.maxStackCount > inventory[i].count) { // has space for at least one item
+                    if (itemInfo.maxStackCount < inventory[i].count + count) // not enough space for all items in same stack
+                    {
+                        count -= itemInfo.maxStackCount - inventory[i].count;
+                        inventory[i].count = itemInfo.maxStackCount;
+                    }
+                    else { // has enough space for all items in same stack
+                        inventory[i].count += count;
+                        count = 0;
+                    }
+                    Debug.Log("Added " + itemInfo.itemName + " to existing stack at index " + i + ". Current count is " + inventory[i].count);
+                    if (count <= 0) return;
+                }
+                
+            }
+            else if (inventory[i].count == 0 && emptyIndex == -1) {
+                emptyIndex = i;
             }
         }
         // otherwise create new stack if possible
-        for (int i = 0; i < inventory.Length; i++)
-        {
-            if (inventory[i].count == 0)
-            {
-                inventory[i].count += count;
-                inventory[i].itemInfo = itemInfo;
-                return;
+        // is it possible to pick up more than a stack of an item at a time? if so, need to rewrite this part to match above
+        if (emptyIndex != -1) {
+            while (count > 0) {
+                
             }
+            inventory[emptyIndex].count += count;
+            inventory[emptyIndex].itemInfo = itemInfo;
+            Debug.Log("Added " + itemInfo.itemName + " to new stack at index " + emptyIndex + ". Current count is " + inventory[emptyIndex].count);
+            return;
         }
         // otherwise replace current selected item
         drop();
@@ -74,6 +96,7 @@ public class Inventory
     /// <param name="index">Index of item to drop</param>
     public void drop(int index) { // maybe create another method for dropping stacks of items
         // instantiate physical item
+        
 
         // remove item
         inventory[index].count--;
@@ -97,6 +120,17 @@ public class Inventory
         Slot temp = inventory[index];
         inventory[index] = tempSlot;
         tempSlot = temp;
+    }
+
+    public void displayInventory() {
+        string s = "{";
+        for (int i = 0; i < inventory.Length; i++) {
+            if (i % 9 == 0) s += "\n";
+            if (inventory[i].count > 0) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
+            else s += "[empty]  ";
+        }
+        s += "\n}";
+        Debug.Log(s);
     }
 
     /// <summary>
@@ -132,6 +166,7 @@ public class Inventory
     public ItemInfo getItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
     }
+
 
     /// <summary>
     /// Class to store info for each inventory slot
