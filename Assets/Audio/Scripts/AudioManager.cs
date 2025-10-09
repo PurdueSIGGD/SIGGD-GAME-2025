@@ -1,13 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
 using FMOD;
-using System.Collections.Generic;
 
 public class AudioManager : MonoBehaviour
 {
     private List<StudioEventEmitter> eventEmitters;
+
+    private EventInstance musicEventInstance;
+
     public static AudioManager instance { get; private set; }
+
     private void Awake()
     {
         if (instance != null)
@@ -18,6 +22,11 @@ public class AudioManager : MonoBehaviour
         instance = this;
 
         eventEmitters = new List<StudioEventEmitter>();
+    }
+
+    public void Start()
+    {
+        InitializeMusic(FMODEvents.instance.music);
     }
 
     // when you just want to play a sound once on a trigger
@@ -51,6 +60,33 @@ public class AudioManager : MonoBehaviour
         return emitter;
     }
 
+    public void InitializeMusic(EventReference musicEventReference)
+    {
+        musicEventInstance = CreateEventInstance(musicEventReference);
+        musicEventInstance.start();
+    }
+
+    public void SetMusicArea(MusicArea area)
+    {
+        // NOTE: - string area refers to the parameter sheet in FMOD called 'area'
+        //       - enum is cast to float because thats what FMOD wants I guess
+        musicEventInstance.setParameterByName("area", (float)area);
+        UnityEngine.Debug.Log("setting music area to " + area);
+    }
+
+
+    private bool pauseMusic = false;
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            pauseMusic = !pauseMusic;
+            UnityEngine.Debug.Log("toggle music: " + pauseMusic);
+
+            musicEventInstance.setPaused(pauseMusic);
+        }
+
+    }
 
     private void OnDestroy()
     {
