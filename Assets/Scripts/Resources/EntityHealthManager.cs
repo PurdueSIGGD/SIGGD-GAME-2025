@@ -41,6 +41,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
 
         OnHealthChanged?.Invoke(attackContext); // return info about the damage
+        Debug.Log(CurrentHealth);
 
         if (CurrentHealth <= 0)
         {
