@@ -1,9 +1,8 @@
-using System.Collections.Generic;
-using UnityEngine;
-
 public class SaveManager : Singleton<SaveManager>
 {
-    public List<ISaveModule> modules = new List<ISaveModule>();
+    public ISaveModule[] modules = {
+        new PlayerDataSaveModule()
+    };
 
     new private void Awake()
     {
@@ -11,9 +10,9 @@ public class SaveManager : Singleton<SaveManager>
         Load();
     }
 
-    private void OnEnable()
+    private void OnApplicationQuit()
     {
-        Application.wantsToQuit += Save;
+        Save();
     }
 
     public bool Load()
@@ -28,7 +27,7 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Save()
     {
-        foreach(ISaveModule i in modules)
+        foreach (ISaveModule i in modules)
         {
             i.serialize();
         }
