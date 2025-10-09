@@ -34,7 +34,7 @@ public class RecipeInfo : MonoBehaviour {
     private Dictionary<ItemName, ItemInfo> namesToItemInfos = new(); 
     public RecipeInfo() {}
 
-    public void Start()
+    public void Awake()
     {
         var items = Resources.LoadAll("", typeof(ItemInfo));
 
