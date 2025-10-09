@@ -2,11 +2,9 @@ using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
 using FMOD;
-using System.Collections.Generic;
 
 public class AudioManager : MonoBehaviour
 {
-    private List<StudioEventEmitter> eventEmitters;
     public static AudioManager instance { get; private set; }
     private void Awake()
     {
@@ -16,8 +14,6 @@ public class AudioManager : MonoBehaviour
             UnityEngine.Debug.Log("more than one audio manager in the scene");
         }
         instance = this;
-
-        eventEmitters = new List<StudioEventEmitter>();
     }
 
     // when you just want to play a sound once on a trigger
@@ -41,22 +37,5 @@ public class AudioManager : MonoBehaviour
         VECTOR forw = new VECTOR { x = forward.x, y = forward.y, z = forward.z };
         VECTOR upAttr = new VECTOR { x = up.x, y = up.y, z = up.z };
         return new ATTRIBUTES_3D { position = pos, velocity = vel, forward = forw, up = upAttr };
-    }
-
-    public StudioEventEmitter InitializeEventEmitter(EventReference eventReference, GameObject emitterGameObj)
-    {
-        StudioEventEmitter emitter = emitterGameObj.GetComponent<StudioEventEmitter>();
-        emitter.EventReference = eventReference;
-        eventEmitters.Add(emitter);
-        return emitter;
-    }
-
-
-    private void OnDestroy()
-    {
-        foreach (StudioEventEmitter emitter in eventEmitters)
-        {
-            emitter.Stop();
-        }
     }
 }
