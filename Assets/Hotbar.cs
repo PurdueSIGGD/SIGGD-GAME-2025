@@ -30,12 +30,12 @@ public class hotbar : MonoBehaviour
         {
             var buttonIndex = i;
             var button = InvSlots[buttonIndex].GetComponent<Button>();
-            button.onClick.AddListener(() => DebugOnInvSlotSelected(InvSlots[buttonIndex].GetComponent<Slot>()));
-            Debug.Log("Slot " + buttonIndex + " has " + InvSlots[buttonIndex].GetComponent<Slot>().ItemInfo.itemName);
+            button.onClick.AddListener(() => DebugOnInvSlotSelected(InvSlots[buttonIndex].GetComponent<InventorySlot>()));
+            Debug.Log("Slot " + buttonIndex + " has " + InvSlots[buttonIndex].GetComponent<InventorySlot>().ItemInfo.itemName);
         }
     }
 
-    void DebugOnInvSlotSelected(Slot slot)
+    void DebugOnInvSlotSelected(InventorySlot slot)
     {
         ItemInfo item = slot.ItemInfo;
         lastClickedItems.Add(item);

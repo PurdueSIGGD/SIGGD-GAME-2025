@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Slot : MonoBehaviour
+public class InventorySlot : MonoBehaviour
 {
     public ItemInfo ItemInfo;
     public int count;
