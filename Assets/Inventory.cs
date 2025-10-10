@@ -75,9 +75,6 @@ public class Inventory : MonoBehaviour
         // otherwise create new stack if possible
         // is it possible to pick up more than a stack of an item at a time? if so, need to rewrite this part to match above
         if (emptyIndex != -1) {
-            while (count > 0) {
-                
-            }
             inventory[emptyIndex].count += count;
             inventory[emptyIndex].itemInfo = itemInfo;
             Debug.Log("Added " + itemInfo.itemName + " to new stack at index " + emptyIndex + ". Current count is " + inventory[emptyIndex].count);
