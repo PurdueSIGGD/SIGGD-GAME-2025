@@ -82,10 +82,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638957219992618211
+  lastModified: 638957228064054323
   FileSizes:
   - Name: Desktop
-    Value: 1060
+    Value: 1100
   Exists: 1
 --- !u!114 &11400000
 MonoBehaviour:
@@ -105,18 +105,18 @@ MonoBehaviour:
   - {fileID: 3549248484942726713}
   - {fileID: -2572213772218339773}
   EditorEvents:
-  - {fileID: 2763252007725265595}
   - {fileID: -7287360816317224656}
   - {fileID: 3932974106903040240}
   - {fileID: 8733294538954757679}
+  - {fileID: 31395174443500417}
   EditorParameters: []
   MasterBanks:
   - {fileID: -7377250061199648658}
   StringsBanks:
   - {fileID: -466881227775596725}
-  cacheTime: 638957220010937754
+  cacheTime: 638957228064308029
   cacheVersion: 131632
---- !u!114 &2763252007725265595
+--- !u!114 &31395174443500417
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -126,24 +126,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/Music/LevelMusic
+  m_Name: event:/backgroundMusic
   m_EditorClassIdentifier: 
-  Path: event:/Music/LevelMusic
+  Path: event:/backgroundMusic
   Guid:
-    Data1: -1147462625
-    Data2: 1313153182
-    Data3: -1155305845
-    Data4: 575465975
+    Data1: -590964049
+    Data2: 1269005761
+    Data3: 18035854
+    Data4: -1211529595
   Banks:
   - {fileID: 3549248484942726713}
   IsStream: 1
   Is3D: 0
-  IsOneShot: 0
-  Parameters:
-  - {fileID: 6861345881684323393}
+  IsOneShot: 1
+  Parameters: []
   MinDistance: 1
   MaxDistance: 20
-  Length: 0
+  Length: 192052
 --- !u!114 &3549248484942726713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,10 +158,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 638957218593440278
+  lastModified: 638957228064308029
   FileSizes:
   - Name: Desktop
-    Value: 2424416
+    Value: 1682688
   Exists: 1
 --- !u!114 &3932974106903040240
 MonoBehaviour:
@@ -191,32 +190,6 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 480
---- !u!114 &6861345881684323393
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
-  m_Name: parameter:/LevelMusic/area
-  m_EditorClassIdentifier: 
-  Name: area
-  StudioPath: 
-  Min: 0
-  Max: 1
-  Default: 0
-  ID:
-    data1: 418031181
-    data2: 2725838309
-  Type: 2
-  IsGlobal: 0
-  Labels:
-  - GreyArea
-  - BlueArea
-  Exists: 1
 --- !u!114 &8733294538954757679
 MonoBehaviour:
   m_ObjectHideFlags: 0
