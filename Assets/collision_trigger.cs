@@ -47,15 +47,6 @@ public class collision_trigger : MonoBehaviour
             trueDirection.y = 0;
             
             //This is so that we aren't outside of the field of view or are placed in an awkward position. Optimally it should (almost) face straight ahead at the player.
-            /*if(trueDirection.z > trueDirection.x)
-            {
-                displacementVector.x = 0;
-            }
-            else
-            {
-                displacementVector.z = 0;
-            }*/
-
             if(trueDirection.z < 0)
             {
                 displacementVector.z = -displacementVector.z;
