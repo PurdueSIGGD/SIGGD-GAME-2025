@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal.Internal;
 using UnityEngine.UI;
+using static ItemInfo;
 /// <summary>
 /// Scriptable Object that holds all of the item information
 /// </summary>
@@ -11,11 +13,15 @@ public class ItemInfo : ScriptableObject
     public enum ItemType{ // All possible types of items
         Weapon,
         Resource,
-        Container
+        Container,
+        Empty
     };
 
     public enum ItemName { // All possible names of items
-        Spear
+        Spear,
+        Rock,
+        RockSpear,
+        Empty
     };
 
     [SerializeField] public ItemType itemType;// type of item
@@ -31,9 +37,6 @@ public class ItemInfo : ScriptableObject
     [SerializeField] public int maxStackCount; // max number of this item in a stack
 
     [SerializeField] public string description; // description of the item
-
-    // Maybe include reference to gameobject for instantiating?
-
 
     public void log() { 
         Debug.Log("Item Type: " +  itemType);
