@@ -24,6 +24,8 @@ public class PlayerMovement : MonoBehaviour
     {
         footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.footsteps);
 
+        //music.start();
+
         rb = GetComponent<Rigidbody>();
     }
 

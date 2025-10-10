@@ -5,6 +5,9 @@ using System;
 
 public class FMODEvents : MonoBehaviour
 {
+    [field: Header("Ambiance")]
+    [field: SerializeField] public EventReference ambience { get; private set; }
+
     [field: Header("Player SFX")] 
     [field: SerializeField] public EventReference enemyDeath { get; private set; }
 
@@ -13,9 +16,6 @@ public class FMODEvents : MonoBehaviour
 
     [field: Header("Background Music")] 
     [field: SerializeField] public EventReference music { get; private set; }
-
-    [field: Header("Server Room Noise")] 
-    [field: SerializeField] public EventReference serverNoise { get; private set; }
 
     public static FMODEvents instance { get; private set; }
 

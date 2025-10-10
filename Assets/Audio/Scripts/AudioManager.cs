@@ -8,9 +8,11 @@ public class AudioManager : MonoBehaviour
 {
     private List<StudioEventEmitter> eventEmitters;
 
+    private EventInstance ambienceEventInstance;
     private EventInstance musicEventInstance;
 
     public static AudioManager instance { get; private set; }
+
 
     private void Awake()
     {
@@ -20,12 +22,22 @@ public class AudioManager : MonoBehaviour
             UnityEngine.Debug.Log("more than one audio manager in the scene");
         }
         instance = this;
-
-        eventEmitters = new List<StudioEventEmitter>();
     }
 
-    public void Start()
+    private void InitializeAmbience(EventReference ambienceEventReference)
     {
+        ambienceEventInstance = CreateEventInstance(ambienceEventReference);
+        ambienceEventInstance.start();
+    }
+
+    public void SetAmbienceParameter(string parameterName, float parameterValue)
+    {
+        ambienceEventInstance.setParameterByName(parameterName, parameterValue);
+    }
+
+    private void Start()
+    {
+        InitializeAmbience(FMODEvents.instance.ambience);
         InitializeMusic(FMODEvents.instance.music);
     }
 
@@ -51,7 +63,6 @@ public class AudioManager : MonoBehaviour
         VECTOR upAttr = new VECTOR { x = up.x, y = up.y, z = up.z };
         return new ATTRIBUTES_3D { position = pos, velocity = vel, forward = forw, up = upAttr };
     }
-
     public StudioEventEmitter InitializeEventEmitter(EventReference eventReference, GameObject emitterGameObj)
     {
         StudioEventEmitter emitter = emitterGameObj.GetComponent<StudioEventEmitter>();
