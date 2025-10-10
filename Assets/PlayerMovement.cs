@@ -26,8 +26,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        //footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["Footsteps"]);
-        //music = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["backgroundMusic"]);
+        footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["footsteps"]);
+        music = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["backgroundMusic"]);
 
         music.start();
 
@@ -36,19 +36,19 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        /*
+        // this makes footsteps get reloaded if they load in too early before the bank is properly setup
         if (!footsteps.isValid())
         {
             footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.soundEvents["Footsteps"]);
             UnityEngine.Debug.Log("footsteps are made they should work?");
         }
-        */
+        
 
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            //AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
-
+            AudioManager.instance.PlayOneShot(FMODEvents.instance.soundEvents["maleDeath"], this.transform.position);
+            
             //AudioManager.playSound("enemyDeath", this.transform.position);
         }
 
