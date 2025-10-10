@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class EntityHealthManager : MonoBehaviour, IHealth
 {
@@ -17,8 +18,8 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     }
 
     // possible events we may want?
-    public System.Action<DamageContext> OnHealthChanged;
-    public System.Action OnDeath;
+    public Action<DamageContext> OnHealthChanged;
+    public Action OnDeath;
 
     private void Awake()
     {
@@ -41,6 +42,8 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
 
         OnHealthChanged?.Invoke(attackContext); // return info about the damage
+
+        Debug.Log($"{gameObject.name} took {amount} damage from {attacker.name}. Current Health: {CurrentHealth}/{maxHealth}");
 
         if (CurrentHealth <= 0)
         {
