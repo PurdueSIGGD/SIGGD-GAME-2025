@@ -6,6 +6,9 @@ using FMOD;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance { get; private set; }
+
+    private EventInstance ambienceEventInstance;
+
     private void Awake()
     {
         if (instance != null)
@@ -14,6 +17,18 @@ public class AudioManager : MonoBehaviour
             UnityEngine.Debug.Log("more than one audio manager in the scene");
         }
         instance = this;
+    }
+
+    private void InitializeAmbience(EventReference ambienceEventReference)
+    {
+        ambienceEventInstance = CreateEventInstance(ambienceEventReference);
+        ambienceEventInstance.start();
+        print("ambience started");
+    }
+
+    private void Start()
+    {
+        InitializeAmbience(FMODEvents.instance.ambience);
     }
 
     // when you just want to play a sound once on a trigger
