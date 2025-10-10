@@ -17,9 +17,9 @@ public class FMODEvents : MonoBehaviour
     [field: Header("Background Music")] 
     [field: SerializeField] public EventReference music { get; private set; }
 
-    [field: SerializeField] public List<EventReference> sounds { get; private set; }
-
     public static FMODEvents instance { get; private set; }
+
+    [field: SerializeField] public static StringEventReferenceDictionary referenceDict = new StringEventReferenceDictionary();
 
     private void Awake()
     {
