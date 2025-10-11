@@ -22,6 +22,8 @@ public class AudioManager : MonoBehaviour
             UnityEngine.Debug.Log("more than one audio manager in the scene");
         }
         instance = this;
+        
+        eventEmitters = new List<StudioEventEmitter>();
     }
 
     private void InitializeAmbience(EventReference ambienceEventReference)
@@ -33,6 +35,20 @@ public class AudioManager : MonoBehaviour
     public void SetAmbienceParameter(string parameterName, float parameterValue)
     {
         ambienceEventInstance.setParameterByName(parameterName, parameterValue);
+    }
+
+    public void InitializeMusic(EventReference musicEventReference)
+    {
+        musicEventInstance = CreateEventInstance(musicEventReference);
+        musicEventInstance.start();
+    }
+
+    public void SetMusicArea(MusicArea area)
+    {
+        // NOTE: - string area refers to the parameter sheet in FMOD called 'area'
+        //       - enum is cast to float because thats what FMOD wants I guess
+        musicEventInstance.setParameterByName("area", (float)area);
+        UnityEngine.Debug.Log("setting music area to " + area);
     }
 
     private void Start()
@@ -63,26 +79,13 @@ public class AudioManager : MonoBehaviour
         VECTOR upAttr = new VECTOR { x = up.x, y = up.y, z = up.z };
         return new ATTRIBUTES_3D { position = pos, velocity = vel, forward = forw, up = upAttr };
     }
+
     public StudioEventEmitter InitializeEventEmitter(EventReference eventReference, GameObject emitterGameObj)
     {
         StudioEventEmitter emitter = emitterGameObj.GetComponent<StudioEventEmitter>();
         emitter.EventReference = eventReference;
         eventEmitters.Add(emitter);
         return emitter;
-    }
-
-    public void InitializeMusic(EventReference musicEventReference)
-    {
-        musicEventInstance = CreateEventInstance(musicEventReference);
-        musicEventInstance.start();
-    }
-
-    public void SetMusicArea(MusicArea area)
-    {
-        // NOTE: - string area refers to the parameter sheet in FMOD called 'area'
-        //       - enum is cast to float because thats what FMOD wants I guess
-        musicEventInstance.setParameterByName("area", (float)area);
-        UnityEngine.Debug.Log("setting music area to " + area);
     }
 
 

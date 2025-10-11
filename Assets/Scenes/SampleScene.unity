@@ -262,7 +262,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nonRigidbodyVelocity: 0
-  attenuationObject: {fileID: 330585543}
+  attenuationObject: {fileID: 1094773800}
 --- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -478,6 +478,38 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6257ccade71ba7bfc98b31d91fea6826, type: 3}
+--- !u!1 &737816379
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 737816380}
+  m_Layer: 0
+  m_Name: Server
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &737816380
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 737816379}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.10664468, y: 1.2574459, z: -0.49692726}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1170159480}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1094773800
 GameObject:
   m_ObjectHideFlags: 0
@@ -762,11 +794,11 @@ Transform:
   m_GameObject: {fileID: 1170159476}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.06, y: 0.2721, z: -0.08}
+  m_LocalPosition: {x: 8.2666445, y: 3.0125542, z: 8.336927}
   m_LocalScale: {x: 1.596614, y: 4.314867, z: 0.6583206}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 391609554}
+  m_Father: {fileID: 737816380}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1170159481
 MonoBehaviour:
@@ -783,13 +815,13 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: -1670785933
-      Data2: 1121937056
-      Data3: 567638423
-      Data4: -1123412106
+      Data1: -743648344
+      Data2: 1266383529
+      Data3: -1099683929
+      Data4: -830716001
     Path: event:/SFX/Server/serverNoise
   Event: 
-  EventPlayTrigger: 0
+  EventPlayTrigger: 1
   EventStopTrigger: 0
   AllowFadeout: 1
   TriggerOnce: 0
@@ -900,28 +932,28 @@ MonoBehaviour:
       Data2: 1146810873
       Data3: -2024132175
       Data4: 841946915
-    Path: event:/maledeath
+    Path: event:/SFX/Player/maledeath
   <footsteps>k__BackingField:
     Guid:
       Data1: -838718119
       Data2: 1199901597
       Data3: -801935183
       Data4: -247095348
-    Path: event:/Footsteps
+    Path: event:/SFX/Player/Footsteps
   <music>k__BackingField:
     Guid:
-      Data1: -1147462625
-      Data2: 1313153182
-      Data3: -1155305845
-      Data4: 575465975
+      Data1: -1063812193
+      Data2: 1132975378
+      Data3: -1089394018
+      Data4: -691204149
     Path: event:/Music/LevelMusic
   <serverNoise>k__BackingField:
     Guid:
-      Data1: -1670785933
-      Data2: 1121937056
-      Data3: 567638423
-      Data4: -1123412106
-    Path: event:/SFX/Server/serverNoise
+      Data1: -743648344
+      Data2: 1266383529
+      Data3: -1099683929
+      Data4: -830716001
+    Path: event:/SFX/Server/ServerNoise
 --- !u!1 &1898736287
 GameObject:
   m_ObjectHideFlags: 0
@@ -1066,5 +1098,4 @@ SceneRoots:
   - {fileID: 2284319371864713357}
   - {fileID: 585933846}
   - {fileID: 1232986410}
-  - {fileID: 1525460575154402584}
-  - {fileID: 1641357945}
+  - {fileID: 737816380}
