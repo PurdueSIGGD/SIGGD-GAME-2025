@@ -2,7 +2,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Stats/Stat Profile")]
+[CreateAssetMenu(menuName = "ScriptableObjects/Stat Profile")]
 public class StatData : ScriptableObject
 {
     public List<StatValue> stats;

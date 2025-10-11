@@ -5,7 +5,7 @@ using UnityEngine;
 public class GenericStatPickup : MonoBehaviour
 {
     [Header("Effect Settings")]
-    public StatType statToAffect = StatType.Attack;
+    [SerializeField] private StatType statToAffect = StatType.Attack;
     public float multiplier = 2f;
     public float duration = 5f;
 
@@ -37,6 +37,16 @@ public class GenericStatPickup : MonoBehaviour
     //    if (targetStats != null)
     //    {
     //        Debug.Log($"{targetStats.name}'s {statToWatch}: {targetStats.GetStat(statToWatch)}");
+    //    }
+
+    //    if (Input.GetKeyDown(KeyCode.T) && o != null)
+    //    {
+    //        Stat stats = o.GetComponent<Stat>();
+    //        if (stats != null)
+    //        {
+    //            stats.ResetModifier(statToAffect);
+    //            Debug.Log($"Reset {statToAffect} modifier on {o.name}");
+    //        }
     //    }
     //}
 
