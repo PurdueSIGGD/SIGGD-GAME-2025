@@ -17,16 +17,12 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
 
     private EventInstance footsteps;
-    private EventInstance music;
-
-    private bool pauseMusic = false;
 
     public Rigidbody rb;
 
     private void Start()
     {
         footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.footsteps);
-        music = AudioManager.instance.CreateEventInstance(FMODEvents.instance.music);
 
         //music.start();
 
@@ -38,16 +34,6 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
-
-            //AudioManager.playSound("enemyDeath", this.transform.position);
-        }
-
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            pauseMusic = !pauseMusic;
-            UnityEngine.Debug.Log("toggle music: " + pauseMusic);
-
-            music.setPaused(pauseMusic);
         }
 
         if (transform.position.y < -50)
