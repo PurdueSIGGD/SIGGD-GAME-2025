@@ -23,7 +23,7 @@ public class PhysicalItem : MonoBehaviour, IPointerClickHandler
 
     void pickup() {
         // remove physical gameobject and add item to inventory
-        inventory.add(itemInfo, 1);
+        inventory.add(itemInfo, 3);
         Destroy(this.gameObject);
         inventory.displayInventory();
     }

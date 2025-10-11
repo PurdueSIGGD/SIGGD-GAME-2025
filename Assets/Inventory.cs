@@ -47,11 +47,12 @@ public class Inventory : MonoBehaviour
     /// </summary>
     /// <param name="itemInfo">Item to add</param>
     /// <param name="count">Amount of items</param>
-    public void add(ItemInfo itemInfo, int count) { // maybe change input type
-        // add to current stack
-        int emptyIndex = -1;
+    /// 
+    /// <returns>Number of items that could not be added to the inventory</returns>
+    public int add(ItemInfo itemInfo, int count) { // maybe change input type
+        // first add to existing stacks
         for (int i = 0; i < inventory.Length; i++) {
-            if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName)
+            if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName) // matches item
             {
                 if (itemInfo.maxStackCount > inventory[i].count) { // has space for at least one item
                     if (itemInfo.maxStackCount < inventory[i].count + count) // not enough space for all items in same stack
@@ -64,26 +65,33 @@ public class Inventory : MonoBehaviour
                         count = 0;
                     }
                     Debug.Log("Added " + itemInfo.itemName + " to existing stack at index " + i + ". Current count is " + inventory[i].count);
-                    if (count <= 0) return;
+                    if (count <= 0) return 0;
                 }
                 
             }
-            else if (inventory[i].count == 0 && emptyIndex == -1) {
-                emptyIndex = i;
-            }
         }
         // otherwise create new stack if possible
-        // is it possible to pick up more than a stack of an item at a time? if so, need to rewrite this part to match above
-        if (emptyIndex != -1) {
-            inventory[emptyIndex].count += count;
-            inventory[emptyIndex].itemInfo = itemInfo;
-            Debug.Log("Added " + itemInfo.itemName + " to new stack at index " + emptyIndex + ". Current count is " + inventory[emptyIndex].count);
-            return;
+        if (count > 0) {
+            for (int i = 0; i < inventory.Length; i++) {
+                if (inventory[i].count == 0) { // is empty slot
+                    if (count > itemInfo.maxStackCount) // will need to split the items between slots
+                    {
+                        count -= itemInfo.maxStackCount;
+                        inventory[i].itemInfo = itemInfo;
+                        inventory[i].count = itemInfo.maxStackCount;
+                    }
+                    else { // has enough space for all items in same stack
+                        inventory[i].itemInfo = itemInfo;
+                        inventory[i].count += count;
+                        count = 0;
+                    }
+                    Debug.Log("Added " + itemInfo.itemName + " to new stack at index " + i + ". Current count is " + inventory[i].count);
+                    if (count <= 0) return 0;
+                }
+            }
         }
+        return count; // leftover items that could not be added
         // otherwise replace current selected item
-        drop();
-        inventory[selected].itemInfo = itemInfo;
-        inventory[selected].count = 0;
 
     }
 
