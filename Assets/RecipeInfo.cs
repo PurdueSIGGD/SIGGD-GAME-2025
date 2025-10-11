@@ -13,6 +13,9 @@ public class RecipeInfo : MonoBehaviour {
         { (ItemName.RockSpear, ItemName.RockSpear), ItemName.Empty },
     };
 
+    /// <summary>
+    /// Returns null if no valid recipe is found.
+    /// </summary>
     public ItemInfo UseRecipe(ItemName item1, ItemName item2)
     {
         var key = (item1, item2);
