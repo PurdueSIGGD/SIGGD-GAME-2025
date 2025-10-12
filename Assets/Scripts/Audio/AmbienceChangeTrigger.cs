@@ -10,9 +10,9 @@ public class AmbienceChangeTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.tag.Equals("Player"))
+        if (collider.CompareTag("Player"))
         {
-            AudioManager.instance.SetAmbienceParameter(parameterName, parameterValue);
+            AudioManager.Instance.SetAmbienceParameter(parameterName, parameterValue);
         }
     }
 }

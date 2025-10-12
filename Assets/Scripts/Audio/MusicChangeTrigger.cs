@@ -8,10 +8,10 @@ public class MusicChangeTrigger : MonoBehaviour
     
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.tag.Equals("Player"))
+        if (collider.CompareTag("Player"))
         {
             Debug.Log("touched area");
-            AudioManager.instance.SetMusicArea(area);
+            AudioManager.Instance.SetMusicArea(area);
         }
     }
 }

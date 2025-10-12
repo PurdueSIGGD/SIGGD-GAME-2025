@@ -3,19 +3,18 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    [SerializeField] private GameObject player;
+    private GameObject player;
+    private Vector3 playerPos;
 
-
-    private Vector3 offset = new Vector3(0, 5, -5);
+    private Vector3 offset = new Vector3(0, 0, 0);
     private Vector3 fixedPos = new Vector3 { x = 0, y = 5, z = -10};
     private Quaternion rotation = Quaternion.AngleAxis(30, Vector3.right);
 
     private bool followPlayer = true;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-
+        player = PlayerID.Instance.gameObject;
     }
 
     void Update()
@@ -27,7 +26,10 @@ public class CameraMovement : MonoBehaviour
             if (followPlayer)
                 Debug.Log("camera set to follow player");
             else
+            {
+                fixedPos = transform.position;
                 Debug.Log("camera set to fixed position");
+            }
         }
     }
 
@@ -39,17 +41,14 @@ public class CameraMovement : MonoBehaviour
             return;
         }
 
-        Vector3 playerPos = player.GetComponent<Transform>().position;
-
+        playerPos = player.transform.position;
         if (followPlayer)
         {
             transform.position = playerPos + offset;
-            transform.rotation = rotation;
         }
         else
         {
             transform.position = fixedPos;
-            transform.rotation = rotation;
         }
     }
 

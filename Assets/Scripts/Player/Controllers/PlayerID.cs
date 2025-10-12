@@ -25,6 +25,11 @@ public class PlayerID : Singleton<PlayerID>
         base.Awake();
         stateMachine = GetComponent<PlayerStateMachine>();
         rb = GetComponent<Rigidbody>();
+
+        if (cam == null)
+        {
+            cam = Camera.main;
+        }
     }
 
     #endregion

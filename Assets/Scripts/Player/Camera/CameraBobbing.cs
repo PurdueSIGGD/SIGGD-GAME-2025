@@ -57,8 +57,7 @@ public class CameraBobbing : MonoBehaviour
     #region Start and Update Methods
     private void Start()
     {
-        PlayerID playerID = FindFirstObjectByType<PlayerID>();
-        playerRigidbody = playerID.rb;
+        playerRigidbody = PlayerID.Instance.rb;
     }
     private void Update()
     {

@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.footsteps);
+        footsteps = AudioManager.Instance.CreateEventInstance(FMODEvents.instance.footsteps);
 
         //music.start();
 
@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
+            AudioManager.Instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
         }
 
         if (transform.position.y < -50)
@@ -56,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
         if (rb.linearVelocity.magnitude != 0)
         {
             // NOTE: 3d attributes need to be set in order to play instances in 3d
-            ATTRIBUTES_3D attr = AudioManager.instance.configAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, Vector3.up);
+            ATTRIBUTES_3D attr = AudioManager.Instance.configAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, Vector3.up);
             footsteps.set3DAttributes(attr);
 
             PLAYBACK_STATE playbackState;

@@ -11,7 +11,7 @@ public class Server : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        emitter = AudioManager.instance.InitializeEventEmitter(FMODEvents.instance.serverNoise, this.gameObject);
+        emitter = AudioManager.Instance.InitializeEventEmitter(FMODEvents.instance.serverNoise, this.gameObject);
         emitter.Play();
     }
 

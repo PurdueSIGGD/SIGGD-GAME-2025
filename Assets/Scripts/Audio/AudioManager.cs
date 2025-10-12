@@ -11,19 +11,25 @@ public class AudioManager : MonoBehaviour
     private EventInstance ambienceEventInstance;
     private EventInstance musicEventInstance;
 
-    public static AudioManager instance { get; private set; }
+    public static AudioManager Instance { get; private set; }
 
 
     private void Awake()
     {
-        if (instance != null)
+        if (Instance != null)
         {
             // this hopefully will never be seen
             UnityEngine.Debug.Log("more than one audio manager in the scene");
         }
-        instance = this;
+        Instance = this;
         
         eventEmitters = new List<StudioEventEmitter>();
+    }
+
+    private void Start()
+    {
+        InitializeAmbience(FMODEvents.instance.ambience);
+        InitializeMusic(FMODEvents.instance.music);
     }
 
     private void InitializeAmbience(EventReference ambienceEventReference)
@@ -32,15 +38,15 @@ public class AudioManager : MonoBehaviour
         ambienceEventInstance.start();
     }
 
-    public void SetAmbienceParameter(string parameterName, float parameterValue)
-    {
-        ambienceEventInstance.setParameterByName(parameterName, parameterValue);
-    }
-
     public void InitializeMusic(EventReference musicEventReference)
     {
         musicEventInstance = CreateEventInstance(musicEventReference);
         musicEventInstance.start();
+    }
+
+    public void SetAmbienceParameter(string parameterName, float parameterValue)
+    {
+        ambienceEventInstance.setParameterByName(parameterName, parameterValue);
     }
 
     public void SetMusicArea(MusicArea area)
@@ -49,12 +55,6 @@ public class AudioManager : MonoBehaviour
         //       - enum is cast to float because thats what FMOD wants I guess
         musicEventInstance.setParameterByName("area", (float)area);
         UnityEngine.Debug.Log("setting music area to " + area);
-    }
-
-    private void Start()
-    {
-        InitializeAmbience(FMODEvents.instance.ambience);
-        InitializeMusic(FMODEvents.instance.music);
     }
 
     // when you just want to play a sound once on a trigger
