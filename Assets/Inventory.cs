@@ -5,10 +5,13 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
 
+    // So that the hotbar items can be set in the editor. Do not try to edit these arrays.
     [SerializeField]
-    private Button[] HotbarSlots = new Button[3];
+    private SlotScript[] InitHotbarSlots = new SlotScript[9];
+    // So that the hotbar items can be set in the editor. Do not try to edit these arrays.
     [SerializeField]
-    private Button[] InvSlots = new Button[9];
+
+    private SlotScript[] InitInventorySlots = new SlotScript[18];
 
     private List<ItemInfo> lastClickedItems = new();
 
@@ -24,33 +27,83 @@ public class Inventory : MonoBehaviour
             inventory[i] = new Slot();
         }
 
-        for (int i = 0; i < HotbarSlots.Length; i++)
+        for (int i = 0; i < InitHotbarSlots.Length; i++)
         {
-            var buttonIndex = i;
-            var button = HotbarSlots[buttonIndex].GetComponent<Button>();
-            button.onClick.AddListener(() => OnSlotSelected(buttonIndex));
+            // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
+            if (InitHotbarSlots[i] == null) continue;
+
+            var uiSlot = InitHotbarSlots[i];
+            uiSlot.Index = i;
+            uiSlot.SetSlot(inventory[i]);
+
+            var button = uiSlot.GetComponent<Button>();
+            button.onClick.AddListener(() => OnSlotSelected(uiSlot));
         }
 
-        Debug.Log("Slot and their contents:");
-        // For debug testing crafting.
-        for (int i = 0; i < InvSlots.Length; i++)
+        for (int i = 0; i < InitInventorySlots.Length; i++)
         {
-            var buttonIndex = i;
-            var button = InvSlots[buttonIndex].GetComponent<Button>();
-            button.onClick.AddListener(() => DebugOnInvSlotSelected(InvSlots[buttonIndex].GetComponent<InventorySlot>()));
-            Debug.Log("Inventory slot " + buttonIndex + " has " + InvSlots[buttonIndex].GetComponent<InventorySlot>().ItemInfo.itemName);
+            // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
+            if (InitInventorySlots[i] == null) continue;
+
+            var uiSlot = InitInventorySlots[i];
+            uiSlot.Index = i;
+            uiSlot.SetSlot(inventory[i + 9]);
+
+            var button = uiSlot.GetComponent<Button>();
+            var slot = GetInventorySlot(i + 9);
+            button.onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
     }
 
-    void OnSlotSelected(int slotIndex)
+    private Slot GetHotbarSlot(int index)
     {
-        Debug.Log("Hotbar slot #" + slotIndex + " clicked");
+        if (index >= 9 || index < 0)
+        {
+            Debug.LogWarning("Hotbar size 9, index " + index);
+            return null;
+        }
+        return inventory[index];
+    }
+
+    private void SetHotbarSlot(int index, Slot slot)
+    {
+        if (index >= 9 || index < 0)
+        {
+            Debug.LogWarning("Hotbar size 9, index " + index);
+            return;
+        }
+        inventory[index] = slot;
+    }
+
+    private Slot GetInventorySlot(int index)
+    {
+        if (index < 9)
+        {
+            Debug.LogWarning("Inventory size 16, index = " + index);
+            return null;
+        }
+        return inventory[index];
+    }
+
+    private void SetInventorySlot(int index, Slot slot)
+    {
+        if (index < 9)
+        {
+            Debug.LogWarning("Inventory size 16, index + " + index);
+            return;
+        }
+        inventory[index] = slot;
+    }
+
+    void OnSlotSelected(SlotScript uiSlot)
+    {
+        Debug.Log("Hotbar slot #" + uiSlot.Index + " clicked");
     }
 
     // This method shows recipe crafting, but is considered "debug" because it won't work this way in a playable build.
-    void DebugOnInvSlotSelected(InventorySlot slot)
+    void DebugOnInvSlotSelected(Slot slot)
     {
-        ItemInfo item = slot.ItemInfo;
+        ItemInfo item = slot.itemInfo;
         lastClickedItems.Add(item);
         if (lastClickedItems.Count >= 2)
         {
@@ -58,7 +111,7 @@ public class Inventory : MonoBehaviour
             // If there is no valid recipe, null is returned.
             if (combined != null)
             {
-                Debug.Log("Combining " + lastClickedItems[0].itemName + " and " + lastClickedItems[1].itemName);
+                Debug.Log("Combining " + lastClickedItems[^2].itemName + " and " + lastClickedItems[^1].itemName);
                 combined.log();
                 lastClickedItems.Clear();
             }
@@ -217,19 +270,5 @@ public class Inventory : MonoBehaviour
     /// <returns>The </returns>
     public ItemInfo getItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
-    }
-
-
-    /// <summary>
-    /// Class to store info for each inventory slot
-    /// </summary>
-    private class Slot {
-        public int count;
-        public ItemInfo itemInfo;
-
-        public Slot() {
-            count = 0;
-            itemInfo = null;
-        }
     }
 }
