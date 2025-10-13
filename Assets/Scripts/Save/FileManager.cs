@@ -19,7 +19,6 @@ public class FileManager : Singleton<FileManager>
     protected override void Awake()
     {
         base.Awake();
-        Debug.Log("file manager loaded");
         mainDirectory = Path.Combine(Application.persistentDataPath, "Data");
 
         InitializeDirectoryStructure();

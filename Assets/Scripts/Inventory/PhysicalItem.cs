@@ -25,7 +25,7 @@ public class PhysicalItem : MonoBehaviour, IPointerClickHandler
         // remove physical gameobject and add item to inventory
         inventory.add(itemInfo, 3);
         Destroy(this.gameObject);
-        inventory.displayInventory();
+        inventory.PrintInventory();
     }
 
     void OnPointerClick(PointerEventData pointerEventData) {

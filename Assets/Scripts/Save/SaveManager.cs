@@ -9,7 +9,6 @@ public class SaveManager : Singleton<SaveManager>
     protected override void Awake()
     {
         base.Awake();
-        Debug.Log("Save Manager loaded");
         Load();
     }
 

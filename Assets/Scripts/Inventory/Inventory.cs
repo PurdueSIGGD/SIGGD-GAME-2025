@@ -1,58 +1,81 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Inventory : MonoBehaviour
 {
+    const int HotBarLength = 9;
+    const int InventoryLength = 18;
 
-    // So that the hotbar items can be set in the editor. Do not try to edit these arrays.
-    [SerializeField]
-    private SlotScript[] InitHotbarSlots = new SlotScript[9];
-    // So that the hotbar items can be set in the editor. Do not try to edit these arrays.
-    [SerializeField]
-
-    private SlotScript[] InitInventorySlots = new SlotScript[18];
+    [Header("Add Slot.cs to these if you like to add an item in edtior")]
+    [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength];
+    [SerializeField] private Button[] inventorySlots = new Button[InventoryLength];
 
     private List<ItemInfo> lastClickedItems = new();
 
     private Slot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
+    private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
     private Slot tempSlot; // temporary slot for holding item that is being moved
 
+    void Awake()
+    {
+        inventory = new Slot[HotBarLength + InventoryLength];
+        inventoryCanvas = GetComponentInChildren<Canvas>();
+        inventoryCanvas.enabled = false;
+    }
+
     void Start()
     {
-        inventory = new Slot[27];
-        for (int i = 0; i < inventory.Length; i++)
-        {
-            inventory[i] = new Slot();
-        }
-
-        for (int i = 0; i < InitHotbarSlots.Length; i++)
+        for (int i = 0; i < HotBarLength; i++)
         {
             // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
-            if (InitHotbarSlots[i] == null) continue;
+            if (hotbarSlots[i] == null) continue;
 
-            var uiSlot = InitHotbarSlots[i];
-            uiSlot.Index = i;
-            uiSlot.SetSlot(inventory[i]);
+            // TODO: Add to the existing code below to load in saved items here 
+            if (!hotbarSlots[i].TryGetComponent<Slot>(out Slot slot))
+            {
+                slot = hotbarSlots[i].AddComponent<Slot>();
+            }
+            slot.index = i;
+            SetHotbarSlot(slot.index, slot);
 
-            var button = uiSlot.GetComponent<Button>();
-            button.onClick.AddListener(() => OnSlotSelected(uiSlot));
+            hotbarSlots[i].onClick.AddListener(() => OnSlotSelected(slot));
         }
 
-        for (int i = 0; i < InitInventorySlots.Length; i++)
+        for (int i = 0; i < InventoryLength; i++)
         {
             // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
-            if (InitInventorySlots[i] == null) continue;
+            if (inventorySlots[i] == null) continue;
 
-            var uiSlot = InitInventorySlots[i];
-            uiSlot.Index = i;
-            uiSlot.SetSlot(inventory[i + 9]);
+            // TODO: Add to the existing code below to load in saved items here 
+            if (!inventorySlots[i].TryGetComponent<Slot>(out Slot slot))
+            {
+                slot = inventorySlots[i].AddComponent<Slot>();
+            }
+            slot.index = i + HotBarLength;
+            SetInventorySlot(slot.index, slot);
 
-            var button = uiSlot.GetComponent<Button>();
-            var slot = GetInventorySlot(i + 9);
-            button.onClick.AddListener(() => DebugOnInvSlotSelected(slot));
+            inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
+    }
+    
+    // TODO: replace
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            ShowInventory(!inventoryCanvas.enabled);
+        }
+    }
+
+    /// <summary>
+    /// Enable the inventory ui, disable player movment, and show cursor
+    /// </summary>
+    public void ShowInventory(bool enabled)
+    {
+        inventoryCanvas.enabled = enabled;
     }
 
     private Slot GetHotbarSlot(int index)
@@ -72,7 +95,12 @@ public class Inventory : MonoBehaviour
             Debug.LogWarning("Hotbar size 9, index " + index);
             return;
         }
-        inventory[index] = slot;
+        if (inventory[index] == null)
+        {
+            Debug.Log("null");
+            inventory[index] = slot;
+        }
+        inventory[index].UpdateSlot(slot);
     }
 
     private Slot GetInventorySlot(int index)
@@ -92,12 +120,16 @@ public class Inventory : MonoBehaviour
             Debug.LogWarning("Inventory size 16, index + " + index);
             return;
         }
-        inventory[index] = slot;
+        if (inventory[index] == null)
+        {
+            inventory[index] = slot;
+        }
+        inventory[index].UpdateSlot(slot);
     }
 
-    void OnSlotSelected(SlotScript uiSlot)
+    void OnSlotSelected(Slot uiSlot)
     {
-        Debug.Log("Hotbar slot #" + uiSlot.Index + " clicked");
+        Debug.Log("Hotbar slot #" + uiSlot.index + " clicked");
     }
 
     // This method shows recipe crafting, but is considered "debug" because it won't work this way in a playable build.
@@ -227,7 +259,10 @@ public class Inventory : MonoBehaviour
         tempSlot = temp;
     }
 
-    public void displayInventory() {
+    /// <summary>
+    /// Print out a string representation of player's inventory in console
+    /// </summary>
+    public void PrintInventory() {
         string s = "{";
         for (int i = 0; i < inventory.Length; i++) {
             if (i % 9 == 0) s += "\n";
