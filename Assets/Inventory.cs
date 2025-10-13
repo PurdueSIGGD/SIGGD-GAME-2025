@@ -1,9 +1,19 @@
-using System.Runtime.ExceptionServices;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class Inventory : MonoBehaviour
 {
+
+    // So that the hotbar items can be set in the editor. Do not try to edit these arrays.
+    [SerializeField]
+    private SlotScript[] InitHotbarSlots = new SlotScript[9];
+    // So that the hotbar items can be set in the editor. Do not try to edit these arrays.
+    [SerializeField]
+
+    private SlotScript[] InitInventorySlots = new SlotScript[18];
+
+    private List<ItemInfo> lastClickedItems = new();
 
     private Slot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
     private int selected; // index of selected item in hotbar
@@ -15,6 +25,96 @@ public class Inventory : MonoBehaviour
         for (int i = 0; i < inventory.Length; i++)
         {
             inventory[i] = new Slot();
+        }
+
+        for (int i = 0; i < InitHotbarSlots.Length; i++)
+        {
+            // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
+            if (InitHotbarSlots[i] == null) continue;
+
+            var uiSlot = InitHotbarSlots[i];
+            uiSlot.Index = i;
+            uiSlot.SetSlot(inventory[i]);
+
+            var button = uiSlot.GetComponent<Button>();
+            button.onClick.AddListener(() => OnSlotSelected(uiSlot));
+        }
+
+        for (int i = 0; i < InitInventorySlots.Length; i++)
+        {
+            // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
+            if (InitInventorySlots[i] == null) continue;
+
+            var uiSlot = InitInventorySlots[i];
+            uiSlot.Index = i;
+            uiSlot.SetSlot(inventory[i + 9]);
+
+            var button = uiSlot.GetComponent<Button>();
+            var slot = GetInventorySlot(i + 9);
+            button.onClick.AddListener(() => DebugOnInvSlotSelected(slot));
+        }
+    }
+
+    private Slot GetHotbarSlot(int index)
+    {
+        if (index >= 9 || index < 0)
+        {
+            Debug.LogWarning("Hotbar size 9, index " + index);
+            return null;
+        }
+        return inventory[index];
+    }
+
+    private void SetHotbarSlot(int index, Slot slot)
+    {
+        if (index >= 9 || index < 0)
+        {
+            Debug.LogWarning("Hotbar size 9, index " + index);
+            return;
+        }
+        inventory[index] = slot;
+    }
+
+    private Slot GetInventorySlot(int index)
+    {
+        if (index < 9)
+        {
+            Debug.LogWarning("Inventory size 16, index = " + index);
+            return null;
+        }
+        return inventory[index];
+    }
+
+    private void SetInventorySlot(int index, Slot slot)
+    {
+        if (index < 9)
+        {
+            Debug.LogWarning("Inventory size 16, index + " + index);
+            return;
+        }
+        inventory[index] = slot;
+    }
+
+    void OnSlotSelected(SlotScript uiSlot)
+    {
+        Debug.Log("Hotbar slot #" + uiSlot.Index + " clicked");
+    }
+
+    // This method shows recipe crafting, but is considered "debug" because it won't work this way in a playable build.
+    void DebugOnInvSlotSelected(Slot slot)
+    {
+        ItemInfo item = slot.itemInfo;
+        lastClickedItems.Add(item);
+        if (lastClickedItems.Count >= 2)
+        {
+            var combined = RecipeInfo.Get().UseRecipe(lastClickedItems[^2].itemName, lastClickedItems[^1].itemName);
+            // If there is no valid recipe, null is returned.
+            if (combined != null)
+            {
+                Debug.Log("Combining " + lastClickedItems[^2].itemName + " and " + lastClickedItems[^1].itemName);
+                combined.log();
+                lastClickedItems.Clear();
+            }
         }
     }
 
@@ -170,19 +270,5 @@ public class Inventory : MonoBehaviour
     /// <returns>The </returns>
     public ItemInfo getItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
-    }
-
-
-    /// <summary>
-    /// Class to store info for each inventory slot
-    /// </summary>
-    private class Slot {
-        public int count;
-        public ItemInfo itemInfo;
-
-        public Slot() {
-            count = 0;
-            itemInfo = null;
-        }
     }
 }
