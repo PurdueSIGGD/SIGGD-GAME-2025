@@ -29,6 +29,7 @@ public class ThreeLinkV2 : MonoBehaviour {
             joint.cubeDisplay.localPosition = Vector3.up * joint.jointOrigin.localPosition.y / 2f;
             joint.cubeDisplay.localScale = (Vector3.one - Vector3.up) * limbThickness + Vector3.up * joint.length;
         }
+
         l1 = joints[0].length;
         l2 = joints[1].length;
         l3 = joints[2].length;
@@ -52,18 +53,16 @@ public class ThreeLinkV2 : MonoBehaviour {
         float yAng = -Mathf.Atan2(t.z, t.x);
         origin.localRotation = Quaternion.Euler(0, (yAng - Mathf.PI / 2) * Mathf.Rad2Deg, 0);
 
-        Vector3 dirToWrist = (t - origin.position).normalized; // Use vector from origin to 2-link target as the axis to rotate around
-        Vector3 dirToTarget = (target.position - origin.position).normalized; // Use vector from origin to end effector as the normal of the plane to project onto
         Vector3 localUp = -target.up; //    Vector we need to get angle from
-        localUp = Vector3.ProjectOnPlane(localUp, dirToTarget); //   Ignore the third axis of rotation
+        localUp = Vector3.ProjectOnPlane(localUp, t.normalized); //   Ignore the third axis of rotation
 
         //  Calculate the angle between the Vector3.up and localUp
         float roll = Mathf.Atan2(
-            Vector3.Dot(Vector3.up, localUp), //    y component calculated using the projection onto Vector3.up
-            Vector3.Dot(origin.right, localUp) // x component calculated using the projection onto the perpendicular vector, origin.forward
+            Vector3.Dot(origin.up, localUp), //    y component calculated using the projection onto Vector3.up
+            Vector3.Dot(origin.right, localUp) //   x component calculated using the projection onto the perpendicular vector, origin.forward
         );
 
-        origin.Rotate(dirToWrist, -(roll - Mathf.PI / 2) * Mathf.Rad2Deg, Space.World);
+        origin.Rotate(t.normalized, -(roll - Mathf.PI / 2) * Mathf.Rad2Deg, Space.World);
 
         //  --------------------------------------------------------------------------------
         //                        TWO LINK INVERSE KINEMATICS SOLUTION
