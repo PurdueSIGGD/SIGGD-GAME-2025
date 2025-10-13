@@ -1,16 +1,9 @@
-using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class Inventory : MonoBehaviour
 {
-
-    [SerializeField]
-    private Button[] HotbarSlots = new Button[3];
-    [SerializeField]
-    private Button[] InvSlots = new Button[9];
-
-    private List<ItemInfo> lastClickedItems = new();
 
     private Slot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
     private int selected; // index of selected item in hotbar
@@ -22,46 +15,6 @@ public class Inventory : MonoBehaviour
         for (int i = 0; i < inventory.Length; i++)
         {
             inventory[i] = new Slot();
-        }
-
-        for (int i = 0; i < HotbarSlots.Length; i++)
-        {
-            var buttonIndex = i;
-            var button = HotbarSlots[buttonIndex].GetComponent<Button>();
-            button.onClick.AddListener(() => OnSlotSelected(buttonIndex));
-        }
-
-        Debug.Log("Slot and their contents:");
-        // For debug testing crafting.
-        for (int i = 0; i < InvSlots.Length; i++)
-        {
-            var buttonIndex = i;
-            var button = InvSlots[buttonIndex].GetComponent<Button>();
-            button.onClick.AddListener(() => DebugOnInvSlotSelected(InvSlots[buttonIndex].GetComponent<InventorySlot>()));
-            Debug.Log("Inventory slot " + buttonIndex + " has " + InvSlots[buttonIndex].GetComponent<InventorySlot>().ItemInfo.itemName);
-        }
-    }
-
-    void OnSlotSelected(int slotIndex)
-    {
-        Debug.Log("Hotbar slot #" + slotIndex + " clicked");
-    }
-
-    // This method shows recipe crafting, but is considered "debug" because it won't work this way in a playable build.
-    void DebugOnInvSlotSelected(InventorySlot slot)
-    {
-        ItemInfo item = slot.ItemInfo;
-        lastClickedItems.Add(item);
-        if (lastClickedItems.Count >= 2)
-        {
-            var combined = RecipeInfo.Get().UseRecipe(lastClickedItems[^2].itemName, lastClickedItems[^1].itemName);
-            // If there is no valid recipe, null is returned.
-            if (combined != null)
-            {
-                Debug.Log("Combining " + lastClickedItems[0].itemName + " and " + lastClickedItems[1].itemName);
-                combined.log();
-                lastClickedItems.Clear();
-            }
         }
     }
 
