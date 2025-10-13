@@ -11,19 +11,17 @@ public class PlayerDataSaveModule : ISaveModule
 
     public bool deserialize()
     {
-        if (FileManager.Instance.FileExists(savePath)) return false;
+        if (!FileManager.Instance.FileExists(savePath)) return false;
 
         byte[] bytes = FileManager.Instance.ReadFile(savePath);
         playerData = SerializationUtility.DeserializeValue<PlayerSaveData>(bytes, DataFormat.Binary);
-
-        player.transform.position = playerData.Position;
 
         return true;
     }
 
     public bool serialize()
     {
-        playerData.Position = player.transform.position;
+        if (player) playerData.Position = player.transform.position;
 
         byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);
         FileManager.Instance.WriteFile(savePath, bytes);
