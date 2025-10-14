@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
  * A ScriptableObject to hold various parameters for rigidbody movements.
  * </summary>
  */
-[CreateAssetMenu(fileName = "Move Data", menuName = "ScriptableObjects/Move Data", order = 1)]
+[CreateAssetMenu(fileName = "Move Data", menuName = "ScriptableObjects/Move Data", order = 2)]
 public class MoveData : ScriptableObject
 {
     [Header("Lateral Movement Parameters")]
