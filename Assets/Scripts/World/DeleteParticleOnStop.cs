@@ -1,7 +1,7 @@
 using UnityEditorInternal;
 using UnityEngine;
 
-public class deletion : MonoBehaviour
+public class DeleteParticleOnStop : MonoBehaviour
 {
     private ParticleSystem parent;
     
