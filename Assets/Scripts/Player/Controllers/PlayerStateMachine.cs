@@ -1,4 +1,5 @@
-using System;
+using FMOD.Studio;
+using FMOD;
 using UnityEngine;
 using Utility;
 
@@ -28,19 +29,44 @@ public class PlayerStateMachine : MonoBehaviour
     
     [HideInInspector] public Vector3 moveDirection; // The 3D direction the player is currently moving in.
     public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f; // Whether the player is currently moving.
-    
+
     #endregion
-    
+
     #region MonoBehaviour Callbacks
-    
+    private EventInstance footsteps;
     private void Start()
     {
         playerID = PlayerID.Instance; // Running this in Start to ensure PlayerID is initialized first
+        footsteps = AudioManager.Instance.CreateEventInstance(FMODEvents.instance.footsteps);
     }
 
     private void Update()
     {
         UpdateAnimatorParams();
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb.linearVelocity.magnitude >= 0.5f)
+        {
+            // NOTE: 3d attributes need to be set in order to play instances in 3d
+            ATTRIBUTES_3D attr = AudioManager.Instance.configAttributes3D(rb.position, rb.linearVelocity, transform.forward, transform.up);
+            footsteps.set3DAttributes(attr);
+
+            PLAYBACK_STATE playbackState;
+            footsteps.getPlaybackState(out playbackState);
+            UnityEngine.Debug.Log("playing");
+            float volumes = 0;
+            footsteps.getPitch(out volumes);
+            UnityEngine.Debug.Log(volumes);
+            if (playbackState.Equals(PLAYBACK_STATE.STOPPED))
+            {
+                UnityEngine.Debug.Log("restarting");
+                footsteps.start();
+            }
+        }
+        else
+        {
+            UnityEngine.Debug.Log("stopping");
+            footsteps.stop(STOP_MODE.ALLOWFADEOUT);
+        }
     }
     
     // Because the animator is our state machine, we update parameters there to control state transitions.
