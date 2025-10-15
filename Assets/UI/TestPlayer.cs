@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -37,6 +38,8 @@ public class TestPlayer : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Thread.Sleep(2000);
+
         savePath = Application.persistentDataPath + "/player.json";
         if (File.Exists(savePath))
         {

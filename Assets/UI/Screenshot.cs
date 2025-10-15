@@ -11,6 +11,7 @@ public class Screenshot : MonoBehaviour
     void Start()
     {
         image = GetComponent<Image>();
+        image.color = new Color(0.5f, 0.5f, 0.5f);
         string screenshotPath = Application.persistentDataPath + "/screenshot.png";
 
         if (File.Exists(screenshotPath))
