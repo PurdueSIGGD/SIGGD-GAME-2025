@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System;
 using UnityEngine.UIElements;
 using System.Linq;
+using CrashKonijn.Goap.Core;
 
 namespace SIGGD.Goap.PackScripts
 {
     public class PackData
     {
+        IAgentType agentType;
         List<PackBehavior> packMembers = new List<PackBehavior>();
         PackBehavior packAlpha = null;
         int MAX_MEMBERS;
@@ -23,6 +25,7 @@ namespace SIGGD.Goap.PackScripts
 
             this.packMembers = new List<PackBehavior>(starterMembers);
             this.packAlpha = CalculateAlpha(packMembers);
+            this.agentType = packAlpha.agentType;
         }
 
         public void AddToPack(PackBehavior newMember)
