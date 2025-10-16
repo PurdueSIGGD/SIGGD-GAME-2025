@@ -15,6 +15,8 @@ public class PlayerStateMachine : MonoBehaviour
     #region Components
     [Header("Components")]
     public Animator animator; // Reference to the Animator component.
+    [HideInInspector] public Collider mainCol; // Reference to the Collider component on the same GameObject.
+    [HideInInspector] public Collider[] allCols;
 
     #endregion
     
@@ -59,6 +61,9 @@ public class PlayerStateMachine : MonoBehaviour
     private void Start()
     {
         playerID = PlayerID.Instance; // Running this in Start to ensure PlayerID is initialized first
+        
+        mainCol = GetComponent<Collider>();
+        allCols = GetComponentsInChildren<Collider>();
     }
 
     private void Update()
@@ -247,7 +252,58 @@ public class PlayerStateMachine : MonoBehaviour
         playerID.rb.AddForce(gravity, ForceMode.Acceleration);
     }
     
+    #endregion
     
+    #region Collision Methods
+
+    /**
+     * <summary>
+     * Disables all colliders on the player.
+     * </summary>
+     */
+    public void DisableColliders()
+    {
+        foreach (var col in allCols)
+            col.enabled = false;
+    }
+    
+    /**
+     * <summary>
+     * Enables all colliders on the player.
+     * </summary>
+     */
+    public void EnableColliders()
+    {
+        foreach (var col in allCols)
+            col.enabled = true;
+    }
+    
+    /**
+     * <summary>
+     * Ignores collisions between the player and a specified layer.
+     * </summary>
+     * <param name="layer">The layer to ignore collisions with.</param>
+     * <param name="ignore">Whether to ignore (true) or re-enable (false
+     */
+    public void IgnoreCollisionWithLayer(int layer, bool ignore = true)
+    {
+        foreach (var col in allCols)
+            Physics.IgnoreLayerCollision(gameObject.layer, layer, ignore);
+    }
+    
+    /**
+     * <summary>
+     * Ignores collisions between the player and a specified GameObject.
+     * </summary>
+     * <param name="obj">The GameObject to ignore collisions with.</param>
+     * <param name="ignore">Whether to ignore (true) or re-enable (false) collisions.</param>
+     */
+    public void IgnoreCollisionWithObject(GameObject obj, bool ignore = true)
+    {
+        foreach (var col in allCols)
+            foreach (var objCol in obj.GetComponents<Collider>())
+                Physics.IgnoreCollision(col, objCol, ignore);
+    }
     
     #endregion
 }
