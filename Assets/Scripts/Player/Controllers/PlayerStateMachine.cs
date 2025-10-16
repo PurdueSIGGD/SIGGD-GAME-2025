@@ -41,6 +41,8 @@ public class PlayerStateMachine : MonoBehaviour
     
     private float lastTimeGrounded, lastTimeJumpPressed;
     
+    public Vector3 LastGroundedPosition { get; private set; }
+    
     public bool IsFalling => playerID.rb.linearVelocity.y < -0.1f && !IsGrounded;
     
     #endregion
@@ -109,7 +111,10 @@ public class PlayerStateMachine : MonoBehaviour
     private void UpdateAnimatorParams()
     {
         if (IsGrounded)
+        {
             lastTimeGrounded = moveData.coyoteTime;
+            LastGroundedPosition = playerID.transform.position;
+        }
         else
             lastTimeGrounded -= Time.deltaTime;
         
