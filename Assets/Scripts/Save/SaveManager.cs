@@ -1,13 +1,20 @@
+using UnityEngine;
+
 public class SaveManager : Singleton<SaveManager>
 {
     public ISaveModule[] modules = {
         new PlayerDataSaveModule()
     };
 
-    new private void Awake()
+    protected override void Awake()
     {
-        PlayerDataSaveModule.player = gameObject;
+        base.Awake();
         Load();
+    }
+
+    void Start()
+    {
+        PlayerDataSaveModule.player = PlayerID.Instance.gameObject;
     }
 
     private void OnApplicationQuit()

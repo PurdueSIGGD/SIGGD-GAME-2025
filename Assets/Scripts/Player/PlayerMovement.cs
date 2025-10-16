@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
 
-    public Transform orientation;
+    [HideInInspector] public Transform orientation;
 
     float horizontalInput;
     float verticalInput;
@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
 
     private EventInstance footsteps;
 
-    public Rigidbody rb;
+    [HideInInspector] public Rigidbody rb;
 
     private void Start()
     {
