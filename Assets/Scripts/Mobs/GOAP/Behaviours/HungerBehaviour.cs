@@ -13,22 +13,36 @@ namespace SIGGD.Goap.Behaviours
         private AgentBehaviour agent;
 
         [field:SerializeField]
-        public float stamina { get; set; }
+        public float hunger { get; set; }
 
         [SerializeField]
         private HungerConfigSO HungerConfig;
 
-        private bool damageTickActive = true;
+        private bool damageTickActive = false;
 
         [SerializeField]
         private EntityHealthManager HealthManager;
         private void Awake()
         {
-            stamina = Random.Range(HungerConfig.minStartingHunger, HungerConfig.maxStartingHunger);
+            hunger = Random.Range(HungerConfig.minStartingHunger, HungerConfig.maxStartingHunger);
         }
         public void Update()
         {
-            stamina -= Time.deltaTime * StatsConfig.staminaLossRate * 2;
+            hunger += Time.deltaTime * HungerConfig.hungerGainRate;
+            if (!damageTickActive && hunger > HungerConfig.damageThreshold)
+            {
+                StartCoroutine(HungerDamageTick());
+            }
+        }
+        private IEnumerator HungerDamageTick()
+        {
+            damageTickActive = true;
+            while (hunger > HungerConfig.damageThreshold)
+            {
+                HealthManager.TakeDamage(HungerConfig.damage, gameObject, "hunger damage tick");
+                yield return new WaitForSeconds(HungerConfig.damageTickRate);
+            }
+            damageTickActive = false;
         }
     }
 
