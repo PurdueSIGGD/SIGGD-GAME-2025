@@ -1,6 +1,9 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
+using SIGGD.Goap.Config;
+using System.Collections;
+using System.Threading;
 using UnityEngine;
 
 namespace SIGGD.Goap.Behaviours
@@ -10,18 +13,23 @@ namespace SIGGD.Goap.Behaviours
         private AgentBehaviour agent;
 
         [field:SerializeField]
-        public float hunger { get; set; }
+        public float stamina { get; set; }
 
+        [SerializeField]
+        private HungerConfigSO HungerConfig;
+
+        private bool damageTickActive = true;
+
+        [SerializeField]
+        private EntityHealthManager HealthManager;
         private void Awake()
         {
-            hunger = Random.Range(20f, 100f);
+            stamina = Random.Range(HungerConfig.minStartingHunger, HungerConfig.maxStartingHunger);
         }
         public void Update()
         {
-            hunger += Time.deltaTime * 2f;
+            stamina -= Time.deltaTime * StatsConfig.staminaLossRate * 2;
         }
-
-
     }
 
 }
