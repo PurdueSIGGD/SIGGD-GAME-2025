@@ -67,6 +67,7 @@ public class Inventory : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             ShowInventory(!inventoryCanvas.enabled);
+            
         }
     }
 
@@ -76,6 +77,15 @@ public class Inventory : MonoBehaviour
     public void ShowInventory(bool enabled)
     {
         inventoryCanvas.enabled = enabled;
+        if (enabled)
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+        } else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        
+        Cursor.visible = enabled;
     }
 
     private Slot GetHotbarSlot(int index)
