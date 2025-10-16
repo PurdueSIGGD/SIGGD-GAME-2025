@@ -65,17 +65,20 @@ public class SpawnFireflyTrigger : MonoBehaviour
             faceAnotherObject.SetLookRotation(differencePos);
             addingParticles.transform.rotation = faceAnotherObject;
              
-            //I don't know if we will be needing the upcoming lines of code but I guess it's ok to have on hand in case we truly need it.
-            //So I found this in a discussion post but apparently this is how you access any variable in the main of the particle system.
-            //The way this works to my knowledge is it looks at the data for the main settings of the particle system components of the particle
-            //system objects that this code spawns in and overrides the previous data, data from the prefab, with new data that comes from the
-            //object this script is attached to. I don't know for sure if that's actually how it works but it's a good way of making sense of it.
-            ParticleSystem componentParticle = addingParticles.GetComponent<ParticleSystem>();
-            ParticleSystem.MainModule m = componentParticle.main;
-            //One more thing, I've currently set the bursts to shoot out 100 particles all at once and if the max particles that you set is higher
-            //than that then it will not send them all out in 1 burst. To counteract this set it to a higher number but for now it will be set to 100
-            //because I don't think we will be needing more.
-            m.maxParticles = particleNum;
+            if(particleNum > 0)
+            {
+                //I don't know if we will be needing the upcoming lines of code but I guess it's ok to have on hand in case we truly need it.
+                //So I found this in a discussion post but apparently this is how you access any variable in the main of the particle system.
+                //The way this works to my knowledge is it looks at the data for the main settings of the particle system components of the particle
+                //system objects that this code spawns in and overrides the previous data, data from the prefab, with new data that comes from the
+                //object this script is attached to. I don't know for sure if that's actually how it works but it's a good way of making sense of it.
+                ParticleSystem componentParticle = addingParticles.GetComponent<ParticleSystem>();
+                ParticleSystem.MainModule m = componentParticle.main;
+                //One more thing, I've currently set the bursts to shoot out 100 particles all at once and if the max particles that you set is higher
+                //than that then it will not send them all out in 1 burst. To counteract this set it to a higher number but for now it will be set to 100
+                //because I don't think we will be needing more.
+                m.maxParticles = particleNum;
+            }
             
         }
     }
