@@ -1,3 +1,4 @@
+using System.Drawing;
 using UnityEditor.TerrainTools;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,83 +12,71 @@ public class SpawnFireflyTrigger : MonoBehaviour
     private Quaternion faceAnotherObject;
     private Vector3 differencePos;
     public int displacementNum;
-    private Vector3 displacementVector;
     private Transform playerCameraTransform;
     private Vector3 collisionEnterPosition;
     public bool particleFaceDirection = true;
-
+    public int particleNum;
     private bool isEmitting;
     private void OnTriggerEnter(Collider other)
     {
         collisionEnterPosition = other.transform.position;
+        //Essentially checks to see if it is emitting already & if the collider was from the player and if the first is false and 2nd is true then it goes through the if statement
         if (!isEmitting && other.gameObject.CompareTag("Player"))
         {
-            addingParticles = Instantiate(fireflyParticles, Camera.main.transform.position, Camera.main.transform.rotation);
-
-            // lock rotation to stop particles going into the floor/sky
-            addingParticles.transform.localEulerAngles = new Vector3(0, addingParticles.transform.localEulerAngles.y, addingParticles.transform.localEulerAngles.z);
-            // spawn particles a little bit ahead of player
-            addingParticles.transform.position = addingParticles.transform.position + Camera.main.transform.forward * 2; // arbitary num, should serialize later
-            isEmitting = true;
+            addingParticles = Instantiate(fireflyParticles);
 
 
-            // hey, don't mean to comment out your code, but as I am testing, the particles are spawning somewhere else randomly
-            // I'm running out of time to go through everyone's stuff, so I wrote a quick version of your code above instead
-            // feel free to uncomment your code and test through it
+            //Gets a reference to the players Camera.
+            playerCameraTransform = Camera.main.transform;
 
-
-
-            ////Gets a reference to the players Camera.
-            //playerCameraTransform = Camera.main.transform;
-
-            ////This is how far away the particle system is placed. This is in addition to the forward vector of the camera which already has some numbers to it.
-            ////We will need these stuff when account for what direction the camera is truly facing in. Working with only the camera's forward motion will not get us anywhere as we need it's rotation as well.
-            //float angle;
-            //Vector3 axis;
-            //playerCameraTransform.rotation.ToAngleAxis(out angle, out axis);
-            //if(particleFaceDirection == false)
-            //{
-            //    displacementVector = new Vector3(displacementNum, 0, displacementNum);
-            //}
-            //else
-            //{
-            //    displacementVector = new Vector3(-displacementNum, 0, -displacementNum);
-            //}
-            ////We do this so that it reduces the distance at which the particle is placed.
-            //displacementVector = -displacementVector;
-            ////When we have the angle + forward vector of the camera (which I think is the forward vector of the player body) it becomes the true direction the camera is facing to.
-            //Vector3 trueDirection = playerCameraTransform.forward * angle;
+            //Need this for the particles to face either to or away from the player.
+            float angle;
+            Vector3 axis;
+            playerCameraTransform.rotation.ToAngleAxis(out angle, out axis);
+                  
+            //This is to place the particle system within the camera's view angle and at distance that's specified by a variable within the inspector.
+            //Note that this works because forward is a direction and not a vector and multiplying it by the displacement num gets a location.
+            //Also note that this is where it can make or break the system. If you set too high of a displacement num in the inspector
+            //Then you get a particle system that's too far away from the camera. The opposite is true as well.
+            var displacedSum = playerCameraTransform.forward * displacementNum;
             
-            ////So that we don't account for sky particles. 
-            //trueDirection.y = 0;
+            //Ensures that the particles aren't placed behind the player (removing this line means particles spawn behind the players)
+            //COULD BE USED WITH PARTICLEFACEDIRECTION == FALSE. 
+            displacedSum = -displacedSum;
             
-            ////This is so that we aren't outside of the field of view or are placed in an awkward position. Optimally it should (almost) face straight ahead at the player.
-            //if(trueDirection.z < 0)
-            //{
-            //    displacementVector.z = -displacementVector.z;
-            //}
-            //else if (trueDirection.x < 0)
-            //{
-            //    displacementVector.x = -displacementVector.x;
-            //}
-            //trueDirection += displacementVector;
-
-            //addingParticles.transform.position = trueDirection ;
+            //So that it doesn't become a beam from the sky.
+            displacedSum.y = 0;
             
-            ////This gets the distance between the player position and the particle position, the thing we're rotating. One of the if statements rotates it to face the camera while the other away from it.
-            //if (particleFaceDirection == false)
-            //{
-            //    differencePos = collisionEnterPosition - addingParticles.transform.position;
-            //}
-            //else
-            //{
-            //    differencePos =  addingParticles.transform.position - collisionEnterPosition;
-            //}
+            addingParticles.transform.position = collisionEnterPosition;
+            //With the base position set in the line before, it moves the system according to the displaced sum variable.
+            addingParticles.transform.Translate(displacedSum);
 
-            //faceAnotherObject = new Quaternion();
-            //faceAnotherObject = Quaternion.LookRotation(differencePos);
+            //To make it either face the camera (player) or away from it.
+            if (particleFaceDirection == false)
+            {
+                differencePos = collisionEnterPosition - addingParticles.transform.position;
+            }
+            else
+            {
+                differencePos = addingParticles.transform.position - collisionEnterPosition;
+            }
 
-            //addingParticles.transform.rotation = faceAnotherObject;
+            faceAnotherObject = new Quaternion();
+            faceAnotherObject.SetLookRotation(differencePos);
+            addingParticles.transform.rotation = faceAnotherObject;
+             
+            //I don't know if we will be needing the upcoming lines of code but I guess it's ok to have on hand in case we truly need it.
+            //So I found this in a discussion post but apparently this is how you access any variable in the main of the particle system.
+            //The way this works to my knowledge is it looks at the data for the main settings of the particle system components of the particle
+            //system objects that this code spawns in and overrides the previous data, data from the prefab, with new data that comes from the
+            //object this script is attached to. I don't know for sure if that's actually how it works but it's a good way of making sense of it.
+            ParticleSystem componentParticle = addingParticles.GetComponent<ParticleSystem>();
+            ParticleSystem.MainModule m = componentParticle.main;
+            //One more thing, I've currently set the bursts to shoot out 100 particles all at once and if the max particles that you set is higher
+            //than that then it will not send them all out in 1 burst. To counteract this set it to a higher number but for now it will be set to 100
+            //because I don't think we will be needing more.
+            m.maxParticles = particleNum;
+            
         }
     }
 }
