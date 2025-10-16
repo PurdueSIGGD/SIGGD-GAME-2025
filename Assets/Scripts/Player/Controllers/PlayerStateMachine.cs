@@ -12,8 +12,6 @@ public class PlayerStateMachine : MonoBehaviour
     #endregion
 
     #region Components
-
-    
     [Header("Components")]
     public Animator animator; // Reference to the Animator component.
 
