@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Utility;
 
 /**
@@ -24,6 +25,24 @@ public class PlayerStateMachine : MonoBehaviour
     
     #endregion
     
+    #region Check Attributes
+
+    public float gravityScale { get; private set; } = 1f;
+    
+    [Header("Checks")] 
+    [SerializeField] public Transform groundCheckPoint;
+    [SerializeField] public Vector3 groundCheckSize = new Vector3(0.49f, 0.3f, 0.49f);
+    public LayerMask groundLayer;
+    
+    public bool IsGrounded =>
+        Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
+    
+    private float lastTimeGrounded, lastTimeJumpPressed;
+    
+    public bool IsFalling => playerID.rb.linearVelocity.y < -0.1f && !IsGrounded;
+    
+    #endregion
+    
     #region Movement Attributes
     
     [HideInInspector] public Vector3 moveDirection; // The 3D direction the player is currently moving in.
@@ -41,7 +60,30 @@ public class PlayerStateMachine : MonoBehaviour
     private void Update()
     {
         UpdateAnimatorParams();
+        CalculateGravity();
+        
     }
+
+    private void FixedUpdate()
+    {
+        ApplyGravity();
+    }
+
+    private void OnEnable()
+    {
+        PlayerInput.Instance.OnJump += OnJumpAction;
+    }
+
+    #region Input Callbacks
+
+    private void OnJumpAction(InputAction.CallbackContext context)
+    {
+        if (context.phase != InputActionPhase.Performed) return;
+        
+        lastTimeJumpPressed = moveData.jumpInputBufferTime;
+    }
+
+    #endregion
     
     // Because the animator is our state machine, we update parameters there to control state transitions.
     #region Animator Methods
@@ -52,7 +94,23 @@ public class PlayerStateMachine : MonoBehaviour
      */
     private void UpdateAnimatorParams()
     {
+        if (IsGrounded)
+            lastTimeGrounded = moveData.coyoteTime;
+        else
+            lastTimeGrounded -= Time.deltaTime;
+        
+        lastTimeJumpPressed -= Time.deltaTime;
+        
         animator.SetBool(Animator.StringToHash("isMoving"), IsMoving);
+        animator.SetBool(Animator.StringToHash("isGrounded"), IsGrounded); 
+        animator.SetBool(Animator.StringToHash("isFalling"), IsFalling);
+        
+        if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0)
+        {
+            animator.SetTrigger(Animator.StringToHash("Jumping"));
+            lastTimeJumpPressed = 0;
+            lastTimeGrounded = 0;
+        }
     }
     
     #endregion
@@ -79,6 +137,8 @@ public class PlayerStateMachine : MonoBehaviour
         Vector3 direction = moveInput.x * cam.right.SetY(0).normalized + 
                                moveInput.y * cam.forward.SetY(0).normalized;
         
+        Debug.Log(direction);
+        
         MoveInDirectionWithSpeed(direction, speed, moveData.movementInterpolation);
     }
     
@@ -99,14 +159,76 @@ public class PlayerStateMachine : MonoBehaviour
         targetSpeed = Vector3.Lerp(playerID.rb.linearVelocity, targetSpeed, lerpAmount);
 
 
-        float accelRate = (Mathf.Abs(targetSpeed.magnitude) > 0.01f) ? moveData.runAccelAmount : moveData.runDecelAmount;
+        float accelRate;
+        if (IsGrounded)
+            accelRate = (Mathf.Abs(targetSpeed.magnitude) > 0.01f) ? moveData.runAccelAmount : moveData.runDecelAmount;
+        else
+            accelRate = (Mathf.Abs(targetSpeed.magnitude) > 0.01f) ? moveData.runAccelAmount * moveData.accelInAir : 
+                moveData.runDecelAmount * moveData.decelInAir;
+        
+        if (IsFalling && Mathf.Abs(playerID.rb.linearVelocity.y) < moveData.jumpHangSpeedThreshold)
+        {
+            accelRate *= moveData.jumpHangAccelerationMult;
+            targetSpeed *= moveData.jumpHangMaxSpeedMult;
+        }
 		
         Vector3 speedDiff = targetSpeed - playerID.rb.linearVelocity.SetY(0);
 		
         Vector3 movementForce = speedDiff * accelRate;
+        
+        Debug.Log(movementForce);
 		
         playerID.rb.AddForce(movementForce, ForceMode.Acceleration);
     }
+
+    /**
+     * <summary>
+     * Makes the player jump by applying an upward force based on the parameters in the scriptable object.
+     * </summary>
+     *
+     * <param name="force">The force to apply for the jump.</param>
+     */
+    public void Jump(float force)
+    {
+        playerID.rb.linearVelocity = playerID.rb.linearVelocity.SetY(0);
+        playerID.rb.AddForce(Vector3.up * force, ForceMode.VelocityChange);
+    }
+    
+    /**
+     * <summary>
+     * Calculates the appropriate gravity scale based on the player's vertical velocity and grounded state.
+     * </summary>
+     */
+    private void CalculateGravity()
+    {
+        if (!IsGrounded && Mathf.Abs(playerID.rb.linearVelocity.y) < moveData.jumpHangSpeedThreshold)
+        {
+            gravityScale = moveData.GravityScale * moveData.jumpHangGravityMult;
+        }
+        else if (playerID.rb.linearVelocity.y < 0)
+        {
+            gravityScale = moveData.GravityScale * moveData.fallGravityMult;
+            playerID.rb.linearVelocity = new Vector3(playerID.rb.linearVelocity.x, 
+                Mathf.Max(playerID.rb.linearVelocity.y, -moveData.maxFallSpeed), playerID.rb.linearVelocity.z);
+        }
+        else
+        {
+            gravityScale = moveData.GravityScale;
+        }
+    }
+    
+    /**
+     * <summary>
+     * Applies gravity to the player's rigidbody based on the calculated gravity scale.
+     * </summary>
+     */
+    private void ApplyGravity()
+    {
+        Vector3 gravity = moveData.globalGravity * gravityScale * Vector3.up;
+        playerID.rb.AddForce(gravity, ForceMode.Acceleration);
+    }
+    
+    
     
     #endregion
 }
