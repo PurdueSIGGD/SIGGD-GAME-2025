@@ -27,7 +27,9 @@ public class PlayerStateMachine : MonoBehaviour
     
     #region Check Attributes
 
-    public float gravityScale { get; private set; } = 1f;
+    public float gravityScale { get; private set; } = 1f; // A scale on gravity when applied to the player,
+                                                          // relevant when the player is in situations like falling
+                                                          // or hanging on a jump at the apex
     
     [Header("Checks")] 
     [SerializeField] public Transform groundCheckPoint;
@@ -73,9 +75,21 @@ public class PlayerStateMachine : MonoBehaviour
     {
         PlayerInput.Instance.OnJump += OnJumpAction;
     }
+    
+    private void OnDisable()
+    {
+        PlayerInput.Instance.OnJump -= OnJumpAction;
+    }
 
     #region Input Callbacks
 
+    /**
+     * <summary>
+     * Handles the jump input action, setting a timer for jump buffering.
+     * </summary>
+     *
+     * <param name="context">The context of the input action.</param>
+     */
     private void OnJumpAction(InputAction.CallbackContext context)
     {
         if (context.phase != InputActionPhase.Performed) return;

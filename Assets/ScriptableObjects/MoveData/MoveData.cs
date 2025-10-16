@@ -22,7 +22,7 @@ public class MoveData : ScriptableObject
     [SerializeField] private float runAcceleration = 7f;
     
     [HideInInspector]
-    public float runAccelAmount; //Calculated acceleration rate for reaching target speed.
+    public float runAccelAmount; //Calculated acceleration rate for reaching target speed (currently not calculated, but could be in the future).
 
 
 
@@ -30,7 +30,7 @@ public class MoveData : ScriptableObject
     [SerializeField] private float runDeceleration = 7;
 
     [HideInInspector]
-    public float runDecelAmount; //Calculated deceleration rate for stopping movement.
+    public float runDecelAmount; //Calculated deceleration rate for stopping movement (currently not calculated, but could be in the future).
 
     [Tooltip("How smoothly to interpolate between speeds. 1 is instant, 0 is no movement.")]
     public float movementInterpolation = 1;
@@ -78,8 +78,8 @@ public class MoveData : ScriptableObject
     private void OnValidate()
     {
         //Calculate are run acceleration & deceleration forces using formula: amount = ((1 / Time.fixedDeltaTime) * acceleration) / runMaxSpeed
-        runAccelAmount = (50 * runAcceleration) / walkSpeed;
-        runDecelAmount = (50 * runDeceleration) / walkSpeed;
+        runAccelAmount = runAcceleration;
+        runDecelAmount = runDeceleration;
 
         #region Variable Ranges
         runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, walkSpeed);
