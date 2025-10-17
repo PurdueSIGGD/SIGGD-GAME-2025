@@ -1,5 +1,7 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
+using CrashKonijn.Agent.Runtime;
+using SIGGD.Goap.Behaviours;
 using UnityEngine;
 
 namespace SIGGD.Goap
@@ -37,13 +39,16 @@ namespace SIGGD.Goap
         // This method is required
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
+            data.Timer -= context.DeltaTime;
             return ActionRunState.Completed;
+
         }
 
         // This method is called when the action is completed
         // This method is optional and can be removed
         public override void Complete(IMonoAgent agent, Data data)
         {
+            data.HungerBehaviour.hunger -= 50f;
         }
 
         // This method is called when the action is stopped
@@ -56,13 +61,17 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override void End(IMonoAgent agent, Data data)
         {
+
         }
 
         // The action class itself must be stateless!
         // All data should be stored in the data class
         public class Data : IActionData
         {
+            [GetComponent]
+            public HungerBehaviour HungerBehaviour { get; set; }
             public ITarget Target { get; set; }
+            public float Timer { get; set; }
         }
     }
 }

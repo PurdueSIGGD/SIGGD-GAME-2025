@@ -1,6 +1,7 @@
 using CrashKonijn.Goap.Core;
 using CrashKonijn.Goap.Runtime;
 using SIGGD.Goap.Capabilities;
+using SIGGD.Mobs;
 using UnityEngine;
 
 namespace SIGGD.Goap.AgentTypes {
@@ -8,9 +9,10 @@ namespace SIGGD.Goap.AgentTypes {
     {
         public override IAgentTypeConfig Create()
         {
-            var factory = new AgentTypeBuilder("BaseAgent");
+            var factory = new AgentTypeBuilder(MobIds.generic);
             factory.AddCapability<HungerCapability>();
             factory.AddCapability<WanderCapability>();
+            factory.AddCapability<HuntPreyCapability>();
             return factory.Build();
         }
     }

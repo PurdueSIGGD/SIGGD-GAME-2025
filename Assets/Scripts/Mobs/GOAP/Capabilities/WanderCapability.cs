@@ -15,7 +15,6 @@ namespace SIGGD.Goap.Capabilities
                 .AddCondition<IsWandering>(Comparison.GreaterThanOrEqual, 1)
                 .SetBaseCost(30);
             builder.AddAction<WanderAction>()
-            //  .AddCondition<Food>
                 .AddEffect<IsWandering>(EffectType.Increase)
                 .SetTarget<WanderTarget>();
             builder.AddTargetSensor<WanderTargetSensor>()

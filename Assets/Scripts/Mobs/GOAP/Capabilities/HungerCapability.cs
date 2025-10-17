@@ -1,6 +1,7 @@
-using SIGGD.Goap.Sensors;
-using CrashKonijn.Goap.Core;
+using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
+using CrashKonijn.Goap.Core;
+using SIGGD.Goap.Sensors;
 using UnityEngine;
 
 namespace SIGGD.Goap.Capabilities
@@ -15,9 +16,15 @@ namespace SIGGD.Goap.Capabilities
                 .AddCondition<Hunger>(Comparison.SmallerThanOrEqual, 0)
                 .SetBaseCost(100);
             builder.AddAction<EatAction>()
-            //  .AddCondition<Food>
                 .AddEffect<Hunger>(EffectType.Decrease)
-                .SetRequiresTarget(false);
+                .SetTarget<HungerTarget>()
+                .SetBaseCost(10);
+
+            builder.AddWorldSensor<HungerSensor>()
+                .SetKey<Hunger>();
+            builder.AddTargetSensor<HungerTargetSensor>()
+                .SetTarget<HungerTarget>();
+
             return builder.Build();
         }
     }
