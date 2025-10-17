@@ -312,8 +312,16 @@ public class Inventory : MonoBehaviour
     /// 
     /// </summary>
     /// <param name="index"></param>
-    /// <returns>The </returns>
+    /// <returns>The item at a specified index</returns>
     public ItemInfo getItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
+    }
+
+    /// <summary>
+    /// Getter method for the entire inventory
+    /// </summary>
+    /// <returns>The array of inventory slots</returns>
+    public Slot[] getInventory() {
+        return inventory;
     }
 }
