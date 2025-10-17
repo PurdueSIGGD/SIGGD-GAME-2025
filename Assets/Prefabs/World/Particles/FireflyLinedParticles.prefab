@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5848833012363005657}
   - component: {fileID: 7102755695582753148}
   - component: {fileID: 6476580639385992549}
-  - component: {fileID: 3353929161582090348}
+  - component: {fileID: -1906875059508348841}
   m_Layer: 0
   m_Name: FireflyLinedParticles
   m_TagString: Untagged
@@ -44,8 +44,8 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 5
   simulationSpeed: 1
-  stopAction: 0
-  cullingMode: 0
+  stopAction: 3
+  cullingMode: 1
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
@@ -605,7 +605,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 100
+    maxNumParticles: 30
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -981,7 +981,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 10
+        scalar: 100
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -4956,14 +4956,14 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &3353929161582090348
+--- !u!114 &-1906875059508348841
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3109076985815416071}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d561db29b538e1f4dba5dedf4b1dab15, type: 3}
   m_Name: 
