@@ -30,6 +30,7 @@ public class PlayerStateMachine : MonoBehaviour
     
     [HideInInspector] public Vector3 moveDirection; // The 3D direction the player is currently moving in.
     public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f; // Whether the player is currently moving.
+    public bool IsClimbing => PlayerID.Instance.gameObject.GetComponent<ClimbAction>().IsClimbing();
     
     #endregion
     
@@ -54,7 +55,10 @@ public class PlayerStateMachine : MonoBehaviour
      */
     private void UpdateAnimatorParams()
     {
-        animator.SetBool(Animator.StringToHash("isMoving"), IsMoving);
+        bool isClimbing = IsClimbing;
+        bool isMoving = isClimbing ? false : IsMoving; // cannot be moving and climbing at the same time.
+        animator.SetBool(Animator.StringToHash("isMoving"), isMoving);
+        animator.SetBool(Animator.StringToHash("isClimbing"), isClimbing);
     }
     
     #endregion
