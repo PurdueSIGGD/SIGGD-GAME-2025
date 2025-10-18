@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class Inventory : MonoBehaviour
 {
-    const int HotBarLength = 9;
-    const int InventoryLength = 18;
+    public const int HotBarLength = 9;
+    public const int InventoryLength = 18;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
     [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength];
@@ -18,6 +18,19 @@ public class Inventory : MonoBehaviour
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
     private Slot tempSlot; // temporary slot for holding item that is being moved
+
+    //
+    // TEMP CODE FROM SAVE TEAM -- NOLAN J
+    //
+
+    public Slot[] getInventory()
+    {
+        return this.inventory;
+    }
+
+    //
+    // END OF TEMP CODE FROM SAVE TEAM -- NOLAN J
+    //
 
     void Awake()
     {
