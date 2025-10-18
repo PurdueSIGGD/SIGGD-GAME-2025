@@ -5,4 +5,5 @@ using UnityEngine;
 public class PlayerSaveData
 {
     public Vector3 Position;
+    public Quaternion Rotation;
 }
