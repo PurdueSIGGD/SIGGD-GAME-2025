@@ -18,6 +18,7 @@ public class PlayerInput : Singleton<PlayerInput>
     public bool crouchInput = false;
     
     public event Action OnAttack = delegate { };
+    public Action<InputAction.CallbackContext> OnJump = delegate { }; // jump event
 
     ////////
     protected override void Awake()
@@ -94,7 +95,8 @@ public class PlayerInput : Singleton<PlayerInput>
 
     //// jump, crouch, sprint inputs
     private void InputJump(InputAction.CallbackContext callbackValue) {
-        // call something to jump (here)
+        
+        OnJump?.Invoke(callbackValue);
     }
     private void InputCrouch(InputAction.CallbackContext callbackValue) {
         if (callbackValue.performed) { // player is holding down crouch
