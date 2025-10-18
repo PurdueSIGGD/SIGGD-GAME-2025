@@ -5,12 +5,14 @@ using UnityEngine.UIElements;
 using System.Linq;
 using CrashKonijn.Goap.Core;
 
-namespace SIGGD.Goap.PackScripts
+namespace SIGGD.Mobs.PackScripts
 {
+
+    [Serializable]
     public class PackData
     {
-        IAgentType agentType;
-        List<PackBehavior> packMembers = new List<PackBehavior>();
+        public IAgentType agentType { get; private set; }
+        public List<PackBehavior> packMembers { get; private set; } = new List<PackBehavior>();
         PackBehavior packAlpha = null;
         int MAX_MEMBERS;
         bool packFull = false;

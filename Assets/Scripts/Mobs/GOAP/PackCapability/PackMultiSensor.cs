@@ -1,27 +1,33 @@
 using System;
 using System.Collections.Generic;
+using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
 using SIGGD.Goap;
-using SIGGD.Goap.PackScripts;
+using SIGGD.Mobs.PackScripts;
 using UnityEngine;
 
-namespace CrashKonijn.Docs.GettingStarted.Sensors
+namespace SIGGD.Goap.Sensors
 {
-    public class PackSensor : MultiSensorBase
+    public class PackMultiSensor : MultiSensorBase
     {
         // You must use the constructor to register all the sensors
         // This can also be called outside of the gameplay loop to validate the configuration
-        public PackSensor()
+        public PackMultiSensor()
         {
-            this.AddLocalWorldSensor<DistanceFromAlpha>((agent, references) =>
+            this.AddLocalWorldSensor<CloseToAlpha>((agent, references) =>
             {
                 var packBehavior = references.GetCachedComponent<PackBehavior>();
-                return packBehavior.GetDistanceKey();
+                return packBehavior.GetCloseToAlphaKey();
             });
             this.AddLocalWorldSensor<IsAlpha>((agent, references) =>
             {
                 var packBehavior = references.GetCachedComponent<PackBehavior>();
                 return packBehavior.GetIsAlphaKey();
+            });
+            this.AddLocalWorldSensor<InPack>((agent, references) =>
+            {
+                var packBehavior = references.GetCachedComponent<PackBehavior>();
+                return packBehavior.GetPack() == null;
             });
             this.AddLocalTargetSensor<PackAlphaTarget>((agent, references, target) =>
             {
@@ -42,4 +48,5 @@ namespace CrashKonijn.Docs.GettingStarted.Sensors
         {
         }
     }
+
 }
