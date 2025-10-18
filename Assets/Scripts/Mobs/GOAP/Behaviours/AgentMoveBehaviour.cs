@@ -8,10 +8,13 @@ namespace SIGGD.Goap.Behaviours
 {
     public class AgentMoveBehaviour : MonoBehaviour
     {
+        
         private AgentBehaviour agent;
         private ITarget currentTarget;
         private bool shouldMove;
+
         public NavMeshAgent navMeshAgent;
+        
 
         private float speed = 500f;
 
@@ -70,7 +73,7 @@ namespace SIGGD.Goap.Behaviours
                 return;
 
             // Move the agent along towards their goal position
-            MovePartialPath(this.currentTarget.Position, Time.deltaTime * speed);
+            Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * speed);
         }
 
         private void OnDrawGizmos()
@@ -80,41 +83,5 @@ namespace SIGGD.Goap.Behaviours
 
             Gizmos.DrawLine(this.transform.position, this.currentTarget.Position);
         }
-
-        // Function to move along the navmesh path
-        void MovePartialPath(Vector3 destination, float distanceToTravel)
-        {
-            NavMeshPath path = new NavMeshPath();
-            if (!navMeshAgent.CalculatePath(destination, path) || path.corners.Length < 2)
-            {
-                return;
-            }
-            Vector3 currentPosition = this.transform.position;
-            float distanceRemaining = distanceToTravel;
-
-            for (int i = 1; i < path.corners.Length; i++)
-            {
-                Vector3 segmentStart = path.corners[i - 1];
-                Vector3 segmentEnd = path.corners[i];
-                float segmentLength = Vector3.Distance(segmentStart, segmentEnd);
-
-                if (distanceRemaining > segmentLength)
-                {
-                    distanceRemaining -= segmentLength;
-                }
-                else
-                {
-                    // Move partway through this segment
-                    Vector3 direction = (segmentEnd - segmentStart).normalized;
-                    Vector3 partialTarget = segmentStart + direction * distanceRemaining;
-                    navMeshAgent.SetDestination(partialTarget);
-                    return;
-                }
-            }
-
-            // If we reach here, move to the final corner (distance is longer than full path)
-            navMeshAgent.SetDestination(path.corners[^1]);
-        }
     }
-
 }
