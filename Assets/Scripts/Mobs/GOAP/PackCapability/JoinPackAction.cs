@@ -13,13 +13,13 @@ namespace SIGGD.Goap
         // This method is called every frame while the action is running
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
-            PackBehavior nearestNeighbor = data.PackBehaviour.FindNearbyNeighbor(data.PackBehaviour.Data.NumSearchRingSplits);
+            PackBehavior nearestNeighbor = data.PackBehaviour.FindNearbyNeighbor();
 
             // stop 
             if (nearestNeighbor == null)
                 return ActionRunState.Stop;
 
-            float distance = PackBehavior.CalculateDistance(data.PackBehaviour, nearestNeighbor).magnitude;
+            float distance = PackBehavior.CalculateDistanceVector(data.PackBehaviour, nearestNeighbor).magnitude;
             if (distance < data.PackBehaviour.Data.JoinPackRange)
             {
                 data.PackBehaviour.JoinPack(nearestNeighbor);

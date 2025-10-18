@@ -13,7 +13,7 @@ namespace SIGGD.Mobs.PackScripts
     {
         public IAgentType agentType { get; private set; }
         public List<PackBehavior> packMembers { get; private set; } = new List<PackBehavior>();
-        PackBehavior packAlpha = null;
+        [SerializeField] PackBehavior packAlpha = null;
         int MAX_MEMBERS;
         bool packFull = false;
         Func<PackData, bool> disbandMethod; // set to 'remove from pack list' by PackManager
@@ -36,11 +36,14 @@ namespace SIGGD.Mobs.PackScripts
                 throw new ArgumentException("PackData.AddToPack: Pack is full, cannot add anymore members, use IsFull() to verify pack emptiness.");
 
             packMembers.Add(newMember);
+            newMember.SetPack(this);
 
             if (packMembers.Count == MAX_MEMBERS)
             {
                 packFull = true;
             }
+
+            UpdateAlpha();
         }
 
         public void RemoveFromPack(PackBehavior removedMember)
@@ -55,6 +58,8 @@ namespace SIGGD.Mobs.PackScripts
                 // disband pack if only one member remaining
                 DisbandPack();
             }
+
+            UpdateAlpha();
         }
         public void SetDisbandMethod(Func<PackData, bool> disbandMethod)
         {
@@ -120,7 +125,7 @@ namespace SIGGD.Mobs.PackScripts
         }
         public bool Contains(PackBehavior p)
         {
-            return packMembers.FirstOrDefault(e => e == p) == null;
+            return packMembers.FirstOrDefault(e => e == p) != null;
         }
         public List<PackBehavior> GetPackMembers()
         {

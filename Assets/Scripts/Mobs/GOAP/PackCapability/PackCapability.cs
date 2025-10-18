@@ -14,18 +14,20 @@ namespace SIGGD.Goap.Capabilities
 
             builder.AddGoal<StickTogetherGoal>()
                 .AddCondition<InPack>(Comparison.GreaterThan, 0)
-                .AddCondition<CloseToAlpha>(Comparison.SmallerThan, 1)
+                .AddCondition<CloseToAlpha>(Comparison.GreaterThan, 0)
                 .AddCondition<IsAlpha>(Comparison.SmallerThanOrEqual, 0);
 
             builder.AddAction<FollowAlphaAction>()
                 .AddCondition<InPack>(Comparison.GreaterThan, 0)
                 .AddEffect<CloseToAlpha>(EffectType.Increase)
-                .SetTarget<PackAlphaTarget>();
+                .SetTarget<PackAlphaTarget>()
+                .SetStoppingDistance(2f);
 
             builder.AddAction<JoinPackAction>()
                 .AddCondition<InPack>(Comparison.SmallerThanOrEqual, 0)
                 .AddEffect<InPack>(EffectType.Increase)
-                .SetTarget<PackClosestTarget>();
+                .SetTarget<PackClosestTarget>()
+                .SetStoppingDistance(2f);
 
             builder.AddMultiSensor<PackMultiSensor>();
 

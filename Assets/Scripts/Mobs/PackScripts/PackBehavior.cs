@@ -9,22 +9,35 @@ using UnityEngine;
 
 namespace SIGGD.Mobs.PackScripts
 {
+    [Serializable]
     public class PackBehavior : MonoBehaviour
     {
         PackManager packManager;
         GoapActionProvider provider;
-        public IAgentType agentType { get; private set; }
+        public IAgentType agentType { get; private set; } = null;
         PackData myPack = null;
-        int powerLevel; // dummy value for now since powerLevel implementation is not done yet
+        [SerializeField] int powerLevel; // dummy value for now since powerLevel implementation is not done yet
         const int MINPOWER = 0;
         const int MAXPOWER = 99;
-        [SerializeField] public PackBehaviorData Data { get; }
+        [SerializeField] public PackBehaviorData Data;
 
         void Start()
         {
             packManager = FindFirstObjectByType<PackManager>().GetComponent<PackManager>();
             powerLevel = UnityEngine.Random.Range(MINPOWER, MAXPOWER);
             agentType = provider.AgentType;
+        }
+        void Update()
+        {
+            // validate membership to current pack via distance checking
+            if (myPack != null)
+            {
+                float dist = CalculateDistanceVector(myPack.GetClosestMember(this.transform.position), this).magnitude;
+                if (dist > Data.LeavePackRange)
+                {
+                    LeavePack();
+                }
+            }
         }
         public int GetPowerLevel()
         {
@@ -52,8 +65,9 @@ namespace SIGGD.Mobs.PackScripts
             myPack.RemoveFromPack(this);
             myPack = null;
         }
-        public PackBehavior FindNearbyNeighbor(int numSearchRingSplits)
+        public PackBehavior FindNearbyNeighbor()
         {
+            int numSearchRingSplits = Data.NumSearchRingSplits;
             float maxSearchRing = Data.AgentTypeVisionRange;
             float searchIncrement = maxSearchRing / numSearchRingSplits;
 
@@ -66,7 +80,8 @@ namespace SIGGD.Mobs.PackScripts
                 foreach (Collider hit in hits)
                 {
                     PackBehavior otherPack = hit.gameObject.GetComponent<PackBehavior>();
-                    if (otherPack.agentType != this.agentType) continue;
+                    if (otherPack.gameObject == this.gameObject) continue;
+                    if (otherPack.agentType != this.agentType) continue; // skip pack behaviors of different agent type
 
                     // just straight up return the first thing you find for performance
                     return otherPack;
@@ -77,7 +92,7 @@ namespace SIGGD.Mobs.PackScripts
         }
         public Collider[] LookForMobs(float radius)
         {
-            return Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Mobs"));
+            return Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Mob"));
         }
         public Vector3 GetRawAlphaPositionDiff()
         {
@@ -93,7 +108,13 @@ namespace SIGGD.Mobs.PackScripts
             if (myPack == null) return 0;
             return myPack.GetAlpha() == this ? 1 : 0;
         }
-        public static Vector3 CalculateDistance(PackBehavior a, PackBehavior b)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>A Vector3 pointint in the direction to get from B to A.</returns>
+        public static Vector3 CalculateDistanceVector(PackBehavior a, PackBehavior b)
         {
             // can be replaced with a nav system based calculation in the future
             return a.gameObject.transform.position - b.gameObject.transform.position;

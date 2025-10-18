@@ -12,11 +12,14 @@ namespace SIGGD.Mobs.PackScripts
             PackData newPack = new PackData(founders);
             packs.Add(newPack);
             newPack.SetDisbandMethod(packs.Remove); // allows PackData objects to automatically remove themselves when disbanding
+            q.SetPack(newPack);
+            p.SetPack(newPack);
             return newPack;
         }
 
         public PackData JoinPacks(PackBehavior q, PackBehavior p)
         {
+            print("Joining two packs!");
             PackData resultingPack = null;
             if (q.GetPack() == null && p.GetPack() == null) // neither mob has a pack
             {
@@ -34,7 +37,7 @@ namespace SIGGD.Mobs.PackScripts
             }
             else if (q.GetPack() != null && p.GetPack() != null) // q and p are packed up
             {
-                resultingPack = PackData.MergePacks(q.GetPack(), p.GetPack());
+                resultingPack = PackData.MergePacks(q.GetPack(), p.GetPack()); // merge packs automatically updates the pack of each agent
             }
             return resultingPack;
         }

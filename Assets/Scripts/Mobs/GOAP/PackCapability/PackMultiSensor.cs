@@ -27,12 +27,23 @@ namespace SIGGD.Goap.Sensors
             this.AddLocalWorldSensor<InPack>((agent, references) =>
             {
                 var packBehavior = references.GetCachedComponent<PackBehavior>();
-                return packBehavior.GetPack() == null;
+                return packBehavior.GetPack() != null;
             });
             this.AddLocalTargetSensor<PackAlphaTarget>((agent, references, target) =>
             {
                 var packBehavior = references.GetCachedComponent<PackBehavior>();
-                return new TransformTarget(packBehavior.GetPack().GetAlpha().gameObject.transform);
+                if (packBehavior.GetPack() == null)
+                    return null;
+                PackBehavior alpha = packBehavior.GetPack().GetAlpha();
+                return new TransformTarget(alpha.gameObject.transform);
+            });
+            this.AddLocalTargetSensor<PackClosestTarget>((agent, references, target) =>
+            {
+                var packBehavior = references.GetCachedComponent<PackBehavior>();
+                PackBehavior neighbor = packBehavior.FindNearbyNeighbor();
+                if (neighbor == null)
+                    return null;
+                return new TransformTarget(neighbor.gameObject.transform);
             });
         }
 
