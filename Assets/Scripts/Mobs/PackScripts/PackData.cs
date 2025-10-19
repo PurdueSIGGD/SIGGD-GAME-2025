@@ -4,6 +4,7 @@ using System;
 using UnityEngine.UIElements;
 using System.Linq;
 using CrashKonijn.Goap.Core;
+using SIGGD.Goap;
 
 namespace SIGGD.Mobs.PackScripts
 {
@@ -14,9 +15,11 @@ namespace SIGGD.Mobs.PackScripts
         public IAgentType agentType { get; private set; }
         public List<PackBehavior> packMembers { get; private set; } = new List<PackBehavior>();
         [SerializeField] PackBehavior packAlpha = null;
+        [SerializeField] int size = 0;
         int MAX_MEMBERS;
         bool packFull = false;
         Func<PackData, bool> disbandMethod; // set to 'remove from pack list' by PackManager
+        public bool locked = false; // handle edge cases
 
         public PackData(List<PackBehavior> starterMembers, int max_members = int.MaxValue)
         {
@@ -28,6 +31,8 @@ namespace SIGGD.Mobs.PackScripts
             this.packMembers = new List<PackBehavior>(starterMembers);
             this.packAlpha = CalculateAlpha(packMembers);
             this.agentType = packAlpha.agentType;
+            this.size = packMembers.Count;
+            this.MAX_MEMBERS = max_members;
         }
 
         public void AddToPack(PackBehavior newMember)
@@ -37,18 +42,20 @@ namespace SIGGD.Mobs.PackScripts
 
             packMembers.Add(newMember);
             newMember.SetPack(this);
+            size++;
 
             if (packMembers.Count == MAX_MEMBERS)
             {
                 packFull = true;
             }
 
-            UpdateAlpha();
+            UpdateAlpha(newMember);
         }
 
         public void RemoveFromPack(PackBehavior removedMember)
         {
             packMembers.Remove(removedMember);
+            size--;
             if (packMembers.Count < MAX_MEMBERS)
             {
                 packFull = false;
@@ -58,8 +65,7 @@ namespace SIGGD.Mobs.PackScripts
                 // disband pack if only one member remaining
                 DisbandPack();
             }
-
-            UpdateAlpha();
+            if (packAlpha == null) UpdateAlpha();
         }
         public void SetDisbandMethod(Func<PackData, bool> disbandMethod)
         {
@@ -98,6 +104,13 @@ namespace SIGGD.Mobs.PackScripts
             }
             return false;
         }
+        public void UpdateAlpha(PackBehavior contender)
+        {
+            if (packAlpha == null || contender.GetPowerLevel() > packAlpha.GetPowerLevel())
+            {
+                packAlpha = contender;
+            }
+        }
 
         public PackBehavior GetClosestMember(Vector3 position)
         {
@@ -135,6 +148,10 @@ namespace SIGGD.Mobs.PackScripts
         {
             return packAlpha;
         }
+        public int GetSize()
+        {
+            return size;
+        }
         public int MaxSize()
         {
             return MAX_MEMBERS;
@@ -142,31 +159,6 @@ namespace SIGGD.Mobs.PackScripts
         public bool IsFull()
         {
             return packFull;
-        }
-
-        public static PackData MergePacks(PackData q, PackData p)
-        {
-            // check if packs are the same
-            if (q == p)
-            {
-                return q;
-            }
-
-            // verify max pack sizes
-            int mergedMaxSize = q.MaxSize() < p.MaxSize() ? q.MaxSize() : p.MaxSize(); // use the smaller of the max sizes
-
-            // disallow pack merging if merged pack would be too big
-            if (mergedMaxSize < q.MaxSize() + p.MaxSize())
-            {
-                return null;
-            }
-            List<PackBehavior> combined = new List<PackBehavior>(q.GetPackMembers().Concat(p.GetPackMembers()));
-            PackData newPack = new PackData(combined);
-            foreach (PackBehavior member in newPack.GetPackMembers())
-            {
-                member.SetPack(newPack);
-            }
-            return newPack;
         }
     }
 }

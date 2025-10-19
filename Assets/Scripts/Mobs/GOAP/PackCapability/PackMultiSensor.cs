@@ -24,6 +24,11 @@ namespace SIGGD.Goap.Sensors
                 var packBehavior = references.GetCachedComponent<PackBehavior>();
                 return packBehavior.GetIsAlphaKey();
             });
+            this.AddLocalWorldSensor<PackSize>((agent, references) =>
+            {
+                var packBehavior = references.GetCachedComponent<PackBehavior>();
+                return packBehavior.GetPack() != null ? packBehavior.GetPack().GetSize() : 1;
+            });
             this.AddLocalWorldSensor<InPack>((agent, references) =>
             {
                 var packBehavior = references.GetCachedComponent<PackBehavior>();
@@ -40,8 +45,8 @@ namespace SIGGD.Goap.Sensors
             this.AddLocalTargetSensor<PackClosestTarget>((agent, references, target) =>
             {
                 var packBehavior = references.GetCachedComponent<PackBehavior>();
-                PackBehavior neighbor = packBehavior.FindNearbyNeighbor();
-                if (neighbor == null)
+                PackBehavior neighbor = packBehavior.FindNearbyNeighbor(excludePack: true);
+                if (neighbor == null || !PackManager.CanJoin(packBehavior, neighbor, excludePack: true))
                     return null;
                 return new TransformTarget(neighbor.gameObject.transform);
             });

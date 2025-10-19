@@ -1,45 +1,154 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using System;
+using UnityEngine.Assertions.Must;
 
 namespace SIGGD.Mobs.PackScripts
 {
     public class PackManager : MonoBehaviour
     {
         [SerializeField] List<PackData> packs = new List<PackData>();
-        public PackData CreatePack(PackBehavior q, PackBehavior p)
+        public PackData JoinPacks(PackBehavior q, PackBehavior p)
+        {
+            if (q.GetPack() != null) q.GetPack().locked = true;
+            if (p.GetPack() != null) p.GetPack().locked = true;
+
+            PackData resultingPack = null;
+            if (q.GetPack() == null && p.GetPack() == null) // neither mob has a pack
+            {
+                // print("JOIN: empty to empty");
+                resultingPack = CreatePack(q, p);
+            }
+            else if (q.GetPack() == null && p.GetPack() != null) // p already is a pack
+            {
+                // print("JOIN: pack to empty");
+                p.GetPack().AddToPack(q);
+                resultingPack = p.GetPack();
+            }
+            else if (q.GetPack() != null && p.GetPack() == null) // q already is a pack
+            {
+                // print("JOIN: pack to empty");
+                q.GetPack().AddToPack(p);
+                resultingPack = q.GetPack();
+            }
+            else if (q.GetPack() != null && p.GetPack() != null) // q and p are packed up
+            {
+                // print("JOIN: merge");
+                resultingPack = MergePacks(q.GetPack(), p.GetPack()); // merge packs automatically updates the pack of each agent
+            }
+
+            if (q.GetPack() != null) q.GetPack().locked = false;
+            if (p.GetPack() != null) p.GetPack().locked = false;
+            return resultingPack;
+        }
+        PackData CreatePack(PackBehavior q, PackBehavior p)
         {
             List<PackBehavior> founders = new List<PackBehavior>() { q, p };
-            PackData newPack = new PackData(founders);
+            PackData newPack = new PackData(founders, max_members: q.Data.MaxPackSize);
             packs.Add(newPack);
             newPack.SetDisbandMethod(packs.Remove); // allows PackData objects to automatically remove themselves when disbanding
             q.SetPack(newPack);
             p.SetPack(newPack);
             return newPack;
         }
-
-        public PackData JoinPacks(PackBehavior q, PackBehavior p)
+        PackData CreatePack(List<PackBehavior> founders)
         {
-            print("Joining two packs!");
-            PackData resultingPack = null;
-            if (q.GetPack() == null && p.GetPack() == null) // neither mob has a pack
+            PackData newPack = new PackData(founders, max_members: founders[0].Data.MaxPackSize);
+            packs.Add(newPack);
+            newPack.SetDisbandMethod(packs.Remove); // allows PackData objects to automatically remove themselves when disbanding
+            foreach (PackBehavior member in newPack.GetPackMembers())
             {
-                resultingPack = CreatePack(q, p);
+                member.SetPack(newPack);
             }
-            else if (q.GetPack() == null && p.GetPack() != null) // p already is a pack
-            {
-                p.GetPack().AddToPack(q);
-                resultingPack = p.GetPack();
-            }
-            else if (q.GetPack() != null && p.GetPack() == null) // q already is a pack
-            {
-                q.GetPack().AddToPack(p);
-                resultingPack = q.GetPack();
-            }
-            else if (q.GetPack() != null && p.GetPack() != null) // q and p are packed up
-            {
-                resultingPack = PackData.MergePacks(q.GetPack(), p.GetPack()); // merge packs automatically updates the pack of each agent
-            }
-            return resultingPack;
+            newPack.UpdateAlpha();
+            return newPack;
         }
+        PackData MergePacks(PackData q, PackData p)
+        {
+            // check if packs are the same
+            if (q == p)
+            {
+                return q;
+            }
+
+            // check if mergeable
+            int mergedMaxSize = EvaluateMergeSize(q, p);
+            if (mergedMaxSize < 0)
+                throw new ArgumentException("PackManager.MergePacks: Invalid merge sizes, check before merging packs!"); // quit merge on failed merge size
+
+            // add all members from one pack to the other
+            PackData newPack = q.MaxSize() < p.MaxSize() ? q : p;
+            PackData otherPack = q.MaxSize() < p.MaxSize() ? p : q;
+            List<PackBehavior> newMembers = otherPack.GetPackMembers();
+            foreach (PackBehavior member in newMembers)
+            {
+                newPack.AddToPack(member);
+            }
+            otherPack.DisbandPack();
+            return newPack;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="q"></param>
+        /// <returns>New merged size, OR -1 on failed merge.</returns>
+        public static int EvaluateMergeSize(PackData p, PackData q)
+        {
+            // verify max pack sizes
+            int mergedMaxSize = q.MaxSize() < p.MaxSize() ? q.MaxSize() : p.MaxSize(); // use the smaller of the max sizes
+
+            // disallow pack merging if merged pack would be too big
+            if (mergedMaxSize < q.GetSize() + p.GetSize())
+                return -1;
+            return mergedMaxSize;
+        }
+
+        public static bool CanJoin(PackBehavior p, PackBehavior q, bool excludePack = false)
+        {
+            // skip locked packs
+            if (q.GetPack() != null && q.GetPack().locked ||
+                p.GetPack() != null && p.GetPack().locked)
+            {
+                print("CanJoin: Safety Lock Fault");
+                return false;
+            }
+
+
+            if (q.agentType != p.agentType)
+            {
+                // skip pack behaviors of different agent type
+                // print("CanJoin: Different Type Fault");
+                return false;
+            }
+
+            // skip mobs of same pack if excludePack is set to true
+            if (excludePack && p.GetPack() != null && q.GetPack() == p.GetPack())
+            {
+                // print("CanJoin: Exclude Pack Fault");
+                return false;
+            }
+
+            // skip unmergeable packs
+            if (q.GetPack() != null &&
+                p.GetPack() != null &&
+                EvaluateMergeSize(p.GetPack(), q.GetPack()) < 0)
+            {
+                // print("CanJoin: Merge Size Fault");
+                return false;
+            }
+
+            // skip full packs
+            if ((q.GetPack() != null && q.GetPack().IsFull()) ||
+                (p.GetPack() != null && p.GetPack().IsFull()))
+            {
+                // print("CanJoin: Full Pack Fault");
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }

@@ -12,21 +12,21 @@ namespace SIGGD.Goap.Capabilities
         {
             var builder = new CapabilityBuilder("PackCapability");
 
-            builder.AddGoal<StickTogetherGoal>()
+            builder.AddGoal<GrowPackGoal>()
                 .AddCondition<InPack>(Comparison.GreaterThan, 0)
-                .AddCondition<CloseToAlpha>(Comparison.GreaterThan, 0)
-                .AddCondition<IsAlpha>(Comparison.SmallerThanOrEqual, 0);
+                .AddCondition<PackSize>(Comparison.GreaterThanOrEqual, int.MaxValue);
+            builder.AddAction<JoinPackAction>()
+                .AddEffect<InPack>(EffectType.Increase)
+                .AddEffect<PackSize>(EffectType.Increase)
+                .SetTarget<PackClosestTarget>()
+                .SetStoppingDistance(2f);
 
+            builder.AddGoal<FollowAlphaGoal>()
+                .AddCondition<CloseToAlpha>(Comparison.GreaterThan, 0);
             builder.AddAction<FollowAlphaAction>()
                 .AddCondition<InPack>(Comparison.GreaterThan, 0)
                 .AddEffect<CloseToAlpha>(EffectType.Increase)
                 .SetTarget<PackAlphaTarget>()
-                .SetStoppingDistance(2f);
-
-            builder.AddAction<JoinPackAction>()
-                .AddCondition<InPack>(Comparison.SmallerThanOrEqual, 0)
-                .AddEffect<InPack>(EffectType.Increase)
-                .SetTarget<PackClosestTarget>()
                 .SetStoppingDistance(2f);
 
             builder.AddMultiSensor<PackMultiSensor>();

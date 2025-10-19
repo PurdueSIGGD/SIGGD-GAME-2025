@@ -13,10 +13,12 @@ namespace SIGGD.Goap
         // This method is called every frame while the action is running
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
-            if (data.PackBehaviour.GetRawAlphaPositionDiff().magnitude < data.PackBehaviour.Data.JoinPackRange)
+            if (data.PackBehaviour.GetPack().GetAlpha() == null)
                 return ActionRunState.Completed;
-            else
-                return ActionRunState.Continue;
+
+            if (data.PackBehaviour.GetRawAlphaPositionDiff().magnitude < data.PackBehaviour.Data.CloseEnoughToAlphaDist)
+                return ActionRunState.Completed;
+            return ActionRunState.Continue;
         }
 
         // The action class itself must be stateless!

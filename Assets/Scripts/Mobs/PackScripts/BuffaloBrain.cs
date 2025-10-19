@@ -5,17 +5,22 @@ using SIGGD.Mobs;
 using Unity.VisualScripting;
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Core;
+using SIGGD.Mobs.PackScripts;
 
 namespace SIGGD.Goap.Behaviours
 {
     public class BuffaloBrain : BaseAgentBrain
     {
+        PackBehavior packBehavior;
+
         protected override void Awake()
         {
             this.goap = FindFirstObjectByType<GoapBehaviour>();
             this.agent = this.GetComponent<AgentBehaviour>();
             this.provider = this.GetComponent<GoapActionProvider>();
             this.provider.AgentType = this.goap.GetAgentType(MobIds.buffalo);
+
+            this.packBehavior = GetComponent<PackBehavior>();
         }
         protected override void Start()
         {
@@ -32,7 +37,17 @@ namespace SIGGD.Goap.Behaviours
         }
         private void DecideGoal()
         {
-            this.provider.RequestGoal<WanderGoal, StickTogetherGoal>(true);
+            this.provider.RequestGoal<WanderGoal, FollowAlphaGoal, GrowPackGoal>(true);
+
+            // if (!packBehavior.IsHappyWithPack())
+            // {
+            //     this.provider.RequestGoal<GrowPackGoal, WanderGoal>(true);
+            // }
+            // else
+            // {
+            //     this.provider.RequestGoal<WanderGoal, FollowAlphaGoal>(true);
+            // }
+
         }
     }
 

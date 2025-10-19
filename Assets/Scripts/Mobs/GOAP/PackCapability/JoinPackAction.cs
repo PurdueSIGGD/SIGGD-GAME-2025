@@ -9,14 +9,11 @@ namespace SIGGD.Goap
 {
     public class JoinPackAction : GoapActionBase<JoinPackAction.Data>
     {
-
         // This method is called every frame while the action is running
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
-            PackBehavior nearestNeighbor = data.PackBehaviour.FindNearbyNeighbor();
-
-            // stop 
-            if (nearestNeighbor == null)
+            PackBehavior nearestNeighbor = data.PackBehaviour.FindNearbyNeighbor(excludePack: true);
+            if (nearestNeighbor == null || !PackManager.CanJoin(data.PackBehaviour, nearestNeighbor))
                 return ActionRunState.Stop;
 
             float distance = PackBehavior.CalculateDistanceVector(data.PackBehaviour, nearestNeighbor).magnitude;

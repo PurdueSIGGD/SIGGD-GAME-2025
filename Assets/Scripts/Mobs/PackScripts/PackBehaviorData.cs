@@ -32,5 +32,9 @@ namespace SIGGD.Mobs.PackScripts
         [SerializeField]
         public float CloseEnoughToAlphaDist;
         // distance from alpha at which the implementing agent will complete its follow alpha goal
+
+        [SerializeField]
+        public int MaxPackSize;
+        // maximum pack size
     }
 }

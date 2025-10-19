@@ -21,6 +21,9 @@ namespace SIGGD.Mobs.PackScripts
         const int MAXPOWER = 99;
         [SerializeField] public PackBehaviorData Data;
 
+        float leaveCheckTimer;
+        [SerializeField] float leaveCheckTimeSec;
+
         void Start()
         {
             packManager = FindFirstObjectByType<PackManager>().GetComponent<PackManager>();
@@ -32,12 +35,25 @@ namespace SIGGD.Mobs.PackScripts
             // validate membership to current pack via distance checking
             if (myPack != null)
             {
-                float dist = CalculateDistanceVector(myPack.GetClosestMember(this.transform.position), this).magnitude;
-                if (dist > Data.LeavePackRange)
+                leaveCheckTimer -= Time.deltaTime;
+                if (leaveCheckTimer < 0)
                 {
-                    LeavePack();
+                    PackBehavior neighbor = FindNearbyNeighbor(excludePack: false, specificPack: myPack);
+                    if (neighbor != null)
+                    {
+                        float dist = CalculateDistanceVector(neighbor, this).magnitude;
+                        if (dist > Data.LeavePackRange)
+                        {
+                            LeavePack();
+                        }
+                    }
+                    leaveCheckTimer = leaveCheckTimeSec;
                 }
             }
+        }
+        void OnDestroy()
+        {
+            LeavePack();
         }
         public int GetPowerLevel()
         {
@@ -49,7 +65,7 @@ namespace SIGGD.Mobs.PackScripts
         }
         public void JoinPack(PackBehavior other)
         {
-            packManager.JoinPacks(this, other);
+            PackData newPack = packManager.JoinPacks(this, other);
         }
         public void SetPack(PackData newPack)
         {
@@ -65,7 +81,7 @@ namespace SIGGD.Mobs.PackScripts
             myPack.RemoveFromPack(this);
             myPack = null;
         }
-        public PackBehavior FindNearbyNeighbor()
+        public PackBehavior FindNearbyNeighbor(bool excludePack = false, PackData specificPack = null)
         {
             int numSearchRingSplits = Data.NumSearchRingSplits;
             float maxSearchRing = Data.AgentTypeVisionRange;
@@ -80,11 +96,11 @@ namespace SIGGD.Mobs.PackScripts
                 foreach (Collider hit in hits)
                 {
                     PackBehavior otherPack = hit.gameObject.GetComponent<PackBehavior>();
-                    if (otherPack.gameObject == this.gameObject) continue;
-                    if (otherPack.agentType != this.agentType) continue; // skip pack behaviors of different agent type
-
-                    // just straight up return the first thing you find for performance
-                    return otherPack;
+                    if (otherPack == null) continue;
+                    if (otherPack == this) continue; // skip self
+                    if (specificPack != null && otherPack.GetPack() != specificPack) continue; // skip if mob not in specific pack we're looking for
+                    if (PackManager.CanJoin(this, otherPack, excludePack: excludePack))
+                        return otherPack; // just straight up return the first thing you find for performance
                 }
             }
             // didn't find any enemy
@@ -107,6 +123,14 @@ namespace SIGGD.Mobs.PackScripts
         {
             if (myPack == null) return 0;
             return myPack.GetAlpha() == this ? 1 : 0;
+        }
+        public bool IsHappyWithPack()
+        {
+            if (myPack == null)
+            {
+                return false;
+            }
+            return myPack.GetSize() == Data.MaxPackSize;
         }
         /// <summary>
         /// 
