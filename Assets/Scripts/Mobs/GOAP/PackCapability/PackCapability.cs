@@ -31,7 +31,8 @@ namespace SIGGD.Goap.Capabilities
                 .AddCondition<InPack>(Comparison.GreaterThan, 0)
                 .AddEffect<CloseToAlpha>(EffectType.Increase)
                 .SetTarget<PackAlphaTarget>()
-                .SetStoppingDistance(2f);
+                .SetStoppingDistance(2f)
+                .SetValidateTarget(true);
 
             builder.AddMultiSensor<PackMultiSensor>();
 

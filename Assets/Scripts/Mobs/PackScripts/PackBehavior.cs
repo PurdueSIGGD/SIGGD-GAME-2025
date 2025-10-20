@@ -129,6 +129,7 @@ namespace SIGGD.Mobs.PackScripts
         public int GetCloseToAlphaKey()
         {
             if (myPack == null) return 0;
+            if (myPack.GetAlpha() == null) return 0;
             return GetRawAlphaPositionDiff().magnitude <= Data.CloseEnoughToAlphaDist ? 1 : 0;
         }
         public int GetIsAlphaKey()

@@ -22,6 +22,8 @@ namespace SIGGD.Goap
         public override bool IsValid(IActionReceiver agent, Data data)
         {
             return data.PackBehaviour.GetPack() != null &&
+                data.Target != null &&
+                data.Target.IsValid() &&
                 data.AlphaTarget != null &&
                 !data.PackBehaviour.CheckLeaveRange(data.AlphaTarget);
         }

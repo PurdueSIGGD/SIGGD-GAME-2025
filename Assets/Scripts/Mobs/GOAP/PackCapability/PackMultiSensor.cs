@@ -41,7 +41,7 @@ namespace SIGGD.Goap.Sensors
             this.AddLocalTargetSensor<PackAlphaTarget>((agent, references, target) =>
             {
                 var packBehavior = references.GetCachedComponent<PackBehavior>();
-                if (packBehavior.GetPack() == null)
+                if (packBehavior.GetPack() == null || packBehavior.GetPack().GetAlpha() == null)
                     return null;
                 PackBehavior alpha = packBehavior.GetPack().GetAlpha();
                 return new TransformTarget(alpha.gameObject.transform);
