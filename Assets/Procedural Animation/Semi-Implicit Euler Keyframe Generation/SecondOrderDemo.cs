@@ -14,11 +14,11 @@ public class SecondOrderDemo : MonoBehaviour {
     }
 
     void Update() {
-        positionFilter.ComputerKValues(frequency, damping, response);
+        positionFilter.ComputeKValues(frequency, damping, response);
         Vector3 yPos = positionFilter.Update(Time.deltaTime, target.position);
         transform.position = yPos;
 
-        rotationFilter.ComputerKValues(frequency, damping, response);
+        rotationFilter.ComputeKValues(frequency, damping, response);
         Vector3 yRot = rotationFilter.Update(Time.deltaTime, target.forward);
         transform.forward = yRot;
     }

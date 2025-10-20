@@ -9,13 +9,12 @@ public class ThreeLinkV2 : MonoBehaviour {
     }
 
     [Header("Required Variables")]
-    [SerializeField] Joint[] joints = new Joint[3];
     [SerializeField] Transform origin;
-    [SerializeField] Transform target;
+    public Transform target;
+    public Joint[] joints = new Joint[3];
     [Header("Tweakable Values")]
     [SerializeField] float limbThickness = 0.5f;
     [SerializeField] bool negativeSolution;
-
     float l1, l2, l3;
 
     void Start() {
@@ -51,7 +50,7 @@ public class ThreeLinkV2 : MonoBehaviour {
         //  --------------------------------------------------------------------------------
         //  Calculate the angle in order to point origin.right towards target.position
         float yAng = -Mathf.Atan2(t.z, t.x);
-        origin.localRotation = Quaternion.Euler(0, (yAng - Mathf.PI / 2) * Mathf.Rad2Deg, 0);
+        origin.rotation = Quaternion.Euler(0, (yAng - Mathf.PI / 2) * Mathf.Rad2Deg, 0);
 
         Vector3 localUp = -target.up; //    Vector we need to get angle from
         localUp = Vector3.ProjectOnPlane(localUp, t.normalized); //   Ignore the third axis of rotation
@@ -74,7 +73,7 @@ public class ThreeLinkV2 : MonoBehaviour {
         float angB = Mathf.PI + (negativeSolution ? 1 : -1) * Mathf.Acos((l1 * l1 + l2 * l2 - d * d) / (2 * l1 * l2)); // Calculate the exterior angle opposite of the distance
 
         //  Rotate the joints to be in the right place
-        origin.localRotation *= Quaternion.Euler((angI + angA - Mathf.PI / 2) * Mathf.Rad2Deg, 0, 0);
+        origin.rotation *= Quaternion.Euler((angI + angA - Mathf.PI / 2) * Mathf.Rad2Deg, 0, 0);
         joints[0].jointOrigin.localRotation = Quaternion.Euler(-angB * Mathf.Rad2Deg, 0, 0);
 
         Vector3 v = (target.position - joints[1].jointOrigin.position).normalized;
