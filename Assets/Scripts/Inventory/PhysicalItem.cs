@@ -2,7 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 /// <summary>
-/// Script for the physical item that can be picked up
+/// OBSOLETE: Script for the physical item that can be picked up
 /// </summary>
 public class PhysicalItem : MonoBehaviour, IPointerClickHandler
 {
@@ -23,7 +23,7 @@ public class PhysicalItem : MonoBehaviour, IPointerClickHandler
 
     void pickup() {
         // remove physical gameobject and add item to inventory
-        inventory.add(itemInfo, 3);
+        inventory.AddItem(itemInfo, 3);
         Destroy(this.gameObject);
         inventory.PrintInventory();
     }

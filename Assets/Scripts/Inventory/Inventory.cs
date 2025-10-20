@@ -3,7 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Inventory : MonoBehaviour
+public class Inventory : Singleton<Inventory>, IInventory
 {
     const int HotBarLength = 9;
     const int InventoryLength = 18;
@@ -19,8 +19,9 @@ public class Inventory : MonoBehaviour
     private int selected; // index of selected item in hotbar
     private Slot tempSlot; // temporary slot for holding item that is being moved
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         inventory = new Slot[HotBarLength + InventoryLength];
         inventoryCanvas = GetComponentInChildren<Canvas>();
         inventoryCanvas.enabled = false;
@@ -64,10 +65,10 @@ public class Inventory : MonoBehaviour
     // TODO: replace
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            ShowInventory(!inventoryCanvas.enabled);
-        }
+        // if (Input.GetKeyDown(KeyCode.E))
+        // {
+        //     ShowInventory(!inventoryCanvas.enabled);
+        // }
     }
 
     /// <summary>
@@ -181,7 +182,7 @@ public class Inventory : MonoBehaviour
     /// <param name="count">Amount of items</param>
     /// 
     /// <returns>Number of items that could not be added to the inventory</returns>
-    public int add(ItemInfo itemInfo, int count) { // maybe change input type
+    public int AddItem(ItemInfo itemInfo, int count) { // maybe change input type
         // first add to existing stacks
         for (int i = 0; i < inventory.Length; i++) {
             if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName) // matches item
@@ -226,12 +227,41 @@ public class Inventory : MonoBehaviour
         // otherwise replace current selected item
 
     }
+    
+    /**
+     * <summary>
+     * Removes item from inventory
+     * </summary>
+     * <param name="item">Item to remove</param>
+     * <param name="count">Amount of items to remove</param>
+     * <returns>Whether or not the removal was successful</returns>
+     */
+    public bool RemoveItem(ItemInfo item, int count)
+    {
+        int index = find(item.itemName);
+        if (index == -1) return false; // item not found
+
+        if (inventory[index].count >= count)
+        {
+            inventory[index].count -= count;
+            if (inventory[index].count == 0)
+            {
+                inventory[index].itemInfo = null;
+            }
+            return true;
+        }
+        else
+        {
+            return false; // not enough items to remove
+        }
+    }
 
     /// <summary>
     /// Drop item at index
     /// </summary>
     /// <param name="index">Index of item to drop</param>
-    public void drop(int index) { // maybe create another method for dropping stacks of items
+    /// <returns>Whether or not the drop was successful</returns>
+    public bool drop(int index) { // maybe create another method for dropping stacks of items
         // instantiate physical item
         
 
@@ -240,6 +270,8 @@ public class Inventory : MonoBehaviour
         if (inventory[index].count <= 0) {
             inventory[index].itemInfo = null;
         }
+        
+        return true;
     }
 
     /// <summary>

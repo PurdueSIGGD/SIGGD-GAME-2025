@@ -18,6 +18,7 @@ public class PlayerInput : Singleton<PlayerInput>
     public bool crouchInput = false;
     
     public Action<InputAction.CallbackContext> OnJump = delegate { }; // jump event
+    public Action<InputAction.CallbackContext> OnInteract = delegate { };
 
     ////////
     protected override void Awake()
@@ -115,7 +116,8 @@ public class PlayerInput : Singleton<PlayerInput>
 
     //// interact, attack inputs
     private void InputInteract(InputAction.CallbackContext callbackValue) {
-        // call something to interact (here)
+        Debug.Log("Interact input detected");
+        OnInteract?.Invoke(callbackValue);
     }
 
     private void InputAttack(InputAction.CallbackContext callbackValue) {
