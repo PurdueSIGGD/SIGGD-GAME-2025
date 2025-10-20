@@ -16,9 +16,9 @@ namespace SIGGD.Mobs.PackScripts
         public float AgentTypeVisionRange;
         // maximum radius around which the implementing agent can see agents of its type for the sake of forming packs
 
-        [SerializeField]
-        public float JoinPackRange;
-        // maximum radius around which the implementing agent can join the pack of the target agent
+        // [SerializeField]
+        // public float JoinPackRange;
+        // // maximum radius around which the implementing agent can join the pack of the target agent
 
         [SerializeField]
         public int NumSearchRingSplits;

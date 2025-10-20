@@ -19,7 +19,7 @@ namespace SIGGD.Mobs.PackScripts
         int MAX_MEMBERS;
         bool packFull = false;
         Func<PackData, bool> disbandMethod; // set to 'remove from pack list' by PackManager
-        public bool locked = false; // handle edge cases
+        bool locked = false; // handle edge cases
 
         public PackData(List<PackBehavior> starterMembers, int max_members = int.MaxValue)
         {
@@ -159,6 +159,18 @@ namespace SIGGD.Mobs.PackScripts
         public bool IsFull()
         {
             return packFull;
+        }
+        public void Lock()
+        {
+            locked = true;
+        }
+        public void Unlock()
+        {
+            locked = false;
+        }
+        public bool IsLocked()
+        {
+            return locked;
         }
     }
 }

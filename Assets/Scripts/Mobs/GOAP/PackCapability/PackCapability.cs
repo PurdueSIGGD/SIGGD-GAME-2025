@@ -13,13 +13,17 @@ namespace SIGGD.Goap.Capabilities
             var builder = new CapabilityBuilder("PackCapability");
 
             builder.AddGoal<GrowPackGoal>()
-                .AddCondition<InPack>(Comparison.GreaterThan, 0)
-                .AddCondition<PackSize>(Comparison.GreaterThanOrEqual, int.MaxValue);
-            builder.AddAction<JoinPackAction>()
-                .AddEffect<InPack>(EffectType.Increase)
-                .AddEffect<PackSize>(EffectType.Increase)
+                .AddCondition<LargePack>(Comparison.GreaterThanOrEqual, 1);
+            builder.AddAction<GrowPackAction>()
+                .AddCondition<InPack>(Comparison.GreaterThanOrEqual, 1)
+                .AddEffect<LargePack>(EffectType.Increase)
                 .SetTarget<PackClosestTarget>()
                 .SetStoppingDistance(2f);
+            builder.AddAction<JoinPackAction>()
+                .AddEffect<InPack>(EffectType.Increase)
+                .SetTarget<PackClosestTarget>()
+                .SetStoppingDistance(2f);
+
 
             builder.AddGoal<FollowAlphaGoal>()
                 .AddCondition<CloseToAlpha>(Comparison.GreaterThan, 0);

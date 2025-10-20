@@ -11,8 +11,8 @@ namespace SIGGD.Mobs.PackScripts
         [SerializeField] List<PackData> packs = new List<PackData>();
         public PackData JoinPacks(PackBehavior q, PackBehavior p)
         {
-            if (q.GetPack() != null) q.GetPack().locked = true;
-            if (p.GetPack() != null) p.GetPack().locked = true;
+            if (q.GetPack() != null) q.GetPack().Lock();
+            if (p.GetPack() != null) p.GetPack().Lock();
 
             PackData resultingPack = null;
             if (q.GetPack() == null && p.GetPack() == null) // neither mob has a pack
@@ -38,10 +38,21 @@ namespace SIGGD.Mobs.PackScripts
                 resultingPack = MergePacks(q.GetPack(), p.GetPack()); // merge packs automatically updates the pack of each agent
             }
 
-            if (q.GetPack() != null) q.GetPack().locked = false;
-            if (p.GetPack() != null) p.GetPack().locked = false;
+            if (q.GetPack() != null) q.GetPack().Unlock();
+            if (p.GetPack() != null) p.GetPack().Unlock();
             return resultingPack;
         }
+        public void LeavePack(PackBehavior q)
+        {
+            PackData myPack = q.GetPack();
+            if (myPack == null) return;
+
+            myPack.Lock();
+            myPack.RemoveFromPack(q);
+            myPack.Unlock();
+        }
+
+
         PackData CreatePack(PackBehavior q, PackBehavior p)
         {
             List<PackBehavior> founders = new List<PackBehavior>() { q, p };
@@ -108,13 +119,12 @@ namespace SIGGD.Mobs.PackScripts
         public static bool CanJoin(PackBehavior p, PackBehavior q, bool excludePack = false)
         {
             // skip locked packs
-            if (q.GetPack() != null && q.GetPack().locked ||
-                p.GetPack() != null && p.GetPack().locked)
+            if (q.GetPack() != null && q.GetPack().IsLocked() ||
+                p.GetPack() != null && p.GetPack().IsLocked())
             {
                 print("CanJoin: Safety Lock Fault");
                 return false;
             }
-
 
             if (q.agentType != p.agentType)
             {
@@ -147,6 +157,18 @@ namespace SIGGD.Mobs.PackScripts
                 return false;
             }
 
+            return true;
+        }
+
+        public static bool CanLeave(PackBehavior p)
+        {
+            PackData myPack = p.GetPack();
+            if (myPack == null) return false; // pack doesn't exist fault
+
+            if (myPack.IsLocked())
+            {
+                return false; // locked pack fault
+            }
             return true;
         }
 

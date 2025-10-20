@@ -2,5 +2,5 @@ using CrashKonijn.Goap.Runtime;
 
 namespace SIGGD.Goap
 {
-    public class PackSize : WorldKeyBase { }
+    public class LargePack : WorldKeyBase { }
 }

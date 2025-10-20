@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SIGGD.Goap
 {
-    public class JoinPackAction : GoapActionBase<JoinPackAction.Data>
+    public class GrowPackAction : GoapActionBase<GrowPackAction.Data>
     {
         public override void Start(IMonoAgent agent, Data data)
         {

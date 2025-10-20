@@ -20,9 +20,7 @@ namespace SIGGD.Mobs.PackScripts
         const int MINPOWER = 0;
         const int MAXPOWER = 99;
         [SerializeField] public PackBehaviorData Data;
-
-        float leaveCheckTimer;
-        [SerializeField] float leaveCheckTimeSec;
+        PackBehavior lastNearesNeighbor;
 
         void Start()
         {
@@ -30,30 +28,25 @@ namespace SIGGD.Mobs.PackScripts
             powerLevel = UnityEngine.Random.Range(MINPOWER, MAXPOWER);
             agentType = provider.AgentType;
         }
-        void Update()
+        void FixedUpdate()
         {
             // validate membership to current pack via distance checking
             if (myPack != null)
             {
-                leaveCheckTimer -= Time.deltaTime;
-                if (leaveCheckTimer < 0)
+                PackBehavior neighbor = FindNearbyNeighbor(excludePack: false, specificPack: myPack);
+                if (neighbor != null)
                 {
-                    PackBehavior neighbor = FindNearbyNeighbor(excludePack: false, specificPack: myPack);
-                    if (neighbor != null)
+                    float dist = CalculateDistanceVector(neighbor, this).magnitude;
+                    if (dist > Data.LeavePackRange)
                     {
-                        float dist = CalculateDistanceVector(neighbor, this).magnitude;
-                        if (dist > Data.LeavePackRange)
-                        {
-                            LeavePack();
-                        }
+                        TryLeavePack();
                     }
-                    leaveCheckTimer = leaveCheckTimeSec;
                 }
             }
         }
         void OnDestroy()
         {
-            LeavePack();
+            ForceLeavePack();
         }
         public int GetPowerLevel()
         {
@@ -63,7 +56,7 @@ namespace SIGGD.Mobs.PackScripts
         {
             return myPack;
         }
-        public void JoinPack(PackBehavior other)
+        public void TryJoinPack(PackBehavior other)
         {
             PackData newPack = packManager.JoinPacks(this, other);
         }
@@ -76,7 +69,14 @@ namespace SIGGD.Mobs.PackScripts
             }
             myPack = newPack;
         }
-        public void LeavePack()
+        public void TryLeavePack()
+        {
+            if (PackManager.CanLeave(this))
+            {
+                packManager.LeavePack(this);
+            }
+        }
+        public void ForceLeavePack()
         {
             myPack.RemoveFromPack(this);
             myPack = null;
@@ -91,7 +91,10 @@ namespace SIGGD.Mobs.PackScripts
             for (int i = 0; i < numSearchRingSplits; i++)
             {
                 // LOS abstraction
-                Collider[] hits = LookForMobs(i * searchIncrement);
+                Collider[] hits = LookForMobs(
+                    transform.position,
+                    i * searchIncrement);
+
                 if (hits.Length == 0) continue;
                 foreach (Collider hit in hits)
                 {
@@ -100,15 +103,21 @@ namespace SIGGD.Mobs.PackScripts
                     if (otherPack == this) continue; // skip self
                     if (specificPack != null && otherPack.GetPack() != specificPack) continue; // skip if mob not in specific pack we're looking for
                     if (PackManager.CanJoin(this, otherPack, excludePack: excludePack))
-                        return otherPack; // just straight up return the first thing you find for performance
+                        lastNearesNeighbor = otherPack;
+                    return otherPack; // just straight up return the first thing you find for performance
                 }
             }
             // didn't find any enemy
+            lastNearesNeighbor = null;
             return null;
         }
-        public Collider[] LookForMobs(float radius)
+        public PackBehavior GetLastNearestNeighbor()
         {
-            return Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Mob"));
+            return lastNearesNeighbor;
+        }
+        public Collider[] LookForMobs(Vector3 position, float radius)
+        {
+            return Physics.OverlapSphere(position, radius, LayerMask.GetMask("Mob"));
         }
         public Vector3 GetRawAlphaPositionDiff()
         {
@@ -132,6 +141,18 @@ namespace SIGGD.Mobs.PackScripts
             }
             return myPack.GetSize() == Data.MaxPackSize;
         }
+        public bool CheckLeaveRange(PackBehavior other)
+        {
+            float dist = CalculateDistanceVector(this, other).magnitude;
+            return dist >= Data.LeavePackRange;
+        }
+        public bool CheckLeaveRange(Vector3 position)
+        {
+            float dist = CalculateDistanceVector(
+                this.gameObject.transform.position,
+                position).magnitude;
+            return dist >= Data.LeavePackRange;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -142,6 +163,11 @@ namespace SIGGD.Mobs.PackScripts
         {
             // can be replaced with a nav system based calculation in the future
             return a.gameObject.transform.position - b.gameObject.transform.position;
+        }
+        public static Vector3 CalculateDistanceVector(Vector3 a, Vector3 b)
+        {
+            // can be replaced with a nav system based calculation in the future
+            return a - b;
         }
     }
 }

@@ -24,10 +24,14 @@ namespace SIGGD.Goap.Sensors
                 var packBehavior = references.GetCachedComponent<PackBehavior>();
                 return packBehavior.GetIsAlphaKey();
             });
-            this.AddLocalWorldSensor<PackSize>((agent, references) =>
+            this.AddLocalWorldSensor<LargePack>((agent, references) =>
             {
                 var packBehavior = references.GetCachedComponent<PackBehavior>();
-                return packBehavior.GetPack() != null ? packBehavior.GetPack().GetSize() : 1;
+                if (packBehavior.GetPack() == null)
+                {
+                    return 0;
+                }
+                return packBehavior.GetPack().GetSize() == packBehavior.Data.MaxPackSize ? 1 : 0;
             });
             this.AddLocalWorldSensor<InPack>((agent, references) =>
             {
