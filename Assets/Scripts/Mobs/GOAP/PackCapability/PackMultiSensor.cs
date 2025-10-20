@@ -49,6 +49,8 @@ namespace SIGGD.Goap.Sensors
             this.AddLocalTargetSensor<PackClosestTarget>((agent, references, target) =>
             {
                 var packBehavior = references.GetCachedComponent<PackBehavior>();
+                if (packBehavior.IsHappyWithPack())
+                    return null;
                 PackBehavior neighbor = packBehavior.FindNearbyNeighbor(excludePack: true);
                 if (neighbor == null || !PackManager.CanJoin(packBehavior, neighbor, excludePack: true))
                     return null;

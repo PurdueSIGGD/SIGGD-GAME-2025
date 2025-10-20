@@ -33,11 +33,11 @@ namespace SIGGD.Mobs.PackScripts
             // validate membership to current pack via distance checking
             if (myPack != null)
             {
-                PackBehavior neighbor = FindNearbyNeighbor(excludePack: false, specificPack: myPack);
+                // PackBehavior neighbor = FindNearbyNeighbor(excludePack: false, specificPack: myPack);
+                PackBehavior neighbor = myPack.GetAlpha();
                 if (neighbor != null)
                 {
-                    float dist = CalculateDistanceVector(neighbor, this).magnitude;
-                    if (dist > Data.LeavePackRange)
+                    if (CheckLeaveRange(neighbor))
                     {
                         TryLeavePack();
                     }

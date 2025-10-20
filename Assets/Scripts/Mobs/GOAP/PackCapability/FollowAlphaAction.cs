@@ -9,16 +9,24 @@ namespace SIGGD.Goap
 {
     public class FollowAlphaAction : GoapActionBase<FollowAlphaAction.Data>
     {
-
+        public override void Start(IMonoAgent agent, Data data)
+        {
+            base.Start(agent, data);
+            data.AlphaTarget = data.PackBehaviour.GetPack().GetAlpha();
+        }
         // This method is called every frame while the action is running
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
-            if (data.PackBehaviour.GetPack().GetAlpha() == null)
-                return ActionRunState.Completed;
-
-            if (data.PackBehaviour.GetRawAlphaPositionDiff().magnitude < data.PackBehaviour.Data.CloseEnoughToAlphaDist)
-                return ActionRunState.Completed;
-            return ActionRunState.Continue;
+            return ActionRunState.Completed;
+        }
+        public override bool IsValid(IActionReceiver agent, Data data)
+        {
+            return data.PackBehaviour.GetPack() != null &&
+                data.AlphaTarget != null &&
+                !data.PackBehaviour.CheckLeaveRange(data.AlphaTarget);
+        }
+        public override void Stop(IMonoAgent agent, Data data)
+        {
         }
 
         // The action class itself must be stateless!
@@ -28,6 +36,7 @@ namespace SIGGD.Goap
             [GetComponent]
             public PackBehavior PackBehaviour { get; set; }
             public ITarget Target { get; set; }
+            public PackBehavior AlphaTarget { get; set; }
         }
     }
 }
