@@ -69,12 +69,15 @@ namespace SIGGD.Mobs.PackScripts
             }
             myPack = newPack;
         }
-        public void TryLeavePack()
+        public bool TryLeavePack()
         {
             if (PackManager.CanLeave(this))
             {
                 packManager.LeavePack(this);
+                myPack = null;
+                return true;
             }
+            return false;
         }
         public void ForceLeavePack()
         {

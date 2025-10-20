@@ -52,7 +52,6 @@ namespace SIGGD.Mobs.PackScripts
             myPack.Unlock();
         }
 
-
         PackData CreatePack(PackBehavior q, PackBehavior p)
         {
             List<PackBehavior> founders = new List<PackBehavior>() { q, p };
@@ -88,15 +87,22 @@ namespace SIGGD.Mobs.PackScripts
             if (mergedMaxSize < 0)
                 throw new ArgumentException("PackManager.MergePacks: Invalid merge sizes, check before merging packs!"); // quit merge on failed merge size
 
+
             // add all members from one pack to the other
             PackData newPack = q.MaxSize() < p.MaxSize() ? q : p;
             PackData otherPack = q.MaxSize() < p.MaxSize() ? p : q;
-            List<PackBehavior> newMembers = otherPack.GetPackMembers();
-            foreach (PackBehavior member in newMembers)
+            while (otherPack.GetPackMembers().Count > 0)
             {
-                newPack.AddToPack(member);
+                newPack.AddToPack(otherPack.RemoveFromPack());
             }
-            otherPack.DisbandPack();
+
+            // List<PackBehavior> allMembers = new List<PackBehavior>(q.GetPackMembers().Concat(p.GetPackMembers()));
+            // PackData combinedPack = CreatePack(allMembers);
+            // packs.Add(combinedPack);
+
+            // q.DisbandPack();
+            // p.DisbandPack();
+
             return newPack;
         }
         /// <summary>

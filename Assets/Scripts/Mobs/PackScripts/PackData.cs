@@ -48,24 +48,60 @@ namespace SIGGD.Mobs.PackScripts
             {
                 packFull = true;
             }
-
+            ValidateSize(size, packMembers.Count);
             UpdateAlpha(newMember);
         }
-
-        public void RemoveFromPack(PackBehavior removedMember)
+        /// <summary>
+        /// Removes a specified member, or the first member of the packMembers list.
+        /// </summary>
+        /// <param name="removedMember"></param>
+        /// <returns>The removed member.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public PackBehavior RemoveFromPack(PackBehavior removedMember = null)
         {
-            packMembers.Remove(removedMember);
+            // check size
+            if (size == 0)
+                throw new ArgumentException("PackData.RemoveFromPack: Pack is empty, can't remove anything!!!");
+
+            // remove target
+            bool result = true;
+            if (removedMember != null)
+            {
+                result = packMembers.Remove(removedMember);
+            }
+            else
+            {
+                removedMember = packMembers[0];
+                packMembers.RemoveAt(0); // must exist
+            }
+
+            if (!result)
+            {
+                throw new ArgumentException("PackData.RemoveFromPack: removedMember not found in packMembers!");
+            }
             size--;
+
+            // update state of pack data
             if (packMembers.Count < MAX_MEMBERS)
             {
                 packFull = false;
             }
-            if (packMembers.Count <= 1)
+            if (packMembers.Count == 0)
             {
                 // disband pack if only one member remaining
                 DisbandPack();
             }
+            ValidateSize(size, packMembers.Count);
             if (packAlpha == null) UpdateAlpha();
+
+            return removedMember;
+        }
+        public void ValidateSize(int size, int packCount)
+        {
+            if (size != packCount)
+            {
+                throw new ArgumentException("PackData.ValidateSize: Pack size " + size + " doesn't match list count " + packCount + ".");
+            }
         }
         public void SetDisbandMethod(Func<PackData, bool> disbandMethod)
         {
@@ -74,7 +110,6 @@ namespace SIGGD.Mobs.PackScripts
         public void DisbandPack()
         {
             disbandMethod(this);
-            packMembers.Clear();
         }
 
         public PackBehavior CalculateAlpha(List<PackBehavior> members)
