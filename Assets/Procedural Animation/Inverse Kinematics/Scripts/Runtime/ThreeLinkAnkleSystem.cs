@@ -1,6 +1,11 @@
 using UnityEngine;
 
 namespace ProceduralAnimation.Runtime {
+    /// <summary>
+    /// Solver for a 3 link arm where the last link is an ankle/wrist that is just offset by taking the target's up vector and multiplying it by -l3.
+    /// This solver does not preserve the roll of the first two links when calculating the last link's orientation.
+    /// The math is almost the same as ThreeLinkV2 so refer to those comments.
+    /// </summary>
     public class ThreeLinkAnkleSystem : MonoBehaviour {
         [Header("Public Variables")]
         public Transform origin;

@@ -1,6 +1,9 @@
 using UnityEngine;
 
 namespace ProceduralAnimation.Runtime {
+    /// <summary>
+    /// 3D Two link solver, math is similar to last block in ThreeLinkV2
+    /// </summary>
     public class TwoLinkSystem : MonoBehaviour {
         [SerializeField] Transform origin;
         [SerializeField] Transform joint1;

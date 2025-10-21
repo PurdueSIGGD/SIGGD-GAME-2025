@@ -26,32 +26,32 @@ namespace ProceduralAnimation.Runtime {
     public class SpiderController : MonoBehaviour {
         [System.Serializable]
         public class Leg {
-            public Transform pivot;
-            public Transform groundTarget;
-            public ThreeLinkV2 leg;
+            public Transform pivot; //  The shoulder transform
+            public Transform groundTarget;  //  The target where the leg's end effector should land
+            public ThreeLinkV2 leg; //  The reference to the three link solver
 
-            [HideInInspector] public bool initialized = false;
+            [HideInInspector] public bool initialized = false;  //  self-explanatory
 
             //  Used for calculating the interpolated positions
-            [HideInInspector] public Vector3 startPosition;
-            [HideInInspector] public Vector3 targetPosition;
-            [HideInInspector] public SecondOrderDynamics positionFilter;
+            [HideInInspector] public Vector3 startPosition; //  The start interpolation position
+            [HideInInspector] public Vector3 targetPosition; // The end interpolation position
+            [HideInInspector] public SecondOrderDynamics positionFilter; // Filter for position calculations
 
-            [HideInInspector] public Vector3 startUp;
-            [HideInInspector] public Vector3 targetUp;
-            [HideInInspector] public SecondOrderDynamics upFilter;
+            [HideInInspector] public Vector3 startUp; //    The start interpolation up vector
+            [HideInInspector] public Vector3 targetUp; //   The end interpolation vector
+            [HideInInspector] public SecondOrderDynamics upFilter; //   Filter for up vector calculations
 
-            [HideInInspector] public float restTimer;
-            [HideInInspector] public float startInterpolationTime;
-            [HideInInspector] public bool isStepping = false;
+            [HideInInspector] public float restTimer; //    Internal timer to check whether to snap back to rest position
+            [HideInInspector] public float startInterpolationTime; //   What time it started moving
+            [HideInInspector] public bool isStepping = false; //    If it is currently being moved by any filters. Used to prevent more than one filter
         }
 
         [FoldoutGroup("Float Parameters"), SerializeField] float distToLegCentre = 0.5f; //   This controls how much higher than the centre of leg heights it is 
         [FoldoutGroup("Float Parameters"), SerializeField] LayerMask groundMask; //   Should be set to anything the spider can walk on
-        [FoldoutGroup("Float Parameters"), SerializeField] float maxRaycastDist = 5f; //  Half is above the ground target and the other half is below
-        [FoldoutGroup("Float Parameters"), SerializeField] float minDelta = 0.2f; //  Refer to Features section in the summary of this class
-        [FoldoutGroup("Float Parameters"), SerializeField] float maxDelta = 2f; //    Max distance before it takes a step
-        [FoldoutGroup("Float Parameters"), SerializeField] float tiltLerpSpeed = 10f; //   The speed that it lerps the tilt
+        [FoldoutGroup("Float Parameters"), SerializeField, Min(0)] float maxRaycastDist = 5f; //  Half is above the ground target and the other half is below
+        [FoldoutGroup("Float Parameters"), SerializeField, Min(0)] float minDelta = 0.2f; //  Refer to Features section in the summary of this class
+        [FoldoutGroup("Float Parameters"), SerializeField, Min(0)] float maxDelta = 2f; //    Max distance before it takes a step
+        [FoldoutGroup("Float Parameters"), SerializeField, Min(0)] float tiltLerpSpeed = 10f; //   The speed that it lerps the tilt
 
         [FoldoutGroup("Body Settings"), SerializeField] Transform body;
         [FoldoutGroup("Body Settings"), SerializeField] Transform legParent;
@@ -61,9 +61,9 @@ namespace ProceduralAnimation.Runtime {
         [FoldoutGroup("Body Settings"), HideIf("@bodyPosSettings == null"), Button("Remove Scriptable Object Reference")] void RemoveBodySettings() { bodyPosSettings = null; }
         [FoldoutGroup("Leg Settings"), SerializeField] Leg[] leftLegs;
         [FoldoutGroup("Leg Settings"), SerializeField] Leg[] rightLegs;
-        [FoldoutGroup("Leg Settings"), SerializeField] float legStepTime = 0.25f; //  How long each step takes
-        [FoldoutGroup("Leg Settings"), SerializeField] float legStepHeight = 1f;  //  How high the step should be
-        [FoldoutGroup("Leg Settings"), SerializeField] float timeBeforeRest = 0.5f; //    How long before moving to rest position (refer to minDelta)
+        [FoldoutGroup("Leg Settings"), Header("Leg Step Settings"), SerializeField] float legStepHeight = 1f;  //  How high the step should be
+        [FoldoutGroup("Leg Settings"), SerializeField, Min(0)] float legStepTime = 0.25f; //  How long each step takes
+        [FoldoutGroup("Leg Settings"), SerializeField, Min(0)] float timeBeforeRest = 0.5f; //    How long before moving to rest position (refer to minDelta)
         //  These are used for calculating the coefficients for the interpolation used in moving the legs
         [Header("Leg Interpolation Settings")]
         [FoldoutGroup("Leg Settings"), SerializeField, InlineEditor(InlineEditorObjectFieldModes.Hidden)] SecondOrderSettings legSettings;
@@ -105,14 +105,13 @@ namespace ProceduralAnimation.Runtime {
             legParent.position = Vector3.zero;
             legParent.rotation = Quaternion.identity;
 
+            if (legsInitialized()) {
+                CalculateBodyPosition();
+                CalculateBodyTilt();
+            }
+
             UpdateLegGroup(leftLegs, 0);
             UpdateLegGroup(rightLegs, 1);
-
-            if (!legsInitialized())
-                return;
-
-            CalculateBodyPosition();
-            CalculateBodyTilt();
         }
 
         /// <summary>
@@ -204,7 +203,7 @@ namespace ProceduralAnimation.Runtime {
                 float height = Mathf.Sin(Mathf.PI * t) * legStepHeight;
 
                 //  Calculate target position
-                Vector3 targetPos = Vector3.Lerp(leg.startPosition, leg.targetPosition, t);
+                Vector3 targetPos = Vector3.Lerp(leg.startPosition, leg.targetPosition, t) + body.up * height;
 
                 //  Calculate the target's up vector
                 Quaternion startRot = Quaternion.LookRotation(leg.leg.target.forward, leg.startUp);
@@ -215,7 +214,7 @@ namespace ProceduralAnimation.Runtime {
                 Vector3 targetUp = rot * Vector3.up;
 
                 //  Apply filters then apply to target transform
-                leg.leg.target.position = leg.positionFilter.Update(Time.deltaTime, targetPos) + body.up * height;
+                leg.leg.target.position = leg.positionFilter.Update(Time.deltaTime, targetPos);
                 leg.leg.target.up = leg.upFilter.Update(Time.deltaTime, targetUp);
 
                 yield return null;

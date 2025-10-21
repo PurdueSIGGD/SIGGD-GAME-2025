@@ -37,8 +37,8 @@ namespace ProceduralAnimation.Runtime.Dynamics {
         /// <param name="r">The initial response of the system, if r is negative, the system will try and anticipate movements. If r is positive, it will overshoot then compensate.</param>
         public void ComputeKValues(float f, float z, float r) {
             //  Prevent the system from going haywire
-            f = Mathf.Min(f, 0.001f);
-            z = Mathf.Min(z, 0.001f);
+            f = Mathf.Max(f, 0.001f);
+            z = Mathf.Max(z, 0.001f);
 
             //  Compute k's
             k1 = z / (Mathf.PI * f);
@@ -69,6 +69,7 @@ namespace ProceduralAnimation.Runtime.Dynamics {
             xp = x;
             y = y + T * yd;
             yd += T * (x + k3 * xd - y - k1 * yd) / k2_stable;
+
             return y;
         }
     }

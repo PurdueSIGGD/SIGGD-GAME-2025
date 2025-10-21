@@ -40,6 +40,10 @@ namespace ProceduralAnimation.Editor {
         }
 
         // The following functions are used for SecondOrderDynamics related Editor scripts
+
+        /// <summary>
+        /// Only used in editors so far, can be moved.
+        /// </summary>
         public class SecondOrderFloatSystem {
             float k1, k2, k3;
             float xp, x0, y, yd;

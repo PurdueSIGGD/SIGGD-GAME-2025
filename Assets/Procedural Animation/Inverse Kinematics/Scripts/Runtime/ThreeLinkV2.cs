@@ -1,35 +1,47 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace ProceduralAnimation.Runtime {
+    /// <summary>
+    /// Solver for a 3 link arm where the last link is an ankle/wrist that is just offset by taking the target's up vector and multiplying it by -l3.
+    /// This solve does preserve the roll of the first two links by rolling the entire system instead.
+    /// </summary>
     public class ThreeLinkV2 : MonoBehaviour {
         [System.Serializable]
         public class Joint {
-            public Transform jointOrigin;
-            public Transform cubeDisplay;
-            public float length;
+            public Transform jointOrigin; //    This is the point that gets rotated
+            public Transform cubeDisplay; //    This one is technically optional (i'll make it optional later)
+            public float length; // The distance between this joint and the next/previous.
         }
 
         [Header("Required Variables")]
-        [SerializeField] Transform origin;
-        public Transform target;
-        public Joint[] joints = new Joint[3];
+        [SerializeField] Transform origin; //  The origin position, the start of the first link
+        public Transform target; // The desired location of the end effector
+        public Joint[] joints = new Joint[3]; //    The list of all joints. The length of this array must be 3 or the script won't work.
         [Header("Tweakable Values")]
-        [SerializeField] float limbThickness = 0.5f;
-        [SerializeField] bool negativeSolution;
-        float l1, l2, l3;
+        [SerializeField] bool useCubesAsLimbs = false; //   Toggle temporary display made by scaled cubes
+        [SerializeField, ShowIf("useCubesAsLimbs")] float limbThickness = 0.5f; // Only used if cubeDisplay is on
+        [SerializeField] bool negativeSolution; //  Whether or not to use the positive solution of the two link IK
+        float l1, l2, l3; //    Used to make the math easier to understand
 
         void Start() {
+            //  Check if there are only 3 joints.
             if (joints.Length != 3) {
                 Debug.LogError("There must be 3 joint classes attached to this script.");
                 gameObject.SetActive(false);
             }
 
+            //  Initialize each joint
             foreach (Joint joint in joints) {
                 joint.jointOrigin.localPosition = Vector3.up * joint.length;
                 joint.cubeDisplay.localPosition = Vector3.up * joint.jointOrigin.localPosition.y / 2f;
-                joint.cubeDisplay.localScale = (Vector3.one - Vector3.up) * limbThickness + Vector3.up * joint.length;
+
+                //  Scale the cube up if useCubesAsLimbs is checked
+                if (useCubesAsLimbs)
+                    joint.cubeDisplay.localScale = (Vector3.one - Vector3.up) * limbThickness + Vector3.up * joint.length;
             }
 
+            //  Made for easier code reading
             l1 = joints[0].length;
             l2 = joints[1].length;
             l3 = joints[2].length;
@@ -40,16 +52,20 @@ namespace ProceduralAnimation.Runtime {
             //  --------------------------------------------------------------------------------
             //                                KNOWN VARIABLES
             //  --------------------------------------------------------------------------------
+            //  Calculate the position of the second joint after the two link IK solver is done, also offset by origin.position
             Vector3 t = target.position - origin.position - target.up * l3;
+
+            //  Calculate distance
             float d = t.magnitude;
 
-            if (d > l1 + l2 || d < Mathf.Abs(l1 - l2)) //   Exit if the target is not in range
+            //   Exit if the target is not in range
+            if (d > l1 + l2 || d < Mathf.Abs(l1 - l2))
                 return;
 
             //  --------------------------------------------------------------------------------
             //                         SHOULDER ANGLE OFFSET CALCULATIONS
             //  --------------------------------------------------------------------------------
-            //  Calculate the angle in order to point origin.right towards target.position
+            //  Calculate the angle in order to point origin.forward towards target.position
             float yAng = -Mathf.Atan2(t.z, t.x);
             origin.rotation = Quaternion.Euler(0, (yAng - Mathf.PI / 2) * Mathf.Rad2Deg, 0);
 
@@ -62,6 +78,7 @@ namespace ProceduralAnimation.Runtime {
                 Vector3.Dot(origin.right, localUp) //   x component calculated using the projection onto the perpendicular vector, origin.forward
             );
 
+            //  Rotate the origin using calculated roll
             origin.Rotate(t.normalized, -(roll - Mathf.PI / 2) * Mathf.Rad2Deg, Space.World);
 
             //  --------------------------------------------------------------------------------
@@ -77,13 +94,16 @@ namespace ProceduralAnimation.Runtime {
             origin.rotation *= Quaternion.Euler((angI + angA - Mathf.PI / 2) * Mathf.Rad2Deg, 0, 0);
             joints[0].jointOrigin.localRotation = Quaternion.Euler(-angB * Mathf.Rad2Deg, 0, 0);
 
+            //  Vector from the end of the second joint to the target's position
             Vector3 v = (target.position - joints[1].jointOrigin.position).normalized;
 
+            //  Calculate the angle to bring the last joint down by to reach target
             float angC = Mathf.Atan2(
                 Vector3.Dot(v, -joints[0].jointOrigin.forward),
                 Vector3.Dot(v, joints[0].jointOrigin.up)
             );
 
+            //  Bring last joint down by angC
             joints[1].jointOrigin.localRotation = Quaternion.Euler(-angC * Mathf.Rad2Deg, 0, 0);
         }
     }

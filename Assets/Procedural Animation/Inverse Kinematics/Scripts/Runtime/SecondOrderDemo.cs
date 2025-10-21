@@ -6,7 +6,7 @@ namespace ProceduralAnimation.Runtime.Dynamics {
         [SerializeField] Transform target;
         [SerializeField, InlineEditor] SecondOrderSettings settings;
         SecondOrderDynamics positionFilter;
-        SecondOrderDynamics rotationFilter;
+        SecondOrderDynamics rotationFilter; //  This one needs work i probably need to make a quaternion version
 
         void Start() {
             positionFilter = new SecondOrderDynamics(settings.f, settings.z, settings.r, transform.position);
