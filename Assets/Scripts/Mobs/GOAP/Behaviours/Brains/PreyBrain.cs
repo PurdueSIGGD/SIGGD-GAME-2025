@@ -14,10 +14,8 @@ namespace SIGGD.Goap.Behaviours
 
         protected override void Awake()
         {
-            this.goap = FindFirstObjectByType<GoapBehaviour>();
-            this.agent = this.GetComponent<AgentBehaviour>();
-            this.provider = this.GetComponent<GoapActionProvider>();
-            this.provider.AgentType = this.goap.GetAgentType(MobIds.prey);
+            base.Awake();
+            SetAgentType(MobIds.prey);
         }
         protected override void Start()
         {
@@ -34,7 +32,7 @@ namespace SIGGD.Goap.Behaviours
         }
         private void DecideGoal()
         {
-            this.provider.RequestGoal<DontStarveGoal>(true);
+            this.provider.RequestGoal<WanderGoal, GrowPackGoal, FollowAlphaGoal, DontStarveGoal>(true);
         }
     }
 

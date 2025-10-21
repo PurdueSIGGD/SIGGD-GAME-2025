@@ -11,16 +11,10 @@ namespace SIGGD.Goap.Behaviours
 {
     public class BuffaloBrain : BaseAgentBrain
     {
-        PackBehavior packBehavior;
-
         protected override void Awake()
         {
-            this.goap = FindFirstObjectByType<GoapBehaviour>();
-            this.agent = this.GetComponent<AgentBehaviour>();
-            this.provider = this.GetComponent<GoapActionProvider>();
-            this.provider.AgentType = this.goap.GetAgentType(MobIds.buffalo);
-
-            this.packBehavior = GetComponent<PackBehavior>();
+            base.Awake();
+            SetAgentType(MobIds.prey);
         }
         protected override void Start()
         {
@@ -38,16 +32,6 @@ namespace SIGGD.Goap.Behaviours
         private void DecideGoal()
         {
             this.provider.RequestGoal<WanderGoal, FollowAlphaGoal, GrowPackGoal>(true);
-
-            // if (!packBehavior.IsHappyWithPack())
-            // {
-            //     this.provider.RequestGoal<GrowPackGoal, WanderGoal>(true);
-            // }
-            // else
-            // {
-            //     this.provider.RequestGoal<WanderGoal, FollowAlphaGoal>(true);
-            // }
-
         }
     }
 
