@@ -13,8 +13,9 @@ namespace SIGGD.Mobs.PackScripts
     public class PackBehavior : MonoBehaviour
     {
         PackManager packManager;
+        BaseAgentBrain myBrain;
         GoapActionProvider provider;
-        public IAgentType agentType { get; private set; } = null;
+        [SerializeField] public string agentType { get; private set; } = "N/A";
         PackData myPack = null;
         [SerializeField] int powerLevel; // dummy value for now since powerLevel implementation is not done yet
         const int MINPOWER = 0;
@@ -24,12 +25,14 @@ namespace SIGGD.Mobs.PackScripts
 
         void Start()
         {
+            myBrain = GetComponent<BaseAgentBrain>();
             packManager = FindFirstObjectByType<PackManager>().GetComponent<PackManager>();
             powerLevel = UnityEngine.Random.Range(MINPOWER, MAXPOWER);
-            agentType = provider.AgentType;
+            agentType = myBrain.GetAgentType();
         }
         void FixedUpdate()
         {
+
             // validate membership to current pack via distance checking
             if (myPack != null)
             {

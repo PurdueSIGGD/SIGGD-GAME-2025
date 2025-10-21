@@ -128,7 +128,7 @@ namespace SIGGD.Mobs.PackScripts
             if (q.GetPack() != null && q.GetPack().IsLocked() ||
                 p.GetPack() != null && p.GetPack().IsLocked())
             {
-                print("CanJoin: Safety Lock Fault");
+                // print("CanJoin: Safety Lock Fault");
                 return false;
             }
 

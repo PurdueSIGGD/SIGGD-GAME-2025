@@ -12,7 +12,7 @@ namespace SIGGD.Mobs.PackScripts
     [Serializable]
     public class PackData
     {
-        public IAgentType agentType { get; private set; }
+        [SerializeField] public string agentType { get; private set; }
         public List<PackBehavior> packMembers { get; private set; } = new List<PackBehavior>();
         [SerializeField] PackBehavior packAlpha = null;
         [SerializeField] int size = 0;

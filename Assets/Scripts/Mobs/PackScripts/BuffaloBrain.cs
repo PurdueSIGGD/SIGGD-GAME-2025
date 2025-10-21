@@ -14,7 +14,7 @@ namespace SIGGD.Goap.Behaviours
         protected override void Awake()
         {
             base.Awake();
-            SetAgentType(MobIds.prey);
+            SetAgentType(MobIds.buffalo);
         }
         protected override void Start()
         {
