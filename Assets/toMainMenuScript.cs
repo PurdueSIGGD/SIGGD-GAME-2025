@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class toMainMenuScript : MonoBehaviour
 {
@@ -12,5 +13,9 @@ public class toMainMenuScript : MonoBehaviour
     void Update()
     {
         
+    }
+    public void loadMainMenu()
+    {
+        SceneManager.LoadScene("Main Menu");
     }
 }
