@@ -25,8 +25,6 @@ public class PlayerStateMachine : MonoBehaviour
     [Header("Parameter SOs")]
     public MoveData moveData; // ScriptableObject containing movement parameters.
     
-    public ItemInfo defaultItem; // The default item the player starts with.
-    
     #endregion
     
     #region Check Attributes
@@ -84,15 +82,9 @@ public class PlayerStateMachine : MonoBehaviour
     {
         PlayerInput.Instance.OnJump += OnJumpAction;
     }
-
-    private void OnEnable()
-    {
-        PlayerInput.Instance.OnAttack += TriggerAttack;
-    }
     
     private void OnDisable()
     {
-        PlayerInput.Instance.OnAttack -= TriggerAttack;
         PlayerInput.Instance.OnJump -= OnJumpAction;
     }
 
@@ -149,18 +141,6 @@ public class PlayerStateMachine : MonoBehaviour
 
     #endregion
     
-    #region Attack Methods
-
-    public void TriggerAttack()
-    {
-        animator.SetBool(Animator.StringToHash("isAttacking"), true);
-    }
-    public ItemInfo GetEquippedItem()
-    {
-        return defaultItem;
-    }
-    
-    #endregion
     
     // This region contains public methods used to move the player. This can be refactored into 
     // each individual state if this gets too cumbersome, but I am leaving it here for now because multiple
