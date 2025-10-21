@@ -97,7 +97,7 @@ public class Inventory : MonoBehaviour
         }
         if (inventory[index] == null)
         {
-            Debug.Log("null");
+            //Debug.Log("null");
             inventory[index] = slot;
         }
         inventory[index].UpdateSlot(slot);

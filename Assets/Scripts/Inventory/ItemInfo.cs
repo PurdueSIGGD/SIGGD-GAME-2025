@@ -14,6 +14,7 @@ public class ItemInfo : ScriptableObject
         Weapon,
         Resource,
         Container,
+        Trap,
         Empty
     };
 
@@ -21,6 +22,7 @@ public class ItemInfo : ScriptableObject
         Spear,
         Rock,
         RockSpear,
+        StunTrap,
         Empty
     };
 
