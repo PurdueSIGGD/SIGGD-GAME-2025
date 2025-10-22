@@ -148,6 +148,7 @@ namespace ProceduralAnimation.Runtime {
                 //  Calculate t value to interpolate between min and max values for velocity based variables (t is the y value of a sigmoid function)
                 float exp = (theoreticalMaxVelocity / 2 - vMag) / theoreticalMaxVelocity * 5f;
                 float t = 1 - Mathf.Exp(exp) / (Mathf.Exp(exp) + 1);
+                //float t = Mathf.Clamp01(vMag / theoreticalMaxVelocity);
 
                 //  Dynamically change step time, lead distance and lean angle
                 stepTime = Mathf.Lerp(legStepTime.y, legStepTime.x, t); //  Swapped the order because faster spider means lower step time
