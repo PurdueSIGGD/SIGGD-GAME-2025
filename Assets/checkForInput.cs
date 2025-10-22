@@ -2,15 +2,17 @@ using UnityEngine;
 
 public class checkForInput : MonoBehaviour
 {
-    public GameObject myGameObject;
-    public GameObject myGameObject2;
-    public bool isEnabled;
+    public GameObject buttonObject;
+    public GameObject fadedScreen;
+    private bool isEnabled;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
    
     void Start()
     {
-        myGameObject.SetActive(false);
-        myGameObject2.SetActive(false);
+        buttonObject = GameObject.FindWithTag("QuitButton");
+        fadedScreen = GameObject.FindWithTag("FadedScreen");
+        buttonObject.SetActive(false);
+        fadedScreen.SetActive(false);
         isEnabled = false;
     }
 
@@ -20,8 +22,8 @@ public class checkForInput : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             isEnabled = !isEnabled;
-            myGameObject.SetActive(isEnabled);
-            myGameObject2.SetActive(isEnabled);
+            buttonObject.SetActive(isEnabled);
+            fadedScreen.SetActive(isEnabled);
         }
     }
 }

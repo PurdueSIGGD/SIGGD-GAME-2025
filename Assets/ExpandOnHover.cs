@@ -1,15 +1,21 @@
 using UnityEngine;
+using TMPro;
 
 public class ExpandOnHover : MonoBehaviour
 {
     public Vector2 expandDimensions = new Vector2(200,75);
     private Vector2 initialDimensions;
     private Canvas canvas;
+    private float fontSizeIncrement = 4;
+    private float originalFontSize;
+    private TextMeshProUGUI tmpText;
     RectTransform rectTransform;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
+        tmpText = GetComponentInChildren<TextMeshProUGUI>();
+        originalFontSize = tmpText.fontSize;
         initialDimensions = rectTransform.sizeDelta;
         canvas = GetComponentInParent<Canvas>();
     }
@@ -34,9 +40,12 @@ public class ExpandOnHover : MonoBehaviour
     public void Expand()
     {
         rectTransform.sizeDelta = expandDimensions;
+        tmpText.fontSize = originalFontSize + fontSizeIncrement;
+
     }
     public void Contract()
     {
         rectTransform.sizeDelta = initialDimensions;
+        tmpText.fontSize = originalFontSize;
     }
 }
