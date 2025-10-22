@@ -14,16 +14,17 @@ namespace SIGGD.Goap.Capabilities
 
             builder.AddGoal<DontStarveGoal>()
                 .AddCondition<Hunger>(Comparison.SmallerThanOrEqual, 0)
-                .SetBaseCost(100);
+                .SetBaseCost(5);
             builder.AddAction<EatAction>()
                 .AddEffect<Hunger>(EffectType.Decrease)
-                .SetTarget<HungerTarget>()
+                .AddCondition<FoodCount>(Comparison.GreaterThanOrEqual, 1)
+                .SetTarget<ClosestFood>()
                 .SetBaseCost(10);
-
-            builder.AddWorldSensor<HungerSensor>()
-                .SetKey<Hunger>();
-            builder.AddTargetSensor<HungerTargetSensor>()
-                .SetTarget<HungerTarget>();
+            builder.AddMultiSensor<FoodSensor>();
+            //builder.AddWorldSensor<HungerSensor>()
+            //    .SetKey<Hunger>();
+           // builder.AddTargetSensor<HungerTargetSensor>()
+            //    .SetTarget<HungerTarget>();
 
             return builder.Build();
         }

@@ -1,7 +1,8 @@
 using CrashKonijn.Agent.Core;
+using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
-using System.Collections.Generic;
 using SIGGD.Goap.Behaviours;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SIGGD.Goap.Sensors
@@ -9,22 +10,25 @@ namespace SIGGD.Goap.Sensors
     public class ClosestPreyTargetSensor : LocalTargetSensorBase
     {
 
-        private FoodBehaviour[] food;
+        private PreyBehaviour[] prey;
+        
         public override void Created()
         {
         }
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
-            var closestFood = Closest(food, agent.Transform.position);
-            if (closestFood == null)
+            var AgentHuntBehaviour = references.GetCachedComponent<AgentHuntBehaviour>();
+            if (AgentHuntBehaviour.currentTargetOfHunt != null && AgentHuntBehaviour.currentTargetOfHunt.activeInHierarchy)
+                return new TransformTarget(AgentHuntBehaviour.currentTargetOfHunt.transform);
+            var closestPrey = Closest(prey, agent.Transform.position);
+            if (closestPrey == null)
                 return null;
 
-            // If the target is a transform target, set the target to the closest pear
             if (existingTarget is TransformTarget transformTarget)
-                return transformTarget.SetTransform(closestFood.transform);
-
-            return new TransformTarget(closestFood.transform);
+                return transformTarget.SetTransform(closestPrey.transform);
+            AgentHuntBehaviour.SetHuntTarget(closestPrey.gameObject);
+            return new TransformTarget(closestPrey.transform);
         }
         private T Closest<T>(IEnumerable<T> list, Vector3 position)
             where T : MonoBehaviour
@@ -47,7 +51,7 @@ namespace SIGGD.Goap.Sensors
         }
         public override void Update()
         {
-            this.food = Object.FindObjectsByType<FoodBehaviour>(FindObjectsSortMode.None);
+            this.prey = Object.FindObjectsByType<PreyBehaviour>(FindObjectsSortMode.None);
 
         }
     }

@@ -9,6 +9,7 @@ namespace SIGGD.Goap.Sensors
     {
         public override void Created()
         {
+
         }
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)

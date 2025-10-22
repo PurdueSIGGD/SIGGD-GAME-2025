@@ -15,8 +15,12 @@ public class FieldOfView : MonoBehaviour
     public float angleRange;
     public bool canSeeTarget = true;
     public GameObject targetRef;
+    public static event Action<Transform> OnPlayerDetected;
     void Start()
     {
+        targetMask = LayerMask.GetMask("Player");
+        targetRef = null;
+        canSeeTarget = false;
         StartCoroutine(FOVRoutine());
 
     }
@@ -36,30 +40,27 @@ public class FieldOfView : MonoBehaviour
     }
     private void FOVCheck()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, viewRadius);
-        if (hitColliders.Length > 0 )
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
+        canSeeTarget = false;
+        targetRef = null;
+        if (hitColliders.Length < 1) return;
+        foreach (Collider collider in hitColliders)
         {
-            Transform target = hitColliders[0].transform;
-            Vector3 directionToTarget = (target.position - transform.position).normalized;
-            if (Vector3.Angle(transform.forward, directionToTarget) < angleRange / 2)
             {
-                float distanceToTarget = Vector3.Distance(transform.position, target.position);
-                if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
+                Transform target = collider.transform;
+                Vector3 directionToTarget = (target.position - transform.position).normalized;
+                if (Vector3.Angle(transform.forward, directionToTarget) < angleRange / 2)
                 {
-                    canSeeTarget = true;
-                } else
-                {
-                    canSeeTarget = false;
+                    float distanceToTarget = Vector3.Distance(transform.position, target.position);
+                    if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
+                    {
+                        OnPlayerDetected?.Invoke(collider.gameObject.transform);
+                        canSeeTarget = true;
+                        targetRef = collider.gameObject;
+                        break;
+                    }
                 }
-            } else
-            {
-                canSeeTarget = false;
             }
         }
-        if (canSeeTarget)
-        {
-            canSeeTarget = false;
-        }
-
     }
 }

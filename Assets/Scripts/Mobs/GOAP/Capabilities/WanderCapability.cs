@@ -13,10 +13,11 @@ namespace SIGGD.Goap.Capabilities
 
             builder.AddGoal<WanderGoal>()
                 .AddCondition<IsWandering>(Comparison.GreaterThanOrEqual, 1)
-                .SetBaseCost(30);
+                .SetBaseCost(60);
             builder.AddAction<WanderAction>()
                 .AddEffect<IsWandering>(EffectType.Increase)
-                .SetTarget<WanderTarget>();
+                .SetTarget<WanderTarget>()
+                .SetStoppingDistance(1);
             builder.AddTargetSensor<WanderTargetSensor>()
                 .SetTarget<WanderTarget>();
             return builder.Build();

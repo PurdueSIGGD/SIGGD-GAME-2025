@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace SIGGD.Goap.Config
 {
-    [CreateAssetMenu(fileName = "HungerConfigSO", menuName = "Scriptable Objects/HungerConfigSO")]
-    public class HungerConfigSO : ScriptableObject
+    [CreateAssetMenu(fileName = "HungerConfigSO", menuName = "Scriptable Objects/BaseStateConfigSO")]
+    public class BaseStatConfig : ScriptableObject
     {
         [Header("Hunger Settings")]
         public float minStartingHunger = 20f;
@@ -16,6 +16,9 @@ namespace SIGGD.Goap.Config
         public float damageTickRate = 5f;
         [Header("Hunting Settings")]
         public int hierarchialRank = 5;
+        public LayerMask playerLayer;
+        [Header("Stamina Settings")]
+        public float maxStamina = 100f;
+        public float staminaGainRate = 2f;
     }
-
 }

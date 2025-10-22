@@ -16,7 +16,7 @@ public class AgentSpawner : MonoBehaviour
     }
     void Start()
     {
-        var agent = Instantiate(this.agentPrefab, new Vector3(10, 10, 10), new Quaternion(10, 10, 10, 10)).GetComponent<GoapActionProvider>();
+        var agent = Instantiate(this.agentPrefab, new Vector3(10, -1, 10), new Quaternion(10, 10, 10, 10)).GetComponent<GoapActionProvider>();
 
         agent.gameObject.SetActive(true);
     }

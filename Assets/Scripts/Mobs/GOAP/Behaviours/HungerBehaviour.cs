@@ -15,8 +15,10 @@ namespace SIGGD.Goap.Behaviours
         [field:SerializeField]
         public float hunger { get; set; }
 
+        public int foodCount = 0;
+
         [SerializeField]
-        private HungerConfigSO HungerConfig;
+        private BaseStatConfig HungerConfig;
 
         private bool damageTickActive = false;
 

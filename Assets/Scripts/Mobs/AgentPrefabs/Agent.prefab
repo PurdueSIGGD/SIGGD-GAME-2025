@@ -18,7 +18,10 @@ GameObject:
   - component: {fileID: 5879672453355403147}
   - component: {fileID: 4906383535191772310}
   - component: {fileID: 3961905274383774964}
-  m_Layer: 0
+  - component: {fileID: 2486343355560632045}
+  - component: {fileID: 7974380799499938315}
+  - component: {fileID: 7202118053845586846}
+  m_Layer: 9
   m_Name: Agent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -160,6 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbf235ea778bbce4288d24c623bdc81f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0
 --- !u!114 &5879672453355403147
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,7 +189,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <hunger>k__BackingField: 40
-  HungerConfig: {fileID: 11400000, guid: ebcf195647a11254b9dd41b74b056afc, type: 2}
+  foodCount: 0
+  HungerConfig: {fileID: 11400000, guid: 1c2a12c7ad63f074d86a890f7c6116e6, type: 2}
   HealthManager: {fileID: 3961905274383774964}
 --- !u!114 &3961905274383774964
 MonoBehaviour:
@@ -200,3 +205,55 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 30
+--- !u!95 &2486343355560632045
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187435234258320091}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 570560b50fd47804da49dfd5309f1620, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7974380799499938315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187435234258320091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca5df349d0378454d81f17b8a94acacd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  draw: 0
+--- !u!114 &7202118053845586846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187435234258320091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1690c74f17bc54c9fcca3ae621173e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <stamina>k__BackingField: 0
+  statConfig: {fileID: 11400000, guid: 1c2a12c7ad63f074d86a890f7c6116e6, type: 2}

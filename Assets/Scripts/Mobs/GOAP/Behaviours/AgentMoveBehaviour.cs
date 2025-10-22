@@ -8,12 +8,19 @@ namespace SIGGD.Goap.Behaviours
     public class AgentMoveBehaviour : MonoBehaviour
     {
         private AgentBehaviour agent;
+        private AgentSprintBehaviour sprint;
         private ITarget currentTarget;
         private bool shouldMove;
+        private bool sprintAllowed;
+        public float speed;
+
 
         private void Awake()
         {
             this.agent = this.GetComponent<AgentBehaviour>();
+            sprint = GetComponent<AgentSprintBehaviour>();
+            sprintAllowed = false;
+            speed = 1f;
         }
 
         private void OnEnable()
@@ -22,6 +29,7 @@ namespace SIGGD.Goap.Behaviours
             this.agent.Events.OnTargetChanged += this.OnTargetChanged;
             this.agent.Events.OnTargetNotInRange += this.TargetNotInRange;
             this.agent.Events.OnTargetLost += this.TargetLost;
+
         }
 
         private void OnDisable()
@@ -53,6 +61,7 @@ namespace SIGGD.Goap.Behaviours
         {
             this.shouldMove = true;
         }
+        
 
         public void Update()
         {
@@ -64,12 +73,20 @@ namespace SIGGD.Goap.Behaviours
 
             if (this.currentTarget == null)
                 return;
-
-            //Add Navmesh
-            
-            this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.currentTarget.Position.x, this.transform.position.y, this.currentTarget.Position.z), Time.deltaTime);
+            speed = 1f;
+            if (sprintAllowed)
+            {
+                if (sprint.stamina > 0)
+                {
+                    speed = 2f;
+                    sprint.stamina -= 8 * Time.deltaTime;
+                }
+            }
+            this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.currentTarget.Position.x, this.transform.position.y, this.currentTarget.Position.z), Time.deltaTime * speed);
+            this.transform.LookAt(currentTarget.Position);
         }
 
+        
         private void OnDrawGizmos()
         {
             if (this.currentTarget == null)
@@ -77,8 +94,7 @@ namespace SIGGD.Goap.Behaviours
 
             Gizmos.DrawLine(this.transform.position, this.currentTarget.Position);
         }
-
+        public void 
     }
-
 }
 

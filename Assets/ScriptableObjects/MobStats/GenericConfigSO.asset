@@ -12,11 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07017870e6b6bf343829b1be4966c4b1, type: 3}
   m_Name: GenericConfigSO
   m_EditorClassIdentifier: 
-  minStartingHunger: 20
-  maxStartingHunger: 100
+  minStartingHunger: -50
+  maxStartingHunger: -100
   maxHunger: 300
   minHunger: -400
   damage: 2
-  hungerGainRate: 5
-  damageThreshold: 50
-  damageTickRate: 5
+  hungerGainRate: 2
+  damageThreshold: 150
+  damageTickRate: 25
+  hierarchialRank: 5
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  maxStamina: 100
+  staminaGainRate: 2

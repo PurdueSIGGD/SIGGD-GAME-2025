@@ -6,7 +6,6 @@ public class FoodBehaviour : MonoBehaviour
     {
         
     }
-
     void Update()
     {
         

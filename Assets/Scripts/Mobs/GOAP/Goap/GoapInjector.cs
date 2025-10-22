@@ -7,7 +7,7 @@ namespace SIGGD.Goap.Interfaces
 {
     public class GoapInjector : MonoBehaviour, IGoapInjector
     {
-        public HungerConfigSO HungerConfigSO;
+        public BaseStatConfig BaseStatConfig;
         public void Inject(IAction action)
         {
             if (action is IInjectable injectable)

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AttackBehaviour : MonoBehaviour
+public class PreyBehaviour : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
