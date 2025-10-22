@@ -84,7 +84,7 @@ public class Inventory : MonoBehaviour
         else Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = enabled;
         PlayerInput.Instance.DebugToggleInput(enabled);
-        Debug.LogWarning("This ran!");
+        Debug.LogWarning("Opening player inventory!");
     }
 
     private Slot GetHotbarSlot(int index)
