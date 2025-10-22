@@ -161,7 +161,7 @@ public class PlayerStateMachine : MonoBehaviour
         Vector3 direction = moveInput.x * cam.right.SetY(0).normalized + 
                                moveInput.y * cam.forward.SetY(0).normalized;
         
-        Debug.Log(direction);
+        // Debug.Log(direction);
         
         MoveInDirectionWithSpeed(direction, speed, moveData.movementInterpolation);
     }
@@ -200,7 +200,7 @@ public class PlayerStateMachine : MonoBehaviour
 		
         Vector3 movementForce = speedDiff * accelRate;
         
-        Debug.Log(movementForce);
+        // Debug.Log(movementForce);
 		
         playerID.rb.AddForce(movementForce, ForceMode.Acceleration);
     }
