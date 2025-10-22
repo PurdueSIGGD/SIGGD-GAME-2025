@@ -1602,10 +1602,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   maxRaycastDist: 9
-  minDelta: 0.2
+  minDelta: 0.25
   maxDelta: 2
   bodyTiltLerpSpeed: 10
-  velocitySmoothingLerpSpeed: 10
+  velocitySmoothSpeed: 10
   body: {fileID: 1534219952}
   legParent: {fileID: 1637190343}
   bodyPosSettings: {fileID: 11400000, guid: 5362e28ead9778649a519f561d39393e, type: 2}
@@ -1622,6 +1622,7 @@ MonoBehaviour:
     startInterpolationTime: 0
     isStepping: 0
     rawUp: {x: 0, y: 0, z: 0}
+    skewRotation: {x: 0, y: 0, z: 0, w: 0}
   - pivot: {fileID: 147894239}
     groundTarget: {fileID: 749643152}
     leg: {fileID: 916215210}
@@ -1634,6 +1635,7 @@ MonoBehaviour:
     startInterpolationTime: 0
     isStepping: 0
     rawUp: {x: 0, y: 0, z: 0}
+    skewRotation: {x: 0, y: 0, z: 0, w: 0}
   rightLegs:
   - pivot: {fileID: 116327491}
     groundTarget: {fileID: 453281677}
@@ -1647,6 +1649,7 @@ MonoBehaviour:
     startInterpolationTime: 0
     isStepping: 0
     rawUp: {x: 0, y: 0, z: 0}
+    skewRotation: {x: 0, y: 0, z: 0, w: 0}
   - pivot: {fileID: 337613558}
     groundTarget: {fileID: 1725205964}
     leg: {fileID: 1323467325}
@@ -1659,10 +1662,11 @@ MonoBehaviour:
     startInterpolationTime: 0
     isStepping: 0
     rawUp: {x: 0, y: 0, z: 0}
+    skewRotation: {x: 0, y: 0, z: 0, w: 0}
   legStepHeight: 1
   legStepTime: {x: 0.05, y: 0.25}
   maxLeanAngle: {x: 30, y: 45}
-  tiltBlendFactor: 0.5
+  legRotSmoothSpeed: 10
   maxLeadDist: 3
   theoreticalMaxVelocity: 25
   timeBeforeRest: 0.5

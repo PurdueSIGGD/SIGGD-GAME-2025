@@ -1,6 +1,8 @@
 using ProceduralAnimation.Runtime.Dynamics;
 using Sirenix.OdinInspector;
 using System.Collections;
+using Unity.Profiling;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 
 namespace ProceduralAnimation.Runtime {
@@ -46,15 +48,18 @@ namespace ProceduralAnimation.Runtime {
             [HideInInspector] public bool isStepping = false; //    If it is currently being moved by any filters. Used to prevent more than one filter
 
             [HideInInspector] public Vector3 rawUp; //  Used for distance based rotation
+
+            //  Distance based rotation is always applied but velocity is only applied when moving
+            [HideInInspector] public Quaternion skewRotation;
         }
 
         [FoldoutGroup("Float Parameters"), SerializeField] float distToLegCentre = 0.5f; //   This controls how much higher than the centre of leg heights it is 
         [FoldoutGroup("Float Parameters"), SerializeField] LayerMask groundMask; //   Should be set to anything the spider can walk on
         [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float maxRaycastDist = 5f; //  Half is above the ground target and the other half is below
-        [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float minDelta = 0.2f; //  Refer to Features section in the summary of this class
+        [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float minDelta = 0.25f; //  Refer to Features section in the summary of this class
         [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float maxDelta = 2f; //    Max distance before it takes a step
         [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float bodyTiltLerpSpeed = 10f; //   The speed that it lerps the tilt
-        [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float velocitySmoothingLerpSpeed = 10f; //   The speed that it lerps the tilt
+        [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float velocitySmoothSpeed = 10f; //   The speed that it lerps the tilt
 
         [FoldoutGroup("Body Settings"), SerializeField] Transform body;
         [FoldoutGroup("Body Settings"), SerializeField] Transform legParent;
@@ -71,7 +76,9 @@ namespace ProceduralAnimation.Runtime {
         [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 2, true)] Vector2 legStepTime = new Vector2(0.05f, 0.25f); //  How long each step takes
 
         [Header("Leg Lean Settings")]
-        [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 90, true)] Vector2 maxLeanAngle = new Vector2(30f, 45f); //  How far to offset the hind legs forwards and front legs backwards
+        [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 90, true)] Vector2 maxFrontLegsLeanAngle = new Vector2(30f, 45f); //  How much to rotate the legs closest to the velocity's direction forward
+        [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 90, true)] Vector2 maxHindLegsLeanAngle = new Vector2(15f, 30f); //  How much to rotate the legs furthest to the velocity's direction forward
+        [FoldoutGroup("Leg Settings"), SerializeField] float legRotSmoothSpeed = 10f;
 
         [Header("Other Leg Settings")]
         [FoldoutGroup("Leg Settings"), SerializeField] float maxLeadDist = 3f; //  How far to offset the hind legs forwards and front legs backwards
@@ -100,7 +107,9 @@ namespace ProceduralAnimation.Runtime {
         [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] int stepsCompleted = 0; // Number of steps completed by the group
         [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] bool groupOneMoving; //    If group one is moving or not. Group one is arbitrary up to the setup.
         [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] float vMag; // Magnitude of velocity
-        [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] float stepTime, leadDist, leanAngle; //   The interpolated step time, lead distance and lean angle
+        [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] float stepTime, leadDist; //   The interpolated step time and lead distance
+        [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] float frontLeanAngle, hindLeanAngle; //   The interpolated front lean angle and hind lean angle
+        [ShowInInspector] float test;
 
         SecondOrderDynamics positionFilter; //  Filter for interpolating the body's position
 
@@ -133,17 +142,19 @@ namespace ProceduralAnimation.Runtime {
                 rawVelocity = Vector3.ProjectOnPlane((body.position - prevBodyPos) / Time.deltaTime, body.up);
 
                 //  Smooth the velocity so small movements don't set velocity insanely high for no reason
-                velocity = Vector3.Lerp(velocity, rawVelocity, Time.deltaTime * velocitySmoothingLerpSpeed);
+                velocity = Vector3.Lerp(velocity, rawVelocity, Time.deltaTime * velocitySmoothSpeed);
                 vMag = velocity.magnitude;
 
                 //  Calculate t value to interpolate between min and max values for velocity based variables (t is the y value of a sigmoid function)
-                float t = 1 - Mathf.Exp(theoreticalMaxVelocity / 2 - vMag) / (Mathf.Exp(theoreticalMaxVelocity / 2 - vMag) + 1);
+                float exp = (theoreticalMaxVelocity / 2 - vMag) / theoreticalMaxVelocity * 5f;
+                float t = 1 - Mathf.Exp(exp) / (Mathf.Exp(exp) + 1);
 
                 //  Dynamically change step time, lead distance and lean angle
                 stepTime = Mathf.Lerp(legStepTime.y, legStepTime.x, t); //  Swapped the order because faster spider means lower step time
 
                 leadDist = Mathf.Lerp(0, maxLeadDist, t);
-                leanAngle = Mathf.Lerp(maxLeanAngle.x, maxLeanAngle.y, t);
+                frontLeanAngle = Mathf.Lerp(maxFrontLegsLeanAngle.x, maxFrontLegsLeanAngle.y, t);
+                hindLeanAngle = Mathf.Lerp(maxHindLegsLeanAngle.x, maxHindLegsLeanAngle.y, t);
             }
 
             UpdateLegGroup(leftLegs, 0);
@@ -173,27 +184,37 @@ namespace ProceduralAnimation.Runtime {
                 //  Calculate distance from raycast hit point and target's position
                 float dist = Vector3.Distance(hit.point, leg.leg.target.position);
 
-                Vector3 distanceVector = Vector3.ProjectOnPlane(body.position - leg.leg.target.position, body.up).normalized; //    Vector to rotate distanceLean around
-                Vector3 orthoVelocity = Vector3.Cross(velocity.normalized, body.up).normalized; //  Vector to rotate velocityLean around
+                if (leg.initialized) {
+                    //  Vector to rotate velocityLean around and used to calculate the dot product to make sure distance based rotation isn't being weird
+                    Vector3 orthoVelocity = Vector3.Cross(velocity.normalized, body.up).normalized;
 
-                int sign = i % 2 == offset ? -1 : 1; // Sign depending on what leg it is (same on diagonal legs)
-                float velocityLean = sign * leanAngle * vMag / theoreticalMaxVelocity; // Lean angle which goes higher the faster the body is moving
+                    //  Get max lean angle by interpolating between the max front and max hind leg lean angle
+                    float dot = Vector3.Dot(velocity.normalized, Vector3.ProjectOnPlane(leg.leg.target.position - leg.pivot.position, body.up).normalized);
 
-                //  Make Quaternion
-                Quaternion velocityBasedRot = Quaternion.AngleAxis(velocityLean, orthoVelocity);
+                    //  Lerp using how parallel the velocity is with the vector given from the target to the pivot
+                    float maxLeanAngle = Mathf.Lerp(hindLeanAngle, frontLeanAngle, (dot + 1) / 2);
 
-                //  Apply rotation
-                leg.leg.target.up = velocityBasedRot * leg.rawUp;
+                    //  Lean angle calculated using distance
+                    float distanceLean = -maxLeanAngle * Mathf.Clamp01(dist / maxDelta);
 
-                // Debug Controls
-                if (showDebugTools) {
-                    Debug.DrawRay(leg.groundTarget.position + leg.groundTarget.up * maxRaycastDist / 2, -leg.groundTarget.up * maxRaycastDist, Color.cyan);
+                    //  Make Quaternion
+                    leg.skewRotation = Quaternion.Slerp(leg.skewRotation, Quaternion.AngleAxis(distanceLean, orthoVelocity), Time.deltaTime * legRotSmoothSpeed);
 
-                    //  Rotation vectors
-                    Debug.DrawRay(leg.leg.target.position, distanceVector, Color.magenta);
-                    Debug.DrawRay(leg.leg.target.position, body.up, Color.green);
-                    Debug.DrawRay(leg.leg.target.position, orthoVelocity, Color.red);
-                    Debug.DrawRay(leg.leg.target.position, velocity.normalized, Color.blue);
+                    //  Apply rotation
+                    leg.leg.target.up = leg.skewRotation * leg.rawUp;
+
+                    // Debug Controls
+                    if (showDebugTools) {
+                        Debug.DrawRay(leg.groundTarget.position + leg.groundTarget.up * maxRaycastDist / 2, -leg.groundTarget.up * maxRaycastDist, Color.cyan);
+
+                        //  Ground Target Vector
+                        Debug.DrawRay(groundPos, hit.normal);
+
+                        //  Rotation vectors
+                        Debug.DrawRay(leg.leg.target.position, body.up, Color.green);
+                        Debug.DrawRay(leg.leg.target.position, orthoVelocity, Color.red);
+                        Debug.DrawRay(leg.leg.target.position, velocity.normalized, Color.blue);
+                    }
                 }
 
                 if (leg.isStepping || (groupOneMoving != (i % 2 == offset) && leg.initialized))
@@ -226,6 +247,9 @@ namespace ProceduralAnimation.Runtime {
                 //  Create SecondOrderDynamics classes
                 leg.positionFilter = new SecondOrderDynamics(legSettings, leg.leg.target.position);
                 leg.upFilter = new SecondOrderDynamics(legSettings, leg.leg.target.up);
+
+                //  Zero out Quaternions
+                leg.skewRotation = Quaternion.identity;
 
                 leg.initialized = true;
                 return;
