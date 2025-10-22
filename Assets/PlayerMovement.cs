@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FMOD.Studio;
 using FMOD;
+using FMODUnity;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
@@ -22,7 +23,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.instance.footsteps);
+        //footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.getEvent("footsteps"));
+
+        FMODEvents.instance.AssignEventTo("footsteps", (instance) =>
+        {
+            footsteps = instance;
+            UnityEngine.Debug.Log("Footsteps assigned. Valid? " + footsteps.isValid());
+        });
 
         //music.start();
 
@@ -53,23 +60,35 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateSound()
     {
-        if (rb.linearVelocity.magnitude != 0)
+        if (footsteps.isValid()) // make sure the instance exists
         {
-            // NOTE: 3d attributes need to be set in order to play instances in 3d
-            ATTRIBUTES_3D attr = AudioManager.instance.configAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, Vector3.up);
-            footsteps.set3DAttributes(attr);
+            Vector3 velocity = rb.linearVelocity;
 
-            PLAYBACK_STATE playbackState;
-            footsteps.getPlaybackState(out playbackState);
-
-            if (playbackState.Equals(PLAYBACK_STATE.STOPPED))
+            if (velocity.magnitude > 0.1f) // moving
             {
-                footsteps.start();
+                // Update 3D attributes
+                ATTRIBUTES_3D attr = RuntimeUtils.To3DAttributes(gameObject);
+                footsteps.set3DAttributes(attr);
+
+                // Check if it's already playing
+                PLAYBACK_STATE state;
+                footsteps.getPlaybackState(out state);
+
+                if (state != PLAYBACK_STATE.PLAYING)
+                {
+                    footsteps.start();
+                }
             }
-        }
-        else
-        {
-            footsteps.stop(STOP_MODE.ALLOWFADEOUT);
+            else // stopped
+            {
+                PLAYBACK_STATE state;
+                footsteps.getPlaybackState(out state);
+
+                if (state == PLAYBACK_STATE.PLAYING)
+                {
+                    footsteps.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                }
+            }
         }
     }
 }
