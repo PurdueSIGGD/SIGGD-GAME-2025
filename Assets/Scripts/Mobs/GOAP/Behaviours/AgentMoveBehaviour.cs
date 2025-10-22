@@ -2,11 +2,13 @@ using CrashKonijn.Agent.Core;
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace SIGGD.Goap.Behaviours
 {
     public class AgentMoveBehaviour : MonoBehaviour
     {
+        
         private AgentBehaviour agent;
         private AgentSprintBehaviour sprint;
         private ITarget currentTarget;
@@ -14,6 +16,11 @@ namespace SIGGD.Goap.Behaviours
         private bool sprintAllowed;
         public float speed;
 
+
+        public NavMeshAgent navMeshAgent;
+        
+
+        private float speed = 500f;
 
         private void Awake()
         {
@@ -84,6 +91,9 @@ namespace SIGGD.Goap.Behaviours
             }
             this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.currentTarget.Position.x, this.transform.position.y, this.currentTarget.Position.z), Time.deltaTime * speed);
             this.transform.LookAt(currentTarget.Position);
+
+            // Move the agent along towards their goal position
+            Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * speed);
         }
 
         
@@ -97,4 +107,3 @@ namespace SIGGD.Goap.Behaviours
         public void 
     }
 }
-

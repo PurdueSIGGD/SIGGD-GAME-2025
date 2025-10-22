@@ -25,6 +25,7 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override void Start(IMonoAgent agent, Data data)
         {
+            data.Timer = Random.Range(0.5f, 1.5f);
         }
 
         // This method is called once before the action is performed
@@ -37,7 +38,12 @@ namespace SIGGD.Goap
         // This method is required
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
-            return ActionRunState.Completed;
+            if (data.Timer <= 0f)
+                return ActionRunState.Completed;
+
+            data.Timer -= context.DeltaTime;
+
+            return ActionRunState.Continue;
         }
 
         // This method is called when the action is completed
@@ -63,6 +69,7 @@ namespace SIGGD.Goap
         public class Data : IActionData
         {
             public ITarget Target { get; set; }
+            public float Timer { get; set; }
         }
     }
 }
