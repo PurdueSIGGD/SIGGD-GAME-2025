@@ -66,8 +66,8 @@ namespace SIGGD.Goap.Behaviours
                 return;
 
             //Add Navmesh
-            
-            this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.currentTarget.Position.x, this.transform.position.y, this.currentTarget.Position.z), Time.deltaTime);
+
+            this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.currentTarget.Position.x, this.transform.position.y, this.currentTarget.Position.z), Time.deltaTime * 5);
         }
 
         private void OnDrawGizmos()

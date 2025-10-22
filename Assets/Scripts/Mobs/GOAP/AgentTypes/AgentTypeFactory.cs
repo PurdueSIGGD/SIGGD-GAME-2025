@@ -4,7 +4,8 @@ using SIGGD.Goap.Capabilities;
 using SIGGD.Mobs;
 using UnityEngine;
 
-namespace SIGGD.Goap.AgentTypes {
+namespace SIGGD.Goap.AgentTypes
+{
     public class AgentTypeFactory : AgentTypeFactoryBase
     {
         public override IAgentTypeConfig Create()
@@ -13,6 +14,7 @@ namespace SIGGD.Goap.AgentTypes {
             factory.AddCapability<HungerCapability>();
             factory.AddCapability<WanderCapability>();
             factory.AddCapability<HuntPreyCapability>();
+            factory.AddCapability<PackCapability>();
             return factory.Build();
         }
     }
