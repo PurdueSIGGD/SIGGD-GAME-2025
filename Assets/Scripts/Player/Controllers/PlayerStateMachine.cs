@@ -83,10 +83,6 @@ public class PlayerStateMachine : MonoBehaviour
     private void OnEnable()
     {
         PlayerInput.Instance.OnJump += OnJumpAction;
-    }
-
-    private void OnEnable()
-    {
         PlayerInput.Instance.OnAttack += TriggerAttack;
     }
     
