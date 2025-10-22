@@ -6,11 +6,11 @@ using UnityEngine;
 
 namespace SIGGD.Goap.AgentTypes
 {
-    public class PreyTypeFactory : AgentTypeFactoryBase
+    public class BuffaloTypeFactory : AgentTypeFactoryBase
     {
         public override IAgentTypeConfig Create()
         {
-            var factory = new AgentTypeBuilder(MobIds.prey);
+            var factory = new AgentTypeBuilder(MobIds.buffalo);
             factory.AddCapability<HungerCapability>();
             factory.AddCapability<WanderCapability>();
             factory.AddCapability<PackCapability>();
