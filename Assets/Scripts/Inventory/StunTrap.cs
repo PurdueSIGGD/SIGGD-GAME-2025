@@ -1,12 +1,11 @@
 using UnityEngine;
 
-public class StunTrap : MonoBehaviour
+public class StunTrap : MonoBehaviour, Usable
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private Rigidbody rb;
     [SerializeField] private float throwForce;
-    [SerializeField] GameObject camera;
-    void Start()
+    void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
@@ -14,17 +13,19 @@ public class StunTrap : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            Throw();
-        }
+        
     }
 
     void Throw() {
         Debug.Log("Throw: " + PlayerID.Instance.cam.transform.forward);
+        Debug.Log(PlayerID.Instance.gameObject.transform.position + " " + rb.position);
         rb.position = PlayerID.Instance.gameObject.transform.position;
         rb.AddForce(PlayerID.Instance.cam.transform.forward * throwForce, ForceMode.Impulse);
         
+    }
+
+    public void Use() {
+        Throw();
     }
 
     void OnCollisionEnter(Collision collision)

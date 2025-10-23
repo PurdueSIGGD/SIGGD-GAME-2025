@@ -9,10 +9,12 @@ public class Inventory : MonoBehaviour
     const int InventoryLength = 18;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
-    [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength];
-    [SerializeField] private Button[] inventorySlots = new Button[InventoryLength];
+    [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength]; // hotbar buttons
+    [SerializeField] private Button[] inventorySlots = new Button[InventoryLength]; // inventory buttons
 
     private List<ItemInfo> lastClickedItems = new();
+
+    [SerializeField] public GameObject[] items = new GameObject[1]; // array of all of the different types of items; used for instantiating
 
     private Slot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
     private Canvas inventoryCanvas;
@@ -68,6 +70,10 @@ public class Inventory : MonoBehaviour
         {
             ShowInventory(!inventoryCanvas.enabled);
         }
+        if (Input.GetKeyDown(KeyCode.Q)) {
+            Debug.Log("Using item");
+            Use();
+        }
     }
 
     /// <summary>
@@ -82,7 +88,7 @@ public class Inventory : MonoBehaviour
     {
         if (index >= 9 || index < 0)
         {
-            Debug.LogWarning("Hotbar size 9, index " + index);
+            Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
             return null;
         }
         return inventory[index];
@@ -92,7 +98,7 @@ public class Inventory : MonoBehaviour
     {
         if (index >= 9 || index < 0)
         {
-            Debug.LogWarning("Hotbar size 9, index " + index);
+            Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
             return;
         }
         if (inventory[index] == null)
@@ -107,7 +113,7 @@ public class Inventory : MonoBehaviour
     {
         if (index < 9)
         {
-            Debug.LogWarning("Inventory size 16, index = " + index);
+            Debug.LogWarning("Inventory size " + InventoryLength + ", index = " + index);
             return null;
         }
         return inventory[index];
@@ -117,7 +123,7 @@ public class Inventory : MonoBehaviour
     {
         if (index < 9)
         {
-            Debug.LogWarning("Inventory size 16, index + " + index);
+            Debug.LogWarning("Inventory size " + InventoryLength + ", index + " + index);
             return;
         }
         if (inventory[index] == null)
@@ -154,9 +160,36 @@ public class Inventory : MonoBehaviour
     /// Switches the selected item (limited to hotbar)
     /// </summary>
     /// <param name="index">Index to switch to</param>
-    public void select(int index) {
+    public void Select(int index) {
         selected = index;
         Debug.Log("Selected " + index + " index, containing " + inventory[index].itemInfo.itemName);
+    }
+
+    /// <summary>
+    /// Uses the currently selected item
+    /// </summary>
+    public void Use() {
+        if (inventory[selected].count == 0 || inventory[selected].itemInfo == null) return;
+        ItemInfo itemInfo = inventory[selected].itemInfo;
+        if (itemInfo.itemType == ItemInfo.ItemType.Trap) {
+            if (itemInfo.itemName == ItemInfo.ItemName.StunTrap) {
+                GameObject newStunTrap = Instantiate(items[0]);
+                newStunTrap.GetComponent<StunTrap>().Use();
+                Decrement();
+                Debug.Log("Used " + itemInfo.itemName + ", " + inventory[selected].count + " remaining");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Decrements the count of the selected item by one
+    /// </summary>
+    public void Decrement()
+    {
+        inventory[selected].count--;
+        if (inventory[selected].count == 0) {
+            inventory[selected].itemInfo = null;
+        }
     }
 
     /// <summary>
@@ -164,7 +197,7 @@ public class Inventory : MonoBehaviour
     /// </summary>
     /// <param name="itemName">Name of the item</param>
     /// <returns>Index of the item or -1 if not found</returns>
-    public int find(ItemInfo.ItemName itemName) {
+    public int Find(ItemInfo.ItemName itemName) {
         for (int i = 0; i < inventory.Length; i++) {
             if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemName)
             {
@@ -181,7 +214,7 @@ public class Inventory : MonoBehaviour
     /// <param name="count">Amount of items</param>
     /// 
     /// <returns>Number of items that could not be added to the inventory</returns>
-    public int add(ItemInfo itemInfo, int count) { // maybe change input type
+    public int Add(ItemInfo itemInfo, int count) { // maybe change input type
         // first add to existing stacks
         for (int i = 0; i < inventory.Length; i++) {
             if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName) // matches item
@@ -231,7 +264,7 @@ public class Inventory : MonoBehaviour
     /// Drop item at index
     /// </summary>
     /// <param name="index">Index of item to drop</param>
-    public void drop(int index) { // maybe create another method for dropping stacks of items
+    public void Drop(int index) { // maybe create another method for dropping stacks of items
         // instantiate physical item
         
 
@@ -245,15 +278,15 @@ public class Inventory : MonoBehaviour
     /// <summary>
     /// Drop selected item
     /// </summary>
-    public void drop() {
-        drop(selected);
+    public void Drop() {
+        Drop(selected);
     }
 
     /// <summary>
     /// Swaps item in tempSlot with chosen item
     /// </summary>
     /// <param name="index">Index of item to be moved</param>
-    public void move(int index) {
+    public void Move(int index) {
         Slot temp = inventory[index];
         inventory[index] = tempSlot;
         tempSlot = temp;
@@ -278,7 +311,7 @@ public class Inventory : MonoBehaviour
     /// </summary>
     /// <param name="index">Index to check</param>
     /// <returns>Whether or not the slot is empty</returns>
-    public bool isEmpty(int index) {
+    public bool IsEmpty(int index) {
         return inventory[index].count == 0;
     }
 
@@ -286,7 +319,7 @@ public class Inventory : MonoBehaviour
     /// 
     /// </summary>
     /// <returns>Whether or not an item is being moved (stored in tempSlot)</returns>
-    public bool isMovingItem() {
+    public bool IsMovingItem() {
         return tempSlot.count > 0;
     }
 
@@ -294,7 +327,7 @@ public class Inventory : MonoBehaviour
     /// 
     /// </summary>
     /// <returns>The selected item</returns>
-    public ItemInfo getSelectedItem() { // maybe change return type
+    public ItemInfo GetSelectedItem() { // maybe change return type
         return inventory[selected].itemInfo;
     }
 
@@ -303,11 +336,11 @@ public class Inventory : MonoBehaviour
     /// </summary>
     /// <param name="index"></param>
     /// <returns>The </returns>
-    public ItemInfo getItem(int index) { // maybe change return type;
+    public ItemInfo GetItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
     }
 
-    public Slot[] getInventory() {
+    public Slot[] GetInventory() {
         return inventory;
     }
 }
