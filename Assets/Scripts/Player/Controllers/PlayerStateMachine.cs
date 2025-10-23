@@ -25,7 +25,7 @@ public class PlayerStateMachine : MonoBehaviour
     [Header("Parameter SOs")]
     public MoveData moveData; // ScriptableObject containing movement parameters.
     
-    public ItemInfo defaultItem; // The default item the player starts with.
+    public ItemInfo defaultItem; // The default item the player has equipped.
     
     #endregion
     
@@ -83,12 +83,12 @@ public class PlayerStateMachine : MonoBehaviour
     private void OnEnable()
     {
         PlayerInput.Instance.OnJump += OnJumpAction;
-        PlayerInput.Instance.OnAttack += TriggerAttack;
+        PlayerInput.Instance.OnAction += TriggerAction;
     }
     
     private void OnDisable()
     {
-        PlayerInput.Instance.OnAttack -= TriggerAttack;
+        PlayerInput.Instance.OnAction -= TriggerAction;
         PlayerInput.Instance.OnJump -= OnJumpAction;
     }
 
@@ -147,9 +147,10 @@ public class PlayerStateMachine : MonoBehaviour
     
     #region Attack Methods
 
-    public void TriggerAttack()
+    public void TriggerAction(InputAction.CallbackContext context)
     {
-        animator.SetBool(Animator.StringToHash("isAttacking"), true);
+        if (context.phase != InputActionPhase.Performed) return;
+        animator.SetBool(Animator.StringToHash("isUsingAction"), true);
     }
     public ItemInfo GetEquippedItem()
     {
@@ -176,8 +177,6 @@ public class PlayerStateMachine : MonoBehaviour
         Transform cam = playerID.cam.transform;
         Vector3 direction = moveInput.x * cam.right.SetY(0).normalized + 
                                moveInput.y * cam.forward.SetY(0).normalized;
-        
-        Debug.Log(direction);
         
         MoveInDirectionWithSpeed(direction, speed, moveData.movementInterpolation);
     }
@@ -216,8 +215,6 @@ public class PlayerStateMachine : MonoBehaviour
 		
         Vector3 movementForce = speedDiff * accelRate;
         
-        Debug.Log(movementForce);
-		
         playerID.rb.AddForce(movementForce, ForceMode.Acceleration);
     }
 

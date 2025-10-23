@@ -17,8 +17,8 @@ public class PlayerInput : Singleton<PlayerInput>
     public bool sprintInput = false;
     public bool crouchInput = false;
     
-    public event Action OnAttack = delegate { };
     public Action<InputAction.CallbackContext> OnJump = delegate { }; // jump event
+    public Action<InputAction.CallbackContext> OnAction = delegate { }; // attack event
 
     ////////
     protected override void Awake()
@@ -51,7 +51,8 @@ public class PlayerInput : Singleton<PlayerInput>
     }
 
     ////// when disabled, deactivate inputs
-    private void OnDisable() {
+    private void OnDisable()
+    {
         inputActions.Disable();
 
         inputActions.Player.Move.performed -= InputOnMove;
@@ -67,6 +68,13 @@ public class PlayerInput : Singleton<PlayerInput>
         inputActions.Player.Jump.performed -= InputJump;
         inputActions.Player.Sprint.performed -= InputSprint;
         inputActions.Player.Sprint.canceled -= InputSprint;
+    }
+
+    // Added
+    public void DebugToggleInput(bool enabled)
+    {
+        if (enabled) OnDisable();
+        else OnEnable();
     }
 
     ////////////// input methods. Performed When inputing stuff ////////////
@@ -120,8 +128,6 @@ public class PlayerInput : Singleton<PlayerInput>
     }
 
     private void InputAttack(InputAction.CallbackContext callbackValue) {
-        if (callbackValue.performed) {
-            OnAttack?.Invoke();
-        }
+        OnAction?.Invoke(callbackValue);
     }
 }

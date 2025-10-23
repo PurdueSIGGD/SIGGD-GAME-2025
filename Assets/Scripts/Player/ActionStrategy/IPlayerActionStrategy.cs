@@ -15,7 +15,12 @@ public abstract class IPlayerActionStrategy
 {
     protected PlayerStateMachine stateMachine;
     public AnimationClip animationClip;
-    public float ActionDuration => animationClip != null ? animationClip.length : 0f;
+    
+    [Tooltip("The duration of the action (defaults to the length of the animation clip if -1")]
+    [SerializeField] private float specifiedActionDuration = -1f;
+    
+    public float ActionDuration => specifiedActionDuration >= 0 ? specifiedActionDuration :
+        (animationClip != null ? animationClip.length : 0f);
     private float actionTimer = 0;
     
     /**
@@ -60,7 +65,7 @@ public abstract class IPlayerActionStrategy
         
         if (actionTimer >= ActionDuration)
         {
-            stateMachine.animator.SetBool(Animator.StringToHash("isAttacking"), false);
+            stateMachine.animator.SetBool(Animator.StringToHash("isUsingAction"), false);
             actionTimer = 0;
         }
     }
