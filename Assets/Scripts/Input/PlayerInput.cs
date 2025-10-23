@@ -53,7 +53,8 @@ public class PlayerInput : Singleton<PlayerInput>
     }
 
     ////// when disabled, deactivate inputs
-    private void OnDisable() {
+    private void OnDisable()
+    {
         inputActions.Disable();
 
         inputActions.Player.Move.performed -= InputOnMove;
@@ -69,6 +70,13 @@ public class PlayerInput : Singleton<PlayerInput>
         inputActions.Player.Jump.performed -= InputJump;
         inputActions.Player.Sprint.performed -= InputSprint;
         inputActions.Player.Sprint.canceled -= InputSprint;
+    }
+
+    // Added
+    public void DebugToggleInput(bool enabled)
+    {
+        if (enabled) OnDisable();
+        else OnEnable();
     }
 
     ////////////// input methods. Performed When inputing stuff ////////////
