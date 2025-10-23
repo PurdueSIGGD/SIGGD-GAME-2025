@@ -54,17 +54,17 @@ namespace SIGGD.Goap.Behaviours
                 return;
             if (this.provider.CurrentPlan.Goal is not KillPlayerGoal)
             {
-                AgentMoveBehaviour.DisableSprint();
+                //AgentMoveBehaviour.DisableSprint();
                 this.provider.RequestGoal<WanderGoal>(false);
             }
         }
         protected override void OnActionStart(IAction action)
         {
             if (this.provider.CurrentPlan.Action is KillPreyAction)
-                AgentMoveBehaviour.EnableSprint();
+                //AgentMoveBehaviour.EnableSprint();
             if (this.provider.CurrentPlan.Goal is KillPlayerGoal)
             {
-                AgentMoveBehaviour.EnableSprint();
+                //AgentMoveBehaviour.EnableSprint();
             }
         }
 
@@ -76,7 +76,7 @@ namespace SIGGD.Goap.Behaviours
         {
             if (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 50)
             {
-                AgentMoveBehaviour.EnableSprint();
+               // AgentMoveBehaviour.EnableSprint();
                 this.provider.RequestGoal<KillPlayerGoal>(true);
             }
         }

@@ -1,4 +1,3 @@
-using Assets.Scripts.Mobs.GOAP.Behaviours;
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
@@ -14,19 +13,29 @@ namespace SIGGD.Goap.Behaviours
         [field: SerializeField]
         public float stamina { get; set; }
 
-        AgentData AgentData;
+        //AgentData AgentData;
+        bool sprintAllowed = false;
 
         [SerializeField]
         private BaseStatConfig statConfig;
         private void Awake()
         {
-            AgentData = GetComponent<AgentData>();
+            //AgentData = GetComponent<AgentData>();
             stamina = statConfig.maxStamina;
         }
         public void Update()
         {
 
         }
+        public void EnableSprint()
+        {
+            sprintAllowed = true;
+        }
+        public void DisableSprint()
+        {
+            sprintAllowed = false;
+        }
+        /*
         public void FixedUpdate()
         {
             if (stamina < statConfig.maxStamina * AgentData.energyLevel)
@@ -34,6 +43,7 @@ namespace SIGGD.Goap.Behaviours
                 ReduceStamina(statConfig.staminaGainRate);
             }
         }
+        
         public void ReduceStamina(float amount)
         {
             stamina -= amount * energyLevel;
@@ -45,14 +55,6 @@ namespace SIGGD.Goap.Behaviours
         public float GetStamina()
         {
             return stamina;
-        }
-        public void EnableSprint()
-        {
-            sprintAllowed = true;
-        }
-        public void DisableSprint()
-        {
-            sprintAllowed = false;
         }
         public bool ShouldSprint()
         {
@@ -67,6 +69,7 @@ namespace SIGGD.Goap.Behaviours
             stamina
             desperation,tiredness,distance,urgency,stamina
         }
+        */
     }
 }
 

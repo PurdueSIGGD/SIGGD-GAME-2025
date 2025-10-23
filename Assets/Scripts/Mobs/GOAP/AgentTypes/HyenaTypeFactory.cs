@@ -14,7 +14,7 @@ namespace SIGGD.Goap.AgentTypes
             factory.AddCapability<WanderCapability>();
             factory.AddCapability<HungerCapability>();
             factory.AddCapability<HuntPreyCapability>();
-            //factory.AddCapability<AttackPlayerCapability>();
+            factory.AddCapability<AttackPlayerCapability>();
             return factory.Build();
         }
     }

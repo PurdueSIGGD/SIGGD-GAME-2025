@@ -14,20 +14,19 @@ namespace SIGGD.Goap.Behaviours
         private ITarget currentTarget;
         private bool shouldMove;
         private bool sprintAllowed;
-        public float speed;
 
 
         public NavMeshAgent navMeshAgent;
         
 
-        private float speed = 500f;
+        public float speed;
 
         private void Awake()
         {
             this.agent = this.GetComponent<AgentBehaviour>();
             sprint = GetComponent<AgentSprintBehaviour>();
             sprintAllowed = false;
-            speed = 1f;
+            speed = 3f;
         }
 
         private void OnEnable()
@@ -80,7 +79,8 @@ namespace SIGGD.Goap.Behaviours
 
             if (this.currentTarget == null)
                 return;
-            speed = 1f;
+            //speed = 1f;
+            /*
             if (sprintAllowed)
             {
                 if (sprint.stamina > 0)
@@ -89,8 +89,9 @@ namespace SIGGD.Goap.Behaviours
                     sprint.stamina -= 8 * Time.deltaTime;
                 }
             }
-            this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.currentTarget.Position.x, this.transform.position.y, this.currentTarget.Position.z), Time.deltaTime * speed);
-            this.transform.LookAt(currentTarget.Position);
+            */
+           // this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.currentTarget.Position.x, this.transform.position.y, this.currentTarget.Position.z), Time.deltaTime * speed);
+           // this.transform.LookAt(currentTarget.Position);
 
             // Move the agent along towards their goal position
             Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * speed);
@@ -104,6 +105,5 @@ namespace SIGGD.Goap.Behaviours
 
             Gizmos.DrawLine(this.transform.position, this.currentTarget.Position);
         }
-        public void 
     }
 }
