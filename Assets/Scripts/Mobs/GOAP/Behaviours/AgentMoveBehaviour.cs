@@ -94,7 +94,6 @@ namespace SIGGD.Goap.Behaviours
 
             Gizmos.DrawLine(this.transform.position, this.currentTarget.Position);
         }
-        public void 
     }
 }
 

@@ -5,17 +5,16 @@ using SIGGD.Mobs;
 using Unity.VisualScripting;
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Core;
+using SIGGD.Mobs.PackScripts;
 
 namespace SIGGD.Goap.Behaviours
 {
-    public class PreyBrain : BaseAgentBrain
+    public class BuffaloBrain : BaseAgentBrain
     {
-        private HungerBehaviour hungerBehaviour;
-
         protected override void Awake()
         {
             base.Awake();
-            SetAgentType(MobIds.prey);
+            SetAgentType(MobIds.buffalo);
         }
         protected override void Start()
         {
@@ -32,7 +31,7 @@ namespace SIGGD.Goap.Behaviours
         }
         private void DecideGoal()
         {
-            this.provider.RequestGoal<WanderGoal, GrowPackGoal, FollowAlphaGoal, DontStarveGoal>(true);
+            this.provider.RequestGoal<WanderGoal, FollowAlphaGoal, GrowPackGoal>(true);
         }
     }
 

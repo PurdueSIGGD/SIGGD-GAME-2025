@@ -13,6 +13,7 @@ namespace SIGGD.Goap.Behaviours
         protected AgentBehaviour agent;
         protected GoapActionProvider provider;
         protected GoapBehaviour goap;
+        protected string agentType;
 
         protected virtual void Awake()
         {
@@ -40,6 +41,11 @@ namespace SIGGD.Goap.Behaviours
             this.provider.Events.OnGoalCompleted -= this.OnGoalCompleted;
             this.provider.Events.OnNoActionFound -= this.OnNoActionFound;
         }
+        public void SetAgentType(string mobId)
+        {
+            this.agentType = mobId;
+            this.provider.AgentType = this.goap.GetAgentType(mobId);
+        }
         protected abstract void Start();
 
         protected virtual void OnActionStart(IAction action)
@@ -66,6 +72,10 @@ namespace SIGGD.Goap.Behaviours
         protected virtual void OnNoActionFound(IGoalRequest request)
         {
 
+        }
+        public string GetAgentType()
+        {
+            return agentType;
         }
     }
 }
