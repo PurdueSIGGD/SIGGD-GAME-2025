@@ -2,6 +2,7 @@ using Sirenix.Serialization;
 using UnityEngine;
 
 public class PlayerDataSaveModule : ISaveModule
+public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
 {
     private static string savePath = $"{FileManager.savesDirectory}/playerData";
 
@@ -10,6 +11,7 @@ public class PlayerDataSaveModule : ISaveModule
     public static GameObject player;
 
     public static FirstPersonCamera camera;
+    public static new FirstPersonCamera camera;
 
     public bool deserialize()
     {

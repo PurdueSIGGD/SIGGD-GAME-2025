@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
@@ -5,6 +7,7 @@ public class SaveManager : Singleton<SaveManager>
     public ISaveModule[] modules = {
         new PlayerDataSaveModule()
     };
+    public List<ISaveModule> modules;
 
     protected override void Awake()
     {
@@ -28,6 +31,11 @@ public class SaveManager : Singleton<SaveManager>
         {
             i.deserialize();
         }
+        modules = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                  .OfType<ISaveModule>()
+                  .ToList();
+        foreach (var module in modules)
+            module.deserialize();
 
         return true;
     }
@@ -38,6 +46,11 @@ public class SaveManager : Singleton<SaveManager>
         {
             i.serialize();
         }
+        modules = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                  .OfType<ISaveModule>()
+                  .ToList();
+        foreach (var module in modules)
+            module.serialize();
 
         return true;
     }
