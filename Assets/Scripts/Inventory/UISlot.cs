@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class Slot : MonoBehaviour
+public class UISlot : MonoBehaviour
 {
     public ItemInfo itemInfo;
     public int count = 0;
@@ -14,10 +14,10 @@ public class Slot : MonoBehaviour
         textDisplay = GetComponentInChildren<TextMeshProUGUI>();
     }
 
-    public void UpdateSlot(Slot slot)
+    public void UpdateSlot(UISlot uiSlot)
     {
-        itemInfo = slot.itemInfo;
-        count = slot.count;
+        itemInfo = uiSlot.itemInfo;
+        count = uiSlot.count;
         if (itemInfo)
         {
             if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check

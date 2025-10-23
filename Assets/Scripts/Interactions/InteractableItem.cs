@@ -1,24 +1,25 @@
+using System;
 using UnityEngine;
 
 public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
 {
     public ItemInfo itemInfo;
-    
-    public void OnHoverEnter()
+
+    public void OnHoverEnter(InteractableUI ui)
     {
-        // Show item highlight or tooltip
+        ui.ActivateUI(this);
         Debug.Log($"Hovering over item: {itemInfo.itemName}");
     }
     
-    public void OnHoverExit()
+    public void OnHoverExit(InteractableUI ui)
     {
-        // Hide item highlight or tooltip
+        ui.DeactivateUI();
         Debug.Log($"Stopped hovering over item: {itemInfo.itemName}");
     }
     
     public void OnInteract(IInteractor interactor)
     {
-        interactor.Inventory.AddItem(itemInfo, 1);
+        Debug.Log(interactor.Inventory.AddItem(itemInfo, 1));
         Debug.Log($"Item {itemInfo.itemName} picked up by interactor.");
         Destroy(this.gameObject); // Remove the item from the scene
     }

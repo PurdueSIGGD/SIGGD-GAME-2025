@@ -7,6 +7,8 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
     public float interactionDistance = 3f;
     public IInteractable<IInteractor> Interactable;
     
+    public InteractableUI interactableUI;
+    
     [HideInInspector] public PlayerID playerID;
 
     private void Start()
@@ -24,20 +26,20 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
             {
                 if (Interactable == null || !Interactable.Equals(interactable))
                 {
-                    Interactable?.OnHoverExit();
+                    Interactable?.OnHoverExit(interactableUI);
                     Interactable = interactable;
-                    Interactable.OnHoverEnter();
+                    Interactable.OnHoverEnter(interactableUI);
                 }
             }
             else
             {
-                Interactable?.OnHoverExit();
+                Interactable?.OnHoverExit(interactableUI);
                 Interactable = null;
             }
         }
         else
         {
-            Interactable?.OnHoverExit();
+            Interactable?.OnHoverExit(interactableUI);
             Interactable = null;
         }
     }
@@ -56,7 +58,10 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
 
     public void Interact(IInteractable<IInteractor> interactable)
     {
-        interactable.OnInteract(this);
+        interactableUI.BeginInteractUI(Interactable, () =>
+        {
+            interactable.OnInteract(this);
+        }, () => !PlayerInput.Instance.interactionHeld);
     }
     
     #endregion

@@ -14,15 +14,16 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     private List<ItemInfo> lastClickedItems = new();
 
-    private Slot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
+    private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
-    private Slot tempSlot; // temporary slot for holding item that is being moved
+    private UISlot _tempUISlot; // temporary slot for holding item that is being moved
 
     protected override void Awake()
     {
         base.Awake();
-        inventory = new Slot[HotBarLength + InventoryLength];
+        inventory = new UISlot[HotBarLength + InventoryLength];
+        
         inventoryCanvas = GetComponentInChildren<Canvas>();
         inventoryCanvas.enabled = false;
     }
@@ -35,9 +36,9 @@ public class Inventory : Singleton<Inventory>, IInventory
             if (hotbarSlots[i] == null) continue;
 
             // TODO: Add to the existing code below to load in saved items here 
-            if (!hotbarSlots[i].TryGetComponent<Slot>(out Slot slot))
+            if (!hotbarSlots[i].TryGetComponent<UISlot>(out UISlot slot))
             {
-                slot = hotbarSlots[i].AddComponent<Slot>();
+                slot = hotbarSlots[i].AddComponent<UISlot>();
             }
             slot.index = i;
             SetHotbarSlot(slot.index, slot);
@@ -51,9 +52,9 @@ public class Inventory : Singleton<Inventory>, IInventory
             if (inventorySlots[i] == null) continue;
 
             // TODO: Add to the existing code below to load in saved items here 
-            if (!inventorySlots[i].TryGetComponent<Slot>(out Slot slot))
+            if (!inventorySlots[i].TryGetComponent<UISlot>(out UISlot slot))
             {
-                slot = inventorySlots[i].AddComponent<Slot>();
+                slot = inventorySlots[i].AddComponent<UISlot>();
             }
             slot.index = i + HotBarLength;
             SetInventorySlot(slot.index, slot);
@@ -65,10 +66,10 @@ public class Inventory : Singleton<Inventory>, IInventory
     // TODO: replace
     void Update()
     {
-        // if (Input.GetKeyDown(KeyCode.E))
-        // {
-        //     ShowInventory(!inventoryCanvas.enabled);
-        // }
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            ShowInventory(!inventoryCanvas.enabled);
+        }
     }
 
     /// <summary>
@@ -79,7 +80,7 @@ public class Inventory : Singleton<Inventory>, IInventory
         inventoryCanvas.enabled = enabled;
     }
 
-    private Slot GetHotbarSlot(int index)
+    private UISlot GetHotbarSlot(int index)
     {
         if (index >= 9 || index < 0)
         {
@@ -89,7 +90,7 @@ public class Inventory : Singleton<Inventory>, IInventory
         return inventory[index];
     }
 
-    private void SetHotbarSlot(int index, Slot slot)
+    private void SetHotbarSlot(int index, UISlot uiSlot)
     {
         if (index >= 9 || index < 0)
         {
@@ -99,12 +100,12 @@ public class Inventory : Singleton<Inventory>, IInventory
         if (inventory[index] == null)
         {
             Debug.Log("null");
-            inventory[index] = slot;
+            inventory[index] = uiSlot;
         }
-        inventory[index].UpdateSlot(slot);
+        inventory[index].UpdateSlot(uiSlot);
     }
 
-    private Slot GetInventorySlot(int index)
+    private UISlot GetInventorySlot(int index)
     {
         if (index < 9)
         {
@@ -114,7 +115,7 @@ public class Inventory : Singleton<Inventory>, IInventory
         return inventory[index];
     }
 
-    private void SetInventorySlot(int index, Slot slot)
+    private void SetInventorySlot(int index, UISlot uiSlot)
     {
         if (index < 9)
         {
@@ -123,20 +124,20 @@ public class Inventory : Singleton<Inventory>, IInventory
         }
         if (inventory[index] == null)
         {
-            inventory[index] = slot;
+            inventory[index] = uiSlot;
         }
-        inventory[index].UpdateSlot(slot);
+        inventory[index].UpdateSlot(uiSlot);
     }
 
-    void OnSlotSelected(Slot uiSlot)
+    void OnSlotSelected(UISlot uiUISlot)
     {
-        Debug.Log("Hotbar slot #" + uiSlot.index + " clicked");
+        Debug.Log("Hotbar slot #" + uiUISlot.index + " clicked");
     }
 
     // This method shows recipe crafting, but is considered "debug" because it won't work this way in a playable build.
-    void DebugOnInvSlotSelected(Slot slot)
+    void DebugOnInvSlotSelected(UISlot uiSlot)
     {
-        ItemInfo item = slot.itemInfo;
+        ItemInfo item = uiSlot.itemInfo;
         lastClickedItems.Add(item);
         if (lastClickedItems.Count >= 2)
         {
@@ -184,8 +185,9 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <returns>Number of items that could not be added to the inventory</returns>
     public int AddItem(ItemInfo itemInfo, int count) { // maybe change input type
         // first add to existing stacks
+        
         for (int i = 0; i < inventory.Length; i++) {
-            if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName) // matches item
+            if (inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName) // matches item
             {
                 if (itemInfo.maxStackCount > inventory[i].count) { // has space for at least one item
                     if (itemInfo.maxStackCount < inventory[i].count + count) // not enough space for all items in same stack
@@ -206,7 +208,7 @@ public class Inventory : Singleton<Inventory>, IInventory
         // otherwise create new stack if possible
         if (count > 0) {
             for (int i = 0; i < inventory.Length; i++) {
-                if (inventory[i].count == 0) { // is empty slot
+                if (inventory[i]?.count == 0) { // is empty slot
                     if (count > itemInfo.maxStackCount) // will need to split the items between slots
                     {
                         count -= itemInfo.maxStackCount;
@@ -286,9 +288,9 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// </summary>
     /// <param name="index">Index of item to be moved</param>
     public void move(int index) {
-        Slot temp = inventory[index];
-        inventory[index] = tempSlot;
-        tempSlot = temp;
+        UISlot temp = inventory[index];
+        inventory[index] = _tempUISlot;
+        _tempUISlot = temp;
     }
 
     /// <summary>
@@ -319,7 +321,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// </summary>
     /// <returns>Whether or not an item is being moved (stored in tempSlot)</returns>
     public bool isMovingItem() {
-        return tempSlot.count > 0;
+        return _tempUISlot.count > 0;
     }
 
     /// <summary>
