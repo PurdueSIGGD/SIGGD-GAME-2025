@@ -76,8 +76,8 @@ namespace ProceduralAnimation.Runtime {
         [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 2, true)] Vector2 legStepTime = new Vector2(0.05f, 0.25f); //  How long each step takes
 
         [Header("Leg Lean Settings")]
-        [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 90, true)] Vector2 maxFrontLegsLeanAngle = new Vector2(30f, 45f); //  How much to rotate the legs closest to the velocity's direction forward
-        [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 90, true)] Vector2 maxHindLegsLeanAngle = new Vector2(15f, 30f); //  How much to rotate the legs furthest to the velocity's direction forward
+        [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 90, true)] Vector2 maxFrontLegsLeanAngle = new Vector2(15f, 30f); //  How much to rotate the legs closest to the velocity's direction forward
+        [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 90, true)] Vector2 maxHindLegsLeanAngle = new Vector2(30f, 45f); //  How much to rotate the legs furthest to the velocity's direction forward
         [FoldoutGroup("Leg Settings"), SerializeField] float legRotSmoothSpeed = 10f;
 
         [Header("Other Leg Settings")]
@@ -147,10 +147,19 @@ namespace ProceduralAnimation.Runtime {
 
                 //  Calculate t value to interpolate between min and max values for velocity based variables (t is the y value of a sigmoid function)
                 float exp = (theoreticalMaxVelocity / 2 - vMag) / theoreticalMaxVelocity * 5f;
-                float t = 1 - Mathf.Exp(exp) / (Mathf.Exp(exp) + 1);
 
-                //  Dynamically change step time, lead distance and lean angle
-                stepTime = Mathf.Lerp(legStepTime.y, legStepTime.x, t); //  Swapped the order because faster spider means lower step time
+                // Ensure 0 to 1 value for t is vMag / theoreticalMaxVelocity
+                float t = Mathf.Min(1, vMag / theoreticalMaxVelocity);
+                // Debug.Log(t);
+                if (0 <= t && t < 0.5)
+                    t = 8 * Mathf.Pow(t / 2, 2);
+                else
+                    t = -8 * Mathf.Pow((t - 1) / 2, 2) + 1;
+
+                    // float t = 1 - Mathf.Exp(exp) / (Mathf.Exp(exp) + 1);
+
+                    //  Dynamically change step time, lead distance and lean angle
+                    stepTime = Mathf.Lerp(legStepTime.y, legStepTime.x, t); //  Swapped the order because faster spider means lower step time
 
                 leadDist = Mathf.Lerp(0, maxLeadDist, t);
                 frontLeanAngle = Mathf.Lerp(maxFrontLegsLeanAngle.x, maxFrontLegsLeanAngle.y, t);
@@ -293,7 +302,15 @@ namespace ProceduralAnimation.Runtime {
                 t = Mathf.Min(1f, (Time.time - leg.startInterpolationTime) / localStepTime);
 
                 //  Add height to each step using sin
+                // Added
+                const float skew = 0.9f;
+                float t2 = 1 - (1 / Mathf.Pow(skew, 2)) * Mathf.Pow(t - skew, 2);
+                if (t > skew)
+                {
+                    t2 = 1 - (1 / Mathf.Pow(1 - skew, 2)) * Mathf.Pow(t - skew, 2);
+                }
                 float height = Mathf.Sin(Mathf.PI * t) * legStepHeight;
+                height = t2 * legStepHeight;
 
                 //  Calculate target position
                 Vector3 targetPos = Vector3.Lerp(leg.startPosition, leg.targetPosition, t) + body.up * height;
