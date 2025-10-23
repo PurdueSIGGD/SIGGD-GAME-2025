@@ -30,6 +30,7 @@ public class Inventory : MonoBehaviour
 
     void Start()
     {
+        // Update inventory to match manually placed items in scene/saved items
         for (int i = 0; i < HotBarLength; i++)
         {
             // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
@@ -61,6 +62,8 @@ public class Inventory : MonoBehaviour
 
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
+
+        // TODO: Initialize the rest of the inventory slots as empty so that they are not null
     }
     
     // TODO: replace
@@ -84,9 +87,14 @@ public class Inventory : MonoBehaviour
         inventoryCanvas.enabled = enabled;
     }
 
+    /// <summary>
+    /// Returns a slot of the hotbar
+    /// </summary>
+    /// <param name="index">Index of slot to return</param>
+    /// <returns>Slot at specified index</returns>
     private Slot GetHotbarSlot(int index)
     {
-        if (index >= 9 || index < 0)
+        if (index >= HotBarLength || index < 0)
         {
             Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
             return null;
@@ -94,24 +102,30 @@ public class Inventory : MonoBehaviour
         return inventory[index];
     }
 
+    /// <summary>
+    /// Sets a specific hotbar slot to a given slot object
+    /// </summary>
+    /// <param name="index">Index of slot to set</param>
+    /// <param name="slot">Reference slot to update backend slot with</param>
     private void SetHotbarSlot(int index, Slot slot)
     {
-        if (index >= 9 || index < 0)
+        if (index >= HotBarLength || index < 0)
         {
             Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
             return;
         }
-        if (inventory[index] == null)
-        {
-            //Debug.Log("null");
-            inventory[index] = slot;
-        }
-        inventory[index].UpdateSlot(slot);
+        inventory[index] = slot;
+        inventory[index].UpdateText();
     }
 
+    /// <summary>
+    /// Returns a slot of the inventory (not including the hotbar)
+    /// </summary>
+    /// <param name="index">Index of slot to return</param>
+    /// <returns>Slot at specified index</returns>
     private Slot GetInventorySlot(int index)
     {
-        if (index < 9)
+        if (index < HotBarLength || index >= HotBarLength + InventoryLength)
         {
             Debug.LogWarning("Inventory size " + InventoryLength + ", index = " + index);
             return null;
@@ -119,18 +133,20 @@ public class Inventory : MonoBehaviour
         return inventory[index];
     }
 
+    /// <summary>
+    /// Sets a specific inventory slot (not including hotbar) to a given slot object
+    /// </summary>
+    /// <param name="index">Index of slot to set</param>
+    /// <param name="slot">Reference slot to update backend slot with</param>
     private void SetInventorySlot(int index, Slot slot)
     {
-        if (index < 9)
+        if (index < HotBarLength || index >= HotBarLength + InventoryLength)
         {
             Debug.LogWarning("Inventory size " + InventoryLength + ", index + " + index);
             return;
         }
-        if (inventory[index] == null)
-        {
-            inventory[index] = slot;
-        }
-        inventory[index].UpdateSlot(slot);
+        inventory[index] = slot;
+        inventory[index].UpdateText();
     }
 
     void OnSlotSelected(Slot uiSlot)
@@ -190,6 +206,7 @@ public class Inventory : MonoBehaviour
         if (inventory[selected].count == 0) {
             inventory[selected].itemInfo = null;
         }
+        inventory[selected].UpdateText();
     }
 
     /// <summary>

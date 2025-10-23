@@ -8,6 +8,7 @@ public class StunTrap : MonoBehaviour, Usable
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        //rb.linearVelocity = PlayerID.Instance.gameObject.GetComponent<Rigidbody>().linearVelocity;
     }
 
     // Update is called once per frame
