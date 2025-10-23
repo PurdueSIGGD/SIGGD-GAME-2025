@@ -68,6 +68,13 @@ public class PlayerInput : Singleton<PlayerInput>
         inputActions.Player.Sprint.performed -= InputSprint;
         inputActions.Player.Sprint.canceled -= InputSprint;
     }
+    
+    // Added
+    public void DebugToggleInput(bool enabled)
+    {
+        if (enabled) OnDisable();
+        else OnEnable();
+    }
 
     ////////////// input methods. Performed When inputing stuff ////////////
     private void InputOnMove(InputAction.CallbackContext callbackValue) {
