@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
 {
-    public ISaveModule[] modules = {
-        new PlayerDataSaveModule()
-    };
     public List<ISaveModule> modules;
 
     protected override void Awake()
@@ -27,10 +24,6 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Load()
     {
-        foreach (ISaveModule i in modules)
-        {
-            i.deserialize();
-        }
         modules = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                   .OfType<ISaveModule>()
                   .ToList();
@@ -42,10 +35,6 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Save()
     {
-        foreach (ISaveModule i in modules)
-        {
-            i.serialize();
-        }
         modules = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                   .OfType<ISaveModule>()
                   .ToList();
