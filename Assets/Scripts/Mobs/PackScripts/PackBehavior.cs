@@ -49,7 +49,10 @@ namespace SIGGD.Mobs.PackScripts
         }
         void OnDestroy()
         {
-            ForceLeavePack();
+            if (myPack != null)
+            {
+                myPack.RemoveFromPack(this);
+            }
         }
         public int GetPowerLevel()
         {
@@ -84,6 +87,7 @@ namespace SIGGD.Mobs.PackScripts
         }
         public void ForceLeavePack()
         {
+            if (this == null || myPack == null) return;
             myPack.RemoveFromPack(this);
             myPack = null;
         }
