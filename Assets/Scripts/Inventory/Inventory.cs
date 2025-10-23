@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public class Inventory : MonoBehaviour
 {
@@ -21,11 +22,46 @@ public class Inventory : MonoBehaviour
     private int selected; // index of selected item in hotbar
     private Slot tempSlot; // temporary slot for holding item that is being moved
 
+    private InventoryInputActions inputActions;
+
     void Awake()
     {
         inventory = new Slot[HotBarLength + InventoryLength];
         inventoryCanvas = GetComponentInChildren<Canvas>();
         inventoryCanvas.enabled = false;
+
+        inputActions = new InventoryInputActions();
+    }
+
+    void OnEnable()
+    {
+        inputActions.InventorySelection.Enable();
+        inputActions.InventorySelection.Scroll.performed += OnScroll;
+        inputActions.InventorySelection.NumberKeys.performed += OnNumberKeyInput;
+    }
+
+    void OnDisable()
+    {
+        inputActions.InventorySelection.Disable();
+        inputActions.InventorySelection.Scroll.performed -= OnScroll;
+        inputActions.InventorySelection.NumberKeys.performed -= OnNumberKeyInput;
+    }
+
+    private void OnScroll(InputAction.CallbackContext context)
+    {
+        float scrollValue = context.ReadValue<float>();
+        if (scrollValue == 0) return;
+        int index = (selected + (int)(scrollValue)) % HotBarLength;
+        if (index < 0) {
+            index = HotBarLength - 1;
+        }
+        Select(index);
+    }
+
+    private void OnNumberKeyInput(InputAction.CallbackContext context) {
+        float value = context.ReadValue<float>();
+        int index = (int)(value) - 1;
+        Select(index);
     }
 
     void Start()
@@ -62,8 +98,6 @@ public class Inventory : MonoBehaviour
 
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
-
-        // TODO: Initialize the rest of the inventory slots as empty so that they are not null
     }
     
     // TODO: replace
@@ -74,7 +108,7 @@ public class Inventory : MonoBehaviour
             ShowInventory(!inventoryCanvas.enabled);
         }
         if (Input.GetKeyDown(KeyCode.Q)) {
-            Debug.Log("Using item");
+            Debug.Log("Trying to use item");
             Use();
         }
     }
@@ -178,14 +212,20 @@ public class Inventory : MonoBehaviour
     /// <param name="index">Index to switch to</param>
     public void Select(int index) {
         selected = index;
-        Debug.Log("Selected " + index + " index, containing " + inventory[index].itemInfo.itemName);
+        if (!inventory[index] || inventory[index].count == 0 || !inventory[index].itemInfo)
+        {
+            Debug.Log("Selected index " + index + ", which is empty");
+        }
+        else {
+            Debug.Log("Selected index " + index + ", containing " + inventory[index].count + " " + inventory[index].itemInfo.itemName + "s");
+        } 
     }
 
     /// <summary>
     /// Uses the currently selected item
     /// </summary>
     public void Use() {
-        if (inventory[selected].count == 0 || inventory[selected].itemInfo == null) return;
+        if (!inventory[selected] || inventory[selected].count == 0 || inventory[selected].itemInfo == null) return;
         ItemInfo itemInfo = inventory[selected].itemInfo;
         if (itemInfo.itemType == ItemInfo.ItemType.Trap) {
             if (itemInfo.itemName == ItemInfo.ItemName.StunTrap) {

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Slot : MonoBehaviour
 {
-    public ItemInfo itemInfo;
+    public ItemInfo itemInfo = null;
     public int count = 0;
     [HideInInspector] public int index;
 
