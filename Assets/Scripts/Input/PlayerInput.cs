@@ -17,7 +17,7 @@ public class PlayerInput : Singleton<PlayerInput>
     public bool sprintInput = false;
     public bool crouchInput = false;
     
-    public event Action OnAttack = delegate { };
+    public event Action<InputAction.CallbackContext> OnAction = delegate { };
     public Action<InputAction.CallbackContext> OnJump = delegate { }; // jump event
 
     ////////
@@ -120,8 +120,6 @@ public class PlayerInput : Singleton<PlayerInput>
     }
 
     private void InputAttack(InputAction.CallbackContext callbackValue) {
-        if (callbackValue.performed) {
-            OnAttack?.Invoke();
-        }
+        OnAction?.Invoke(callbackValue);
     }
 }
