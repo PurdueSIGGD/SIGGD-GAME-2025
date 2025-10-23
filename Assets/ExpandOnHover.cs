@@ -3,7 +3,7 @@ using TMPro;
 
 public class ExpandOnHover : MonoBehaviour
 {
-    public Vector2 expandDimensions = new Vector2(200,75);
+    public Vector2 expandDimensions = new Vector2(170,40);
     private Vector2 initialDimensions;
     private Canvas canvas;
     private float fontSizeIncrement = 4;

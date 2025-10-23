@@ -1,16 +1,22 @@
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
-public class checkForInput : MonoBehaviour
+public class EscapeMenu : MonoBehaviour
 {
+    private Button quitButton;
+    public GameObject buttonObj;
     public GameObject buttonObject;
     public GameObject fadedScreen;
     private bool isEnabled;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-   
     void Start()
     {
-        buttonObject = GameObject.FindWithTag("QuitButton");
-        fadedScreen = GameObject.FindWithTag("FadedScreen");
+        if (buttonObj != null)
+        {
+            quitButton = buttonObj.GetComponent<Button>();
+            quitButton.onClick.AddListener(loadMainMenu);
+        }
         buttonObject.SetActive(false);
         fadedScreen.SetActive(false);
         isEnabled = false;
@@ -25,5 +31,10 @@ public class checkForInput : MonoBehaviour
             buttonObject.SetActive(isEnabled);
             fadedScreen.SetActive(isEnabled);
         }
+    }
+    public void loadMainMenu()
+    {
+      
+        SceneManager.LoadScene("Main Menu");
     }
 }
