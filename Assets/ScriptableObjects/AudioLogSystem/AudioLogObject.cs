@@ -6,7 +6,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AudioLogObject", menuName = "Scriptable Objects/AudioLogObject")]
 public class AudioLogObject : ScriptableObject
 {
-    public AudioClip voiceline;
-    public string text;
-    public double length;
+    
+    [System.Serializable]
+    public struct lineInfo
+    {
+        public string line;
+        public double seconds;
+    }
+    public lineInfo[] subtitles;
 }
