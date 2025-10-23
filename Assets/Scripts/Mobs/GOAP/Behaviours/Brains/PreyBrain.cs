@@ -32,8 +32,7 @@ namespace SIGGD.Goap.Behaviours
         }
         private void DecideGoal()
         {
-            //this.provider.RequestGoal<WanderGoal, GrowPackGoal, FollowAlphaGoal, DontStarveGoal>(true);
-            this.provider.RequestGoal<WanderGoal, DontStarveGoal>(true);
+            this.provider.RequestGoal<WanderGoal, GrowPackGoal, FollowAlphaGoal, DontStarveGoal>(true);
         }
     }
 

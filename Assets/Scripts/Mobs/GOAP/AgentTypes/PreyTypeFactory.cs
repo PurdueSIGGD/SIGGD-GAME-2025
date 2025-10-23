@@ -13,7 +13,7 @@ namespace SIGGD.Goap.AgentTypes
             var factory = new AgentTypeBuilder(MobIds.prey);
             factory.AddCapability<HungerCapability>();
             factory.AddCapability<WanderCapability>();
-           // factory.AddCapability<PackCapability>();
+            factory.AddCapability<PackCapability>();
             return factory.Build();
         }
     }
