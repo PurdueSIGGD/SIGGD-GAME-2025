@@ -29,6 +29,7 @@ namespace SIGGD.Goap
         }
         public override void Stop(IMonoAgent agent, Data data)
         {
+            data.PackBehaviour.ForceLeavePack();
         }
 
         // The action class itself must be stateless!

@@ -27,6 +27,7 @@ namespace SIGGD.Goap
                 data.PackTarget).magnitude;
             return distance < data.PackBehaviour.Data.LeavePackRange &&
                 data.PackTarget != null &&
+                data.Target != null && data.Target.IsValid() &&
                 PackManager.CanJoin(data.PackBehaviour, data.PackTarget);
         }
 
