@@ -76,6 +76,15 @@ public class Inventory : MonoBehaviour
     public void ShowInventory(bool enabled)
     {
         inventoryCanvas.enabled = enabled;
+
+        // Inventory ui is still not responsive
+
+        // Added: disable player movement and show cursor.
+        if (enabled) Cursor.lockState = CursorLockMode.None;
+        else Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = enabled;
+        PlayerInput.Instance.DebugToggleInput(enabled);
+        Debug.LogWarning("Opening player inventory!");
     }
 
     private Slot GetHotbarSlot(int index)
@@ -139,7 +148,13 @@ public class Inventory : MonoBehaviour
         lastClickedItems.Add(item);
         if (lastClickedItems.Count >= 2)
         {
-            var combined = RecipeInfo.Get().UseRecipe(lastClickedItems[^2].itemName, lastClickedItems[^1].itemName);
+            var recipeInfo = RecipeInfo.Get();
+            Debug.Log(recipeInfo == null ? "null recipeInfo" : "recipeInfo NOT null");
+
+            var a = lastClickedItems[^2].itemName; 
+            var b = lastClickedItems[^1].itemName;
+
+            var combined = recipeInfo.UseRecipe(lastClickedItems[^2].itemName, lastClickedItems[^1].itemName);
             // If there is no valid recipe, null is returned.
             if (combined != null)
             {
@@ -147,6 +162,7 @@ public class Inventory : MonoBehaviour
                 combined.log();
                 lastClickedItems.Clear();
             }
+            else Debug.Log("combined is null for inputs " + a + " " + b);
         }
     }
 
@@ -305,5 +321,9 @@ public class Inventory : MonoBehaviour
     /// <returns>The </returns>
     public ItemInfo getItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
+    }
+
+    public Slot[] getInventory() {
+        return inventory;
     }
 }

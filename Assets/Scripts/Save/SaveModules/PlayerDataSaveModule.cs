@@ -21,7 +21,10 @@ public class PlayerDataSaveModule : ISaveModule
 
     public bool serialize()
     {
-        if (player) playerData.Position = player.transform.position;
+        if (player && player.TryGetComponent(out PlayerID pid))
+        {
+            playerData.Position = pid.stateMachine.LastGroundedPosition;
+        }
 
         byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);
         FileManager.Instance.WriteFile(savePath, bytes);
