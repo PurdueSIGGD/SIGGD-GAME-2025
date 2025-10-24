@@ -20,6 +20,11 @@ public class FMODEvents : MonoBehaviour
     [field: Header("Server Room Noise")] 
     [field: SerializeField] public EventReference serverNoise { get; private set; }
 
+    [field: SerializeField] public EventReference testAmbienceOne { get; private set; }
+
+    [field: SerializeField] public EventReference testAmbienceTwo { get; private set; }
+
+
 
     public static FMODEvents instance { get; private set; }
 

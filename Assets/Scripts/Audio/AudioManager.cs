@@ -13,6 +13,10 @@ public class AudioManager : MonoBehaviour
 
     public static AudioManager Instance { get; private set; }
 
+    private List<EventReference> randomAmbienceList = new List<EventReference>();
+    private float lastAmbienceSound;
+    private float interval;
+
 
     private void Awake()
     {
@@ -30,6 +34,28 @@ public class AudioManager : MonoBehaviour
     {
         InitializeAmbience(FMODEvents.instance.ambience);
         InitializeMusic(FMODEvents.instance.music);
+
+        randomAmbienceList.Add(FMODEvents.instance.testAmbienceOne);
+        randomAmbienceList.Add(FMODEvents.instance.testAmbienceTwo);
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            PlayRandomAmbience(Vector3.zero);
+        }
+
+        lastAmbienceSound = Time.time;
+        interval = Random.Range(10f, 20f);
+        UnityEngine.Debug.Log($"Next random ambience in {interval:F1} seconds");
+    }
+
+    public void PlayRandomAmbience(Vector3 worldPos)
+    {
+
+        int index = Random.Range(0, randomAmbienceList.Count);
+        EventReference randomEvent = randomAmbienceList[index];
+
+        RuntimeManager.PlayOneShot(randomEvent, worldPos);
+        UnityEngine.Debug.Log("Played random ambience: " + randomEvent.Path);
     }
 
     private void InitializeAmbience(EventReference ambienceEventReference)
@@ -98,6 +124,14 @@ public class AudioManager : MonoBehaviour
             UnityEngine.Debug.Log("toggle music: " + pauseMusic);
 
             musicEventInstance.setPaused(pauseMusic);
+        }
+
+        if (Time.time - lastAmbienceSound >= interval)
+        {
+            PlayRandomAmbience(Vector3.zero);
+            lastAmbienceSound = Time.time;
+            interval = Random.Range(10f, 20f);
+            UnityEngine.Debug.Log($"Next random ambience in {interval:F1} seconds");
         }
 
     }
