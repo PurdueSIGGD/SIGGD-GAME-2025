@@ -26,8 +26,11 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
 
     public bool serialize()
     {
-        if (player) playerData.Position = player.transform.position;
-        if (mainCamera) playerData.Rotation = mainCamera.transform.rotation;
+        if (player && player.TryGetComponent(out PlayerID pid))
+        {
+            playerData.Position = pid.stateMachine.LastGroundedPosition;
+            if (mainCamera) playerData.Rotation = mainCamera.transform.rotation;
+        }
 
         byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);
         FileManager.Instance.WriteFile(savePath, bytes);
