@@ -1608,6 +1608,35 @@ MonoBehaviour:
   velocitySmoothSpeed: 2
   body: {fileID: 1534219952}
   legParent: {fileID: 1637190343}
+  tVelocityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  theoreticalMaxVelocity: 15
+  legStepTime: {x: 0.05, y: 0.25}
+  maxFrontLegsLeanAngle: {x: 15, y: 30}
+  maxHindLegsLeanAngle: {x: 30, y: 45}
+  maxLeadDist: 3
   bodyPosSettings: {fileID: 11400000, guid: 5362e28ead9778649a519f561d39393e, type: 2}
   leftLegs:
   - pivot: {fileID: 1222436860}
@@ -1663,13 +1692,40 @@ MonoBehaviour:
     isStepping: 0
     rawUp: {x: 0, y: 0, z: 0}
     skewRotation: {x: 0, y: 0, z: 0, w: 0}
-  legStepHeight: 1
-  legStepTime: {x: 0.05, y: 0.25}
-  maxFrontLegsLeanAngle: {x: 15, y: 30}
-  maxHindLegsLeanAngle: {x: 30, y: 45}
+  legStepHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   legRotSmoothSpeed: 10
-  maxLeadDist: 3
-  theoreticalMaxVelocity: 25
   timeBeforeRest: 0.5
   legSettings: {fileID: 11400000, guid: 64fd3a5d5904c10499c06044ec0eb228, type: 2}
   showBodyDebugTools: 0
