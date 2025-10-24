@@ -21,6 +21,7 @@ public class PlayerInput : Singleton<PlayerInput>
     public bool jumpInput = false;
     
     public Action<InputAction.CallbackContext> OnJump = delegate { }; // jump event
+    public event Action<InputAction.CallbackContext> OnAction = delegate { };
 
     ////////
     protected override void Awake()
@@ -141,6 +142,8 @@ public class PlayerInput : Singleton<PlayerInput>
 
     private void InputAttack(InputAction.CallbackContext callbackValue) {
         // call something to attack (here)
+
+        OnAction?.Invoke(callbackValue);
     }
 
     // climbing
