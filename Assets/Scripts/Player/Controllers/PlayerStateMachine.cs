@@ -24,9 +24,10 @@ public class PlayerStateMachine : MonoBehaviour
     
     [Header("Parameter SOs")]
     public MoveData moveData; // ScriptableObject containing movement parameters.
-    
+    public ItemInfo defaultItem; // The default item the player starts with.
+
     #endregion
-    
+
     #region Check Attributes
 
     public float gravityScale { get; private set; } = 1f; // A scale on gravity when applied to the player,
@@ -81,11 +82,13 @@ public class PlayerStateMachine : MonoBehaviour
     private void OnEnable()
     {
         PlayerInput.Instance.OnJump += OnJumpAction;
+        PlayerInput.Instance.OnAction += TriggerAction;
     }
     
     private void OnDisable()
     {
         PlayerInput.Instance.OnJump -= OnJumpAction;
+        PlayerInput.Instance.OnAction -= TriggerAction;
     }
 
     #region Input Callbacks
@@ -136,17 +139,31 @@ public class PlayerStateMachine : MonoBehaviour
             lastTimeGrounded = 0;
         }
     }
-    
+
     #endregion
 
     #endregion
-    
-    
+
+    #region Attack Methods
+
+    public void TriggerAction(InputAction.CallbackContext context)
+    {
+        if (context.phase != InputActionPhase.Performed) return;
+        animator.SetBool(Animator.StringToHash("isPerformingAction"), true);
+    }
+
+    public ItemInfo GetEquippedItem()
+    {
+        return defaultItem;
+    }
+
+    #endregion
+
     // This region contains public methods used to move the player. This can be refactored into 
     // each individual state if this gets too cumbersome, but I am leaving it here for now because multiple
     // states might use similar movement logic.
     #region State Methods
-    
+
     /**
      * <summary>
      * Updates the player's movement based on the current moveDirection and camera orientation.
@@ -160,8 +177,6 @@ public class PlayerStateMachine : MonoBehaviour
         Transform cam = playerID.cam.transform;
         Vector3 direction = moveInput.x * cam.right.SetY(0).normalized + 
                                moveInput.y * cam.forward.SetY(0).normalized;
-        
-        //Debug.Log(direction);
         
         MoveInDirectionWithSpeed(direction, speed, moveData.movementInterpolation);
     }
@@ -200,7 +215,6 @@ public class PlayerStateMachine : MonoBehaviour
 		
         Vector3 movementForce = speedDiff * accelRate;
         
-        //Debug.Log(movementForce);
 		
         playerID.rb.AddForce(movementForce, ForceMode.Acceleration);
     }
