@@ -28,11 +28,10 @@ namespace ProceduralAnimation.Runtime {
     public class SpiderController : MonoBehaviour {
         [System.Serializable]
         public class Leg {
-            public Transform pivot; //  The shoulder transform
-            public Transform groundTarget;  //  The target where the leg's end effector should land
-            public ThreeLinkV2 leg; //  The reference to the three link solver
-
-            [HideInInspector] public bool initialized = false;  //  self-explanatory
+            [Tooltip("The shoulder transform")] public Transform pivot;
+            [Tooltip("The target where the leg's end effector should land")] public Transform groundTarget;
+            [Tooltip("The reference to the three link solver")] public ThreeLinkV2 leg;
+            [HideInInspector] public bool initialized = false; //   self-explanatory
 
             //  Used for calculating the interpolated positions
             [HideInInspector] public Vector3 startPosition; //  The start interpolation position
@@ -53,13 +52,13 @@ namespace ProceduralAnimation.Runtime {
             [HideInInspector] public Quaternion skewRotation;
         }
 
-        [FoldoutGroup("Float Parameters"), SerializeField] float distToLegCentre = 0.5f; //   This controls how much higher than the centre of leg heights it is 
-        [FoldoutGroup("Float Parameters"), SerializeField] LayerMask groundMask; //   Should be set to anything the spider can walk on
-        [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float maxRaycastDist = 5f; //  Half is above the ground target and the other half is below
-        [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float minDelta = 0.25f; //  Refer to Features section in the summary of this class
-        [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float maxDelta = 2f; //    Max distance before it takes a step
-        [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float bodyTiltLerpSpeed = 10f; //   The speed that it lerps the tilt
-        [FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float velocitySmoothSpeed = 10f; //   The speed that it lerps the tilt
+        [Tooltip("This controls how much higher than the centre of leg heights it is "), FoldoutGroup("Float Parameters"), SerializeField] float distToLegCentre = 0.5f;
+        [Tooltip("Should be set to anything the spider can walk on"), FoldoutGroup("Float Parameters"), SerializeField] LayerMask groundMask;
+        [Tooltip("Half is above the ground target and the other half is below"), FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float maxRaycastDist = 5f;
+        [Tooltip("Refer to Features section in the summary of this class"), FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float minDelta = 0.25f;
+        [Tooltip("Max distance before it takes a step"), FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float maxDelta = 2f;
+        [Tooltip("The speed that it lerps the tilt"), FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float bodyTiltLerpSpeed = 10f;
+        [Tooltip("The speed that it lerps the tilt"), FoldoutGroup("Float Parameters"), SerializeField, MinValue(0)] float velocitySmoothSpeed = 10f;
 
         [FoldoutGroup("Body Settings"), SerializeField] Transform body;
         [FoldoutGroup("Body Settings"), SerializeField] Transform legParent;
@@ -72,18 +71,18 @@ namespace ProceduralAnimation.Runtime {
         [FoldoutGroup("Leg Settings"), SerializeField] Leg[] rightLegs;
 
         [Header("Leg Step Settings")]
-        [FoldoutGroup("Leg Settings"), SerializeField] float legStepHeight = 1f;  //  How high the step should be
-        [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 2, true)] Vector2 legStepTime = new Vector2(0.05f, 0.25f); //  How long each step takes
+        [Tooltip("How high the step should be"), FoldoutGroup("Leg Settings"), SerializeField] float legStepHeight = 1f;
+        [Tooltip("How long each step takes"), FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 2, true)] Vector2 legStepTime = new Vector2(0.05f, 0.25f);
 
         [Header("Leg Lean Settings")]
-        [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 90, true)] Vector2 maxFrontLegsLeanAngle = new Vector2(30f, 45f); //  How much to rotate the legs closest to the velocity's direction forward
-        [FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 90, true)] Vector2 maxHindLegsLeanAngle = new Vector2(15f, 30f); //  How much to rotate the legs furthest to the velocity's direction forward
+        [Tooltip("How much to rotate the legs closest to the velocity's direction forward"), FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 90, true)] Vector2 maxFrontLegsLeanAngle = new Vector2(15F, 30f);
+        [Tooltip("How much to rotate the legs furthest to the velocity's direction forward"), FoldoutGroup("Leg Settings"), SerializeField, MinMaxSlider(0, 90, true)] Vector2 maxHindLegsLeanAngle = new Vector2(30f, 45f);
         [FoldoutGroup("Leg Settings"), SerializeField] float legRotSmoothSpeed = 10f;
 
         [Header("Other Leg Settings")]
-        [FoldoutGroup("Leg Settings"), SerializeField] float maxLeadDist = 3f; //  How far to offset the hind legs forwards and front legs backwards
-        [FoldoutGroup("Leg Settings"), SerializeField, MinValue(0)] float theoreticalMaxVelocity = 25f; //   Used to calculate the offset for ground targets and also the dynamic step time
-        [FoldoutGroup("Leg Settings"), SerializeField, MinValue(0)] float timeBeforeRest = 0.5f; //    How long before moving to rest position (refer to minDelta)
+        [Tooltip("How far to offset the hind legs forwards and front legs backwards"), FoldoutGroup("Leg Settings"), SerializeField] float maxLeadDist = 3f;
+        [Tooltip("Used to calculate the offset for ground targets and also the dynamic step time"), FoldoutGroup("Leg Settings"), SerializeField, MinValue(0)] float theoreticalMaxVelocity = 25f;
+        [Tooltip("How long before moving to rest position (refer to minDelta)"), FoldoutGroup("Leg Settings"), SerializeField, MinValue(0)] float timeBeforeRest = 0.5f;
 
         //  These are used for calculating the coefficients for the interpolation used in moving the legs
         [Header("Leg Interpolation Settings")]
@@ -101,15 +100,16 @@ namespace ProceduralAnimation.Runtime {
         ///     Non-white lines - the normal vector of the plane made from 3 of the leg joints
         ///     White Line - the average of all these lines
         /// </summary>
-        [FoldoutGroup("Debug"), SerializeField] bool showDebugTools;
-        [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] bool onGround; //  If it is grounded (can be improved but im too lazy)
-        [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] int numSteps = 0; //   Number of steps in this group
-        [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] int stepsCompleted = 0; // Number of steps completed by the group
-        [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] bool groupOneMoving; //    If group one is moving or not. Group one is arbitrary up to the setup.
-        [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] float vMag; // Magnitude of velocity
-        [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] float stepTime, leadDist; //   The interpolated step time and lead distance
-        [FoldoutGroup("Debug"), ShowIf("showDebugTools"), ShowInInspector, ReadOnly] float frontLeanAngle, hindLeanAngle; //   The interpolated front lean angle and hind lean angle
-        [ShowInInspector] float test;
+        [FoldoutGroup("Debug"), SerializeField] bool showBodyDebugTools;
+        [FoldoutGroup("Debug"), SerializeField] bool showLegDebugTools;
+        [FoldoutGroup("Debug"), SerializeField] bool showRaycastDebugTools;
+        [Tooltip("If it is grounded (can be improved but im too lazy)"), FoldoutGroup("Debug"), ShowIf("showLegDebugTools"), ShowInInspector, ReadOnly] bool onGround;
+        [Tooltip("Number of steps in this group"), FoldoutGroup("Debug"), ShowIf("showLegDebugTools"), ShowInInspector, ReadOnly] int numSteps = 0;
+        [Tooltip("Number of steps completed by the group"), FoldoutGroup("Debug"), ShowIf("showLegDebugTools"), ShowInInspector, ReadOnly] int stepsCompleted = 0;
+        [Tooltip("If group one is moving or not. Group one is arbitrary up to the setup."), FoldoutGroup("Debug"), ShowIf("showLegDebugTools"), ShowInInspector, ReadOnly] bool groupOneMoving;
+        [Tooltip("Magnitude of velocity"), FoldoutGroup("Debug"), ShowIf("showBodyDebugTools"), ShowInInspector, ReadOnly] float vMag;
+        [Tooltip("The interpolated step time and lead distance"), FoldoutGroup("Debug"), ShowIf("showLegDebugTools"), ShowInInspector, ReadOnly] float stepTime, leadDist;
+        [Tooltip("The interpolated front lean angle and hind lean angle"), FoldoutGroup("Debug"), ShowIf("showLegDebugTools"), ShowInInspector, ReadOnly] float frontLeanAngle, hindLeanAngle;
 
         SecondOrderDynamics positionFilter; //  Filter for interpolating the body's position
 
@@ -147,7 +147,7 @@ namespace ProceduralAnimation.Runtime {
 
                 //  Calculate t value to interpolate between min and max values for velocity based variables (t is the y value of a sigmoid function)
                 float exp = (theoreticalMaxVelocity / 2 - vMag) / theoreticalMaxVelocity * 5f;
-                float t = 1 - Mathf.Exp(exp) / (Mathf.Exp(exp) + 1);
+                float t = Mathf.Clamp01(1 - Mathf.Exp(exp) / (Mathf.Exp(exp) + 1));
 
                 //  Dynamically change step time, lead distance and lean angle
                 stepTime = Mathf.Lerp(legStepTime.y, legStepTime.x, t); //  Swapped the order because faster spider means lower step time
@@ -204,12 +204,14 @@ namespace ProceduralAnimation.Runtime {
                     leg.leg.target.up = leg.skewRotation * leg.rawUp;
 
                     // Debug Controls
-                    if (showDebugTools) {
+                    if (showRaycastDebugTools) {
                         Debug.DrawRay(leg.groundTarget.position + leg.groundTarget.up * maxRaycastDist / 2, -leg.groundTarget.up * maxRaycastDist, Color.cyan);
 
                         //  Ground Target Vector
                         Debug.DrawRay(groundPos, hit.normal);
+                    }
 
+                    if (showLegDebugTools) {
                         //  Rotation vectors
                         Debug.DrawRay(leg.leg.target.position, body.up, Color.green);
                         Debug.DrawRay(leg.leg.target.position, orthoVelocity, Color.red);
@@ -360,7 +362,7 @@ namespace ProceduralAnimation.Runtime {
             if (onGround)
                 body.localPosition = desiredPos;
 
-            if (showDebugTools) {
+            if (showBodyDebugTools) {
                 Debug.DrawRay(new Vector3(x, 0, z), Vector3.up, Color.red);
                 Debug.DrawRay(q1, q2 - q1);
                 Debug.DrawRay(p1, p2 - p1);
@@ -390,7 +392,7 @@ namespace ProceduralAnimation.Runtime {
             Quaternion rotation = Quaternion.LookRotation(bodyForward);
             body.rotation = Quaternion.Slerp(body.rotation, rotation, Time.deltaTime * bodyTiltLerpSpeed);
 
-            if (showDebugTools) {
+            if (showBodyDebugTools) {
                 Debug.DrawRay(body.position, norm1, Color.yellow);
                 Debug.DrawRay(body.position, norm2, Color.red);
                 Debug.DrawRay(body.position, norm3, Color.green);
