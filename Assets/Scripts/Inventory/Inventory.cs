@@ -19,19 +19,6 @@ public class Inventory : MonoBehaviour
     private int selected; // index of selected item in hotbar
     private Slot tempSlot; // temporary slot for holding item that is being moved
 
-    //
-    // TEMP CODE FROM SAVE TEAM -- NOLAN J
-    //
-
-    public Slot[] getInventory()
-    {
-        return this.inventory;
-    }
-
-    //
-    // END OF TEMP CODE FROM SAVE TEAM -- NOLAN J
-    //
-
     void Awake()
     {
         inventory = new Slot[HotBarLength + InventoryLength];
