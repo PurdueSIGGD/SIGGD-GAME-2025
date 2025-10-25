@@ -8,5 +8,6 @@ public class SpawnItemActionStrategy : IPlayerActionStrategy
     {
         base.OnEnter();
         GameObject.Instantiate(prefab);
+        Inventory.Instance.Decrement();
     }
 }

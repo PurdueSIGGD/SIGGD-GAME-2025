@@ -108,10 +108,6 @@ public class Inventory : Singleton<Inventory>
         {
             ShowInventory(!inventoryCanvas.enabled);
         }
-        if (Input.GetKeyDown(KeyCode.Q)) {
-            Debug.Log("Trying to use item");
-            //Use();
-        }
     }
 
     /// <summary>
@@ -260,6 +256,7 @@ public class Inventory : Singleton<Inventory>
     public void Decrement()
     {
         inventory[selected].count--;
+        Debug.Log("Used " + inventory[selected].itemInfo.itemName + ", " + inventory[selected].count + " remaining");
         if (inventory[selected].count == 0) {
             inventory[selected].itemInfo = null;
         }
