@@ -76,6 +76,7 @@ public class ClimbAction : MonoBehaviour
     // presets
     private Rigidbody playerRigidbody; // retrieved from playerID
     private Transform cameraTransform; // retrieved from playerID
+    private PlayerStateMachine stateMachine;
     private PlayerInput playerInput; // expected to be parented to the player object
     #endregion
 
@@ -139,6 +140,7 @@ public class ClimbAction : MonoBehaviour
         GameObject playerObject = playerID.gameObject;
         playerRigidbody = playerID.rb;
         cameraTransform = playerID.cam.transform;
+        stateMachine = playerID.stateMachine;
         playerInput = playerObject.GetComponent<PlayerInput>();
     }
 
@@ -208,16 +210,30 @@ public class ClimbAction : MonoBehaviour
     }
     
     // inputs to hold a hand down. If pressed down is true, the hand is held down. If false, the hand is lifted.
+    // this method is called by player input
     public void InputHand(bool pressedDown, Hand handInputted) {
         if (isClimbing == true) { 
             int handIndex = (int)handInputted;
-            if (handModeIsToggled == true) { // if toggle mode
-                if (pressedDown == true) {
-                    InputHand(!heldDownHands[handIndex], handInputted, true);
-                }
-            } else {
-                InputHand(pressedDown, handInputted, true);
+            bool pressInput = pressedDown;
+
+            // If I had just clinged to a wall (phantom hand), then detach that hand to make way
+            // for my new hand input! which is more important! it is king!.
+            if (phantomHands[handIndex] == true) {
+                SetPhantomHand(handIndex, false);
+                DetachHand(handInputted);
+                heldDownHands[handIndex] = false;
             }
+
+            // if in toggle mode and i want to press hand down
+            if (handModeIsToggled == true) {
+                if (pressedDown == true) {
+                    pressInput = !heldDownHands[handIndex];
+                } else { // is im already pressing down, letting go of the mouse shouldn't do anything
+                    pressInput = heldDownHands[handIndex];
+                }
+            }
+
+            InputHand(pressInput, handInputted, true);
         }
     }
 
@@ -247,6 +263,7 @@ public class ClimbAction : MonoBehaviour
         InputHand(true, Hand.RightHand, true);
         if (isHandAttached()) {
             isClimbing = true;
+            SetPhantomHand(true);
         } else {
             ExitClimb(); // removes held down hands
         }
@@ -259,10 +276,18 @@ public class ClimbAction : MonoBehaviour
     }
 
     // tries to exitclimbmode 
+    private float timeSpentGrounded = 0;
     private void TryToExitClimbMode() {
-        bool isGrounded = false;
         bool handsAttached = isHandAttached();
-        if (isGrounded == true && handsAttached) {
+
+        bool isGrounded = stateMachine.IsGrounded;
+        if (isGrounded == true) {
+            timeSpentGrounded += Time.deltaTime;
+        } else {
+            timeSpentGrounded = 0;
+        }
+
+        if (timeSpentGrounded >= groundedBufferTime && handsAttached == false) {
             ExitClimbMode();
         }
     }
@@ -288,14 +313,24 @@ public class ClimbAction : MonoBehaviour
     [Tooltip("Distance from the normal of a hand for target climbing position. How far from the wall the player is.")]
     [SerializeField] private float handToPlayerDistance = 1.75f;
 
-    [Tooltip("If equal to 1, reaching can nullify inputted lean. between 0 and 1, inputted lean will overpower reaching lean. If equal to 2, it will fully nullify inputted lean")]
+    [Tooltip("If equal to 1, reaching can nullify inputted lean. between 0 and 1, inputted lean will overpower reaching lean. " +
+        "If equal to 2, it will fully nullify inputted lean")]
     [SerializeField] [Range(0f, 2f)] private float reachingLeaningMagnitude = 0.5f;
+
+    [Tooltip("When doing a grounded check to see if the player should exit climbing mode, " +
+        "the player must be grounded for this amount of time to exit climb mode.")]
+    [SerializeField] [Range(0f, 0.2f)] private float groundedBufferTime = 0.05f;
+
     private bool isReaching = false; // if the player attempts to grab something out of their range, they are reaching
 
     [SerializeField] private GameObject handTransformPrefab;
     private Transform[] handTransforms = new Transform[2];
-    private bool[] heldDownHands = new bool[2];
-    private bool[] attachedHands = new bool[2];
+    private bool[] heldDownHands = new bool[2]; // hands held down by the player
+    private bool[] attachedHands = new bool[2]; // hands attached to a surface
+
+    // this is used in EnterClimbMode and InputHand to let the player quickly input new hand inputs after
+    // attaching themself to a surface
+    private bool[] phantomHands = new bool[2]; // hands that were JUST attached to a surface.
 
     public enum Hand {
         LeftHand,
@@ -310,6 +345,15 @@ public class ClimbAction : MonoBehaviour
     // gets the max distance between two attached hands
     private float GetMaxHandDistance() {
         return grabRange * 3;
+    }
+
+    // sets both phantom hands to given value
+    private void SetPhantomHand(bool toggle) {
+        SetPhantomHand(0, toggle);
+        SetPhantomHand(1, toggle);
+    }
+    private void SetPhantomHand(int handIndex, bool toggle) {
+        phantomHands[handIndex] = toggle;
     }
 
     // for each held down hand, fire said hand. If the hand isn't held down, detach said hand
@@ -404,9 +448,11 @@ public class ClimbAction : MonoBehaviour
     private void FireHand(Hand handToFire) {
         int handIndex = (int)handToFire;
         int otherHandIndex = 1 - handIndex;
+
+        // if my hand isn't attached, or it is attached but in 'phantom' mode, fire the hand
         if (attachedHands[handIndex] == false) {
-            isReaching = true;
             // the hand is reaching for an available spot
+            isReaching = true;
 
             RaycastHit hit;
             Vector3 rayOrigin = transform.position;

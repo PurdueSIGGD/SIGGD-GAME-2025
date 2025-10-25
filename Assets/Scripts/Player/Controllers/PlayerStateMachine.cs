@@ -45,7 +45,7 @@ public class PlayerStateMachine : MonoBehaviour
     
     public Vector3 LastGroundedPosition { get; private set; }
     
-    public bool IsFalling => playerID.rb.linearVelocity.y < -0.1f && !IsGrounded;
+    public bool IsFalling => playerID.rb.linearVelocity.y < -0.1f && !IsGrounded && !IsClimbing;
     
     #endregion
     
@@ -131,7 +131,7 @@ public class PlayerStateMachine : MonoBehaviour
         animator.SetBool(Animator.StringToHash("isGrounded"), IsGrounded); 
         animator.SetBool(Animator.StringToHash("isFalling"), IsFalling);
         
-        if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0)
+        if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0 && IsClimbing == false)
         {
             animator.SetTrigger(Animator.StringToHash("Jumping"));
             lastTimeJumpPressed = 0;
@@ -250,7 +250,11 @@ public class PlayerStateMachine : MonoBehaviour
      */
     private void ApplyGravity()
     {
-        Vector3 gravity = moveData.globalGravity * gravityScale * Vector3.up;
+        float usedGravityScale = gravityScale;
+        if (IsClimbing == true) { // while climbing, gravity is unaffected by gravity scale
+            usedGravityScale = 1;
+        }
+        Vector3 gravity = moveData.globalGravity * usedGravityScale * Vector3.up;
         playerID.rb.AddForce(gravity, ForceMode.Acceleration);
     }
     
