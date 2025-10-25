@@ -399,7 +399,7 @@ public class Inventory : Singleton<Inventory>
     /// </summary>
     /// <returns>The selected item</returns>
     public ItemInfo GetSelectedItem() { // maybe change return type
-        return inventory[selected].itemInfo;
+        return inventory[selected] ? inventory[selected].itemInfo : null;
     }
 
     /// <summary>
