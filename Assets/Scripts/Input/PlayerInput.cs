@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerInput : Singleton<PlayerInput>
 {
+    private ClimbAction climbingScript;
+
     // input variable
     private PlayerInputActions inputActions = null;
 
@@ -16,6 +18,7 @@ public class PlayerInput : Singleton<PlayerInput>
     // these variables are true when the player is HOLDING sprint or crouch
     public bool sprintInput = false;
     public bool crouchInput = false;
+    public bool jumpInput = false;
     
     public Action<InputAction.CallbackContext> OnJump = delegate { }; // jump event
     public event Action<InputAction.CallbackContext> OnAction = delegate { };
@@ -25,6 +28,7 @@ public class PlayerInput : Singleton<PlayerInput>
     {
         base.Awake();
         inputActions = new PlayerInputActions();
+        climbingScript = gameObject.GetComponent<ClimbAction>();
     }
 
     ////// when enabled, activate inputs
@@ -43,8 +47,15 @@ public class PlayerInput : Singleton<PlayerInput>
         inputActions.Player.Crouch.performed += InputCrouch;
         inputActions.Player.Crouch.canceled += InputCrouch;
         inputActions.Player.Jump.performed += InputJump;
+        inputActions.Player.Jump.canceled += InputJump;
         inputActions.Player.Sprint.performed += InputSprint;
         inputActions.Player.Sprint.canceled += InputSprint;
+
+        inputActions.Player.Climb.performed += InputClimb;
+        inputActions.Player.ClimbLeft.performed += InputClimbLeft;
+        inputActions.Player.ClimbLeft.canceled += InputClimbLeft;
+        inputActions.Player.ClimbRight.performed += InputClimbRight;
+        inputActions.Player.ClimbRight.canceled += InputClimbRight;
 
         // can be "performed" or "canceled"
         // performed = pressed down. canceled = released input
@@ -103,6 +114,8 @@ public class PlayerInput : Singleton<PlayerInput>
 
     //// jump, crouch, sprint inputs
     private void InputJump(InputAction.CallbackContext callbackValue) {
+        // call something to jump (here)
+        jumpInput = callbackValue.performed == true;
         
         OnJump?.Invoke(callbackValue);
     }
@@ -131,5 +144,24 @@ public class PlayerInput : Singleton<PlayerInput>
         // call something to attack (here)
 
         OnAction?.Invoke(callbackValue);
+    }
+
+    // climbing
+    private void InputClimb(InputAction.CallbackContext callbackValue)
+    {
+        // call something to attack (here)
+        climbingScript.EnterClimbMode();
+    }
+
+    private void InputClimbLeft(InputAction.CallbackContext callbackValue)
+    {
+        // call climbing script to
+        climbingScript.InputHand(callbackValue.performed, ClimbAction.Hand.LeftHand);
+    }
+
+    private void InputClimbRight(InputAction.CallbackContext callbackValue)
+    {
+        // call something to attack (here)
+        climbingScript.InputHand(callbackValue.performed, ClimbAction.Hand.RightHand);
     }
 }

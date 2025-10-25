@@ -46,14 +46,15 @@ public class PlayerStateMachine : MonoBehaviour
     
     public Vector3 LastGroundedPosition { get; private set; }
     
-    public bool IsFalling => playerID.rb.linearVelocity.y < -0.1f && !IsGrounded;
+    public bool IsFalling => playerID.rb.linearVelocity.y < -0.1f && !IsGrounded && !IsClimbing;
     
     #endregion
     
     #region Movement Attributes
     
     [HideInInspector] public Vector3 moveDirection; // The 3D direction the player is currently moving in.
-    public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f; // Whether the player is currently moving.
+    public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f && !IsClimbing; // Whether the player is currently moving.
+    public bool IsClimbing => PlayerID.Instance.gameObject.GetComponent<ClimbAction>().IsClimbing();
     
     #endregion
     
@@ -118,6 +119,7 @@ public class PlayerStateMachine : MonoBehaviour
      */
     private void UpdateAnimatorParams()
     {
+        animator.SetBool(Animator.StringToHash("isClimbing"), IsClimbing);
         if (IsGrounded)
         {
             lastTimeGrounded = moveData.coyoteTime;
@@ -132,7 +134,7 @@ public class PlayerStateMachine : MonoBehaviour
         animator.SetBool(Animator.StringToHash("isGrounded"), IsGrounded); 
         animator.SetBool(Animator.StringToHash("isFalling"), IsFalling);
         
-        if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0)
+        if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0 && IsClimbing == false)
         {
             animator.SetTrigger(Animator.StringToHash("Jumping"));
             lastTimeJumpPressed = 0;
@@ -154,7 +156,7 @@ public class PlayerStateMachine : MonoBehaviour
 
     public ItemInfo GetEquippedItem()
     {
-        return defaultItem;
+        return Inventory.Instance.GetSelectedItem();
     }
 
     #endregion
@@ -177,8 +179,6 @@ public class PlayerStateMachine : MonoBehaviour
         Transform cam = playerID.cam.transform;
         Vector3 direction = moveInput.x * cam.right.SetY(0).normalized + 
                                moveInput.y * cam.forward.SetY(0).normalized;
-        
-        // Debug.Log(direction);
         
         MoveInDirectionWithSpeed(direction, speed, moveData.movementInterpolation);
     }
@@ -217,7 +217,6 @@ public class PlayerStateMachine : MonoBehaviour
 		
         Vector3 movementForce = speedDiff * accelRate;
         
-        // Debug.Log(movementForce);
 		
         playerID.rb.AddForce(movementForce, ForceMode.Acceleration);
     }
@@ -265,7 +264,11 @@ public class PlayerStateMachine : MonoBehaviour
      */
     private void ApplyGravity()
     {
-        Vector3 gravity = moveData.globalGravity * gravityScale * Vector3.up;
+        float usedGravityScale = gravityScale;
+        if (IsClimbing == true) { // while climbing, gravity is unaffected by gravity scale
+            usedGravityScale = 1;
+        }
+        Vector3 gravity = moveData.globalGravity * usedGravityScale * Vector3.up;
         playerID.rb.AddForce(gravity, ForceMode.Acceleration);
     }
     
