@@ -9,11 +9,13 @@ public class EscapeMenu : MonoBehaviour
     public GameObject buttonObject;
     public GameObject fadedScreen;
     public GameObject inventoryButton;
+    public Canvas inventoryCanvas;
     [SerializeField] private Inventory inventory;
     private bool isEnabled;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        
         if (buttonObj != null)
         {
             quitButton = buttonObj.GetComponent<Button>();
@@ -34,11 +36,30 @@ public class EscapeMenu : MonoBehaviour
             buttonObject.SetActive(isEnabled);
             fadedScreen.SetActive(isEnabled);
             inventoryButton.SetActive(isEnabled);
+            inventoryCanvas.enabled = false;
+        }
+        if (inventoryCanvas.enabled)
+        {
+            isEnabled = false;
+            buttonObject.SetActive(false);
+            fadedScreen.SetActive(false);
+            inventoryButton.SetActive(false);
         }
     }
     public void loadMainMenu()
     {
-      
+        
         SceneManager.LoadScene("Main Menu");
     }
+    public void openInventoryMenu()
+    {
+
+        //inventory.ShowInventory(!inventory.inventoryEnabled);
+        inventoryCanvas.enabled = true;
+        isEnabled = false;
+        buttonObject.SetActive(false);
+        fadedScreen.SetActive(false);
+        inventoryButton.SetActive(false);
+    }
+    
 }

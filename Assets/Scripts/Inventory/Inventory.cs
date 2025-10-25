@@ -13,7 +13,7 @@ public class Inventory : MonoBehaviour
     [SerializeField] private Button[] inventorySlots = new Button[InventoryLength];
 
     private List<ItemInfo> lastClickedItems = new();
-
+    public bool inventoryEnabled;
     private Slot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
@@ -24,6 +24,7 @@ public class Inventory : MonoBehaviour
         inventory = new Slot[HotBarLength + InventoryLength];
         inventoryCanvas = GetComponentInChildren<Canvas>();
         inventoryCanvas.enabled = false;
+        inventoryEnabled = false;
     }
 
     void Start()
@@ -67,6 +68,7 @@ public class Inventory : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             ShowInventory(!inventoryCanvas.enabled);
+           
         }
     }
 
@@ -76,6 +78,7 @@ public class Inventory : MonoBehaviour
     public void ShowInventory(bool enabled)
     {
         inventoryCanvas.enabled = enabled;
+        inventoryEnabled = !inventoryEnabled;
     }
 
     private Slot GetHotbarSlot(int index)
