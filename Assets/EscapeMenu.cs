@@ -8,6 +8,8 @@ public class EscapeMenu : MonoBehaviour
     public GameObject buttonObj;
     public GameObject buttonObject;
     public GameObject fadedScreen;
+    public GameObject inventoryButton;
+    [SerializeField] private Inventory inventory;
     private bool isEnabled;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -19,6 +21,7 @@ public class EscapeMenu : MonoBehaviour
         }
         buttonObject.SetActive(false);
         fadedScreen.SetActive(false);
+        inventoryButton.SetActive(false);
         isEnabled = false;
     }
 
@@ -30,6 +33,7 @@ public class EscapeMenu : MonoBehaviour
             isEnabled = !isEnabled;
             buttonObject.SetActive(isEnabled);
             fadedScreen.SetActive(isEnabled);
+            inventoryButton.SetActive(isEnabled);
         }
     }
     public void loadMainMenu()
