@@ -12,7 +12,7 @@ public class PlayerItemActionState : StateMachineBehaviour
 
         var currentItem = playerStateMachine.GetEquippedItem();
 
-        playerActionStrategy = currentItem?.playerActionStrategy;
+        playerActionStrategy = currentItem != null ? currentItem.playerActionStrategy : null;
 
         if (playerActionStrategy == null) {
             playerStateMachine.animator.SetBool(Animator.StringToHash("isPerformingAction"), false);
