@@ -21,6 +21,6 @@ public class LeaveCarcassBehaviour : MonoBehaviour
     }
     private void SpawnCarcass()
     {
-        Instantiate(carcassPrefab, gameObject.transform.position, Quaternion.identity);
+        Instantiate(carcassPrefab, transform.position, Quaternion.identity);
     }
 }

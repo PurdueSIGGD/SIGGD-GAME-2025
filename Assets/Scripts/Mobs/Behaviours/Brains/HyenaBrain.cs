@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Core;
 using SIGGD.Goap.Sensors;
+using SIGGD.Mobs.PackScripts;
 
 namespace SIGGD.Goap.Behaviours
 {
@@ -14,6 +15,7 @@ namespace SIGGD.Goap.Behaviours
         private AgentMoveBehaviour AgentMoveBehaviour;
         private HungerBehaviour HungerBehaviour;
         private AgentHuntBehaviour HuntBehaviour;
+        private PackBehavior PackBehaviour;
         protected override void Awake()
         {
             this.goap = FindFirstObjectByType<GoapBehaviour>();
@@ -23,6 +25,7 @@ namespace SIGGD.Goap.Behaviours
             AgentMoveBehaviour = this.GetComponent<AgentMoveBehaviour>();
             HuntBehaviour = this.GetComponent<AgentHuntBehaviour>();
             HungerBehaviour = this.GetComponent<HungerBehaviour>();
+            PackBehaviour = this.GetComponent<PackBehavior>();
         }
         protected override void Start()
         {
@@ -48,6 +51,7 @@ namespace SIGGD.Goap.Behaviours
         }
         protected override void OnNoActionFound(IGoalRequest request)
         {
+            if (this.provider.CurrentPlan == null) return;
             if (HuntBehaviour.currentTargetOfHunt != null)
                 return;
             if (this.provider.CurrentPlan.Goal is DontStarveGoal)
@@ -55,6 +59,7 @@ namespace SIGGD.Goap.Behaviours
             if (this.provider.CurrentPlan.Goal is not KillPlayerGoal)
             {
                 //AgentMoveBehaviour.DisableSprint();
+                this.provider.RequestGoal<FollowAlphaGoal, StickTogetherGoal>(false);
                 this.provider.RequestGoal<WanderGoal>(false);
             }
         }

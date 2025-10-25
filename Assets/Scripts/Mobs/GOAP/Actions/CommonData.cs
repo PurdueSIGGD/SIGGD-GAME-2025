@@ -2,6 +2,7 @@
 using UnityEngine;
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Agent.Core;
+using SIGGD.Goap.Behaviours;
 
 namespace SIGGD.Goap
 {
@@ -13,6 +14,8 @@ namespace SIGGD.Goap
 
         [GetComponent]
         public Animator animator { get; set; }
-        
+
+        [GetComponent]
+        public HyenaAttackManager am { get; set; }
     }
 }

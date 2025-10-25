@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SIGGD.Goap.Config
 {
-    [CreateAssetMenu(fileName = "HungerConfigSO", menuName = "Scriptable Objects/BaseStateConfigSO")]
+    [CreateAssetMenu(fileName = "HungerConfigSO", menuName = "Scriptable Objects/Mobs/BaseStateConfigSO")]
     public class BaseStatConfig : ScriptableObject
     {
         [Header("Hunger Settings")]

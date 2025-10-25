@@ -25,7 +25,7 @@ namespace SIGGD.Goap
         }
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
-            return ActionRunState.WaitThenComplete(12f);
+            return ActionRunState.WaitThenComplete(4f);
 
         }
         public override void Complete(IMonoAgent agent, Data data)

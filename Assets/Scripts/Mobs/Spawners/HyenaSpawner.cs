@@ -22,12 +22,12 @@ public class HyenaSpawner : MonoBehaviour
     {
         for (int i = 0; i < spawnCount; i++) {
 
-            var agent = Instantiate(this.agentPrefab, new Vector3(10, -1, 10), new Quaternion(10, 10, 10, 10)).GetComponent<GoapActionProvider>();
+            var agent = Instantiate(this.agentPrefab, new Vector3(10, 2, 10), new Quaternion(10, 10, 10, 10)).GetComponent<GoapActionProvider>();
             agent.gameObject.SetActive(true);
         }
     }
     private Vector3 GetRandomPosition() {
         Vector2 randomPos = Random.insideUnitCircle * spawningX;
-        return new Vector3(randomPos.x, -1, randomPos.y);
+        return new Vector3(randomPos.x, 2, randomPos.y);
     }
 }

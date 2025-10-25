@@ -21,6 +21,13 @@ namespace SIGGD.Goap.Behaviours
 
         public float speed;
 
+        [SerializeField] public Transform groundCheckPoint;
+        [SerializeField] public Vector3 groundCheckSize = new Vector3(0.49f, 0.3f, 0.49f);
+        public LayerMask groundLayer;
+
+        public bool IsGrounded =>
+            Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
+
         private void Awake()
         {
             this.agent = this.GetComponent<AgentBehaviour>();
@@ -94,7 +101,7 @@ namespace SIGGD.Goap.Behaviours
            // this.transform.LookAt(currentTarget.Position);
 
             // Move the agent along towards their goal position
-            Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * speed);
+            Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * speed * 100);
         }
 
         
@@ -105,5 +112,6 @@ namespace SIGGD.Goap.Behaviours
 
             Gizmos.DrawLine(this.transform.position, this.currentTarget.Position);
         }
+
     }
 }

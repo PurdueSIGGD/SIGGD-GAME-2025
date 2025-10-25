@@ -3,6 +3,7 @@ using CrashKonijn.Goap.Runtime;
 using CrashKonijn.Agent.Runtime;
 using UnityEngine;
 using SIGGD.Goap.Interfaces;
+using SIGGD.Goap.Behaviours;
 
 namespace SIGGD.Goap
 {
@@ -25,16 +26,17 @@ namespace SIGGD.Goap
         }
         public override void BeforePerform(IMonoAgent agent, CommonData data)
         {
+            if (Vector3.Distance(data.Target.Position, agent.Transform.position) <= 15)
+            {
+                data.am.StartAttackSequence(data.Target.Position);
+                data.am.isLunging = true;
+            }
         }
 
         public override IActionRunState Perform(IMonoAgent agent, CommonData data, IActionContext context)
         {
-            data.Timer -= context.DeltaTime;
-            if (Vector3.Distance(data.Target.Position, agent.Transform.position) <= 5)
-            {
-                data.animator.SetTrigger("Attack");
-            }
-            return ActionRunState.Completed;
+            if (!data.am.isLunging) return ActionRunState.Completed;
+            return ActionRunState.Continue;
         }
         public override void Stop(IMonoAgent agent, CommonData data)
         {

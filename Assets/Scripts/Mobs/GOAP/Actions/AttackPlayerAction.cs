@@ -1,8 +1,9 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
-using SIGGD.Goap.Interfaces;
+using CrashKonijn.Agent.Runtime;
 using UnityEngine;
-using SIGGD.Goap;
+using SIGGD.Goap.Interfaces;
+using SIGGD.Goap.Behaviours;
 
 namespace SIGGD.Goap
 {
@@ -20,35 +21,38 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override bool IsValid(IActionReceiver agent, CommonData data)
         {
-            return true;
+            return data.Target != null;
         }
 
         // This method is called when the action is started
         // This method is optional and can be removed
         public override void Start(IMonoAgent agent, CommonData data)
         {
-            data.Timer = 2f;
+            data.Timer = 20f;
         }
-
-        // This method is called once before the action is performed
-        // This method is optional and can be removed
         public override void BeforePerform(IMonoAgent agent, CommonData data)
         {
+            if (Vector3.Distance(data.Target.Position, agent.Transform.position) <= 15)
+            {
+                data.am.StartAttackSequence(data.Target.Position);
+                data.am.isLunging = true;
+            }
         }
 
-        // This method is called every frame while the action is running
-        // This method is required
         public override IActionRunState Perform(IMonoAgent agent, CommonData data, IActionContext context)
         {
-            data.Timer -= context.DeltaTime;
-            if (Vector3.Distance(data.Target.Position, agent.Transform.position) <= 5)
-            {
-                data.animator.SetTrigger("Attack");
-            }
-            return ActionRunState.Completed;
+            if (!data.am.isLunging) return ActionRunState.Completed;
+            return ActionRunState.Continue;
         }
+        public override void Stop(IMonoAgent agent, CommonData data)
+        {
+        }
+        public override void End(IMonoAgent agent, CommonData data)
+        {
+            this.Disable(agent, ActionDisabler.ForTime(2f));
 
-
-
+        }
     }
+
+
 }
