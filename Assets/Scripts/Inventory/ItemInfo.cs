@@ -38,6 +38,10 @@ public class ItemInfo : ScriptableObject
 
     [SerializeField] public string description; // description of the item
 
+    [SerializeReference] public IPlayerActionStrategy playerActionStrategy; // strategy pattern for player actions with the item
+
+    // Maybe include reference to gameobject for instantiating?
+
     public void log() { 
         Debug.Log("Item Type: " +  itemType);
         Debug.Log("Item Name: " + itemName);
