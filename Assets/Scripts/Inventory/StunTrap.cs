@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class StunTrap : MonoBehaviour, Usable
+public class StunTrap : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private Rigidbody rb;
@@ -8,7 +8,8 @@ public class StunTrap : MonoBehaviour, Usable
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        //rb.linearVelocity = PlayerID.Instance.gameObject.GetComponent<Rigidbody>().linearVelocity;
+        rb.linearVelocity = PlayerID.Instance.gameObject.GetComponent<Rigidbody>().linearVelocity;
+        Throw();
     }
 
     // Update is called once per frame
@@ -23,10 +24,6 @@ public class StunTrap : MonoBehaviour, Usable
         rb.position = PlayerID.Instance.gameObject.transform.position;
         rb.AddForce(PlayerID.Instance.cam.transform.forward * throwForce, ForceMode.Impulse);
         
-    }
-
-    public void Use() {
-        Throw();
     }
 
     void OnCollisionEnter(Collision collision)

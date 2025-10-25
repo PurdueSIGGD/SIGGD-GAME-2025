@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 
-public class Inventory : MonoBehaviour
+public class Inventory : Singleton<Inventory>
 {
     const int HotBarLength = 9;
     const int InventoryLength = 18;
@@ -24,8 +24,9 @@ public class Inventory : MonoBehaviour
 
     private InventoryInputActions inputActions;
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         inventory = new Slot[HotBarLength + InventoryLength];
         inventoryCanvas = GetComponentInChildren<Canvas>();
         inventoryCanvas.enabled = false;
@@ -109,7 +110,7 @@ public class Inventory : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Q)) {
             Debug.Log("Trying to use item");
-            Use();
+            //Use();
         }
     }
 
@@ -240,18 +241,18 @@ public class Inventory : MonoBehaviour
     /// <summary>
     /// Uses the currently selected item
     /// </summary>
-    public void Use() {
-        if (!inventory[selected] || inventory[selected].count == 0 || inventory[selected].itemInfo == null) return;
-        ItemInfo itemInfo = inventory[selected].itemInfo;
-        if (itemInfo.itemType == ItemInfo.ItemType.Trap) {
-            if (itemInfo.itemName == ItemInfo.ItemName.StunTrap) {
-                GameObject newStunTrap = Instantiate(items[0]);
-                newStunTrap.GetComponent<StunTrap>().Use();
-                Decrement();
-                Debug.Log("Used " + itemInfo.itemName + ", " + inventory[selected].count + " remaining");
-            }
-        }
-    }
+    //public void Use() {
+    //    if (!inventory[selected] || inventory[selected].count == 0 || inventory[selected].itemInfo == null) return;
+    //    ItemInfo itemInfo = inventory[selected].itemInfo;
+    //    if (itemInfo.itemType == ItemInfo.ItemType.Trap) {
+    //        if (itemInfo.itemName == ItemInfo.ItemName.StunTrap) {
+    //            GameObject newStunTrap = Instantiate(items[0]);
+    //            newStunTrap.GetComponent<StunTrap>().Use();
+    //            Decrement();
+    //            Debug.Log("Used " + itemInfo.itemName + ", " + inventory[selected].count + " remaining");
+    //        }
+    //    }
+    //}
 
     /// <summary>
     /// Decrements the count of the selected item by one

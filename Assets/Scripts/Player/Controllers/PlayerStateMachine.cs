@@ -154,7 +154,7 @@ public class PlayerStateMachine : MonoBehaviour
 
     public ItemInfo GetEquippedItem()
     {
-        return defaultItem;
+        return Inventory.Instance.GetSelectedItem();
     }
 
     #endregion
