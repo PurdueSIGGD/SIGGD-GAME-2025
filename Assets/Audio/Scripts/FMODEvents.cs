@@ -6,132 +6,97 @@ using System.Collections;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using FMOD.Studio;
+using System.Threading.Tasks;
 
 public class FMODEvents : SerializedMonoBehaviour
 {
-    [field: Header("Ambiance")]
-    [field: SerializeField] public EventReference ambience { get; private set; }
-
-    [field: Header("Player SFX")]
-    [field: SerializeField] public EventReference enemyDeath { get; private set; }
-
-    [field: Header("Footsteps")]
-    [field: SerializeField] public EventReference footsteps { get; private set; }
-
-    [field: Header("Background Music")]
-    [field: SerializeField] public EventReference music { get; private set; }
-
-    [field: Header("Server Room Noise")]
-    [field: SerializeField] public EventReference serverNoise { get; private set; }
-
-    [SerializeField] private bool initialized = false;
     public static FMODEvents instance { get; private set; }
 
     public List<string> bankNames = new List<string>();
 
-    [OdinSerialize] private Dictionary<string, EventReference> soundEvents = new Dictionary<string, EventReference>();
+    public static bool initialized = false;
 
-    // holds requests for event refs when they are called before soundEvents is filled 
-    [OdinSerialize] private Dictionary<string, List<Action<EventReference>>> requestQueue = new Dictionary<string, List<Action<EventReference>>>();
+    [OdinSerialize] public Dictionary<string, EventReference> soundEvents = new Dictionary<string, EventReference>();
 
     private void Awake()
     {
         if (instance != null)
         {
-            Debug.Log("Too many FMODEvents instances!");
+            Debug.Log("too many instances");
+            return;
         }
 
         instance = this;
 
-        // Load all banks immediately
+        _ = LoadSoundEventsPostBankLoading(); // we dont care about storing this beacause its only running once
+    }
+
+    private async Task LoadSoundEventsPostBankLoading()
+    {
         foreach (string name in bankNames)
         {
-            RuntimeManager.LoadBank(name, true);
+            RuntimeManager.LoadBank(name, true); // the true forces them to all load at once
         }
-    }
 
-    private void Start()
-    {
-        StartCoroutine(LoadSoundEventsPostBankLoading());
-    }
+        // waiting to make sure everything is loaded right
+        while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized || !EventManager.IsInitialized)
+        {
+            await Task.Yield();
+        }
 
-    private IEnumerator LoadSoundEventsPostBankLoading()
-    {
-        yield return null; // Give FMOD a frame to load banks
-
+        // The actual code
         foreach (string name in bankNames)
         {
+            // removing .bank from the inital string given and adding bank:/ cuz its needed for the path to the bank
             string filePath = "bank:/" + name.Replace(".bank", "");
-            if (RuntimeManager.StudioSystem.getBank(filePath, out Bank bank) != FMOD.RESULT.OK)
-            {
-                Debug.LogError("Failed to get bank: " + filePath);
-                continue;
-            }
+            FMOD.Studio.Bank bank;
 
-            bank.getEventList(out EventDescription[] eventDescriptions);
+            // actually getting the bank after theyve been loaded
+            RuntimeManager.StudioSystem.getBank(filePath, out bank);
 
-            foreach (EventDescription desc in eventDescriptions)
+            bank.getEventList(out FMOD.Studio.EventDescription[] eventDescriptions);
+
+            foreach (FMOD.Studio.EventDescription description in eventDescriptions)
             {
-                desc.getPath(out string eventPath);
+                description.getPath(out string eventPath);
+
                 EventReference eventRef = EventReference.Find(eventPath);
 
-                soundEvents[eventPath.Replace("event:/", "")] = eventRef;
+                soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1), eventRef); // the replace just makes the names a little nicer
             }
         }
 
         initialized = true;
-
-        // process queued requests
-        foreach (var request in requestQueue)
-        {
-            if (soundEvents.TryGetValue(request.Key, out var eventRef))
-            {
-                foreach (var action in request.Value)
-                    action.Invoke(eventRef);
-            }
-        }
-        requestQueue.Clear();
-
-        Debug.Log($"FMODEvents initialized: {soundEvents.Count} events loaded.");
+        Debug.Log("All " + soundEvents.Count + " events loaded");
     }
 
-    /// <summary>
-    /// Returns an EventReference immediately if FMODEvents is initialized, otherwise queues it.
-    /// </summary>
-    public void GetReadyEvent(string key, Action<EventReference> action)
+    // the thing that will actually be called when you are trying to get an event instance
+    public async Task<EventInstance> GetEventInstance(string key)
     {
-        if (initialized)
+        // Wait until events are ready
+        while (!initialized)
         {
-            if (soundEvents.TryGetValue(key, out var eventRef))
-                action.Invoke(eventRef);
-            else
-                Debug.LogError($"FMODEvents: Event '{key}' not found.");
+            await Task.Yield();
         }
-        else
-        {
-            if (!requestQueue.ContainsKey(key))
-                requestQueue[key] = new List<Action<EventReference>>();
 
-            requestQueue[key].Add(action);
+        // try to get the value
+        if (soundEvents.TryGetValue(key, out var eventRef))
+        {
+            return RuntimeManager.CreateInstance(eventRef);
         }
+
+        Debug.LogError("couldnt find key: " + key);
+        return default;
     }
 
-    /// <summary>
-    /// Assigns a playable EventInstance to a callback. Handles queuing automatically.
-    /// </summary>
-    public void AssignEventTo(string key, Action<EventInstance> action)
+    // call this when you just want a sound to play once
+    public void playOneShot(string key, Vector3 positon)
     {
-        GetReadyEvent(key, (eventRef) =>
-        {
-            if (!eventRef.IsNull)
-            {
-                EventInstance instance = AudioManager.instance.CreateEventInstance(eventRef);
-                action.Invoke(instance);
-            }
-            else
-            {
-                Debug.LogError($"FMODEvents: EventReference for key '{key}' is null.");
-            }
-        });
+        AudioManager.instance.PlayOneShot(soundEvents[key], positon);
+    }
+
+    public void initializeEventEmitter(string key, GameObject emitterObject)
+    {
+
     }
 }

@@ -21,15 +21,9 @@ public class PlayerMovement : MonoBehaviour
 
     public Rigidbody rb;
 
-    private void Start()
+    private async void Start()
     {
-        //footsteps = AudioManager.instance.CreateEventInstance(FMODEvents.getEvent("footsteps"));
-
-        FMODEvents.instance.AssignEventTo("footsteps", (instance) =>
-        {
-            footsteps = instance;
-            UnityEngine.Debug.Log("Footsteps assigned. Valid? " + footsteps.isValid());
-        });
+        footsteps = await FMODEvents.instance.GetEventInstance("Footsteps");
 
         //music.start();
 
@@ -38,9 +32,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+    
         if (Input.GetKeyDown(KeyCode.E))
         {
-            AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
+            FMODEvents.instance.playOneShot("maledeath", this.transform.position);
         }
 
         if (transform.position.y < -50)
@@ -55,40 +50,44 @@ public class PlayerMovement : MonoBehaviour
 
         rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
 
+        /*
+        if (!footsteps.isValid())
+        {
+            footsteps = FMODEvents.instance.getEventInstance("Footsteps");
+        }
+        */
+
+        if (!footsteps.isValid())
+        {
+            UnityEngine.Debug.Log("not valid");
+        }
+        else
+        {
+            UnityEngine.Debug.Log("valid");
+        }
+
         UpdateSound();
     }
 
     private void UpdateSound()
     {
-        if (footsteps.isValid()) // make sure the instance exists
+        if (rb.linearVelocity.magnitude != 0)
         {
-            Vector3 velocity = rb.linearVelocity;
+            // NOTE: 3d attributes need to be set in order to play instances in 3d
+            ATTRIBUTES_3D attr = AudioManager.instance.configAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, Vector3.up);
+            footsteps.set3DAttributes(attr);
 
-            if (velocity.magnitude > 0.1f) // moving
+            PLAYBACK_STATE playbackState;
+            footsteps.getPlaybackState(out playbackState);
+
+            if (playbackState.Equals(PLAYBACK_STATE.STOPPED))
             {
-                // Update 3D attributes
-                ATTRIBUTES_3D attr = RuntimeUtils.To3DAttributes(gameObject);
-                footsteps.set3DAttributes(attr);
-
-                // Check if it's already playing
-                PLAYBACK_STATE state;
-                footsteps.getPlaybackState(out state);
-
-                if (state != PLAYBACK_STATE.PLAYING)
-                {
-                    footsteps.start();
-                }
+                footsteps.start();
             }
-            else // stopped
-            {
-                PLAYBACK_STATE state;
-                footsteps.getPlaybackState(out state);
-
-                if (state == PLAYBACK_STATE.PLAYING)
-                {
-                    footsteps.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                }
-            }
+        }
+        else
+        {
+            footsteps.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
         }
     }
 }

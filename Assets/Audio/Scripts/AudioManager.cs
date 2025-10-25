@@ -53,8 +53,8 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        InitializeAmbience(FMODEvents.instance.ambience);
-        InitializeMusic(FMODEvents.instance.music);
+        //InitializeAmbience(FMODEvents.instance.ambience);
+        //InitializeMusic(FMODEvents.instance.music);
     }
 
     // when you just want to play a sound once on a trigger
