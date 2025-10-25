@@ -18,12 +18,15 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
 
     private EventInstance footsteps;
+    private EventInstance music;
 
     public Rigidbody rb;
 
     private async void Start()
     {
         footsteps = await FMODEvents.instance.GetEventInstance("Footsteps");
+
+        music = await FMODEvents.instance.initializeMusic("LevelMusic");
 
         //music.start();
 
@@ -32,7 +35,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-    
         if (Input.GetKeyDown(KeyCode.E))
         {
             FMODEvents.instance.playOneShot("maledeath", this.transform.position);
@@ -49,13 +51,6 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
         rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
-
-        /*
-        if (!footsteps.isValid())
-        {
-            footsteps = FMODEvents.instance.getEventInstance("Footsteps");
-        }
-        */
 
         if (!footsteps.isValid())
         {

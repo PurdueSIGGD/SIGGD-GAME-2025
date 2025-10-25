@@ -16,7 +16,7 @@ public class FMODEvents : SerializedMonoBehaviour
 
     public static bool initialized = false;
 
-    [OdinSerialize] public Dictionary<string, EventReference> soundEvents = new Dictionary<string, EventReference>();
+    [OdinSerialize] private Dictionary<string, EventReference> soundEvents = new Dictionary<string, EventReference>();
 
     private void Awake()
     {
@@ -47,7 +47,7 @@ public class FMODEvents : SerializedMonoBehaviour
         // The actual code
         foreach (string name in bankNames)
         {
-            // removing .bank from the inital string given and adding bank:/ cuz its needed for the path to the bank
+            // Adding bank:/ cuz its needed for the path to the bank
             string filePath = "bank:/" + name.Replace(".bank", "");
             FMOD.Studio.Bank bank;
 
@@ -85,7 +85,7 @@ public class FMODEvents : SerializedMonoBehaviour
             return RuntimeManager.CreateInstance(eventRef);
         }
 
-        Debug.LogError("couldnt find key: " + key);
+        Debug.Log("couldnt find key: " + key);
         return default;
     }
 
@@ -95,8 +95,54 @@ public class FMODEvents : SerializedMonoBehaviour
         AudioManager.instance.PlayOneShot(soundEvents[key], positon);
     }
 
-    public void initializeEventEmitter(string key, GameObject emitterObject)
+    public async Task<StudioEventEmitter> initializeEventEmitter(string key, GameObject emitterObject)
     {
+        // Wait until events are ready
+        while (!initialized)
+        {
+            await Task.Yield();
+        }
 
+        if (soundEvents.TryGetValue(key, out var eventRef))
+        {
+            return AudioManager.instance.InitializeEventEmitter(eventRef, emitterObject);
+        }
+
+        Debug.Log("couldnt find key: " + key);
+        return default;
+    }
+
+    public async Task<EventInstance> initializeMusic(string key)
+    {
+        // Wait until events are ready
+        while (!initialized)
+        {
+            await Task.Yield();
+        }
+
+        if (soundEvents.TryGetValue(key, out var eventRef))
+        {
+            AudioManager.instance.InitializeMusic(eventRef);
+        }
+
+        Debug.Log("couldnt find key: " + key);
+        return default;
+    }
+
+    public async Task<EventInstance> initializeAmbience(string key)
+    {
+        // Wait until events are ready
+        while (!initialized)
+        {
+            await Task.Yield();
+        }
+
+        if (soundEvents.TryGetValue(key, out var eventRef))
+        {
+            AudioManager.instance.InitializeMusic(eventRef);
+        }
+
+        Debug.Log("couldnt find key: " + key);
+        return default;
     }
 }
