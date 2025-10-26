@@ -1,12 +1,12 @@
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
-using SIGGD.Mobs;
 using Unity.VisualScripting;
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Core;
+using SIGGD.Goap;
 
-namespace SIGGD.Goap.Behaviours
+namespace SIGGD.Mobs
 {
     public class SimpleBrain : BaseAgentBrain
     {

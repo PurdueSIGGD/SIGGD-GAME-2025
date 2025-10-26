@@ -17,7 +17,7 @@ namespace SIGGD.Goap.Capabilities
             builder.AddAction<AttackPlayerAction>()
                 .AddEffect<PlayerHealth>(EffectType.Decrease)
                 .SetTarget<PlayerLocation>()
-                .SetStoppingDistance(2);
+                .SetStoppingDistance(12);
             builder.AddTargetSensor<PlayerTargetSensor>()
                 .SetTarget<PlayerLocation>();
 

@@ -6,14 +6,14 @@ using System.Collections;
 using System.Threading;
 using UnityEngine;
 
-namespace SIGGD.Goap.Behaviours
+namespace SIGGD.Mobs
 {
     public class HungerBehaviour : MonoBehaviour
     {
         private AgentBehaviour agent;
 
         [field:SerializeField]
-        public float hunger { get; set; }
+        public float hunger { get; private set; }
 
         public int foodCount = 0;
 
@@ -46,7 +46,10 @@ namespace SIGGD.Goap.Behaviours
             }
             damageTickActive = false;
         }
+        public void ReduceHunger(float amount)
+        {
+            hunger -= amount;
+        }
     }
-
 }
 

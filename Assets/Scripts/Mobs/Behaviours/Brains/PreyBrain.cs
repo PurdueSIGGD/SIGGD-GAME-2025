@@ -1,12 +1,12 @@
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
-using SIGGD.Mobs;
 using Unity.VisualScripting;
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Core;
+using SIGGD.Goap;
 
-namespace SIGGD.Goap.Behaviours
+namespace SIGGD.Mobs
 {
     public class PreyBrain : BaseAgentBrain
     {
@@ -32,7 +32,7 @@ namespace SIGGD.Goap.Behaviours
         }
         private void DecideGoal()
         {
-            this.provider.RequestGoal<WanderGoal, GrowPackGoal, FollowAlphaGoal, DontStarveGoal>(true);
+            this.provider.RequestGoal<WanderGoal, GrowPackGoal, FollowAlphaGoal, DontStarveGoal, AvoidDangerGoal>(true);
         }
     }
 

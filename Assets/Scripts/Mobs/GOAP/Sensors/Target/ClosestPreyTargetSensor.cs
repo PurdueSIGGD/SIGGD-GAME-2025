@@ -1,7 +1,7 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
-using SIGGD.Goap.Behaviours;
+using SIGGD.Mobs;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,15 +19,15 @@ namespace SIGGD.Goap.Sensors
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
             var AgentHuntBehaviour = references.GetCachedComponent<AgentHuntBehaviour>();
-            //if (AgentHuntBehaviour.currentTargetOfHunt != null && AgentHuntBehaviour.currentTargetOfHunt.activeInHierarchy)
-            //    return new TransformTarget(AgentHuntBehaviour.currentTargetOfHunt.transform);
+            if (AgentHuntBehaviour.currentTargetOfHunt != null && AgentHuntBehaviour.currentTargetOfHunt.activeInHierarchy)
+                return new TransformTarget(AgentHuntBehaviour.currentTargetOfHunt.transform);
             var closestPrey = Closest(prey, agent.Transform.position);
             if (closestPrey == null)
                 return null;
 
             if (existingTarget is TransformTarget transformTarget)
                 return transformTarget.SetTransform(closestPrey.transform);
-            //AgentHuntBehaviour.SetHuntTarget(closestPrey.gameObject);
+            AgentHuntBehaviour.SetHuntTarget(closestPrey.gameObject);
             return new TransformTarget(closestPrey.transform);
         }
         private T Closest<T>(IEnumerable<T> list, Vector3 position)

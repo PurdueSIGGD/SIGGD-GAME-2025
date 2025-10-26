@@ -3,14 +3,15 @@ using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
 using UnityEngine.AI;
+using SIGGD.Goap;
 
-namespace SIGGD.Goap.Behaviours
+namespace SIGGD.Mobs
 {
     public class AgentMoveBehaviour : MonoBehaviour
     {
         
         private AgentBehaviour agent;
-        private AgentSprintBehaviour sprint;
+        private StaminaBehaviour sprint;
         private ITarget currentTarget;
         private bool shouldMove;
         private bool sprintAllowed;
@@ -31,7 +32,7 @@ namespace SIGGD.Goap.Behaviours
         private void Awake()
         {
             this.agent = this.GetComponent<AgentBehaviour>();
-            sprint = GetComponent<AgentSprintBehaviour>();
+            sprint = GetComponent<StaminaBehaviour>();
             sprintAllowed = false;
             speed = 3f;
         }
@@ -86,19 +87,15 @@ namespace SIGGD.Goap.Behaviours
 
             if (this.currentTarget == null)
                 return;
-            //speed = 1f;
-            /*
+            speed = 3f;
             if (sprintAllowed)
             {
                 if (sprint.stamina > 0)
                 {
-                    speed = 2f;
-                    sprint.stamina -= 8 * Time.deltaTime;
+                    speed = 8f;
+                    sprint.ReduceStamina(8 * Time.deltaTime);
                 }
             }
-            */
-           // this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.currentTarget.Position.x, this.transform.position.y, this.currentTarget.Position.z), Time.deltaTime * speed);
-           // this.transform.LookAt(currentTarget.Position);
 
             // Move the agent along towards their goal position
             Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * speed * 100);
@@ -111,6 +108,14 @@ namespace SIGGD.Goap.Behaviours
                 return;
 
             Gizmos.DrawLine(this.transform.position, this.currentTarget.Position);
+        }
+        public void EnableSprint()
+        {
+            sprintAllowed = true;
+        }
+        public void DisableSprint()
+        {
+            sprintAllowed = false;
         }
 
     }

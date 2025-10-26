@@ -1,13 +1,17 @@
 using UnityEngine;
 
-public class FoodBehaviour : MonoBehaviour
+namespace SIGGD.Mobs
 {
-    void Start()
+
+    public class FoodBehaviour : MonoBehaviour
     {
-        
-    }
-    void Update()
-    {
-        
+        void Start()
+        {
+
+        }
+        void Update()
+        {
+
+        }
     }
 }

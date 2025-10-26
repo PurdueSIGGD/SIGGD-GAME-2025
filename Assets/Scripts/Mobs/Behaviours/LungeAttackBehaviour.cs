@@ -1,6 +1,7 @@
 using NUnit.Framework.Interfaces;
 using UnityEngine;
 
+
 public class LungeAttackBehaviour : MonoBehaviour
 {
     public float attackInterval;

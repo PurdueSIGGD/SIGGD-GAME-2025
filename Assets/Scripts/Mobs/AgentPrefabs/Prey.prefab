@@ -27,7 +27,7 @@ GameObject:
   - component: {fileID: 5686439252671958473}
   m_Layer: 9
   m_Name: Prey
-  m_TagString: Untagged
+  m_TagString: Prey
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -169,6 +169,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navMeshAgent: {fileID: 466983475878616671}
   speed: 0
+  groundCheckPoint: {fileID: 0}
+  groundCheckSize: {x: 0.49, y: 0.3, z: 0.49}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &1626535795618859838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,6 +230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <stamina>k__BackingField: 0
   statConfig: {fileID: 11400000, guid: 1c2a12c7ad63f074d86a890f7c6116e6, type: 2}
+  energyLevel: 1
 --- !u!114 &-5223704737165724895
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,10 +1,9 @@
 ﻿
-using SIGGD.Goap.Behaviours;
 using System;
 using System.Collections;
 using UnityEngine;
 
-namespace SIGGD.Goap.Behaviours
+namespace SIGGD.Mobs
 {
     public class AgentHuntBehaviour : MonoBehaviour
     {
@@ -48,7 +47,7 @@ namespace SIGGD.Goap.Behaviours
         }
         private void FixedUpdate()
         {
-            
+            Debug.Log($"real pos{gameObject.transform.position}");
         }
         private void FinishHunt()
         {

@@ -2,7 +2,9 @@
 using UnityEngine;
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Agent.Core;
-using SIGGD.Goap.Behaviours;
+using SIGGD.Mobs.Hyena;
+using SIGGD.Mobs;
+
 
 namespace SIGGD.Goap
 {
@@ -17,5 +19,8 @@ namespace SIGGD.Goap
 
         [GetComponent]
         public HyenaAttackManager am { get; set; }
+
+        [GetComponent]
+        public AgentMoveBehaviour mb { get; set; }
     }
 }

@@ -13,6 +13,10 @@ public class EnemyAnimator : MonoBehaviour
     private BoxCollider collider;
     private Vector3 boxHalfExtents;
     private Vector3 boxCenter;
+    [SerializeField]
+    private GameObject idleModel;
+    [SerializeField]
+    private GameObject attackModel;
     void Awake()
 
     {
@@ -23,6 +27,7 @@ public class EnemyAnimator : MonoBehaviour
     }
     private void Start()
     {
+        idleModel.SetActive(true);
         boxHalfExtents = collider.size * 0.5f;
         boxCenter = collider.transform.TransformPoint(collider.center);
     }
@@ -45,6 +50,14 @@ public class EnemyAnimator : MonoBehaviour
         }
     }
     */
+    public AnimatorStateInfo getAnimStateInfo()
+    {
+        return animator.GetCurrentAnimatorStateInfo(0);
+    }
+    public float getAnimLength()
+    {
+        return getAnimStateInfo().length;
+    }
     private void OnDrawGizmos()
     {
         if (collider == null) return;
@@ -59,6 +72,12 @@ public class EnemyAnimator : MonoBehaviour
         Gizmos.DrawCube(collider.center, boxHalfExtents * 2);
     }
 
+    public void SetLungeModel()
+    {
+        idleModel.SetActive(false);
+        attackModel.SetActive(true);
+    }
+
     void EnableAttack()
     {
         Debug.Log("attack_enabled");
@@ -67,6 +86,8 @@ public class EnemyAnimator : MonoBehaviour
     }
     void DisableAttack()
     {
+        idleModel.SetActive(true);
+        attackModel.SetActive(false);
         Debug.Log("attack_disabled");
         //collider.gameObject.SetActive(false);
 

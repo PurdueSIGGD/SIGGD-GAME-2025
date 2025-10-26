@@ -3,7 +3,7 @@ using CrashKonijn.Goap.Runtime;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using SIGGD.Goap.Behaviours;
+using SIGGD.Mobs;
 
 namespace SIGGD.Goap.Sensors
 {

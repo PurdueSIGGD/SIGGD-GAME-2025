@@ -18,7 +18,9 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override bool IsValid(IActionReceiver agent, Data data)
         {
-            return true;
+            var targetPos = data.Target.GetValidPosition();
+            if (targetPos == null) return false;
+            return Vector3.Distance((Vector3)targetPos, agent.Transform.position) < 100f;
         }
 
         // This method is called when the action is started

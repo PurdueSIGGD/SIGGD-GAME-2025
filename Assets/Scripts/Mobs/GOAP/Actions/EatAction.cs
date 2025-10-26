@@ -1,8 +1,8 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
 using CrashKonijn.Agent.Runtime;
-using SIGGD.Goap.Behaviours;
 using UnityEngine;
+using SIGGD.Mobs;
 
 namespace SIGGD.Goap
 {
@@ -19,6 +19,7 @@ namespace SIGGD.Goap
         }
         public override void Start(IMonoAgent agent, Data data)
         {
+
         }
         public override void BeforePerform(IMonoAgent agent, Data data)
         {
@@ -32,8 +33,10 @@ namespace SIGGD.Goap
         {
             if (data.Target is not TransformTarget transformTarget)
                 return;
+            // nutrition check either here or in hunger behaviour
+            data.HungerBehaviour.ReduceHunger(20);
             GameObject.Destroy(transformTarget.Transform.gameObject);
-        }
+    }
 
         public override void Stop(IMonoAgent agent, Data data)
         {

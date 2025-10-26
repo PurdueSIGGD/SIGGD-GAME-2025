@@ -1,16 +1,21 @@
 using UnityEngine;
 
-public class PreyBehaviour : MonoBehaviour
+namespace SIGGD.Mobs
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class PreyBehaviour : MonoBehaviour
     {
-        
+        // Start is called once before the first execution of Update after the MonoBehaviour is created
+        public int predatorCount = 0;
+        void Start()
+        {
+
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

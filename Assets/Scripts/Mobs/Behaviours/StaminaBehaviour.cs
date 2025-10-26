@@ -6,44 +6,38 @@ using System.Collections;
 using System.Threading;
 using UnityEngine;
 
-namespace SIGGD.Goap.Behaviours
+namespace SIGGD.Mobs
 {
-    public class AgentSprintBehaviour : MonoBehaviour
+    public class StaminaBehaviour : MonoBehaviour
     {
         [field: SerializeField]
-        public float stamina { get; set; }
+        public float stamina { get; private set; }
 
         //AgentData AgentData;
         bool sprintAllowed = false;
 
         [SerializeField]
         private BaseStatConfig statConfig;
+        public float energyLevel = 1f;
         private void Awake()
         {
             //AgentData = GetComponent<AgentData>();
+
             stamina = statConfig.maxStamina;
         }
         public void Update()
         {
 
         }
-        public void EnableSprint()
-        {
-            sprintAllowed = true;
-        }
-        public void DisableSprint()
-        {
-            sprintAllowed = false;
-        }
-        /*
+
         public void FixedUpdate()
         {
-            if (stamina < statConfig.maxStamina * AgentData.energyLevel)
+            //if (stamina < statConfig.maxStamina * AgentData.energyLevel)
+            if (stamina < statConfig.maxStamina)
             {
-                ReduceStamina(statConfig.staminaGainRate);
+                AddStamina(statConfig.staminaGainRate);
             }
         }
-        
         public void ReduceStamina(float amount)
         {
             stamina -= amount * energyLevel;
@@ -52,6 +46,7 @@ namespace SIGGD.Goap.Behaviours
         {
             stamina += amount * energyLevel;
         }
+        /*
         public float GetStamina()
         {
             return stamina;

@@ -12,10 +12,11 @@ namespace SIGGD.Goap.Capabilities
         {
             var builder = new CapabilityBuilder("HuntPreyCapability");
             builder.AddAction<KillPreyAction>()
-                .SetBaseCost(30)
+                .SetBaseCost(10)
                 .AddEffect<FoodCount>(EffectType.Increase)
                 .SetTarget<ClosestPrey>()
-                .SetStoppingDistance(2);
+                .SetRequiresTarget(true)
+                .SetStoppingDistance(12);
             builder.AddTargetSensor<ClosestPreyTargetSensor>()
                 .SetTarget<ClosestPrey>();
 

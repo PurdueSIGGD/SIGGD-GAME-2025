@@ -3,7 +3,6 @@ using CrashKonijn.Goap.Runtime;
 using CrashKonijn.Agent.Runtime;
 using UnityEngine;
 using SIGGD.Goap.Interfaces;
-using SIGGD.Goap.Behaviours;
 
 namespace SIGGD.Goap
 {
@@ -21,7 +20,7 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override bool IsValid(IActionReceiver agent, CommonData data)
         {
-            return data.Target != null;
+            return !data.am.isLunging;
         }
 
         // This method is called when the action is started
@@ -29,12 +28,15 @@ namespace SIGGD.Goap
         public override void Start(IMonoAgent agent, CommonData data)
         {
             data.Timer = 20f;
+            data.mb.EnableSprint();
         }
         public override void BeforePerform(IMonoAgent agent, CommonData data)
         {
-            if (Vector3.Distance(data.Target.Position, agent.Transform.position) <= 15)
+            float distance = Vector3.Distance(data.Target.Position, agent.Transform.position);
+            if (distance <= 25 && distance > 5)
             {
-                data.am.StartAttackSequence(data.Target.Position);
+                data.am.StartAttackSequence(agent);
+                data.am.SetTarget(data.Target as TransformTarget);
                 data.am.isLunging = true;
             }
         }
@@ -42,14 +44,15 @@ namespace SIGGD.Goap
         public override IActionRunState Perform(IMonoAgent agent, CommonData data, IActionContext context)
         {
             if (!data.am.isLunging) return ActionRunState.Completed;
-            return ActionRunState.Continue;
+            return ActionRunState.Stop;
         }
         public override void Stop(IMonoAgent agent, CommonData data)
         {
         }
         public override void End(IMonoAgent agent, CommonData data)
         {
-            this.Disable(agent, ActionDisabler.ForTime(2f));
+            data.mb.DisableSprint();
+            this.Disable(agent, ActionDisabler.ForTime(0.5f));
 
         }
     }

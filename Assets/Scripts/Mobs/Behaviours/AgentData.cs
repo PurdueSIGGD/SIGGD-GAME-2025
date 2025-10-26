@@ -1,20 +1,31 @@
 ﻿
-/*
 using JetBrains.Annotations;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
-namespace Assets.Scripts.Mobs.GOAP.Behaviours
+namespace SIGGD.Mobs
 {
     public class AgentData : MonoBehaviour
     {
 
         // Use this for initialization
+        private EntityHealthManager healthManager;
+        private StaminaBehaviour staminaBehaviour;
         public int desperationLevel;
         public int powerLevel;
-        public int energyLevel;
+        public float energyLevel;
         public int aggressionLevel;
+        private float maxEnergy = 0;
+        private int maxPower = 0;
+        private int maxDesperation = 0;
+        private int maxAggression = 0;
+
+        private void Awake()
+        {
+            EntityHealthManager healthManager = GetComponent<EntityHealthManager>();
+            StaminaBehaviour staminaBehaviour = GetComponent<StaminaBehaviour>();
+        }
         void Start()
         {
             aggressionLevel = 1;
@@ -28,9 +39,9 @@ namespace Assets.Scripts.Mobs.GOAP.Behaviours
         {
 
         }
-        public void IncreaseEnergy(int amount)
+        public void IncreaseEnergy(float factor)
         {
-            energyLevel = Mathf.Clamp(energyLevel + amount, 0, maxEnergy);
+            energyLevel = Mathf.Clamp(energyLevel * factor, 0, maxEnergy);
         }
         public void DecreaseEnergy(int amount)
         {
@@ -55,12 +66,14 @@ namespace Assets.Scripts.Mobs.GOAP.Behaviours
         public void IncreaseAggression(int amount)
         {
             aggressionLevel = Mathf.Clamp(aggressionLevel + amount, 0, maxAggression);
-            
         }
         public void DecreaseAggression(int amount)
         {
             aggressionLevel = Mathf.Clamp(aggressionLevel - amount, 0, maxAggression);
         }
+        public void CalculateEnergyLevel()
+        {
+            float energyLevel = Mathf.Lerp(0, 1, healthManager.CurrentHealth * staminaBehaviour.stamina / 100);
+        }
     }
 }
-*/

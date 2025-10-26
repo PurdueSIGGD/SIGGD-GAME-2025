@@ -1,7 +1,7 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
 using CrashKonijn.Agent.Runtime;
-using SIGGD.Goap.Behaviours;
+using SIGGD.Mobs;
 using SIGGD.Mobs.PackScripts;
 using UnityEngine;
 

@@ -1,26 +1,30 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class LeaveCarcassBehaviour : MonoBehaviour
+namespace SIGGD.Mobs
 {
-  
-    private EntityHealthManager healthManager;
-    [SerializeField]
-    private GameObject carcassPrefab;
-    private void Awake()
+    public class LeaveCarcassBehaviour : MonoBehaviour
     {
-        healthManager = GetComponent<EntityHealthManager>();
+
+        private EntityHealthManager healthManager;
+        [SerializeField]
+        private GameObject carcassPrefab;
+        private void Awake()
+        {
+            healthManager = GetComponent<EntityHealthManager>();
+        }
+        private void OnEnable()
+        {
+            healthManager.OnDeath += SpawnCarcass;
+        }
+        private void OnDisable()
+        {
+            healthManager.OnDeath -= SpawnCarcass;
+        }
+        private void SpawnCarcass()
+        {
+            Instantiate(carcassPrefab, transform.position, Quaternion.identity);
+        }
     }
-    private void OnEnable()
-    {
-        healthManager.OnDeath += SpawnCarcass;
-    }
-    private void OnDisable()
-    {
-        healthManager.OnDeath -= SpawnCarcass;
-    }
-    private void SpawnCarcass()
-    {
-        Instantiate(carcassPrefab, transform.position, Quaternion.identity);
-    }
+
 }

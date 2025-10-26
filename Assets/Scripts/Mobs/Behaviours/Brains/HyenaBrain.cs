@@ -1,14 +1,14 @@
 ﻿using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
-using SIGGD.Mobs;
 using Unity.VisualScripting;
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Core;
-using SIGGD.Goap.Sensors;
 using SIGGD.Mobs.PackScripts;
+using SIGGD.Goap;
+using SIGGD.Mobs.Hyena;
 
-namespace SIGGD.Goap.Behaviours
+namespace SIGGD.Mobs
 {
     public class HyenaBrain : BaseAgentBrain
     {
@@ -16,6 +16,7 @@ namespace SIGGD.Goap.Behaviours
         private HungerBehaviour HungerBehaviour;
         private AgentHuntBehaviour HuntBehaviour;
         private PackBehavior PackBehaviour;
+        private HyenaAttackManager HyenaAttackManager;
         protected override void Awake()
         {
             this.goap = FindFirstObjectByType<GoapBehaviour>();
@@ -26,10 +27,15 @@ namespace SIGGD.Goap.Behaviours
             HuntBehaviour = this.GetComponent<AgentHuntBehaviour>();
             HungerBehaviour = this.GetComponent<HungerBehaviour>();
             PackBehaviour = this.GetComponent<PackBehavior>();
+            HyenaAttackManager = this.GetComponent<HyenaAttackManager>();
         }
         protected override void Start()
         {
-            this.provider.RequestGoal<WanderGoal, DontStarveGoal>(true);
+            this.provider.RequestGoal<WanderGoal>(true);
+        }
+        private void Update()
+        {
+          // if (this.provider.CurrentPlan == null) this.provider.RequestGoal<WanderGoal>();
         }
         protected override void OnEnable()
         {
@@ -41,27 +47,47 @@ namespace SIGGD.Goap.Behaviours
             base.OnDisable();
             FieldOfView.OnPlayerDetected -= PlayerDetected;
         }
+
         protected override void OnActionEnd(IAction action)
         {
-
-            if (HungerBehaviour.hunger > 50)
+            if (HyenaAttackManager.isLunging) return;
+            Debug.Log("action end");
+            if (this.provider.CurrentPlan == null)
             {
-                this.provider.RequestGoal<DontStarveGoal>(false);
-            }
+                Debug.Log("null plan");
+                this.provider.RequestGoal<WanderGoal, DontStarveGoal>(true);
+                return;
+            } else if (HungerBehaviour.hunger > 50)
+            {
+                Debug.Log("hungry stuff");
+                this.provider.RequestGoal<WanderGoal, DontStarveGoal>(false);
+                return;
+            }               
+            Debug.Log("resolving");
+            //this.provider.ResolveAction();
         }
         protected override void OnNoActionFound(IGoalRequest request)
         {
-            if (this.provider.CurrentPlan == null) return;
+            if (HyenaAttackManager.isLunging) return;
             if (HuntBehaviour.currentTargetOfHunt != null)
                 return;
-            if (this.provider.CurrentPlan.Goal is DontStarveGoal)
-                return;
-            if (this.provider.CurrentPlan.Goal is not KillPlayerGoal)
+            if (this.provider.CurrentPlan == null) return;
+            Debug.Log("how");
+            if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
+            {
+                this.provider.RequestGoal<DontStarveGoal>(true);
+            } else
+            {
+                this.provider.RequestGoal<WanderGoal>(true);
+            }
+            /*
+            else if (this.provider.CurrentPlan.Goal is not KillPlayerGoal)
             {
                 //AgentMoveBehaviour.DisableSprint();
-                this.provider.RequestGoal<FollowAlphaGoal, StickTogetherGoal>(false);
-                this.provider.RequestGoal<WanderGoal>(false);
+                //this.provider.RequestGoal<FollowAlphaGoal, StickTogetherGoal>(false);
+                this.provider.RequestGoal<WanderGoal>(true);
             }
+            */
         }
         protected override void OnActionStart(IAction action)
         {
@@ -72,11 +98,11 @@ namespace SIGGD.Goap.Behaviours
                 //AgentMoveBehaviour.EnableSprint();
             }
         }
-
         private void DecideGoal()
         {
             this.provider.RequestGoal<WanderGoal>(true);
         }
+
         void PlayerDetected(Transform player)
         {
             if (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 50)
