@@ -71,43 +71,12 @@ public class FMODEvents : SerializedMonoBehaviour
         Debug.Log("All " + soundEvents.Count + " events loaded");
     }
 
-    // for repreated sounds
-    public EventInstance getEventInstance(string key)
+    public void playOneShot(string key, Vector3 position)
     {
-        return AudioManager.Instance.CreateEventInstance(soundEvents[key]);
+        AudioManager.Instance.PlayOneShot(soundEvents[key], position);
     }
 
-    // sound you just wanna play once
-    public void playOneShot(string key, Vector3 positon)
-    {
-        AudioManager.Instance.PlayOneShot(soundEvents[key], positon);
-    }
-
-    // currently all the music and ambience are initliazed inside of AudioManager so there are no examples of these being used yet
-    // for making music
-    public void initializeMusic(string key)
-    {
-        AudioManager.Instance.InitializeMusic(soundEvents[key]);
-    }
-
-    // for making ambience
-    public void initializeAmbience(string key)
-    {
-        AudioManager.Instance.InitializeAmbience(soundEvents[key]);
-    }
-
-    // also for ambience
-    public StudioEventEmitter initializeEventEmitter(string key, GameObject emitterObject)
-    {
-        StudioEventEmitter tempEmitter;
-        tempEmitter = AudioManager.Instance.InitializeEventEmitter(soundEvents[key], emitterObject);
-        tempEmitter.Play();
-        return tempEmitter;
-    }
-
-    // ill make all this code work eventually trust - jay
-    /*
-    // the thing that will actually be called when you are trying to get an event instance
+    // gets you an event instance based on the key you give it
     public async Task<EventInstance> GetEventInstance(string key)
     {
         // Wait until events are ready
@@ -130,7 +99,7 @@ public class FMODEvents : SerializedMonoBehaviour
         return default;
     }
     
-    
+    // something for ambience i dont understand it but i hope it works
     public async Task<StudioEventEmitter> initializeEventEmitter(string key, GameObject emitterObject)
     {
         // Wait until events are ready
@@ -148,7 +117,7 @@ public class FMODEvents : SerializedMonoBehaviour
         return default;
     }
 
-    public async Task<EventReference> initializeMusic(string key)
+    public async Task<EventInstance> initializeMusic(string key)
     {
         // Wait until events are ready
         while (!initialized)
@@ -165,7 +134,7 @@ public class FMODEvents : SerializedMonoBehaviour
         return default;
     }
 
-    public async Task<EventReference> initializeAmbience(string key)
+    public async Task<EventInstance> initializeAmbience(string key)
     {
         // Wait until events are ready
         while (!initialized)
@@ -181,5 +150,4 @@ public class FMODEvents : SerializedMonoBehaviour
         Debug.Log("couldnt find key: " + key);
         return default;
     }
-    */
 }
