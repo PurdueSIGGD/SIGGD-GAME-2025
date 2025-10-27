@@ -100,15 +100,6 @@ public class Inventory : Singleton<Inventory>
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
     }
-    
-    // TODO: replace
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            ShowInventory(!inventoryCanvas.enabled);
-        }
-    }
 
     /// <summary>
     /// Enable the inventory ui, disable player movment, and show cursor
