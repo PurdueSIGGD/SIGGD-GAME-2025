@@ -356,8 +356,4 @@ public class Inventory : Singleton<Inventory>, IInventory
     public ItemInfo getItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
     }
-
-    public Slot[] getInventory() {
-        return inventory;
-    }
 }
