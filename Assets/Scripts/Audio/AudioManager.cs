@@ -34,6 +34,7 @@ public class AudioManager : MonoBehaviour
     {
         if (!ambience.isValid())
         {
+            // for some reason testAmbience isnt getting added to soundEvents it might be stored under a bank im not loading
             InitializeAmbience(FMODEvents.instance.soundEvents["testAmbience"]);
         }
 
