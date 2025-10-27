@@ -53,6 +53,7 @@ GameObject:
   - component: {fileID: 2731770825627935556}
   - component: {fileID: 6491714649861698900}
   - component: {fileID: 8801861665935149493}
+  - component: {fileID: 7733996633153474590}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -212,6 +213,7 @@ MonoBehaviour:
   mainCol: {fileID: 0}
   allCols: []
   moveData: {fileID: 11400000, guid: c44b423fe1edd40eb9acc6075047a3e1, type: 2}
+  defaultItem: {fileID: 11400000, guid: a1b0ec91ee954a84e9d2fe4e86bed0f1, type: 2}
   groundCheckPoint: {fileID: 8621645992914645891}
   groundCheckSize: {x: 0.49, y: 0.3, z: 0.49}
   groundLayer:
@@ -268,6 +270,7 @@ MonoBehaviour:
   lookInput: {x: 0, y: 0}
   sprintInput: 0
   crouchInput: 0
+  jumpInput: 0
 --- !u!114 &5997739575148913819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -324,6 +327,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vignetteMat: {fileID: 2100000, guid: 034a1fc6081e7ae459e6ba7dd1263d38, type: 2}
   vignetteIntensity: 4
+--- !u!114 &7733996633153474590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696392301619895344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 779c64551d9f0d64a88b83e52a80fd33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  climbingLayerMaskName: Environment
+  handModeIsToggled: 0
+  influenceVerticalInputWithCrouchAndJump: 0
+  walljumpEnabled: 1
+  disableWalljumpBoosting: 0
+  walljumpUsesLeanDirection: 1
+  oneHandedPenalties: 1
+  useRaycastRadius: 1
+  enableWalljumpFatigue: 1
+  clampWalljumpVelocity: 1
+  leaningMagnitude: 1.25
+  grabRange: 2.25
+  raycastRadius: 0.1
+  handToPlayerDistance: 1.75
+  reachingLeaningMagnitude: 0.5
+  groundedBufferTime: 0.05
+  handTransformPrefab: {fileID: 0}
+  climbingVelocityGain: 1.75
+  maxClimbingVelocity: 2.5
+  forceGain: 12
+  maxClimbingForce: 25
+  oneHandedSpeedPenalty: 0.8
+  oneHandedForcePenalty: 0.6
+  oneHandedLeanMagnitudePenalty: 0.9
+  velocityOvershoot: 0.4
+  steadyStateSpeedCap: 0.5
+  wallJumpMagnitude: 4
+  verticalWallJumpFactor: 1
+  maxWallJumpVelocity: 7
+  fatigueRecoveryTime: 1.5
 --- !u!1 &4791394868699375998
 GameObject:
   m_ObjectHideFlags: 0

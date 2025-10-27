@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FMOD.Studio;
 using FMOD;
+using FMODUnity;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
@@ -20,20 +21,20 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector] public Rigidbody rb;
 
-    private void Start()
+    // the async Start() is needed for getting the event instances set right
+    private async void Start()
     {
-        footsteps = AudioManager.Instance.CreateEventInstance(FMODEvents.instance.footsteps);
-
-        //music.start();
-
         rb = GetComponent<Rigidbody>();
+
+        // as long as you format it like this and have it in a async Start() it should all work
+        footsteps = await FMODEvents.instance.GetEventInstance("Footsteps");
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            AudioManager.Instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
+            FMODEvents.instance.playOneShot("maledeath", this.transform.position);
         }
 
         if (transform.position.y < -50)
@@ -47,6 +48,15 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
         rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+
+        // this is the basic way to make any sort of continued sound events
+        /*
+        if (!footsteps.isValid())
+        {
+            footsteps = FMODEvents.instance.getEventInstance("Footsteps");
+        }
+        */
+        
 
         UpdateSound();
     }
@@ -69,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            footsteps.stop(STOP_MODE.ALLOWFADEOUT);
+            footsteps.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
         }
     }
 }

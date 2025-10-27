@@ -8,8 +8,8 @@ public class AudioManager : MonoBehaviour
 {
     private List<StudioEventEmitter> eventEmitters;
 
-    private EventInstance ambienceEventInstance;
-    private EventInstance musicEventInstance;
+    private EventInstance ambience;
+    private EventInstance music;
 
     public static AudioManager Instance { get; private set; }
 
@@ -26,34 +26,34 @@ public class AudioManager : MonoBehaviour
         eventEmitters = new List<StudioEventEmitter>();
     }
 
-    private void Start()
+    private async void Start()
     {
-        InitializeAmbience(FMODEvents.instance.ambience);
-        InitializeMusic(FMODEvents.instance.music);
+        music = await FMODEvents.instance.initializeMusic("LevelMusic");
+        ambience = await FMODEvents.instance.initializeAmbience("testAmbience");
     }
 
-    private void InitializeAmbience(EventReference ambienceEventReference)
+    public void InitializeAmbience(EventReference ambienceEventReference)
     {
-        ambienceEventInstance = CreateEventInstance(ambienceEventReference);
-        ambienceEventInstance.start();
+        ambience = CreateEventInstance(ambienceEventReference);
+        ambience.start();
     }
 
     public void InitializeMusic(EventReference musicEventReference)
     {
-        musicEventInstance = CreateEventInstance(musicEventReference);
-        musicEventInstance.start();
+        music = CreateEventInstance(musicEventReference);
+        music.start();
     }
 
     public void SetAmbienceParameter(string parameterName, float parameterValue)
     {
-        ambienceEventInstance.setParameterByName(parameterName, parameterValue);
+        ambience.setParameterByName(parameterName, parameterValue);
     }
 
     public void SetMusicArea(MusicArea area)
     {
         // NOTE: - string area refers to the parameter sheet in FMOD called 'area'
         //       - enum is cast to float because thats what FMOD wants I guess
-        musicEventInstance.setParameterByName("area", (float)area);
+        music.setParameterByName("area", (float)area);
         UnityEngine.Debug.Log("setting music area to " + area);
     }
 
@@ -97,7 +97,7 @@ public class AudioManager : MonoBehaviour
             pauseMusic = !pauseMusic;
             UnityEngine.Debug.Log("toggle music: " + pauseMusic);
 
-            musicEventInstance.setPaused(pauseMusic);
+            music.setPaused(pauseMusic);
         }
 
     }
