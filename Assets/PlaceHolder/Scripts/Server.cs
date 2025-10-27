@@ -12,14 +12,17 @@ public class Server : MonoBehaviour
     private async void Start()
     {
         //emitter = AudioManager.instance.InitializeEventEmitter(FMODEvents.instance.serverNoise, this.gameObject);
-        emitter = await FMODEvents.instance.initializeEventEmitter("serverNoise", this.gameObject);
-        emitter.Play();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if(!emitter.isActiveAndEnabled)
+        {
+            emitter = FMODEvents.instance.initializeEventEmitter("serverNoise", this.gameObject);
+            emitter.Play();
+        }
     }
 
     private void OnDestroy()

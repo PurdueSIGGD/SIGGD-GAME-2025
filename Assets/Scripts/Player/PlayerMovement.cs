@@ -21,10 +21,8 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector] public Rigidbody rb;
 
-    private async void Start()
+    private void Start()
     {
-        footsteps = await FMODEvents.instance.GetEventInstance("Footsteps");
-
         rb = GetComponent<Rigidbody>();
     }
 
@@ -47,14 +45,12 @@ public class PlayerMovement : MonoBehaviour
 
         rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
 
+        
         if (!footsteps.isValid())
         {
-            UnityEngine.Debug.Log("not valid");
+            footsteps = FMODEvents.instance.getEventInstance("Footsteps");
         }
-        else
-        {
-            UnityEngine.Debug.Log("valid");
-        }
+        
 
         UpdateSound();
     }

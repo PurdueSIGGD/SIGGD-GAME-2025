@@ -29,10 +29,11 @@ public class AudioManager : MonoBehaviour
         eventEmitters = new List<StudioEventEmitter>();
     }
 
-    private async void Start()
+    private void Start()
     {
-        ambience = await FMODEvents.instance.initializeAmbience("ambiance");
-        music = await FMODEvents.instance.initializeMusic("LevelMusic");
+        //await FMODEvents.instance.WhenInitialized();
+        FMODEvents.instance.initializeAmbience("ambiance");
+        FMODEvents.instance.initializeMusic("LevelMusic");
     }
 
     public void InitializeAmbience(EventReference ambienceEventReference)
