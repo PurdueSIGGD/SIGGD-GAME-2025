@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class UISlot : MonoBehaviour
 {
-    public ItemInfo itemInfo;
+    public ItemInfo itemInfo = null;
     public int count = 0;
     [HideInInspector] public int index;
 
@@ -21,7 +21,10 @@ public class UISlot : MonoBehaviour
         if (itemInfo)
         {
             if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check
-            textDisplay.text = itemInfo.name;
+            textDisplay.text = itemInfo.name + "(" + count + ")";
+        }
+        else {
+            textDisplay.text = "empty";
         }
     }
 }

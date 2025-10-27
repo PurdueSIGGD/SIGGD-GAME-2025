@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public class Inventory : Singleton<Inventory>, IInventory
 {
@@ -9,15 +10,17 @@ public class Inventory : Singleton<Inventory>, IInventory
     const int InventoryLength = 18;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
-    [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength];
-    [SerializeField] private Button[] inventorySlots = new Button[InventoryLength];
+    [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength]; // hotbar buttons
+    [SerializeField] private Button[] inventorySlots = new Button[InventoryLength]; // inventory buttons
 
     private List<ItemInfo> lastClickedItems = new();
 
     private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
+    [SerializeField] public GameObject[] items = new GameObject[1]; // array of all of the different types of items; used for instantiating
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
     private UISlot _tempUISlot; // temporary slot for holding item that is being moved
+    private InventoryInputActions inputActions;
 
     protected override void Awake()
     {
@@ -26,10 +29,44 @@ public class Inventory : Singleton<Inventory>, IInventory
         
         inventoryCanvas = GetComponentInChildren<Canvas>();
         inventoryCanvas.enabled = false;
+
+        inputActions = new InventoryInputActions();
+    }
+
+    void OnEnable()
+    {
+        inputActions.InventorySelection.Enable();
+        inputActions.InventorySelection.Scroll.performed += OnScroll;
+        inputActions.InventorySelection.NumberKeys.performed += OnNumberKeyInput;
+    }
+
+    void OnDisable()
+    {
+        inputActions.InventorySelection.Disable();
+        inputActions.InventorySelection.Scroll.performed -= OnScroll;
+        inputActions.InventorySelection.NumberKeys.performed -= OnNumberKeyInput;
+    }
+
+    private void OnScroll(InputAction.CallbackContext context)
+    {
+        float scrollValue = context.ReadValue<float>();
+        if (scrollValue == 0) return;
+        int index = (selected + (int)(scrollValue)) % HotBarLength;
+        if (index < 0) {
+            index = HotBarLength - 1;
+        }
+        Select(index);
+    }
+
+    private void OnNumberKeyInput(InputAction.CallbackContext context) {
+        float value = context.ReadValue<float>();
+        int index = (int)(value) - 1;
+        Select(index);
     }
 
     void Start()
     {
+        // Update inventory to match manually placed items in scene/saved items
         for (int i = 0; i < HotBarLength; i++)
         {
             // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
@@ -62,15 +99,6 @@ public class Inventory : Singleton<Inventory>, IInventory
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
     }
-    
-    // TODO: replace
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            ShowInventory(!inventoryCanvas.enabled);
-        }
-    }
 
     /// <summary>
     /// Enable the inventory ui, disable player movment, and show cursor
@@ -89,21 +117,32 @@ public class Inventory : Singleton<Inventory>, IInventory
         Debug.LogWarning("Opening player inventory!");
     }
 
+    /// <summary>
+    /// Returns a slot of the hotbar
+    /// </summary>
+    /// <param name="index">Index of slot to return</param>
+    /// <returns>Slot at specified index</returns>
     private UISlot GetHotbarSlot(int index)
     {
-        if (index >= 9 || index < 0)
+        if (index >= HotBarLength || index < 0)
         {
-            Debug.LogWarning("Hotbar size 9, index " + index);
+            Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
             return null;
         }
         return inventory[index];
     }
 
+
+    /// <summary>
+    /// Sets a specific hotbar slot to a given slot object
+    /// </summary>
+    /// <param name="index">Index of slot to set</param>
+    /// <param name="slot">Reference slot to update backend slot with</param>
     private void SetHotbarSlot(int index, UISlot uiSlot)
     {
-        if (index >= 9 || index < 0)
+        if (index >= HotBarLength || index < 0)
         {
-            Debug.LogWarning("Hotbar size 9, index " + index);
+            Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
             return;
         }
         if (inventory[index] == null)
@@ -116,9 +155,9 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     private UISlot GetInventorySlot(int index)
     {
-        if (index < 9)
+        if (index < HotBarLength || index >= HotBarLength + InventoryLength)
         {
-            Debug.LogWarning("Inventory size 16, index = " + index);
+            Debug.LogWarning("Inventory size " + InventoryLength + ", index = " + index);
             return null;
         }
         return inventory[index];
@@ -126,9 +165,9 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     private void SetInventorySlot(int index, UISlot uiSlot)
     {
-        if (index < 9)
+        if (index < HotBarLength || index >= HotBarLength + InventoryLength)
         {
-            Debug.LogWarning("Inventory size 16, index + " + index);
+            Debug.LogWarning("Inventory size " + InventoryLength + ", index + " + index);
             return;
         }
         if (inventory[index] == null)
@@ -172,9 +211,44 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// Switches the selected item (limited to hotbar)
     /// </summary>
     /// <param name="index">Index to switch to</param>
-    public void select(int index) {
+    public void Select(int index) {
         selected = index;
-        Debug.Log("Selected " + index + " index, containing " + inventory[index].itemInfo.itemName);
+        if (!inventory[index] || inventory[index].count == 0 || !inventory[index].itemInfo)
+        {
+            Debug.Log("Selected index " + index + ", which is empty");
+        }
+        else {
+            Debug.Log("Selected index " + index + ", containing " + inventory[index].count + " " + inventory[index].itemInfo.itemName + "s");
+        } 
+    }
+
+    /// <summary>
+    /// Uses the currently selected item
+    /// </summary>
+    //public void Use() {
+    //    if (!inventory[selected] || inventory[selected].count == 0 || inventory[selected].itemInfo == null) return;
+    //    ItemInfo itemInfo = inventory[selected].itemInfo;
+    //    if (itemInfo.itemType == ItemInfo.ItemType.Trap) {
+    //        if (itemInfo.itemName == ItemInfo.ItemName.StunTrap) {
+    //            GameObject newStunTrap = Instantiate(items[0]);
+    //            newStunTrap.GetComponent<StunTrap>().Use();
+    //            Decrement();
+    //            Debug.Log("Used " + itemInfo.itemName + ", " + inventory[selected].count + " remaining");
+    //        }
+    //    }
+    //}
+
+    /// <summary>
+    /// Decrements the count of the selected item by one
+    /// </summary>
+    public void Decrement()
+    {
+        inventory[selected].count--;
+        Debug.Log("Used " + inventory[selected].itemInfo.itemName + ", " + inventory[selected].count + " remaining");
+        if (inventory[selected].count == 0) {
+            inventory[selected].itemInfo = null;
+        }
+        inventory[selected].UpdateSlot(inventory[selected]);
     }
 
     /// <summary>
@@ -182,7 +256,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// </summary>
     /// <param name="itemName">Name of the item</param>
     /// <returns>Index of the item or -1 if not found</returns>
-    public int find(ItemInfo.ItemName itemName) {
+    public int Find(ItemInfo.ItemName itemName) {
         for (int i = 0; i < inventory.Length; i++) {
             if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemName)
             {
@@ -256,7 +330,7 @@ public class Inventory : Singleton<Inventory>, IInventory
      */
     public bool RemoveItem(ItemInfo item, int count)
     {
-        int index = find(item.itemName);
+        int index = Find(item.itemName);
         if (index == -1) return false; // item not found
 
         if (inventory[index].count >= count)
@@ -279,7 +353,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// </summary>
     /// <param name="index">Index of item to drop</param>
     /// <returns>Whether or not the drop was successful</returns>
-    public bool drop(int index) { // maybe create another method for dropping stacks of items
+    public bool Drop(int index) { // maybe create another method for dropping stacks of items
         // instantiate physical item
         
 
@@ -295,15 +369,15 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <summary>
     /// Drop selected item
     /// </summary>
-    public void drop() {
-        drop(selected);
+    public void Drop() {
+        Drop(selected);
     }
 
     /// <summary>
     /// Swaps item in tempSlot with chosen item
     /// </summary>
     /// <param name="index">Index of item to be moved</param>
-    public void move(int index) {
+    public void Move(int index) {
         UISlot temp = inventory[index];
         inventory[index] = _tempUISlot;
         _tempUISlot = temp;
@@ -328,7 +402,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// </summary>
     /// <param name="index">Index to check</param>
     /// <returns>Whether or not the slot is empty</returns>
-    public bool isEmpty(int index) {
+    public bool IsEmpty(int index) {
         return inventory[index].count == 0;
     }
 
@@ -336,7 +410,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// 
     /// </summary>
     /// <returns>Whether or not an item is being moved (stored in tempSlot)</returns>
-    public bool isMovingItem() {
+    public bool IsMovingItem() {
         return _tempUISlot.count > 0;
     }
 
@@ -344,8 +418,8 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// 
     /// </summary>
     /// <returns>The selected item</returns>
-    public ItemInfo getSelectedItem() { // maybe change return type
-        return inventory[selected].itemInfo;
+    public ItemInfo GetSelectedItem() { // maybe change return type
+        return inventory[selected] ? inventory[selected].itemInfo : null;
     }
 
     /// <summary>
@@ -353,7 +427,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// </summary>
     /// <param name="index"></param>
     /// <returns>The </returns>
-    public ItemInfo getItem(int index) { // maybe change return type;
+    public ItemInfo GetItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
     }
 }

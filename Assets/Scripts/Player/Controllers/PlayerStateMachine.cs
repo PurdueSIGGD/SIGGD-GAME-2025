@@ -24,9 +24,10 @@ public class PlayerStateMachine : MonoBehaviour
     
     [Header("Parameter SOs")]
     public MoveData moveData; // ScriptableObject containing movement parameters.
-    
+    public ItemInfo defaultItem; // The default item the player starts with.
+
     #endregion
-    
+
     #region Check Attributes
 
     public float gravityScale { get; private set; } = 1f; // A scale on gravity when applied to the player,
@@ -45,14 +46,15 @@ public class PlayerStateMachine : MonoBehaviour
     
     public Vector3 LastGroundedPosition { get; private set; }
     
-    public bool IsFalling => playerID.rb.linearVelocity.y < -0.1f && !IsGrounded;
+    public bool IsFalling => playerID.rb.linearVelocity.y < -0.1f && !IsGrounded && !IsClimbing;
     
     #endregion
     
     #region Movement Attributes
     
     [HideInInspector] public Vector3 moveDirection; // The 3D direction the player is currently moving in.
-    public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f; // Whether the player is currently moving.
+    public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f && !IsClimbing; // Whether the player is currently moving.
+    public bool IsClimbing => PlayerID.Instance.gameObject.GetComponent<ClimbAction>().IsClimbing();
     
     #endregion
     
@@ -81,11 +83,13 @@ public class PlayerStateMachine : MonoBehaviour
     private void OnEnable()
     {
         PlayerInput.Instance.OnJump += OnJumpAction;
+        PlayerInput.Instance.OnAction += TriggerAction;
     }
     
     private void OnDisable()
     {
         PlayerInput.Instance.OnJump -= OnJumpAction;
+        PlayerInput.Instance.OnAction -= TriggerAction;
     }
 
     #region Input Callbacks
@@ -115,6 +119,7 @@ public class PlayerStateMachine : MonoBehaviour
      */
     private void UpdateAnimatorParams()
     {
+        animator.SetBool(Animator.StringToHash("isClimbing"), IsClimbing);
         if (IsGrounded)
         {
             lastTimeGrounded = moveData.coyoteTime;
@@ -129,24 +134,42 @@ public class PlayerStateMachine : MonoBehaviour
         animator.SetBool(Animator.StringToHash("isGrounded"), IsGrounded); 
         animator.SetBool(Animator.StringToHash("isFalling"), IsFalling);
         
-        if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0)
+        if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0 && IsClimbing == false)
         {
             animator.SetTrigger(Animator.StringToHash("Jumping"));
             lastTimeJumpPressed = 0;
             lastTimeGrounded = 0;
         }
     }
-    
+
     #endregion
 
     #endregion
-    
-    
+
+    #region Attack Methods
+
+    public void TriggerAction(InputAction.CallbackContext context)
+    {
+        if (context.phase != InputActionPhase.Performed) return;
+        animator.SetBool(Animator.StringToHash("isPerformingAction"), true);
+    }
+
+    public ItemInfo GetEquippedItem()
+    {
+        if (Inventory.Instance)
+        {
+            return Inventory.Instance.GetSelectedItem();
+        }
+        return null;
+    }
+
+    #endregion
+
     // This region contains public methods used to move the player. This can be refactored into 
     // each individual state if this gets too cumbersome, but I am leaving it here for now because multiple
     // states might use similar movement logic.
     #region State Methods
-    
+
     /**
      * <summary>
      * Updates the player's movement based on the current moveDirection and camera orientation.
@@ -244,7 +267,11 @@ public class PlayerStateMachine : MonoBehaviour
      */
     private void ApplyGravity()
     {
-        Vector3 gravity = moveData.globalGravity * gravityScale * Vector3.up;
+        float usedGravityScale = gravityScale;
+        if (IsClimbing == true) { // while climbing, gravity is unaffected by gravity scale
+            usedGravityScale = 1;
+        }
+        Vector3 gravity = moveData.globalGravity * usedGravityScale * Vector3.up;
         playerID.rb.AddForce(gravity, ForceMode.Acceleration);
     }
     
