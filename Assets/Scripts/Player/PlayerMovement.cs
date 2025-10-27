@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
         rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
 
-        
+        // this is the basic way to make any sort of continued sound events
         if (!footsteps.isValid())
         {
             footsteps = FMODEvents.instance.getEventInstance("Footsteps");

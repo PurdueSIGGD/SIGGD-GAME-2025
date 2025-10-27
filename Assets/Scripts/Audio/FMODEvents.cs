@@ -31,6 +31,7 @@ public class FMODEvents : SerializedMonoBehaviour
         _ = LoadSoundEventsPostBankLoading(); // we dont care about storing this beacause its only running once
     }
 
+    // loads all event references from all the given banks into the dictionary soundEvents using its name as the key
     private async Task LoadSoundEventsPostBankLoading()
     {
         foreach (string name in bankNames)
@@ -70,30 +71,38 @@ public class FMODEvents : SerializedMonoBehaviour
         Debug.Log("All " + soundEvents.Count + " events loaded");
     }
 
+    // for repreated sounds
     public EventInstance getEventInstance(string key)
     {
         return AudioManager.Instance.CreateEventInstance(soundEvents[key]);
     }
 
-    // call this when you just want a sound to play once
+    // sound you just wanna play once
     public void playOneShot(string key, Vector3 positon)
     {
         AudioManager.Instance.PlayOneShot(soundEvents[key], positon);
     }
 
+    // currently all the music and ambience are initliazed inside of AudioManager so there are no examples of these being used yet
+    // for making music
     public void initializeMusic(string key)
     {
         AudioManager.Instance.InitializeMusic(soundEvents[key]);
     }
 
+    // for making ambience
     public void initializeAmbience(string key)
     {
         AudioManager.Instance.InitializeAmbience(soundEvents[key]);
     }
 
+    // also for ambience
     public StudioEventEmitter initializeEventEmitter(string key, GameObject emitterObject)
     {
-        return AudioManager.Instance.InitializeEventEmitter(soundEvents[key], emitterObject);
+        StudioEventEmitter tempEmitter;
+        tempEmitter = AudioManager.Instance.InitializeEventEmitter(soundEvents[key], emitterObject);
+        tempEmitter.Play();
+        return tempEmitter;
     }
 
     // ill make all this code work eventually trust - jay

@@ -21,7 +21,6 @@ public class Server : MonoBehaviour
         if(!emitter.isActiveAndEnabled)
         {
             emitter = FMODEvents.instance.initializeEventEmitter("serverNoise", this.gameObject);
-            emitter.Play();
         }
     }
 
