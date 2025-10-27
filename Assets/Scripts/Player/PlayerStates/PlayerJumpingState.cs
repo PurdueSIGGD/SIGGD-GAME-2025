@@ -3,12 +3,14 @@ using UnityEngine;
 public class PlayerJumpingState : StateMachineBehaviour
 {
     private PlayerID playerID;
+    private PlayerMovement playerMovement;
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
         playerID = PlayerID.Instance;
+        playerMovement = PlayerID.Instance.playerMovement;
 
-        playerID.stateMachine.Jump(playerID.stateMachine.moveData.JumpForce);
+        playerID.playerMovement.Jump(playerID.stateMachine.moveData.JumpForce);
     }
 }

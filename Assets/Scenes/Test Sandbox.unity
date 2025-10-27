@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &474448441 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8621645992914645891, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
+  m_PrefabInstance: {fileID: 1093636374}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &512662130
 GameObject:
   m_ObjectHideFlags: 0
@@ -563,6 +568,12 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4696392301619895344, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1479762883}
+    - targetCorrespondingSourceObject: {fileID: 4696392301619895344, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1479762882}
     - targetCorrespondingSourceObject: {fileID: 2395527568966306778, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2099306744}
@@ -699,6 +710,56 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4696392301619895344, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
   m_PrefabInstance: {fileID: 1093636374}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1479762882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1479762867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f96fe19ebed8e54491b9522b910c864, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveData: {fileID: 11400000, guid: c44b423fe1edd40eb9acc6075047a3e1, type: 2}
+  moveSpeed: 0
+  orientation: {fileID: 0}
+  rb: {fileID: 0}
+  moveDirection: {x: 0, y: 0, z: 0}
+  groundCheckPoint: {fileID: 474448441}
+  groundCheckSize: {x: 0.49, y: 0.3, z: 0.49}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  lastTimeGrounded: 0
+  lastTimeJumpPressed: 0
+  canMove: 1
+--- !u!143 &1479762883
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1479762867}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1707018562
 GameObject:
   m_ObjectHideFlags: 0

@@ -23,7 +23,7 @@ public class PlayerDataSaveModule : ISaveModule
     {
         if (player && player.TryGetComponent(out PlayerID pid))
         {
-            playerData.Position = pid.stateMachine.LastGroundedPosition;
+            playerData.Position = pid.playerMovement.LastGroundedPosition;
         }
 
         byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);

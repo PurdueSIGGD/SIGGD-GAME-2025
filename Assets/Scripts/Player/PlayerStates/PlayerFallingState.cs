@@ -3,11 +3,13 @@ using UnityEngine;
 public class PlayerFallingState : StateMachineBehaviour
 {
     private PlayerID playerID;
+    private PlayerMovement playerMovement;
     
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
         playerID = PlayerID.Instance;
+        playerMovement = PlayerID.Instance.playerMovement;
     }
     
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -18,6 +20,6 @@ public class PlayerFallingState : StateMachineBehaviour
         
         float speed = playerID.stateMachine.moveData.walkSpeed; // Falling speed is constant, no sprinting while falling.
         
-        PlayerID.Instance.stateMachine.Run(moveInput, speed);
+        PlayerID.Instance.playerMovement.Run(moveInput, speed);
     }
 }

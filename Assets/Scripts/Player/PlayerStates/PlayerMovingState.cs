@@ -9,11 +9,14 @@ using UnityEngine;
 public class PlayerMovingState : StateMachineBehaviour
 {
     private PlayerStateMachine playerStateMachine;
+    private PlayerMovement playerMovement;
     
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
         playerStateMachine = PlayerID.Instance.stateMachine;
+        playerMovement = PlayerID.Instance.playerMovement;
+        playerMovement.SendMessage("EnableMovement");
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -22,11 +25,18 @@ public class PlayerMovingState : StateMachineBehaviour
 
         Vector2 moveInput = PlayerInput.Instance.movementInput;
         bool isSprinting = PlayerInput.Instance.sprintInput;
-        
-        float speed = isSprinting ? playerStateMachine.moveData.sprintSpeed : 
+
+        float speed = isSprinting ? playerStateMachine.moveData.sprintSpeed :
             playerStateMachine.moveData.walkSpeed;
-        
-        PlayerID.Instance.stateMachine.Run(moveInput, speed);
+
+        // Debug.Log("Moving with speed: " + speed);
+
+        PlayerID.Instance.playerMovement.Run(moveInput, speed);
     }
     
+    public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        base.OnStateExit(animator, stateInfo, layerIndex);
+        playerMovement.SendMessage("DisableMovement");
+    }
 }

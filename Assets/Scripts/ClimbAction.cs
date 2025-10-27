@@ -77,6 +77,7 @@ public class ClimbAction : MonoBehaviour
     private Rigidbody playerRigidbody; // retrieved from playerID
     private Transform cameraTransform; // retrieved from playerID
     private PlayerStateMachine stateMachine;
+    private PlayerMovement playerMovement;
     private PlayerInput playerInput; // expected to be parented to the player object
     #endregion
 
@@ -280,7 +281,7 @@ public class ClimbAction : MonoBehaviour
     private void TryToExitClimbMode() {
         bool handsAttached = isHandAttached();
 
-        bool isGrounded = stateMachine.IsGrounded;
+        bool isGrounded = playerMovement.IsGrounded;
         if (isGrounded == true) {
             timeSpentGrounded += Time.deltaTime;
         } else {
