@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.02.02.00">
+<objects serializationModel="Studio.02.03.00">
 	<object class="ParameterPreset" id="{a4d0167e-0503-4734-851e-c0a9931f9a4c}">
 		<property name="name">
 			<value>ambiance_intensity</value>
@@ -15,7 +15,18 @@
 		<property name="initialValue">
 			<value>0</value>
 		</property>
-		<property name="seekSpeed">
+		<relationship name="modulators">
+			<destination>{5abef5e4-f52c-497c-a529-369cbe068660}</destination>
+		</relationship>
+	</object>
+	<object class="SeekModulator" id="{5abef5e4-f52c-497c-a529-369cbe068660}">
+		<property name="nameOfPropertyBeingModulated">
+			<value>cursorPosition</value>
+		</property>
+		<property name="clockSource">
+			<value>1</value>
+		</property>
+		<property name="speedAscending">
 			<value>0.55000001192092896</value>
 		</property>
 	</object>
