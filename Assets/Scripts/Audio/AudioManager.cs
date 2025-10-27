@@ -8,6 +8,9 @@ public class AudioManager : MonoBehaviour
 {
     private List<StudioEventEmitter> eventEmitters;
 
+    private EventReference ambience;
+    private EventReference music;
+
     private EventInstance ambienceEventInstance;
     private EventInstance musicEventInstance;
 
@@ -26,13 +29,13 @@ public class AudioManager : MonoBehaviour
         eventEmitters = new List<StudioEventEmitter>();
     }
 
-    private void Start()
+    private async void Start()
     {
-        InitializeAmbience(FMODEvents.instance.ambience);
-        InitializeMusic(FMODEvents.instance.music);
+        ambience = await FMODEvents.instance.initializeAmbience("ambiance");
+        music = await FMODEvents.instance.initializeMusic("LevelMusic");
     }
 
-    private void InitializeAmbience(EventReference ambienceEventReference)
+    public void InitializeAmbience(EventReference ambienceEventReference)
     {
         ambienceEventInstance = CreateEventInstance(ambienceEventReference);
         ambienceEventInstance.start();
@@ -57,15 +60,6 @@ public class AudioManager : MonoBehaviour
         UnityEngine.Debug.Log("setting music area to " + area);
     }
 
-<<<<<<< HEAD:Assets/Audio/Scripts/AudioManager.cs
-    private void Start()
-    {
-        //InitializeAmbience(FMODEvents.instance.ambience);
-        //InitializeMusic(FMODEvents.instance.music);
-    }
-
-=======
->>>>>>> dev:Assets/Scripts/Audio/AudioManager.cs
     // when you just want to play a sound once on a trigger
     public void PlayOneShot(EventReference sound, Vector3 worldPos)
     {

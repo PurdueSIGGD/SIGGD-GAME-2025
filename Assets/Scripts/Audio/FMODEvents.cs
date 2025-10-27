@@ -92,7 +92,7 @@ public class FMODEvents : SerializedMonoBehaviour
     // call this when you just want a sound to play once
     public void playOneShot(string key, Vector3 positon)
     {
-        AudioManager.instance.PlayOneShot(soundEvents[key], positon);
+        AudioManager.Instance.PlayOneShot(soundEvents[key], positon);
     }
 
     public async Task<StudioEventEmitter> initializeEventEmitter(string key, GameObject emitterObject)
@@ -105,14 +105,14 @@ public class FMODEvents : SerializedMonoBehaviour
 
         if (soundEvents.TryGetValue(key, out var eventRef))
         {
-            return AudioManager.instance.InitializeEventEmitter(eventRef, emitterObject);
+            return AudioManager.Instance.InitializeEventEmitter(eventRef, emitterObject);
         }
 
         Debug.Log("couldnt find key: " + key);
         return default;
     }
 
-    public async Task<EventInstance> initializeMusic(string key)
+    public async Task<EventReference> initializeMusic(string key)
     {
         // Wait until events are ready
         while (!initialized)
@@ -122,14 +122,14 @@ public class FMODEvents : SerializedMonoBehaviour
 
         if (soundEvents.TryGetValue(key, out var eventRef))
         {
-            AudioManager.instance.InitializeMusic(eventRef);
+            AudioManager.Instance.InitializeMusic(eventRef);
         }
 
         Debug.Log("couldnt find key: " + key);
         return default;
     }
 
-    public async Task<EventInstance> initializeAmbience(string key)
+    public async Task<EventReference> initializeAmbience(string key)
     {
         // Wait until events are ready
         while (!initialized)
@@ -139,7 +139,7 @@ public class FMODEvents : SerializedMonoBehaviour
 
         if (soundEvents.TryGetValue(key, out var eventRef))
         {
-            AudioManager.instance.InitializeMusic(eventRef);
+            AudioManager.Instance.InitializeAmbience(eventRef);
         }
 
         Debug.Log("couldnt find key: " + key);

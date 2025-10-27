@@ -18,21 +18,12 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
 
     private EventInstance footsteps;
-    private EventInstance music;
 
     [HideInInspector] public Rigidbody rb;
 
     private async void Start()
     {
-<<<<<<< HEAD:Assets/PlayerMovement.cs
         footsteps = await FMODEvents.instance.GetEventInstance("Footsteps");
-
-        music = await FMODEvents.instance.initializeMusic("LevelMusic");
-=======
-        footsteps = AudioManager.Instance.CreateEventInstance(FMODEvents.instance.footsteps);
->>>>>>> dev:Assets/Scripts/Player/PlayerMovement.cs
-
-        //music.start();
 
         rb = GetComponent<Rigidbody>();
     }
@@ -41,11 +32,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-<<<<<<< HEAD:Assets/PlayerMovement.cs
             FMODEvents.instance.playOneShot("maledeath", this.transform.position);
-=======
-            AudioManager.Instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
->>>>>>> dev:Assets/Scripts/Player/PlayerMovement.cs
         }
 
         if (transform.position.y < -50)
