@@ -80,21 +80,18 @@ public class FMODEvents : SerializedMonoBehaviour
     public async Task<EventInstance> GetEventInstance(string key)
     {
         // Wait until events are ready
-        Debug.Log("in getting event instance");
         while (!initialized)
         {
-            Debug.Log("not initialized yet");
             await Task.Yield();
         }
 
-        Debug.Log("trying to get event value from dict");
-        // try to get the value
+        // tries to get the value
         if (soundEvents.TryGetValue(key, out var eventRef))
         {
-            Debug.Log("returning event instance");
             return RuntimeManager.CreateInstance(eventRef);
         }
 
+        // if it doesnt it logs what it couldnt find
         Debug.Log("couldnt find key: " + key);
         return default;
     }

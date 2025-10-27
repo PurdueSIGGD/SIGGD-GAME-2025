@@ -21,9 +21,12 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector] public Rigidbody rb;
 
+    // the async Start() is needed for getting the event instances set right
     private async void Start()
     {
         rb = GetComponent<Rigidbody>();
+
+        // as long as you format it like this and have it in a async Start() it should all work
         footsteps = await FMODEvents.instance.GetEventInstance("Footsteps");
     }
 
