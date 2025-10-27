@@ -16,7 +16,7 @@ public class FMODEvents : SerializedMonoBehaviour
 
     public static bool initialized = false;
 
-    [OdinSerialize] private Dictionary<string, EventReference> soundEvents = new Dictionary<string, EventReference>();
+    [OdinSerialize] public Dictionary<string, EventReference> soundEvents = new Dictionary<string, EventReference>();
 
     private void Awake()
     {
@@ -41,14 +41,12 @@ public class FMODEvents : SerializedMonoBehaviour
         // waiting to make sure everything is loaded right
         while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized || !EventManager.IsInitialized)
         {
-            Debug.Log("something isnt loaded yet");
             await Task.Yield();
         }
 
         // The actual code
         foreach (string name in bankNames)
         {
-            Debug.Log("banks loading");
             // Adding bank:/ cuz its needed for the path to the bank
             string filePath = "bank:/" + name.Replace(".bank", "");
             FMOD.Studio.Bank bank;
@@ -60,15 +58,12 @@ public class FMODEvents : SerializedMonoBehaviour
 
             foreach (FMOD.Studio.EventDescription description in eventDescriptions)
             {
-                Debug.Log("getting path and adding to dict");
                 description.getPath(out string eventPath);
 
                 EventReference eventRef = EventReference.Find(eventPath);
 
                 soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1), eventRef); // the replace just makes the names a little nicer
             }
-
-            Debug.Log("end of the for loop");
         }
 
         initialized = true;
@@ -77,7 +72,7 @@ public class FMODEvents : SerializedMonoBehaviour
 
     public EventInstance getEventInstance(string key)
     {
-        return AudioManager.Instance.CreateEventInstance(soundEvents["key"]);
+        return AudioManager.Instance.CreateEventInstance(soundEvents[key]);
     }
 
     // call this when you just want a sound to play once
