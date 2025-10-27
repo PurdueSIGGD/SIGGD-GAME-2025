@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ public class Stat : MonoBehaviour
 {
 
     [SerializeField] private StatData statData;
+
 
     // base stats
     public Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>();
@@ -17,6 +19,8 @@ public class Stat : MonoBehaviour
     // holds currently running coroutines for each stat
     private Dictionary<Coroutine, StatType> activeCoroutines = new Dictionary<Coroutine, StatType>();
 
+    private EntityHealthManager healthManager;
+
     private void Awake()
     {
         foreach (var stat in statData.stats)
@@ -26,10 +30,22 @@ public class Stat : MonoBehaviour
         }
     }
 
+    #region Generic Stat Methods / Modifiers
+
     public float GetStat(StatType type)
     {
         return baseStats[type] * modifiers[type];
     }   
+
+    public float ChangeStat(StatType type, float amount)
+    {
+        if (!baseStats.ContainsKey(type))
+            return 0f;
+        baseStats[type] += amount;
+        return baseStats[type];
+
+
+    }
 
     public void ApplyMultiplier(StatType type, float multiplier, float duration)
     {
@@ -66,4 +82,13 @@ public class Stat : MonoBehaviour
 
     // Get base stat without modifiers or 0 if not found
     public float GetBaseStat(StatType stat) => baseStats.ContainsKey(stat) ? baseStats[stat] : 0f;
+
+    public void SetStat(StatType stat, float value)
+    {
+        baseStats[stat] = value;
+    }
+
+    #endregion
+
+ 
 }

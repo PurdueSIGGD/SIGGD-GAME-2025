@@ -1,13 +1,17 @@
 using UnityEngine;
 using System;
+using UnityEngine.UIElements;
 
 public class EntityHealthManager : MonoBehaviour, IHealth
 {
     // default max health to 100
-    [SerializeField] private float maxHealth = 100f;
-    public float MaxHealth => maxHealth; // => used for read-only property
+    public float MaxHealth { get; private set; } = 100f;
 
     public float CurrentHealth { get; private set; }
+
+
+    private Stat statManager;
+
 
     [System.Serializable]
     public struct DamageContext
@@ -17,14 +21,31 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         public string ExtraContext; // any additional context, e.g., "Critical Hit", "Poisoned"
     }
 
+    public void SetMaxHealth(float newMaxHealth)
+    {
+        MaxHealth = newMaxHealth;
+        // Ensure current health does not exceed new max health
+        CurrentHealth = Mathf.Min(CurrentHealth, MaxHealth);
+    }
+
     // possible events we may want?
     public Action<DamageContext> OnHealthChanged;
     public Action OnDeath;
 
     private void Awake()
     {
-        CurrentHealth = maxHealth; // start at full health
+        CurrentHealth = MaxHealth; // start at full health
+        if (TryGetComponent<Stat>(out var statComp))
+        {
+            statManager = statComp;
+            SetMaxHealth(statManager.GetStat(StatType.maxHealth));
+            CurrentHealth = MaxHealth; // reset current health to new max
+        }
+    }
 
+    private void Update()
+    {
+        
     }
 
     public void TakeDamage(float amount, GameObject attacker, string extra)
@@ -43,7 +64,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
 
         OnHealthChanged?.Invoke(attackContext); // return info about the damage
 
-        Debug.Log($"{gameObject.name} took {amount} damage from {attacker.name}. Current Health: {CurrentHealth}/{maxHealth}");
+        Debug.Log($"{gameObject.name} took {amount} damage from {attacker.name}. Current Health: {CurrentHealth}/{MaxHealth}");
 
         if (CurrentHealth <= 0)
         {
@@ -63,7 +84,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         if (CurrentHealth <= 0) return; // prob a design thing, maybe ability to revive dead creatures in the future?
 
         // increase health but not above max, maybe change in future to allow overheal?
-        CurrentHealth = Mathf.Min(CurrentHealth + amount, maxHealth);
+        CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);
 
         OnHealthChanged?.Invoke(healContext);
     }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class GenericStatPickup : MonoBehaviour
 {
     [Header("Effect Settings")]
-    [SerializeField] private StatType statToAffect = StatType.Attack;
+    [SerializeField] private StatType statToAffect;
     public float multiplier = 2f;
     public float duration = 5f;
 

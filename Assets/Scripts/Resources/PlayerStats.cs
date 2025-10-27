@@ -33,7 +33,7 @@ public class PlayerStats : MonoBehaviour
         else 
         {
             //player is starving stuff
-            // Debug.Log("Starving");
+            // Debug.Log("Starving")
  
             hungerDamageTimer += Time.deltaTime;
 
@@ -47,9 +47,9 @@ public class PlayerStats : MonoBehaviour
 
     }
 
-    public void ChangeHunger(float ammount)
+    public void ChangeHunger(float amount)
     {
-        currentHunger += ammount;
+        currentHunger += amount;
     }
 }
 
