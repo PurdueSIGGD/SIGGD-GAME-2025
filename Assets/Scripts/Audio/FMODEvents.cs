@@ -12,7 +12,7 @@ public class FMODEvents : SerializedMonoBehaviour
 {
     public static FMODEvents instance { get; private set; }
 
-    public List<string> bankNames = new List<string>();
+    public List<string> bankNames = new List<string>(); // if you put a bank that doesnt exist into this list it will break the whole loop
 
     public static bool initialized = false;
 

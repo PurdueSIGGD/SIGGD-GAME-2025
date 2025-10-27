@@ -30,19 +30,6 @@ public class AudioManager : MonoBehaviour
     {
         
     }
-    private void FixedUpdate()
-    {
-        if (!ambience.isValid())
-        {
-            // for some reason testAmbience isnt getting added to soundEvents it might be stored under a bank im not loading
-            InitializeAmbience(FMODEvents.instance.soundEvents["testAmbience"]);
-        }
-
-        if (!music.isValid())
-        {
-            InitializeMusic(FMODEvents.instance.soundEvents["LevelMusic"]);
-        }
-    }
 
     public void InitializeAmbience(EventReference ambienceEventReference)
     {
@@ -104,6 +91,18 @@ public class AudioManager : MonoBehaviour
     private bool pauseMusic = false;
     private void Update()
     {
+        if (!ambience.isValid())
+        {
+            // for some reason testAmbience isnt getting added to soundEvents it might be stored under a bank im not loading
+            InitializeAmbience(FMODEvents.instance.soundEvents["testAmbience"]);
+        }
+
+        if (!music.isValid())
+        {
+            UnityEngine.Debug.Log("reloading music");
+            InitializeMusic(FMODEvents.instance.soundEvents["LevelMusic"]);
+        }
+
         if (Input.GetKeyDown(KeyCode.M))
         {
             pauseMusic = !pauseMusic;
