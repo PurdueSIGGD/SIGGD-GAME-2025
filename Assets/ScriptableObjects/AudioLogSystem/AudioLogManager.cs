@@ -4,6 +4,7 @@ using TMPro;
 public class AudioLogManager : MonoBehaviour
 {
     public TextMeshProUGUI displayText;
+    public TextMeshProUGUI subtitleText;
     [SerializeField] AudioLogObject mine;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -16,8 +17,9 @@ public class AudioLogManager : MonoBehaviour
     {
         
     }
-
-    public void ToggleText()
+    
+    // toggle visibility of subtitle and send a debug message
+    public void TestToggle()
     {
         if (displayText.enabled == true)
         {
@@ -29,5 +31,11 @@ public class AudioLogManager : MonoBehaviour
             displayText.enabled = true;
             Debug.Log("subtitle showed");
         }
+    }
+
+    public void PlaySubtitle(string text)
+    {
+        subtitleText.text = text;
+        Debug.Log(text + "\nsubtitle played");
     }
 }
