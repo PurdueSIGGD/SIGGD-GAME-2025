@@ -20,12 +20,10 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector] public Rigidbody rb;
 
-    private void Start()
+    private async void Start()
     {
-        footsteps = AudioManager.Instance.CreateEventInstance(FMODEvents.instance.footsteps);
-
+        footsteps = await FMODEvents.instance.GetEventInstance("Footsteps");
         //music.start();
-
         rb = GetComponent<Rigidbody>();
     }
 
@@ -33,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            AudioManager.Instance.PlayOneShot(FMODEvents.instance.enemyDeath, this.transform.position);
+            FMODEvents.instance.playOneShot("maleDeath", this.transform.position);
         }
 
         if (transform.position.y < -50)

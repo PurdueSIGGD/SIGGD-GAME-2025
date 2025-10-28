@@ -71,10 +71,30 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638968726312335352
+  lastModified: 638971935632457800
   FileSizes:
   - Name: Desktop
     Value: 2424352
+  Exists: 1
+--- !u!114 &-6387020769053406565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/RandomAmbience.bank
+  m_EditorClassIdentifier: 
+  Path: FMOD/Build/Desktop/RandomAmbience.bank
+  Name: RandomAmbience
+  StudioPath: bank:/RandomAmbience
+  lastModified: 638971935639899302
+  FileSizes:
+  - Name: Desktop
+    Value: 507360
   Exists: 1
 --- !u!114 &-4720836053627624549
 MonoBehaviour:
@@ -102,6 +122,60 @@ MonoBehaviour:
   - GreyArea
   - BlueArea
   Exists: 1
+--- !u!114 &-4584105152039995132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/RandomAmbience/twang
+  m_EditorClassIdentifier: 
+  Path: event:/RandomAmbience/twang
+  Guid:
+    Data1: -1972438556
+    Data2: 1232143483
+    Data3: 1184306084
+    Data4: 1142109992
+  Banks:
+  - {fileID: -6387020769053406565}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &-3605527032530874251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/RandomAmbience/echoHarp
+  m_EditorClassIdentifier: 
+  Path: event:/RandomAmbience/echoHarp
+  Guid:
+    Data1: -1459534408
+    Data2: 1191673803
+    Data3: 1103328948
+    Data4: 419567137
+  Banks:
+  - {fileID: -6387020769053406565}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &-2572213772218339773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,6 +196,33 @@ MonoBehaviour:
   - Name: Desktop
     Value: 2431936
   Exists: 1
+--- !u!114 &-2285354582917750487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/RandomAmbience/bird
+  m_EditorClassIdentifier: 
+  Path: event:/RandomAmbience/bird
+  Guid:
+    Data1: 1792138481
+    Data2: 1195427082
+    Data3: -58529150
+    Data4: -1739315682
+  Banks:
+  - {fileID: -6387020769053406565}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &-2042550660342403234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,10 +285,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638968726312402854
+  lastModified: 638971935632502973
   FileSizes:
   - Name: Desktop
-    Value: 1368
+    Value: 1624
   Exists: 1
 --- !u!114 &11400000
 MonoBehaviour:
@@ -207,6 +308,7 @@ MonoBehaviour:
   - {fileID: 3549248484942726713}
   - {fileID: -2572213772218339773}
   - {fileID: -2042550660342403234}
+  - {fileID: -6387020769053406565}
   EditorEvents:
   - {fileID: -8869357982671721172}
   - {fileID: -7930450590582199333}
@@ -216,12 +318,17 @@ MonoBehaviour:
   - {fileID: 2915537851495921713}
   - {fileID: 1309134552171441851}
   - {fileID: 1284361404525078452}
+  - {fileID: -3605527032530874251}
+  - {fileID: 9075198738767962372}
+  - {fileID: 1338392231360325348}
+  - {fileID: -4584105152039995132}
+  - {fileID: -2285354582917750487}
   EditorParameters: []
   MasterBanks:
   - {fileID: -7377250061199648658}
   StringsBanks:
   - {fileID: -466881227775596725}
-  cacheTime: 638968726362003587
+  cacheTime: 638971935639899302
   cacheVersion: 131632
 --- !u!114 &1185779894575477197
 MonoBehaviour:
@@ -297,6 +404,33 @@ MonoBehaviour:
     Data4: -1577967609
   Banks:
   - {fileID: -2042550660342403234}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &1338392231360325348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/RandomAmbience/frog
+  m_EditorClassIdentifier: 
+  Path: event:/RandomAmbience/frog
+  Guid:
+    Data1: 1873085896
+    Data2: 1248290682
+    Data3: 557341351
+    Data4: 1347070242
+  Banks:
+  - {fileID: -6387020769053406565}
   IsStream: 1
   Is3D: 0
   IsOneShot: 1
@@ -429,3 +563,30 @@ MonoBehaviour:
   IsGlobal: 0
   Labels: []
   Exists: 1
+--- !u!114 &9075198738767962372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/RandomAmbience/hornbill
+  m_EditorClassIdentifier: 
+  Path: event:/RandomAmbience/hornbill
+  Guid:
+    Data1: -2058731590
+    Data2: 1191385598
+    Data3: 313201323
+    Data4: 778713503
+  Banks:
+  - {fileID: -6387020769053406565}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
