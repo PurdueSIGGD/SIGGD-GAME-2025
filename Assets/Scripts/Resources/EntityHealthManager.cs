@@ -1,14 +1,14 @@
-using UnityEngine;
-using System;
-using UnityEngine.Events;
-using UnityEngine.UIElements;
-using System.Runtime.CompilerServices;
 using Sirenix.OdinInspector.Editor;
+using System;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 
 public class EntityHealthManager : MonoBehaviour, IHealth
 {
-    // default max health to 100
     public float MaxHealth { get; private set; }
     public float CurrentHealth { get; private set; }
 
@@ -31,18 +31,11 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     private void Start()
     {
         statManager.OnStatChanged.AddListener(OnStatChanged);
+
+        MaxHealth = statManager.GetStat(StatType.maxHealth);
+        CurrentHealth = MaxHealth;
     }
 
-    private void Awake()
-    {
-        CurrentHealth = MaxHealth; // start at full health
-        if (TryGetComponent<Stat>(out var statComp))
-        {
-            statManager = statComp;
-            SetMaxHealth(statManager.GetStat(StatType.maxHealth));
-            CurrentHealth = MaxHealth; // reset current health to new max
-        }
-    }
 
     // this makes sure that if max health changes via stats, we update it here
     private void OnStatChanged(StatType stat, float value)
@@ -51,6 +44,12 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         {
             SetMaxHealth(value);
         }
+    }
+
+    private void OnDestroy()
+    {
+        // Clean up listeners when destroyed
+        statManager.OnStatChanged.RemoveListener(OnStatChanged);
     }
 
     public void SetMaxHealth(float newMaxHealth)
@@ -95,7 +94,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
 
         if (CurrentHealth <= 0) return; // prob a design thing, maybe ability to revive dead creatures in the future?
 
-        // increase health but not above max, maybe change in future to allow overheal?
+        // increase health but not above max
         CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);
 
         OnHealthChanged?.Invoke(healContext);

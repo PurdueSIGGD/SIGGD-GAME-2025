@@ -61,6 +61,7 @@ public class Stat : MonoBehaviour
 
     public void ApplyMultiplier(StatType type, float multiplier, float duration)
     {
+        Debug.Log($"Applying {multiplier}x multiplier to {type} for {duration} seconds on {gameObject.name}");
         activeCoroutines[StartCoroutine(ApplyMultiplierCoroutine(type, multiplier, duration))] = type;
         // StartCoroutine(ApplyMultiplierCoroutine(type, multiplier, duration));
     }

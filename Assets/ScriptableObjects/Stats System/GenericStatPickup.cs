@@ -19,7 +19,6 @@ public class GenericStatPickup : MonoBehaviour
         if (stats != null)
         {
             stats.ApplyMultiplier(statToAffect, multiplier, duration);
-            Debug.Log($"Picked up {statToAffect} multiplier of {multiplier} for {duration} seconds.");
             Destroy(gameObject);
         }
     }
