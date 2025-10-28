@@ -1,36 +1,37 @@
 using UnityEngine;
 using System;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
+using System.Runtime.CompilerServices;
+using Sirenix.OdinInspector.Editor;
+using UnityEngine.Rendering;
 
 public class EntityHealthManager : MonoBehaviour, IHealth
 {
     // default max health to 100
-    public float MaxHealth { get; private set; } = 100f;
-
+    public float MaxHealth { get; private set; }
     public float CurrentHealth { get; private set; }
 
 
-    private Stat statManager;
-
+    [SerializeField] private Stat statManager;
 
     [System.Serializable]
     public struct DamageContext
     {
         public GameObject Attacker; // who caused the damage
         public GameObject Victim;   // who is taking the damage
-        public string ExtraContext; // any additional context, e.g., "Critical Hit", "Poisoned"
-    }
-
-    public void SetMaxHealth(float newMaxHealth)
-    {
-        MaxHealth = newMaxHealth;
-        // Ensure current health does not exceed new max health
-        CurrentHealth = Mathf.Min(CurrentHealth, MaxHealth);
+        public string ExtraContext; // any additional context
     }
 
     // possible events we may want?
     public Action<DamageContext> OnHealthChanged;
     public Action OnDeath;
+
+
+    private void Start()
+    {
+        statManager.OnStatChanged.AddListener(OnStatChanged);
+    }
 
     private void Awake()
     {
@@ -43,9 +44,20 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         }
     }
 
-    private void Update()
+    // this makes sure that if max health changes via stats, we update it here
+    private void OnStatChanged(StatType stat, float value)
     {
-        
+        if (stat == StatType.maxHealth)
+        {
+            SetMaxHealth(value);
+        }
+    }
+
+    public void SetMaxHealth(float newMaxHealth)
+    {
+        MaxHealth = newMaxHealth;
+        // Ensure current health does not exceed new max health
+        CurrentHealth = Mathf.Min(CurrentHealth, MaxHealth);
     }
 
     public void TakeDamage(float amount, GameObject attacker, string extra)

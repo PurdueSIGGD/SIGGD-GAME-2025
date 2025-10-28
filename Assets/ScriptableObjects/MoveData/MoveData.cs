@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -26,5 +27,7 @@ public class MoveData : ScriptableObject
 
     [Tooltip("How smoothly to interpolate between speeds. 1 is instant, 0 is no movement.")]
     public float movementInterpolation = 1;
+
+    
 
 }

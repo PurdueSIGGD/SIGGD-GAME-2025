@@ -44,7 +44,6 @@ public class PlayerStats : MonoBehaviour
                 Debug.LogWarning("Starving - Took 1 damage");
             }
         }
-
     }
 
     public void ChangeHunger(float amount)
