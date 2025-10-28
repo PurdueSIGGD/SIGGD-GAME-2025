@@ -11,7 +11,8 @@ public class AudioLogObject : ScriptableObject
     public struct lineInfo
     {
         public string line;
-        public double seconds;
+        public float seconds;
     }
     public lineInfo[] subtitles;
+    public string audioName;
 }

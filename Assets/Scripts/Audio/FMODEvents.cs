@@ -73,6 +73,7 @@ public class FMODEvents : SerializedMonoBehaviour
 
     public void playOneShot(string key, Vector3 position)
     {
+        Debug.Log("one shot is working");
         AudioManager.Instance.PlayOneShot(soundEvents[key], position);
     }
 

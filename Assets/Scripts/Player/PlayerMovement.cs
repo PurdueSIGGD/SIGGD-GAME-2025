@@ -4,6 +4,7 @@ using UnityEngine;
 using FMOD.Studio;
 using FMOD;
 using FMODUnity;
+using UnityEditor.SearchService;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
@@ -39,6 +40,13 @@ public class PlayerMovement : MonoBehaviour
 
         if (transform.position.y < -50)
             transform.position = new Vector3 { x = 0, y = 5, z = 0 };
+
+        // Testing
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            UnityEngine.Debug.Log("it worked");
+            AudioLogManager.Instance.playOneShot("Footsteps", transform);
+        }
     }
 
     private void FixedUpdate()
