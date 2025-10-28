@@ -12,15 +12,22 @@ public class EscapeMenu : MonoBehaviour
     void Start()
     {
         quitButton.onClick.AddListener(LoadMainMenu);
-        inventoryButton.onClick.AddListener(ShowInventory);
+        inventoryButton.onClick.AddListener(() => {
+            ShowInventory(true);
+        });
         canvas.enabled = false;
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.H))
         {
-            ShowEscapeMenu(!isEnabled);
+            Debug.Log("H pressed");
+            if (!Inventory.Instance.isEnabled())
+            { // only toggle escape menu if inventory is not currently enabled
+                ShowEscapeMenu(!isEnabled);
+            }
+            ShowInventory(false); // always hide inventory when h is pressed
         }
     }
 
@@ -29,12 +36,18 @@ public class EscapeMenu : MonoBehaviour
         if (enable)
         {
             Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = true;
+            canvas.enabled = true;
+            isEnabled = true;
         }
         else
         {
             Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            canvas.enabled = false;
+            isEnabled = false;
         }
-        Cursor.visible = canvas.enabled = isEnabled = enable;
+        //Cursor.visible = canvas.enabled = isEnabled = enable;
     }
 
     public void LoadMainMenu()
@@ -42,12 +55,12 @@ public class EscapeMenu : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
-    public void ShowInventory()
+    public void ShowInventory(bool enabled)
     {
         if (Inventory.Instance)
         {
-            ShowEscapeMenu(false);
-            Inventory.Instance.ShowInventory(true);
+            Inventory.Instance.ShowInventory(enabled);
+            if (enabled) ShowEscapeMenu(false); // hide escape menu when displaying inventory
         }   
     }
 }
