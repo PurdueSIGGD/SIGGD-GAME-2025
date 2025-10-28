@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class Slot : MonoBehaviour
+public class UISlot : MonoBehaviour
 {
     public ItemInfo itemInfo = null;
     public int count = 0;
@@ -14,12 +14,10 @@ public class Slot : MonoBehaviour
         textDisplay = GetComponentInChildren<TextMeshProUGUI>();
     }
 
-    /// <summary>
-    /// Updates text to match backend inventory slot
-    /// </summary>
-    /// <param name="slot">Backend inventory slot connected to this button slot</param>
-    public void UpdateText()
+    public void UpdateSlot(UISlot uiSlot)
     {
+        itemInfo = uiSlot.itemInfo;
+        count = uiSlot.count;
         if (itemInfo)
         {
             if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check
