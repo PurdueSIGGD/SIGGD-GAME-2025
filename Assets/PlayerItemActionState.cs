@@ -12,22 +12,26 @@ public class PlayerItemActionState : StateMachineBehaviour
 
         var currentItem = playerStateMachine.GetEquippedItem();
 
-        playerActionStrategy = currentItem.playerActionStrategy;
+        playerActionStrategy = currentItem != null ? currentItem.playerActionStrategy : null;
 
-        playerActionStrategy.Enter();
+        if (playerActionStrategy == null) {
+            playerStateMachine.animator.SetBool(Animator.StringToHash("isPerformingAction"), false);
+        }
+
+        playerActionStrategy?.Enter();
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateUpdate(animator, stateInfo, layerIndex);
 
-        playerActionStrategy.Update();
+        playerActionStrategy?.Update();
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateExit(animator, stateInfo, layerIndex);
 
-        playerActionStrategy.Exit();
+        playerActionStrategy?.Exit();
     }
 }
