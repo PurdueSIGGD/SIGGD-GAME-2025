@@ -3,6 +3,7 @@ using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
 using FMOD;
+using Sirenix.OdinInspector;
 
 public class AudioManager : MonoBehaviour
 {
@@ -13,10 +14,9 @@ public class AudioManager : MonoBehaviour
 
     public static AudioManager Instance { get; private set; }
 
+    [SerializeField, MinMaxSlider(1, 20)] private Vector2 ambianceInterval = new(1, 20);
+    private float ambianceTimer;
     private List<EventReference> randomAmbienceList = new List<EventReference>();
-    private float lastAmbienceSound;
-    private float interval;
-
 
     private void Awake()
     {
@@ -38,14 +38,8 @@ public class AudioManager : MonoBehaviour
         randomAmbienceList.Add(FMODEvents.instance.testAmbienceOne);
         randomAmbienceList.Add(FMODEvents.instance.testAmbienceTwo);
 
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            PlayRandomAmbience(Vector3.zero);
-        }
-
-        lastAmbienceSound = Time.time;
-        interval = Random.Range(10f, 20f);
-        UnityEngine.Debug.Log($"Next random ambience in {interval:F1} seconds");
+        ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
+        UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
     }
 
     public void PlayRandomAmbience(Vector3 worldPos)
@@ -97,7 +91,7 @@ public class AudioManager : MonoBehaviour
     }
 
     // NOTE: 3d attributes need to be set in order to play instances in 3d
-    public ATTRIBUTES_3D configAttributes3D(Vector3 position, Vector3 velocity, Vector3 forward, Vector3 up)
+    public ATTRIBUTES_3D ConfigAttributes3D(Vector3 position, Vector3 velocity, Vector3 forward, Vector3 up)
     {
         VECTOR pos = new VECTOR { x = position.x, y = position.y, z = position.z };
         VECTOR vel = new VECTOR { x = velocity.x, y = velocity.y, z = velocity.z };
@@ -126,12 +120,12 @@ public class AudioManager : MonoBehaviour
             musicEventInstance.setPaused(pauseMusic);
         }
 
-        if (Time.time - lastAmbienceSound >= interval)
+        ambianceTimer -= Time.deltaTime;
+        if (ambianceTimer < 0)
         {
             PlayRandomAmbience(Vector3.zero);
-            lastAmbienceSound = Time.time;
-            interval = Random.Range(10f, 20f);
-            UnityEngine.Debug.Log($"Next random ambience in {interval:F1} seconds");
+            ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
+            UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
         }
 
     }
