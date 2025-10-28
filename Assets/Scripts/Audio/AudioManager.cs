@@ -1,8 +1,9 @@
+using FMOD;
+using FMOD.Studio;
+using FMODUnity;
+using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
-using FMODUnity;
-using FMOD.Studio;
-using FMOD;
 
 public class AudioManager : MonoBehaviour
 {
@@ -13,10 +14,8 @@ public class AudioManager : MonoBehaviour
 
     public static AudioManager Instance { get; private set; }
 
-    private float lastAmbienceSound;
-    private float interval;
-
-
+    [SerializeField, MinMaxSlider(1, 20)] private Vector2 ambianceInterval = new(1, 20);
+    private float ambianceTimer;
 
     private void Awake()
     {
@@ -34,9 +33,8 @@ public class AudioManager : MonoBehaviour
     {
         music = await FMODEvents.instance.initializeMusic("LevelMusic");
         ambience = await FMODEvents.instance.initializeAmbience("testAmbience");
-        lastAmbienceSound = Time.time;
-        interval = Random.Range(10f, 20f);
-        UnityEngine.Debug.Log($"Next random ambience in {interval:F1} seconds");
+        ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
+        UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
 
     }
 
@@ -107,12 +105,12 @@ public class AudioManager : MonoBehaviour
             music.setPaused(pauseMusic);
         }
 
-        if (Time.time - lastAmbienceSound >= interval)
+        ambianceTimer -= Time.deltaTime;
+        if (ambianceTimer < 0)
         {
             PlayRandomAmbience(Vector3.zero);
-            lastAmbienceSound = Time.time;
-            interval = Random.Range(10f, 20f);
-            UnityEngine.Debug.Log($"Next random ambience in {interval:F1} seconds");
+            ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
+            UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
         }
     }
     public void PlayRandomAmbience(Vector3 worldPos)
