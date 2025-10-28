@@ -9,7 +9,7 @@ public class InventorySaveData
     [Serializable]
     public struct SlotSaveData
     {
-        [SerializeReference] public ItemInfo itemInfo;
+        public string name;
         public int count;
     }
 }

@@ -10,6 +10,9 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
     public static GameObject player;
 
     public static FirstPersonCamera mainCamera = player.GetComponent<FirstPersonCamera>();
+    public static Camera camera;
+    public static PlayerStats stats;
+    public static EntityHealthManager health;
 
     public bool deserialize()
     {
@@ -31,6 +34,15 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
             playerData.Position = pid.stateMachine.LastGroundedPosition;
             if (mainCamera) playerData.Rotation = mainCamera.transform.rotation;
         }
+        camera = PlayerID.Instance.cam;
+        player = PlayerID.Instance.rb.gameObject;
+        stats = player.GetComponent<PlayerStats>();
+        health = player.GetComponent<EntityHealthManager>();
+
+        if (player == null || camera == null || stats == null || health == null) return false;
+
+        playerData.Position = player.transform.position;
+        playerData.Rotation = camera.transform.rotation;
 
         byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);
         FileManager.Instance.WriteFile(savePath, bytes);

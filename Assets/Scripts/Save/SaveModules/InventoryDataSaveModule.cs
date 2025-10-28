@@ -21,18 +21,28 @@ public class InventoryDataSaveModule : ISaveModule
 
     public bool serialize()
     {
-        if (inventory)
+        if (inventory == null) return false;
+
+        inventoryData.inventory = new InventorySaveData.SlotSaveData[Inventory.InventoryLength + Inventory.HotBarLength];
+        Slot[] inventoryReference = inventory.getInventory();
+
+        for (int i = 0; i < inventoryData.inventory.Length; i++)
         {
-            inventoryData.inventory = new InventorySaveData.SlotSaveData[Inventory.InventoryLength + Inventory.HotBarLength];
-            Slot[] inventoryReference = inventory.getInventory();
+            Slot slot = inventoryReference[i];
 
-            for (int i = 0; i < inventoryData.inventory.Length; i++)
+            if (slot == null)
             {
-                Slot slot = inventoryReference[i];
-
                 inventoryData.inventory[i] = new InventorySaveData.SlotSaveData
                 {
-                    itemInfo = slot.itemInfo,
+                    name = "",
+                    count = 0
+                };
+            }
+            else
+            {
+                inventoryData.inventory[i] = new InventorySaveData.SlotSaveData
+                {
+                    name = slot.itemInfo == null ? "" : slot.itemInfo.itemName.ToString(),
                     count = slot.count
                 };
             }

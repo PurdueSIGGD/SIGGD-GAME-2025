@@ -1,10 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
 {
     public List<ISaveModule> modules;
+    [SerializeField] private Inventory inventory; //TEMP
+
+    public ISaveModule[] modules = {
+        new PlayerDataSaveModule(),
+        new InventoryDataSaveModule()
+    };
 
     protected override void Awake()
     {
@@ -14,7 +21,7 @@ public class SaveManager : Singleton<SaveManager>
 
     void Start()
     {
-        PlayerDataSaveModule.player = PlayerID.Instance.gameObject;
+        InventoryDataSaveModule.inventory = inventory; // TEMP
     }
 
     private void OnApplicationQuit()

@@ -6,4 +6,6 @@ public class PlayerSaveData
 {
     public Vector3 Position;
     public Quaternion Rotation;
+    public PlayerStats Stats;
+    public EntityHealthManager HealthManager;
 }
