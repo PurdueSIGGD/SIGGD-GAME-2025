@@ -22,12 +22,7 @@ public class EscapeMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
-            Debug.Log("H pressed");
-            if (!Inventory.Instance.isEnabled())
-            { // only toggle escape menu if inventory is not currently enabled
-                ShowEscapeMenu(!isEnabled);
-            }
-            ShowInventory(false); // always hide inventory when h is pressed
+            ShowEscapeMenu(!isEnabled);
         }
     }
 
@@ -46,7 +41,9 @@ public class EscapeMenu : MonoBehaviour
             Cursor.visible = false;
             canvas.enabled = false;
             isEnabled = false;
+            ShowInventory(false); // close inventory along with escape menu
         }
+        PlayerInput.Instance.DebugToggleInput(enable);
         //Cursor.visible = canvas.enabled = isEnabled = enable;
     }
 
@@ -60,7 +57,9 @@ public class EscapeMenu : MonoBehaviour
         if (Inventory.Instance)
         {
             Inventory.Instance.ShowInventory(enabled);
-            if (enabled) ShowEscapeMenu(false); // hide escape menu when displaying inventory
+            if (enabled) {
+                canvas.enabled = false; // hide escape menu when displaying inventory
+            }
         }   
     }
 }

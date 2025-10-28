@@ -110,7 +110,7 @@ public class Inventory : Singleton<Inventory>, IInventory
         // Inventory ui is still not responsive
 
         // Added: disable player movement and show cursor.
-        PlayerInput.Instance.DebugToggleInput(enabled);
+        //PlayerInput.Instance.DebugToggleInput(enabled);
         Debug.LogWarning("Opening player inventory!");
     }
 
