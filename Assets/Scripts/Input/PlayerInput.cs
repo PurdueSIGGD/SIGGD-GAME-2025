@@ -21,6 +21,8 @@ public class PlayerInput : Singleton<PlayerInput>
     public bool jumpInput = false;
     
     public Action<InputAction.CallbackContext> OnJump = delegate { }; // jump event
+    public Action<InputAction.CallbackContext> OnInteract = delegate { };
+    public bool interactionHeld = false;
     public event Action<InputAction.CallbackContext> OnAction = delegate { };
 
     ////////
@@ -43,6 +45,7 @@ public class PlayerInput : Singleton<PlayerInput>
 
         inputActions.Player.Attack.performed += InputAttack;
         inputActions.Player.Interact.performed += InputInteract;
+        inputActions.Player.Interact.canceled += InputInteract;
 
         inputActions.Player.Crouch.performed += InputCrouch;
         inputActions.Player.Crouch.canceled += InputCrouch;
@@ -137,7 +140,14 @@ public class PlayerInput : Singleton<PlayerInput>
 
     //// interact, attack inputs
     private void InputInteract(InputAction.CallbackContext callbackValue) {
-        // call something to interact (here)
+        Debug.Log("Interact input detected");
+        if (callbackValue.performed) {
+            interactionHeld = true;
+        } else if (callbackValue.canceled) {
+            interactionHeld = false;
+        }
+        
+        OnInteract?.Invoke(callbackValue);
     }
 
     private void InputAttack(InputAction.CallbackContext callbackValue) {

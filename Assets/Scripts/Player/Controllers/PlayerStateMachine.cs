@@ -198,7 +198,7 @@ public class PlayerStateMachine : MonoBehaviour
      */
     public void MoveInDirectionWithSpeed(Vector3 direction, float speed, float lerpAmount = 1)
     {
-        moveDirection = direction;
+        moveDirection = direction.normalized;
         
         Vector3 targetSpeed = direction * speed;
         targetSpeed = Vector3.Lerp(playerID.rb.linearVelocity, targetSpeed, lerpAmount);
@@ -221,7 +221,6 @@ public class PlayerStateMachine : MonoBehaviour
 		
         Vector3 movementForce = speedDiff * accelRate;
         
-		
         playerID.rb.AddForce(movementForce, ForceMode.Acceleration);
     }
 
