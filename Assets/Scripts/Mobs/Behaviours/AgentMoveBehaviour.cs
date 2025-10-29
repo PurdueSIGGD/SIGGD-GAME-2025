@@ -4,6 +4,7 @@ using CrashKonijn.Goap.Runtime;
 using UnityEngine;
 using UnityEngine.AI;
 using SIGGD.Goap;
+using UnityEngine.Polybrush;
 
 namespace SIGGD.Mobs
 {
@@ -15,6 +16,8 @@ namespace SIGGD.Mobs
         private ITarget currentTarget;
         private bool shouldMove;
         private bool sprintAllowed;
+
+        private Rigidbody rb;        
 
 
         public NavMeshAgent navMeshAgent;
@@ -33,6 +36,7 @@ namespace SIGGD.Mobs
         {
             this.agent = this.GetComponent<AgentBehaviour>();
             sprint = GetComponent<StaminaBehaviour>();
+            rb = GetComponent<Rigidbody>();
             sprintAllowed = false;
             speed = 3f;
         }
@@ -98,7 +102,13 @@ namespace SIGGD.Mobs
             }
 
             // Move the agent along towards their goal position
-            Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * speed * 100);
+            Vector3 dir = (Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * speed) - transform.position).normalized;
+            if (dir.sqrMagnitude > 0.01f)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
+                rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 10f * Time.deltaTime));
+            }
+            rb.MovePosition(rb.position + dir * speed * Time.deltaTime);
         }
 
         

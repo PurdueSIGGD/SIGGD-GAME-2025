@@ -3,6 +3,8 @@ using CrashKonijn.Goap.Runtime;
 using SIGGD.Mobs;
 using System.Drawing;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.Animations;
 
 namespace SIGGD.Mobs.Spawners
 {
@@ -28,6 +30,10 @@ namespace SIGGD.Mobs.Spawners
             {
                 var agent = Instantiate(this.agentPrefab, GetRandomPosition(), new Quaternion(10, 10, 10, 10)).GetComponent<GoapActionProvider>();
                 agent.gameObject.SetActive(true);
+                NavMeshAgent navAgent = agent.GetComponent<NavMeshAgent>();
+                NavMeshHit hit;
+                navAgent.Raycast(Vector3.down, out hit);
+                navAgent.Warp(hit.position);
             }
 
         }
@@ -35,7 +41,8 @@ namespace SIGGD.Mobs.Spawners
         private Vector3 GetRandomPosition()
         {
             Vector2 randomPos = Random.insideUnitCircle * spawningX;
-            return new Vector3(randomPos.x, -1, randomPos.y);
+            //return transform.TransformPoint(new Vector3(randomPos.x, -1, randomPos.y));
+            return transform.parent.position + new Vector3(randomPos.x, -1, randomPos.y);
         }
         void Update()
         {

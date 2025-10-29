@@ -18,7 +18,7 @@ public class FOVEditor : Editor
         if (fov.canSeeTarget)
         {
             Handles.color = Color.green;
-            //Handles.DrawLine(fov.trans)
+            Handles.DrawLine(fov.transform.position, fov.targetRef.transform.position);
         }
 
     }

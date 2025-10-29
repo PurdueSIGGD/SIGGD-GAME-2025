@@ -49,11 +49,8 @@ namespace SIGGD.Mobs.Hyena
                 finished = true;
                 yield break;
             }
-            rb.isKinematic = false;
             AgentMoveBehaviour.enabled = false;
             NavMeshAgent.enabled = false;
-            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-
             Quaternion targetRot = Quaternion.LookRotation(GetTarget() - transform.position);
             float elapsed = 0.0f;
             float timeout = 2f;
@@ -67,6 +64,8 @@ namespace SIGGD.Mobs.Hyena
                 yield return null;
             }
             yield return new WaitForSeconds(beginningAttackCooldown);
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rb.isKinematic = false;
             float gravity = Math.Abs(Physics.gravity.y);
             float xDistance = target.x - transform.position.x;
             float zDistance = target.z - transform.position.z;
@@ -85,7 +84,6 @@ namespace SIGGD.Mobs.Hyena
             //yield return new WaitUntil(() => AgentMoveBehaviour.IsGrounded);
             rb.angularVelocity = Vector3.zero;
             rb.linearVelocity = Vector3.zero;
-            rb.isKinematic = true;
             yield return new WaitForFixedUpdate();
             NavMeshHit hit;
             if (NavMesh.SamplePosition(transform.position, out hit, 3f, NavMesh.AllAreas))
@@ -93,7 +91,7 @@ namespace SIGGD.Mobs.Hyena
                 NavMeshAgent.Warp(hit.position);
             }
             //NavMeshAgent.Warp(transform.position);
-
+            rb.isKinematic = true;
 
             NavMeshAgent.enabled = true;
             AgentMoveBehaviour.enabled = true;

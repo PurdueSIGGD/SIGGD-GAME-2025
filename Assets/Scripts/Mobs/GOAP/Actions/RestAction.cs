@@ -1,5 +1,7 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
+using System.Threading;
+using CrashKonijn.Agent.Runtime;
 using UnityEngine;
 
 namespace SIGGD.Goap
@@ -25,6 +27,7 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override void Start(IMonoAgent agent, Data data)
         {
+            data.Timer = 10f;
         }
 
         // This method is called once before the action is performed
@@ -37,7 +40,10 @@ namespace SIGGD.Goap
         // This method is required
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
-            return ActionRunState.Completed;
+            data.Timer -= context.DeltaTime;
+            if (data.Timer < 0 || data.hm.CurrentHealth >= data.hm.MaxHealth) return ActionRunState.Completed;
+            data.hm.Heal(context.DeltaTime * 2f, agent.gameObject, "rested and healed");
+            return ActionRunState.ContinueOrResolve;
         }
 
         // This method is called when the action is completed
@@ -63,6 +69,11 @@ namespace SIGGD.Goap
         public class Data : IActionData
         {
             public ITarget Target { get; set; }
+            [GetComponent]
+            public EntityHealthManager hm { get; set; }
+
+            public float Timer { get; set; }
+
         }
     }
 }

@@ -38,7 +38,11 @@ namespace SIGGD.Goap.Sensors
             NavMeshHit hit;
             if (NavMesh.SamplePosition(random, out hit, 10f, NavMesh.AllAreas))
             {
-                return hit.position;
+                NavMeshPath path = new NavMeshPath();
+                if (NavMesh.CalculatePath(agent.Transform.position, hit.position, NavMesh.AllAreas, path) &&
+                path.status == NavMeshPathStatus.PathComplete) {
+                    return hit.position;
+                }
             }
 
             // Couldn't find a position on the navmesh, so just don't move

@@ -19,6 +19,7 @@ namespace SIGGD.Goap.Capabilities
                 .AddEffect<Hunger>(EffectType.Decrease)
                 .AddCondition<FoodCount>(Comparison.GreaterThanOrEqual, 1)
                 .SetTarget<ClosestFood>()
+                .SetStoppingDistance(1f)
                 .SetBaseCost(10);
             builder.AddMultiSensor<FoodSensor>();
             //builder.AddWorldSensor<HungerSensor>()

@@ -9,48 +9,45 @@ namespace SIGGD.Goap.Sensors
 {
     public class SafetyTargetSensor : LocalTargetSensorBase
     {
-        private Smell smell;
         public override void Created()
         {
+
         }
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
-            smell = references.GetCachedComponent<Smell>();
-            float safeDistanceThreshold = 30f;
-            var predatorPositionSum = smell.GetSumPredatorPositions();
-            if (predatorPositionSum == null) return null;
-            float distance = Vector3.Distance(predatorPositionSum, agent.Transform.position);
-            if (distance > safeDistanceThreshold) return null;
-            smell.positionTest = predatorPositionSum;
-            Vector3 dirFromPredator = (predatorPositionSum - agent.Transform.position).normalized;
-            dirFromPredator += dirFromPredator * Random.Range(-0.1f, 0.1f);
-            Vector3 safePosition = agent.Transform.position - dirFromPredator * Mathf.Max(0, safeDistanceThreshold - distance);
-            float sampleSphereRadius = 10f;
-            Vector3 randomPos;
-            int attempts = 10;
-            Debug.Log($"cool{safePosition}");
-            for (int i = 0; i < attempts; i++)
+            var random = this.LocateRandomPosition(agent);
+            // if the position target exists, update it with a new random position
+            if (existingTarget is PositionTarget positionTarget)
             {
-                randomPos = safePosition + Random.insideUnitSphere * sampleSphereRadius;
-                NavMeshHit hit;
-                if (NavMesh.SamplePosition(randomPos, out hit, 5f, NavMesh.AllAreas))
-                {
-                    if (existingTarget is PositionTarget positionTarget)
-                    {
-                        return positionTarget.SetPosition(hit.position);
-                    } else
-                    {
-                        return new PositionTarget(hit.position);
-                    }
-                }
-                safePosition -= dirFromPredator;
+                return positionTarget.SetPosition(random);
             }
-            return null;
+            // if the position target doesn't exist, create a new random target
+            return new PositionTarget(random);
         }
 
+        /// <summary>
+        /// helper function to generate a random location in-world
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <returns></returns>
+        private Vector3 LocateRandomPosition(IActionReceiver agent)
+        {
+            var random = Random.insideUnitSphere * 10f;
+            random += agent.Transform.position;
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(random, out hit, 10f, NavMesh.AllAreas))
+            {
+                return hit.position;
+            }
+
+            // Couldn't find a position on the navmesh, so just don't move
+            return agent.Transform.position;
+        }
         public override void Update()
         {
+
         }
     }
 }

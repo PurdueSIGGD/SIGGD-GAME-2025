@@ -3,6 +3,7 @@ using CrashKonijn.Goap.Runtime;
 using CrashKonijn.Agent.Runtime;
 using UnityEngine;
 using SIGGD.Goap.Interfaces;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace SIGGD.Goap
 {
@@ -20,7 +21,7 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override bool IsValid(IActionReceiver agent, CommonData data)
         {
-            return !data.am.isLunging;
+            return true;
         }
 
         // This method is called when the action is started
@@ -43,8 +44,12 @@ namespace SIGGD.Goap
 
         public override IActionRunState Perform(IMonoAgent agent, CommonData data, IActionContext context)
         {
-            if (!data.am.isLunging) return ActionRunState.Completed;
-            return ActionRunState.Stop;
+            if (!data.am.isLunging)
+            {
+                Debug.Log("its completing");
+                return ActionRunState.Completed;
+            }
+            return ActionRunState.Continue;
         }
         public override void Stop(IMonoAgent agent, CommonData data)
         {

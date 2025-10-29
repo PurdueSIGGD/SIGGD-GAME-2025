@@ -20,7 +20,7 @@ namespace SIGGD.Goap.Capabilities
                 .SetTarget<SafetyTarget>()
                 .SetStoppingDistance(2f)
                 .SetBaseCost(-40);
-            builder.AddTargetSensor<SafetyTargetSensor>()
+            builder.AddTargetSensor<RestTargetSensor>()
                .SetTarget<SafetyTarget>();
             builder.AddWorldSensor<DangerSensor>()
                 .SetKey<Danger>();

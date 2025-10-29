@@ -109,6 +109,9 @@ namespace SIGGD.Mobs
             {
                // AgentMoveBehaviour.EnableSprint();
                 this.provider.RequestGoal<KillPlayerGoal>(true);
+            } else
+            {
+                this.provider.RequestGoal<KillPlayerGoal, DontStarveGoal>(true);
             }
         }
     }

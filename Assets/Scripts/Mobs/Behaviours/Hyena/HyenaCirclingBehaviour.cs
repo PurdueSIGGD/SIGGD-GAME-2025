@@ -41,7 +41,7 @@ namespace SIGGD.Mobs.Hyena
         public IEnumerator Circle(Func<Vector3> GetTarget)
         {
             finishedCircling = false;
-            float duration = UnityEngine.Random.Range(3f, 7f);
+            float duration = UnityEngine.Random.Range(0f, 0f);
             float elapsed = 0f;
 
             Vector3 direction = new Vector3(0, UnityEngine.Random.Range(-1, 1) > 0 ? 1 : -1, 0);
@@ -69,9 +69,16 @@ namespace SIGGD.Mobs.Hyena
             {
                 elapsed += Time.deltaTime;
 
-                if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh)
-                    Pathfinding.MovePartialPath(NavMeshAgent, GetTarget(), Time.deltaTime * 35 * 100);
+                //if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh)
+                //    Pathfinding.MovePartialPath(NavMeshAgent, GetTarget(), Time.deltaTime * 35 * 100);
 
+                Vector3 dir = (Pathfinding.MovePartialPath(NavMeshAgent, GetTarget(), Time.deltaTime * 10) - transform.position).normalized;
+                if (dir.sqrMagnitude > 0.01f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
+                    rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 10f * Time.deltaTime));
+                }
+                rb.MovePosition(rb.position + dir * 10 * Time.deltaTime);
                 yield return new WaitForFixedUpdate();
             }
             NavMeshAgent.isStopped = true;

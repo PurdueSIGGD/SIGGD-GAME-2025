@@ -243,6 +243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4e06de65456e7b4eb5a42e57afc4d6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  predatorCount: 0
 --- !u!114 &8106625701091564338
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,6 +278,7 @@ MonoBehaviour:
     m_Bits: 0
   targetSmellIntensity: 0
   targetRef: {fileID: 0}
+  positionTest: {x: 0, y: 0, z: 0}
 --- !u!195 &466983475878616671
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -336,7 +338,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0

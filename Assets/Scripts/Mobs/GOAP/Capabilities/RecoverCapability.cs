@@ -5,18 +5,30 @@ using CrashKonijn.Goap.Runtime;
 
 namespace SIGGD.Goap.Capabilities {
 
-    public class RestCapability : CapabilityFactoryBase
+    public class RecoverCapability : CapabilityFactoryBase
     {
         public override ICapabilityConfig Create()
         {
             var builder = new CapabilityBuilder("RecoverCapability");
             builder.AddGoal<HealGoal>()
-                .AddCondition<CurrentHealth>(Comparison.GreaterThanOrEqual, 0);
+                .AddCondition<CurrentHealth>(Comparison.GreaterThanOrEqual, 0)
+                .SetBaseCost(-200);
             builder.AddAction<RestAction>()
                 .AddEffect<CurrentHealth>(EffectType.Increase)
-                .SetTarget<SafetyTarget>();
-            builder.AddTargetSensor<SafetyTargetSensor>()
-                .SetTarget<SafetyTarget>();
+                .SetTarget<RestTarget>();
+            builder.AddTargetSensor<RestTargetSensor>()
+                .SetTarget<RestTarget>();
+
+            /*
+            builder.AddGoal<RegainStaminaGoal>()
+                .AddCondition<CurrentStamina>(Comparison.GreaterThanOrEqual, 0);
+            builder.AddAction<RestAction>()
+                .AddEffect<CurrentHealth>(EffectType.Increase)
+                .SetTarget<RestTarget>();
+            builder.AddTargetSensor<RestTargetSensor>()
+                .SetTarget<RestTarget>();
+            */
+
             return builder.Build();
         }
     }

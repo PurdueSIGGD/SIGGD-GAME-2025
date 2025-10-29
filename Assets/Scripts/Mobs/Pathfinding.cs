@@ -6,13 +6,15 @@ namespace SIGGD.Goap
     public class Pathfinding : MonoBehaviour
     {
         // Function to move along the navmesh path for a certain distance (before reanalyzing the path as it still moves)
-        public static void MovePartialPath(NavMeshAgent navMeshAgent, Vector3 destination, float distanceToTravel)
+        public static Vector3 MovePartialPath(NavMeshAgent navMeshAgent, Vector3 destination, float distanceToTravel)
         {
             NavMeshPath path = new NavMeshPath();
             if (!navMeshAgent.CalculatePath(destination, path) || path.corners.Length < 2)
             {
-                return;
+                return Vector3.zero;
             }
+            if (path.status != NavMeshPathStatus.PathComplete)
+                return Vector3.zero;
             Vector3 currentPosition = navMeshAgent.transform.position;
             float distanceRemaining = distanceToTravel;
 
@@ -29,15 +31,20 @@ namespace SIGGD.Goap
                 else
                 {
                     // Move partway through this segment
+
                     Vector3 direction = (segmentEnd - segmentStart).normalized;
                     Vector3 partialTarget = segmentStart + direction * distanceRemaining;
-                    navMeshAgent.SetDestination(partialTarget);
-                    return;
+                    if (NavMesh.SamplePosition(partialTarget, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                        return hit.position;
+                    return partialTarget;
+                    //navMeshAgent.SetDestination(partialTarget);
+                    //return;
                 }
             }
 
             // If we reach here, move to the final corner (distance to travel is longer than full path)
-            navMeshAgent.SetDestination(path.corners[^1]);
+            //navMeshAgent.SetDestination(path.corners[^1]);
+            return path.corners[^1];
         }
         public static double GetPathDistance(NavMeshAgent navMeshAgent, Vector3 start, Vector3 destination)
         {
