@@ -21,6 +21,8 @@ public class GenericStatPickup : MonoBehaviour
             stats.ApplyMultiplier(statToAffect, multiplier, duration);
             Destroy(gameObject);
         }
+
+         
     }
 
 

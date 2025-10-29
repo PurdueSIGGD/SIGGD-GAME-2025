@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b31c40e81017e9b4596507c79483063e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  statToAffect: 0
+  statToAffect: 1
   multiplier: 2
   duration: 3
 --- !u!65 &869417973
@@ -568,6 +568,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4696392301619895344, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1093636387}
+    - targetCorrespondingSourceObject: {fileID: 4696392301619895344, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1093636397}
   m_SourcePrefab: {fileID: 100100000, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
 --- !u!4 &1093636375 stripped
 Transform:
@@ -609,6 +612,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   statManager: {fileID: 1093636377}
+--- !u!114 &1093636397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093636376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b00c566061feb459692b8d52781ac3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHunger: 100
+  currentHunger: 0
+  hungerDecayRate: 1
+  statManager: {fileID: 1093636377}
+  hungerDamageInterval: 10
 --- !u!1001 &1453462787
 PrefabInstance:
   m_ObjectHideFlags: 0
