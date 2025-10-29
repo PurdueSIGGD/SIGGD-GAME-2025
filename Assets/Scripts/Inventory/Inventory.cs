@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 
-public class Inventory : Singleton<Inventory>
+public class Inventory : Singleton<Inventory>, IInventory
 {
     const int HotBarLength = 9;
     const int InventoryLength = 18;
@@ -15,19 +15,18 @@ public class Inventory : Singleton<Inventory>
 
     private List<ItemInfo> lastClickedItems = new();
 
+    private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
     [SerializeField] public GameObject[] items = new GameObject[1]; // array of all of the different types of items; used for instantiating
-
-    private Slot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
-    private Slot tempSlot; // temporary slot for holding item that is being moved
-
+    private UISlot _tempUISlot; // temporary slot for holding item that is being moved
     private InventoryInputActions inputActions;
 
     protected override void Awake()
     {
         base.Awake();
-        inventory = new Slot[HotBarLength + InventoryLength];
+        inventory = new UISlot[HotBarLength + InventoryLength];
+        
         inventoryCanvas = GetComponentInChildren<Canvas>();
         inventoryCanvas.enabled = false;
 
@@ -74,9 +73,9 @@ public class Inventory : Singleton<Inventory>
             if (hotbarSlots[i] == null) continue;
 
             // TODO: Add to the existing code below to load in saved items here 
-            if (!hotbarSlots[i].TryGetComponent<Slot>(out Slot slot))
+            if (!hotbarSlots[i].TryGetComponent<UISlot>(out UISlot slot))
             {
-                slot = hotbarSlots[i].AddComponent<Slot>();
+                slot = hotbarSlots[i].AddComponent<UISlot>();
             }
             slot.index = i;
             SetHotbarSlot(slot.index, slot);
@@ -90,9 +89,9 @@ public class Inventory : Singleton<Inventory>
             if (inventorySlots[i] == null) continue;
 
             // TODO: Add to the existing code below to load in saved items here 
-            if (!inventorySlots[i].TryGetComponent<Slot>(out Slot slot))
+            if (!inventorySlots[i].TryGetComponent<UISlot>(out UISlot slot))
             {
-                slot = inventorySlots[i].AddComponent<Slot>();
+                slot = inventorySlots[i].AddComponent<UISlot>();
             }
             slot.index = i + HotBarLength;
             SetInventorySlot(slot.index, slot);
@@ -111,11 +110,12 @@ public class Inventory : Singleton<Inventory>
         // Inventory ui is still not responsive
 
         // Added: disable player movement and show cursor.
-        if (enabled) Cursor.lockState = CursorLockMode.None;
-        else Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = enabled;
-        PlayerInput.Instance.DebugToggleInput(enabled);
+        //PlayerInput.Instance.DebugToggleInput(enabled);
         Debug.LogWarning("Opening player inventory!");
+    }
+
+    public bool isEnabled() {
+        return inventoryCanvas.enabled;
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public class Inventory : Singleton<Inventory>
     /// </summary>
     /// <param name="index">Index of slot to return</param>
     /// <returns>Slot at specified index</returns>
-    private Slot GetHotbarSlot(int index)
+    private UISlot GetHotbarSlot(int index)
     {
         if (index >= HotBarLength || index < 0)
         {
@@ -133,28 +133,28 @@ public class Inventory : Singleton<Inventory>
         return inventory[index];
     }
 
+
     /// <summary>
     /// Sets a specific hotbar slot to a given slot object
     /// </summary>
     /// <param name="index">Index of slot to set</param>
     /// <param name="slot">Reference slot to update backend slot with</param>
-    private void SetHotbarSlot(int index, Slot slot)
+    private void SetHotbarSlot(int index, UISlot uiSlot)
     {
         if (index >= HotBarLength || index < 0)
         {
             Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
             return;
         }
-        inventory[index] = slot;
-        inventory[index].UpdateText();
+        if (inventory[index] == null)
+        {
+            Debug.Log("null");
+            inventory[index] = uiSlot;
+        }
+        inventory[index].UpdateSlot(uiSlot);
     }
 
-    /// <summary>
-    /// Returns a slot of the inventory (not including the hotbar)
-    /// </summary>
-    /// <param name="index">Index of slot to return</param>
-    /// <returns>Slot at specified index</returns>
-    private Slot GetInventorySlot(int index)
+    private UISlot GetInventorySlot(int index)
     {
         if (index < HotBarLength || index >= HotBarLength + InventoryLength)
         {
@@ -164,31 +164,29 @@ public class Inventory : Singleton<Inventory>
         return inventory[index];
     }
 
-    /// <summary>
-    /// Sets a specific inventory slot (not including hotbar) to a given slot object
-    /// </summary>
-    /// <param name="index">Index of slot to set</param>
-    /// <param name="slot">Reference slot to update backend slot with</param>
-    private void SetInventorySlot(int index, Slot slot)
+    private void SetInventorySlot(int index, UISlot uiSlot)
     {
         if (index < HotBarLength || index >= HotBarLength + InventoryLength)
         {
             Debug.LogWarning("Inventory size " + InventoryLength + ", index + " + index);
             return;
         }
-        inventory[index] = slot;
-        inventory[index].UpdateText();
+        if (inventory[index] == null)
+        {
+            inventory[index] = uiSlot;
+        }
+        inventory[index].UpdateSlot(uiSlot);
     }
 
-    void OnSlotSelected(Slot uiSlot)
+    void OnSlotSelected(UISlot uiUISlot)
     {
-        Debug.Log("Hotbar slot #" + uiSlot.index + " clicked");
+        Debug.Log("Hotbar slot #" + uiUISlot.index + " clicked");
     }
 
     // This method shows recipe crafting, but is considered "debug" because it won't work this way in a playable build.
-    void DebugOnInvSlotSelected(Slot slot)
+    void DebugOnInvSlotSelected(UISlot uiSlot)
     {
-        ItemInfo item = slot.itemInfo;
+        ItemInfo item = uiSlot.itemInfo;
         lastClickedItems.Add(item);
         if (lastClickedItems.Count >= 2)
         {
@@ -251,7 +249,7 @@ public class Inventory : Singleton<Inventory>
         if (inventory[selected].count == 0) {
             inventory[selected].itemInfo = null;
         }
-        inventory[selected].UpdateText();
+        inventory[selected].UpdateSlot(inventory[selected]);
     }
 
     /// <summary>
@@ -276,10 +274,11 @@ public class Inventory : Singleton<Inventory>
     /// <param name="count">Amount of items</param>
     /// 
     /// <returns>Number of items that could not be added to the inventory</returns>
-    public int Add(ItemInfo itemInfo, int count) { // maybe change input type
+    public int AddItem(ItemInfo itemInfo, int count) { // maybe change input type
         // first add to existing stacks
+        
         for (int i = 0; i < inventory.Length; i++) {
-            if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName) // matches item
+            if (inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName) // matches item
             {
                 if (itemInfo.maxStackCount > inventory[i].count) { // has space for at least one item
                     if (itemInfo.maxStackCount < inventory[i].count + count) // not enough space for all items in same stack
@@ -300,7 +299,7 @@ public class Inventory : Singleton<Inventory>
         // otherwise create new stack if possible
         if (count > 0) {
             for (int i = 0; i < inventory.Length; i++) {
-                if (inventory[i].count == 0) { // is empty slot
+                if (inventory[i]?.count == 0) { // is empty slot
                     if (count > itemInfo.maxStackCount) // will need to split the items between slots
                     {
                         count -= itemInfo.maxStackCount;
@@ -321,12 +320,41 @@ public class Inventory : Singleton<Inventory>
         // otherwise replace current selected item
 
     }
+    
+    /**
+     * <summary>
+     * Removes item from inventory
+     * </summary>
+     * <param name="item">Item to remove</param>
+     * <param name="count">Amount of items to remove</param>
+     * <returns>Whether or not the removal was successful</returns>
+     */
+    public bool RemoveItem(ItemInfo item, int count)
+    {
+        int index = Find(item.itemName);
+        if (index == -1) return false; // item not found
+
+        if (inventory[index].count >= count)
+        {
+            inventory[index].count -= count;
+            if (inventory[index].count == 0)
+            {
+                inventory[index].itemInfo = null;
+            }
+            return true;
+        }
+        else
+        {
+            return false; // not enough items to remove
+        }
+    }
 
     /// <summary>
     /// Drop item at index
     /// </summary>
     /// <param name="index">Index of item to drop</param>
-    public void Drop(int index) { // maybe create another method for dropping stacks of items
+    /// <returns>Whether or not the drop was successful</returns>
+    public bool Drop(int index) { // maybe create another method for dropping stacks of items
         // instantiate physical item
         
 
@@ -335,6 +363,8 @@ public class Inventory : Singleton<Inventory>
         if (inventory[index].count <= 0) {
             inventory[index].itemInfo = null;
         }
+        
+        return true;
     }
 
     /// <summary>
@@ -349,9 +379,9 @@ public class Inventory : Singleton<Inventory>
     /// </summary>
     /// <param name="index">Index of item to be moved</param>
     public void Move(int index) {
-        Slot temp = inventory[index];
-        inventory[index] = tempSlot;
-        tempSlot = temp;
+        UISlot temp = inventory[index];
+        inventory[index] = _tempUISlot;
+        _tempUISlot = temp;
     }
 
     /// <summary>
@@ -382,7 +412,7 @@ public class Inventory : Singleton<Inventory>
     /// </summary>
     /// <returns>Whether or not an item is being moved (stored in tempSlot)</returns>
     public bool IsMovingItem() {
-        return tempSlot.count > 0;
+        return _tempUISlot.count > 0;
     }
 
     /// <summary>
@@ -400,9 +430,5 @@ public class Inventory : Singleton<Inventory>
     /// <returns>The </returns>
     public ItemInfo GetItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
-    }
-
-    public Slot[] GetInventory() {
-        return inventory;
     }
 }

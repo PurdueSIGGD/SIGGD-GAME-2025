@@ -1,8 +1,9 @@
+using FMOD;
+using FMOD.Studio;
+using FMODUnity;
+using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
-using FMODUnity;
-using FMOD.Studio;
-using FMOD;
 
 public class AudioManager : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class AudioManager : MonoBehaviour
 
     public static AudioManager Instance { get; private set; }
 
+    [SerializeField, MinMaxSlider(1, 20)] private Vector2 ambianceInterval = new(1, 20);
+    private float ambianceTimer;
 
     private void Awake()
     {
@@ -22,7 +25,7 @@ public class AudioManager : MonoBehaviour
             UnityEngine.Debug.Log("more than one audio manager in the scene");
         }
         Instance = this;
-        
+
         eventEmitters = new List<StudioEventEmitter>();
     }
 
@@ -30,6 +33,12 @@ public class AudioManager : MonoBehaviour
     {
         music = await FMODEvents.instance.initializeMusic("LevelMusic");
         ambience = await FMODEvents.instance.initializeAmbience("testAmbience");
+<<<<<<< HEAD
+=======
+        ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
+        UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
+
+>>>>>>> dev
     }
 
     public void InitializeAmbience(EventReference ambienceEventReference)
@@ -89,7 +98,6 @@ public class AudioManager : MonoBehaviour
         return emitter;
     }
 
-
     private bool pauseMusic = false;
     private void Update()
     {
@@ -101,6 +109,29 @@ public class AudioManager : MonoBehaviour
             music.setPaused(pauseMusic);
         }
 
+        ambianceTimer -= Time.deltaTime;
+        if (ambianceTimer < 0)
+        {
+            PlayRandomAmbience(Vector3.zero);
+            ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
+            UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
+        }
+    }
+    public void PlayRandomAmbience(Vector3 worldPos)
+    {
+        var randomList = FMODEvents.instance.getRandomSoundsList();
+
+        if (randomList == null || randomList.Count == 0)
+        {
+            UnityEngine.Debug.LogWarning("Random ambience list is empty — skipping playback.");
+            return;
+        }
+
+        int index = Random.Range(0, randomList.Count);
+        EventReference randomEvent = randomList[index];
+
+        RuntimeManager.PlayOneShot(randomEvent, worldPos);
+        UnityEngine.Debug.Log("Played random ambience: " + randomEvent.Path);
     }
 
     private void OnDestroy()

@@ -8,7 +8,7 @@ public class StunTrap : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        rb.linearVelocity = PlayerID.Instance.rb.linearVelocity;
+        
         PlayerID.Instance.stateMachine.IgnoreCollisionWithObject(this.gameObject, true);
         Throw();
     }
@@ -20,8 +20,9 @@ public class StunTrap : MonoBehaviour
     }
 
     void Throw() {
-        Debug.Log("Throw: " + PlayerID.Instance.cam.transform.forward);
+        Debug.Log("Throw: " + PlayerID.Instance.cam.transform.forward + " " + PlayerID.Instance.rb.linearVelocity);
         rb.position = PlayerID.Instance.gameObject.transform.position;
+        rb.linearVelocity = PlayerID.Instance.rb.linearVelocity;
         rb.AddForce(PlayerID.Instance.cam.transform.forward * throwForce, ForceMode.Impulse);
         
     }
