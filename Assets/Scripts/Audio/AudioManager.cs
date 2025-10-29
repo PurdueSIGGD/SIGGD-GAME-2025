@@ -73,6 +73,7 @@ public class AudioManager : MonoBehaviour
     // NOTE: 3d attributes need to be set in order to play instances in 3d
     public ATTRIBUTES_3D configAttributes3D(Vector3 position, Vector3 velocity, Vector3 forward, Vector3 up)
     {
+        // need to add a way to orthonganize forward and up so FMOD stops getting so mad
         VECTOR pos = new VECTOR { x = position.x, y = position.y, z = position.z };
         VECTOR vel = new VECTOR { x = velocity.x, y = velocity.y, z = velocity.z };
         VECTOR forw = new VECTOR { x = forward.x, y = forward.y, z = forward.z };

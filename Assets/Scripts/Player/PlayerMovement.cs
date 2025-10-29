@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
 
         // as long as you format it like this and have it in a async Start() it should all work
-        footsteps = await FMODEvents.instance.GetEventInstance("Footsteps");
+        footsteps = await FMODEvents.instance.getEventInstance("Footsteps");
     }
 
     private void Update()
@@ -45,7 +45,12 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             UnityEngine.Debug.Log("it worked");
-            AudioLogManager.Instance.playOneShot("Footsteps", transform);
+            AudioLogManager.Instance.playAudioLog("Footsteps", gameObject); // pass in the object that the audio log is gonna play at
+        }
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            UnityEngine.Debug.Log("Interuppting");
+            AudioLogManager.Instance.StopCurrentAudio();
         }
     }
 
@@ -74,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
         if (rb.linearVelocity.magnitude != 0)
         {
             // NOTE: 3d attributes need to be set in order to play instances in 3d
-            ATTRIBUTES_3D attr = AudioManager.Instance.configAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, Vector3.up);
+            ATTRIBUTES_3D attr = AudioManager.Instance.configAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, rb.transform.up);
             footsteps.set3DAttributes(attr);
 
             PLAYBACK_STATE playbackState;

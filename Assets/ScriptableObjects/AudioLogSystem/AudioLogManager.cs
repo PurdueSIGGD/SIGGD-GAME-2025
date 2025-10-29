@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using System.Collections;
+using FMODUnity;
+using FMOD.Studio;
+using FMOD;
 
 public class AudioLogManager : MonoBehaviour
 {
@@ -11,13 +14,20 @@ public class AudioLogManager : MonoBehaviour
 
     public static AudioLogManager Instance { get; set; }
 
+    private EventInstance logSoundEvent;
+
+    public GameObject curPlayer; // to store player object after playAudioLog stops running
+    private Rigidbody playerRb;
+
+    private bool isPlaying = false;
+
     private Dictionary<string, AudioLogObject> audioNameToLogs = new();
 
     void Awake()
     {
         if (Instance != null)
         {
-            Debug.Log("Error, too many AudioLogManagers in scene");
+            UnityEngine.Debug.Log("Error, too many AudioLogManagers in scene");
             return;
         }
         Instance = this;
@@ -29,6 +39,15 @@ public class AudioLogManager : MonoBehaviour
         foreach (var log in logs)
         {
             audioNameToLogs[log.audioName] = log;
+        }
+    }
+
+    private void Update()
+    {
+        if(isPlaying && curPlayer != null)
+        {
+            ATTRIBUTES_3D attr = AudioManager.Instance.configAttributes3D(playerRb.position, playerRb.linearVelocity, playerRb.transform.forward, playerRb.transform.up);
+            logSoundEvent.set3DAttributes(attr);
         }
     }
 
@@ -44,20 +63,68 @@ public class AudioLogManager : MonoBehaviour
         subtitles.enabled = false;
         lastStarted = null;
     }
-    public void playOneShot (string audioName, Transform location)
+    public void playAudioLog (string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
     {
         if (lastStarted != null)
         {
             StopCoroutine(lastStarted);
-        } 
-        FMODEvents.instance.playOneShot(audioName, location.position);
+            StopCurrentAudio();
+        }
+
         if (audioNameToLogs.TryGetValue(audioName, out var foundAudio))
         {
+            logSoundEvent = FMODEvents.instance.getEventInstanceNOASYNC(audioName); // audio shouldnt need to be delayed since its not being called in the start
+            curPlayer = player;
+            isPlaying = true;
+            playerRb = curPlayer.GetComponent<Rigidbody>();
+
+            // now that isPlaying is true nad logSoundEvent exists the 3d attributes will be getting updated and we can start the event
+            logSoundEvent.start();
+
             lastStarted = StartCoroutine(startSubtitles(foundAudio));
+
+            StartCoroutine(endAudioWhenDone());
         }
         else
         {
-            Debug.Log("Audio name not in dictionarty: " + audioName);
+            UnityEngine.Debug.Log("Audio name not in dictionarty: " + audioName);
         }
+    }
+
+    // this will end the audio naturally once the clip is done playing if its not interrupted
+    private IEnumerator endAudioWhenDone()
+    {
+        PLAYBACK_STATE state;
+
+        // for out current testing this wont work because footsteps doesnt end it just loops but this should work for more real events that we'll implement
+        logSoundEvent.getPlaybackState(out state);
+        while (state != PLAYBACK_STATE.STOPPED)
+        {
+            yield return null;
+        }
+
+        isPlaying = false;
+        curPlayer = null;
+        logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        logSoundEvent.release();
+    }
+
+    // this can be used for interrupt
+    public void StopCurrentAudio()
+    {
+        // itll break if we try to stop stuff while nothing is playing
+        if (!isPlaying)
+        {
+            return;
+        }
+
+        // run all the normal stop stuff including stopping audio
+        logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        logSoundEvent.release(); // stops the now unused event from floating around not doing anything
+        isPlaying = false;
+        curPlayer = null;
+
+        subtitles.enabled = false;
+        lastStarted = null;
     }
 }

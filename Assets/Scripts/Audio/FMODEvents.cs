@@ -78,7 +78,7 @@ public class FMODEvents : SerializedMonoBehaviour
     }
 
     // gets you an event instance based on the key you give it
-    public async Task<EventInstance> GetEventInstance(string key)
+    public async Task<EventInstance> getEventInstance(string key)
     {
         // Wait until events are ready
         while (!initialized)
@@ -87,6 +87,19 @@ public class FMODEvents : SerializedMonoBehaviour
         }
 
         // tries to get the value
+        if (soundEvents.TryGetValue(key, out var eventRef))
+        {
+            return RuntimeManager.CreateInstance(eventRef);
+        }
+
+        // if it doesnt it logs what it couldnt find
+        Debug.Log("couldnt find key: " + key);
+        return default;
+    }
+
+    // literally just a copy paste of getEventInstance() but it doesnt delay because its not being called in an async method
+    public EventInstance getEventInstanceNOASYNC(string key)
+    {
         if (soundEvents.TryGetValue(key, out var eventRef))
         {
             return RuntimeManager.CreateInstance(eventRef);
