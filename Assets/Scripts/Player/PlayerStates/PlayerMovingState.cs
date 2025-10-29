@@ -16,7 +16,7 @@ public class PlayerMovingState : StateMachineBehaviour
         base.OnStateEnter(animator, stateInfo, layerIndex);
         playerStateMachine = PlayerID.Instance.stateMachine;
         playerMovement = PlayerID.Instance.playerMovement;
-        playerMovement.SendMessage("EnableMovement");
+        playerMovement.IsMoving = true;
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -30,13 +30,11 @@ public class PlayerMovingState : StateMachineBehaviour
             playerStateMachine.moveData.walkSpeed;
 
         // Debug.Log("Moving with speed: " + speed);
-
-        PlayerID.Instance.playerMovement.Run(moveInput, speed);
     }
     
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateExit(animator, stateInfo, layerIndex);
-        playerMovement.SendMessage("DisableMovement");
+        playerMovement.IsMoving = false;
     }
 }

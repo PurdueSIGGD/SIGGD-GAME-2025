@@ -12,5 +12,12 @@ public class PlayerJumpingState : StateMachineBehaviour
         playerMovement = PlayerID.Instance.playerMovement;
 
         playerID.playerMovement.Jump(playerID.stateMachine.moveData.JumpForce);
+        // playerMovement.SendMessage("DisableMovement"); // In case we want to disable movement while jumping
+    }
+
+    public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        base.OnStateExit(animator, stateInfo, layerIndex);
+        // playerMovement.SendMessage("EnableMovement"); // In case we want to disable movement while jumping
     }
 }

@@ -19,6 +19,7 @@ public class PlayerStateMachine : MonoBehaviour
     [HideInInspector] public Collider[] allCols;
 
     private PlayerMovement playerMovement;
+    private FirstPersonCamera firstPersonCamera;
 
     #endregion
     
@@ -39,11 +40,26 @@ public class PlayerStateMachine : MonoBehaviour
         mainCol = GetComponent<Collider>();
         allCols = GetComponentsInChildren<Collider>();
         playerMovement = GetComponent<PlayerMovement>();
+        firstPersonCamera = playerID.cam.GetComponent<FirstPersonCamera>();
     }
 
     private void Update()
     {
-        UpdateAnimatorParams();        
+        UpdateAnimatorParams();
+
+        // Debug keys to test enabling/disabling movement
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            playerMovement.SendMessage("DisableMovement");
+            firstPersonCamera.SendMessage("DisableCamRotation");
+            Debug.Log("Movement Disabled");
+        }
+        else if (Input.GetKeyDown(KeyCode.K))
+        {
+            playerMovement.SendMessage("EnableMovement");
+            firstPersonCamera.SendMessage("EnableCamRotation");
+            Debug.Log("Movement Enabled");
+        }
     }
 
     private void FixedUpdate()

@@ -29,11 +29,12 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public Rigidbody rb;
 
     private PlayerStateMachine playerStateMachine;
+    private FirstPersonCamera firstPersonCamera;
 
     #region Movement Attributes
     
     [HideInInspector] public Vector3 moveDirection; // The 3D direction the player is currently moving in.
-    public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f && !IsClimbing; // Whether the player is currently moving.
+    public bool IsMoving { get; set; } // Whether the player is currently moving.
     public bool IsClimbing => PlayerID.Instance.gameObject.GetComponent<ClimbAction>().IsClimbing();
     
     #endregion
@@ -73,6 +74,7 @@ public class PlayerMovement : MonoBehaviour
 
         playerID = GetComponent<PlayerID>();
         rb = GetComponent<Rigidbody>();
+        firstPersonCamera = playerID.cam.GetComponent<FirstPersonCamera>();
     }
 
     private void Update()
@@ -87,21 +89,24 @@ public class PlayerMovement : MonoBehaviour
 
         CalculateGravity();
 
-        if (!canMove) return;
+        UnityEngine.Debug.Log("Can move" + canMove);
+        UnityEngine.Debug.Log("Is falling" + IsFalling);
 
-        Run(PlayerInput.Instance.movementInput, moveData.sprintSpeed);        
+        // Run(PlayerInput.Instance.movementInput, moveData.sprintSpeed);        
     }
 
     private void FixedUpdate()
     {
-        // horizontalInput = Input.GetAxisRaw("Horizontal");
-        // verticalInput = Input.GetAxisRaw("Vertical");
-        // moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-
-        // rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
-
         ApplyGravity();
         UpdateSound();
+
+        if (IsMoving && canMove)
+        {
+            Vector2 moveInput = PlayerInput.Instance.movementInput;
+            bool isSprinting = PlayerInput.Instance.sprintInput;
+            float speed = isSprinting ? moveData.sprintSpeed : moveData.walkSpeed;
+            Run(moveInput, speed);
+        }
     }
 
     #region State Methods
@@ -116,6 +121,8 @@ public class PlayerMovement : MonoBehaviour
      */
     public void Run(Vector2 moveInput, float speed)
     {
+        if (!canMove) return;
+
         Transform cam = playerID.cam.transform;
         Vector3 direction = moveInput.x * cam.right.SetY(0).normalized + 
                                moveInput.y * cam.forward.SetY(0).normalized;
@@ -168,6 +175,8 @@ public class PlayerMovement : MonoBehaviour
      */
     public void Jump(float force)
     {
+        if (!canMove) return;
+
         rb.linearVelocity = rb.linearVelocity.SetY(0);
         rb.AddForce(Vector3.up * force, ForceMode.Impulse);
     }
