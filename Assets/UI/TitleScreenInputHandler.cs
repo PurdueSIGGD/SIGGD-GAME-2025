@@ -7,13 +7,13 @@ public class TitleScreenInputHandler : MonoBehaviour
 {
     public string mainSceneName;
 
-    AsyncOperation loadScene;
+    // AsyncOperation loadScene;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        loadScene = SceneManager.LoadSceneAsync(mainSceneName, LoadSceneMode.Additive);
-        loadScene.allowSceneActivation = false;
+        // loadScene = SceneManager.LoadSceneAsync(mainSceneName, LoadSceneMode.Additive);
+        // loadScene.allowSceneActivation = false;
     }
 
     // Update is called once per frame
@@ -31,11 +31,13 @@ public class TitleScreenInputHandler : MonoBehaviour
     {
         Debug.Log("STARTING");
 
-        loadScene.allowSceneActivation = true;
-        await loadScene; // Make sure we've actually loaded the scene at this point
+        // loadScene.allowSceneActivation = true;
+        // await loadScene; // Make sure we've actually loaded the scene at this point
         Debug.Log("HIIII");
 
+        SceneManager.LoadScene(mainSceneName, LoadSceneMode.Single);
+
         // not awaiting this because we don't need to
-        _ = SceneManager.UnloadSceneAsync("Assets/UI/titlescreen.unity");
+        // _ = SceneManager.UnloadSceneAsync("Assets/UI/titlescreen.unity");
     }
 }
