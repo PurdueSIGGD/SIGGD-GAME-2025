@@ -31,11 +31,11 @@ public class AudioManager : MonoBehaviour
 
     private async void Start()
     {
-        music = await FMODEvents.instance.initializeMusic("LevelMusic");
-        ambience = await FMODEvents.instance.initializeAmbience("testAmbience");
+        //music = await FMODEvents.instance.initializeMusic("LevelMusic");
+        //ambience = await FMODEvents.instance.initializeAmbience("testAmbience");
 
-        ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
-        UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
+        //ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
+        //UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
     }
 
     public void InitializeAmbience(EventReference ambienceEventReference)

@@ -19,9 +19,11 @@ public class AudioLogManager : MonoBehaviour
     public GameObject curPlayer; // to store player object after playAudioLog stops running
     private Rigidbody playerRb;
 
-    private bool isPlaying = false;
+    [SerializeField] private bool isPlaying = false;
 
     private Dictionary<string, AudioLogObject> audioNameToLogs = new();
+    public List<string> names = new List<string>();
+
 
     void Awake()
     {
@@ -39,6 +41,7 @@ public class AudioLogManager : MonoBehaviour
         foreach (var log in logs)
         {
             audioNameToLogs[log.audioName] = log;
+            names.Add(log.audioName);
         }
     }
 
@@ -62,6 +65,11 @@ public class AudioLogManager : MonoBehaviour
         }
         subtitles.enabled = false;
         lastStarted = null;
+        isPlaying = false;
+        curPlayer = null;
+
+        logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        logSoundEvent.release();
     }
     public void playAudioLog (string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
     {
@@ -71,7 +79,7 @@ public class AudioLogManager : MonoBehaviour
             StopCurrentAudio();
         }
 
-        if (audioNameToLogs.TryGetValue(audioName, out var foundAudio))
+        if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
         {
             logSoundEvent = FMODEvents.instance.getEventInstanceNOASYNC(audioName); // audio shouldnt need to be delayed since its not being called in the start
             curPlayer = player;
@@ -83,7 +91,7 @@ public class AudioLogManager : MonoBehaviour
 
             lastStarted = StartCoroutine(startSubtitles(foundAudio));
 
-            StartCoroutine(endAudioWhenDone());
+            //StartCoroutine(endAudioWhenDone());
         }
         else
         {
