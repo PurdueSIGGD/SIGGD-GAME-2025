@@ -38,7 +38,6 @@ namespace SIGGD.Mobs.Hyena
 
         public IEnumerator Lunge(Func<Vector3> GetTarget)
         {
-            Debug.Log("lunge start");
             beginningAttackCooldown = UnityEngine.Random.Range(0.03f, 0.05f);
 
             finished = false;

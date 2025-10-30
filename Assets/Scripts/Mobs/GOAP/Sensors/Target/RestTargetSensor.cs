@@ -29,7 +29,6 @@ namespace SIGGD.Goap.Sensors
             float sampleSphereRadius = 10f;
             Vector3 randomPos;
             int attempts = 10;
-            Debug.Log($"cool{safePosition}");
             for (int i = 0; i < attempts; i++)
             {
                 randomPos = safePosition + Random.insideUnitSphere * sampleSphereRadius;

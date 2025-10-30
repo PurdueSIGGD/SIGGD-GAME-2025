@@ -30,32 +30,36 @@ namespace SIGGD.Mobs.Hyena
             NavMeshAgent = GetComponent<NavMeshAgent>();
             AgentMoveBehaviour = GetComponent<AgentMoveBehaviour>();
             AgentHuntBehaviour = GetComponent<AgentHuntBehaviour>();
-
         }
         void Start()
         {
             beginningAttackCooldown = 0f;
         }
 
-
         public IEnumerator Circle(Func<Vector3> GetTarget)
         {
             finishedCircling = false;
-            float duration = UnityEngine.Random.Range(0f, 0f);
+            float duration = UnityEngine.Random.Range(3f, 5f);
             float elapsed = 0f;
-
+            float maxRadius = 20f;
+            float radius = maxRadius;
             Vector3 direction = new Vector3(0, UnityEngine.Random.Range(-1, 1) > 0 ? 1 : -1, 0);
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
                 Vector3 next = Vector3.Cross((GetTarget() - transform.position).normalized, direction);
                 float offset = UnityEngine.Random.Range(0.45f, 0.55f);
-                if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh)
-                    Pathfinding.MovePartialPath(NavMeshAgent, next * offset * 30, Time.deltaTime * 50 * 100);
-
+                if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh) {
+                    Pathfinding.MovePartialPath(NavMeshAgent, next * offset * radius, Time.deltaTime * 50 * 100);
+                    radius = Mathf.Min(radius + Time.deltaTime * 5, maxRadius);
+                    Debug.Log(radius);
+                }else {
+                    Debug.Log(radius);
+                    radius = Mathf.Min(radius - Time.deltaTime * 5, 0);
+                }
+                Debug.Log(radius);
                 yield return new WaitForFixedUpdate(); 
             }
-            Debug.Log("stopped circling");
             finishedCircling = true;
         }
         public IEnumerator WalkTowardsTarget(Func<Vector3> GetTarget)
@@ -71,7 +75,6 @@ namespace SIGGD.Mobs.Hyena
 
                 //if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh)
                 //    Pathfinding.MovePartialPath(NavMeshAgent, GetTarget(), Time.deltaTime * 35 * 100);
-
                 Vector3 dir = (Pathfinding.MovePartialPath(NavMeshAgent, GetTarget(), Time.deltaTime * 10) - transform.position).normalized;
                 if (dir.sqrMagnitude > 0.01f)
                 {
@@ -82,7 +85,6 @@ namespace SIGGD.Mobs.Hyena
                 yield return new WaitForFixedUpdate();
             }
             NavMeshAgent.isStopped = true;
-            Debug.Log("stopped walking");
             yield return new WaitUntil(() => NavMeshAgent.pathPending != true);
             finishedWalking = true;
         }

@@ -51,19 +51,15 @@ namespace SIGGD.Mobs
         protected override void OnActionEnd(IAction action)
         {
             if (HyenaAttackManager.isLunging) return;
-            Debug.Log("action end");
             if (this.provider.CurrentPlan == null)
             {
-                Debug.Log("null plan");
                 this.provider.RequestGoal<WanderGoal, DontStarveGoal>(true);
                 return;
             } else if (HungerBehaviour.hunger > 50)
             {
-                Debug.Log("hungry stuff");
                 this.provider.RequestGoal<WanderGoal, DontStarveGoal>(false);
                 return;
             }               
-            Debug.Log("resolving");
             //this.provider.ResolveAction();
         }
         protected override void OnNoActionFound(IGoalRequest request)
@@ -72,7 +68,6 @@ namespace SIGGD.Mobs
             if (HuntBehaviour.currentTargetOfHunt != null)
                 return;
             if (this.provider.CurrentPlan == null) return;
-            Debug.Log("how");
             if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
             {
                 this.provider.RequestGoal<DontStarveGoal>(true);

@@ -42,7 +42,6 @@ namespace SIGGD.Goap
         {
             if (!data.am.isLunging)
             {
-                Debug.Log("its completing");
                 return ActionRunState.Completed;
             }
             return ActionRunState.Continue;

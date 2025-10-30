@@ -42,7 +42,9 @@ namespace SIGGD.Mobs.Spawners
         {
             Vector2 randomPos = Random.insideUnitCircle * spawningX;
             //return transform.TransformPoint(new Vector3(randomPos.x, -1, randomPos.y));
-            return transform.parent.position + new Vector3(randomPos.x, -1, randomPos.y);
+            return transform.TransformPoint(new Vector3(randomPos.x, -1, randomPos.y));
+
+           // return transform.parent.position + new Vector3(randomPos.x, -1, randomPos.y);
         }
         void Update()
         {

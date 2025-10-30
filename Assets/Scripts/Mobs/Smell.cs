@@ -118,13 +118,11 @@ public class Smell : MonoBehaviour
             if (collider.CompareTag("Predator"))
             {
                 tempSumPredatorPositions += collider.gameObject.transform.position;
-                Debug.Log($"ohh{collider.gameObject.transform.position}");
                 tempPredatorCount++;
             }
         }
         HungerBehaviour.foodCount = tempFoodCount;
         sumPredatorPositions = (tempPredatorCount != 0) ? (tempSumPredatorPositions / tempPredatorCount) : Vector3.zero;
-        Debug.Log($"help{sumPredatorPositions} {tempPredatorCount} {tempSumPredatorPositions}");
         PreyBehaviour.predatorCount = tempPredatorCount; 
     }
     private void SmellCheckPredator()
@@ -149,7 +147,6 @@ public class Smell : MonoBehaviour
     }
     public Vector3 GetSumPredatorPositions()
     {
-        Debug.Log($"testPos{sumPredatorPositions}");
         return sumPredatorPositions;
     }
     public Vector3 GetSumPreyPositions()

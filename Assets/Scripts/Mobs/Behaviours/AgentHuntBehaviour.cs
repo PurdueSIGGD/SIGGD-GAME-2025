@@ -14,6 +14,7 @@ namespace SIGGD.Mobs
         public bool inDanger;
         public GameObject currentTargetOfHunt;
         void Start() {
+            currentTargetOfHunt = null;
         }
 
         // Update is called once per frame
@@ -47,7 +48,6 @@ namespace SIGGD.Mobs
         }
         private void FixedUpdate()
         {
-            Debug.Log($"real pos{gameObject.transform.position}");
         }
         private void FinishHunt()
         {

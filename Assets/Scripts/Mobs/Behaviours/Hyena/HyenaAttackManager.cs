@@ -31,7 +31,6 @@ namespace SIGGD.Mobs.Hyena
         }
         public void StartAttackSequence(IMonoAgent agent)
         {
-            Debug.Log("starting lunge");
             try
             {
                 isLunging = true;
@@ -63,7 +62,6 @@ namespace SIGGD.Mobs.Hyena
         public void SetTarget(TransformTarget target)
         {
             this.currentTarget = target;
-            Debug.Log("set new target");
         }
         public Vector3 GetTarget() => this.currentTarget != null ? this.currentTarget.Position : new Vector3(0,0,0);
     }
