@@ -7,7 +7,7 @@ public class LoadPlayerSaveData : MonoBehaviour
 {
     private GameObject player;
     private PlayerSaveData saveData;
-    private Camera playerCam;
+    private FirstPersonCamera playerCam;
 
     // Loading data here as SaveManager executes prior to PlayerID instance
     void Start()
@@ -17,6 +17,6 @@ public class LoadPlayerSaveData : MonoBehaviour
         playerCam = PlayerID.Instance.cam; 
         saveData = PlayerDataSaveModule.playerData;
         player.transform.position = saveData.Position;
-        playerCam.transform.eulerAngles = saveData.Rotation;
+        //playerCam.transform.eulerAngles = saveData.Rotation;
     }
 }

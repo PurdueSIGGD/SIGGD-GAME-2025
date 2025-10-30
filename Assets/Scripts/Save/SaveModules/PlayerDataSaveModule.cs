@@ -5,11 +5,11 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
 {
     private static string savePath = $"{FileManager.savesDirectory}/playerData";
 
-    public static PlayerSaveData playerData = new PlayerSaveData();
+    public static PlayerSaveData playerData;
 
     public static GameObject player;
 
-    public static Camera playerCam;
+    public static FirstPersonCamera playerCam;
     public static PlayerStats stats;
     public static EntityHealthManager health;
 
@@ -18,18 +18,12 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
         if (!FileManager.Instance.FileExists(savePath)) return false;
         byte[] bytes = FileManager.Instance.ReadFile(savePath);
         playerData = SerializationUtility.DeserializeValue<PlayerSaveData>(bytes, DataFormat.JSON);
-        if (!player)
-        {
-            player = PlayerID.Instance.gameObject;
-        }
-        if (!playerCam)
-        {
-            playerCam = Camera.main;
-        }
+        
+        if (!player) player = PlayerID.Instance.gameObject;
+        if (!playerCam) playerCam = PlayerID.Instance.GetComponent<FirstPersonCamera>();
+        playerData ??= new PlayerSaveData();
+        
         player.transform.position = playerData.Position;
-        playerCam.transform.eulerAngles = playerData.Rotation;
-        Debug.Log($"[LOAD] Camera rotation loaded: {playerData.Rotation}");
-
         return true;
     }
 
@@ -39,19 +33,21 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
         //{
         //    playerData.Position = pid.stateMachine.LastGroundedPosition;
         //}
-      
-        playerCam = PlayerID.Instance.cam;
+
+        playerCam = PlayerID.Instance.GetComponentInChildren<FirstPersonCamera>();
         player = PlayerID.Instance.rb.gameObject;
         stats = player.GetComponent<PlayerStats>();
         health = player.GetComponent<EntityHealthManager>();
 
-        if (player == null || playerCam == null || stats == null || health == null) return false;
+        if (player == null || playerCam == null || stats == null || health == null)
+        {
+            Debug.LogWarning("Aborting save");
+            return false;
+        }
 
         playerData.Position = player.transform.position;
-        playerData.Rotation = playerCam.transform.eulerAngles;
-        Debug.Log($"[SAVE] Camera rotation saved: {playerData.Rotation}");
+        playerData.Rotation = playerCam.GetRotation();
         
-
         byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.JSON);
         FileManager.Instance.WriteFile(savePath, bytes);
 
