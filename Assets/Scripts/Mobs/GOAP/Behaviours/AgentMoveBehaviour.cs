@@ -12,6 +12,7 @@ namespace SIGGD.Goap.Behaviours
         private ITarget currentTarget;
         private bool shouldMove;
         public NavMeshAgent navMeshAgent;
+        //Vector3 dest = null;
 
         private void Awake()
         {

@@ -5,20 +5,31 @@ namespace SIGGD.Goap
 {
     public class Pathfinding : MonoBehaviour
     {
+
+        public static Vector3 ERR_VECTOR = new Vector3(-9999999, -9999999, -999999);
+
+        public static Vector3 ShiftTargetToNavMesh(Vector3 rawDest)
+        {
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(rawDest, out hit, 10f, NavMesh.AllAreas))
+            {
+
+                return hit.position;
+            }
+            Debug.LogError("Could not set a valid move target position on the navmesh!");
+            return ERR_VECTOR;
+        }
+        
         // Function to move along the navmesh path for a certain distance (before reanalyzing the path as it still moves)
         public static void MovePartialPath(NavMeshAgent navMeshAgent, Vector3 _destination, float distanceToTravel)
         {
-            NavMeshHit hit;
-            Vector3 destination = new Vector3(0, 0, 0);
-            if (NavMesh.SamplePosition(_destination, out hit, 5f, NavMesh.AllAreas)) {
-                destination = hit.position;
-            }
-            else
+            Vector3 meshDest = ShiftTargetToNavMesh(_destination);
+            if (meshDest == ERR_VECTOR)
             {
-                Debug.LogError("Could not set a valid move target position on the navmesh!");
                 return;
             }
-            navMeshAgent.SetDestination(destination);
+            navMeshAgent.SetDestination(meshDest);
+            Debug.Log(meshDest);
             /*NavMeshPath path = new NavMeshPath();
             if (!navMeshAgent.CalculatePath(destination, path) || path.corners.Length < 2)
             {

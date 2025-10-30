@@ -14,11 +14,12 @@ namespace SIGGD.Goap.Sensors
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
             var random = this.LocateRandomPosition(agent);
+            var randMesh = Pathfinding.ShiftTargetToNavMesh(random);
             if (existingTarget is PositionTarget positionTarget)
             {
-                return positionTarget.SetPosition(random);
+                return positionTarget.SetPosition(randMesh);
             }
-            return new PositionTarget(random);
+            return new PositionTarget(randMesh);
         }
         
         private Vector3 LocateRandomPosition(IActionReceiver agent)
