@@ -7,7 +7,6 @@ using System;
 using UnityEngine.InputSystem;
 using Utility;
 
-[RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
     #region PlayerID Reference
@@ -175,8 +174,6 @@ public class PlayerMovement : MonoBehaviour
      */
     public void Jump(float force)
     {
-        if (!canMove) return;
-
         rb.linearVelocity = rb.linearVelocity.SetY(0);
         rb.AddForce(Vector3.up * force, ForceMode.Impulse);
     }

@@ -38,6 +38,6 @@ public class FirstPersonCamera : MonoBehaviour
         }
     }
 
-    private void EnableCamRotation() => canControl = true;
-    private void DisableCamRotation() => canControl = false;
+    public void EnableCamRotation() => canControl = true;
+    public void DisableCamRotation() => canControl = false;
 }

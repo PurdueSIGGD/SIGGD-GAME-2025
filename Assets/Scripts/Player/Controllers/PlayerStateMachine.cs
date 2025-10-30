@@ -41,6 +41,12 @@ public class PlayerStateMachine : MonoBehaviour
         allCols = GetComponentsInChildren<Collider>();
         playerMovement = GetComponent<PlayerMovement>();
         firstPersonCamera = playerID.cam.GetComponent<FirstPersonCamera>();
+
+        // Collider[] allColliders = FindObjectsByType<Collider>(FindObjectsSortMode.None);
+        // foreach (Collider col in allColliders)
+        // {
+        //     Debug.Log("Collider: " + col.name);
+        // }
     }
 
     private void Update()
@@ -50,14 +56,12 @@ public class PlayerStateMachine : MonoBehaviour
         // Debug keys to test enabling/disabling movement
         if (Input.GetKeyDown(KeyCode.L))
         {
-            playerMovement.SendMessage("DisableMovement");
-            firstPersonCamera.SendMessage("DisableCamRotation");
+            LockMovementAndCam();
             Debug.Log("Movement Disabled");
         }
         else if (Input.GetKeyDown(KeyCode.K))
         {
-            playerMovement.SendMessage("EnableMovement");
-            firstPersonCamera.SendMessage("EnableCamRotation");
+            UnlockMovementAndCam();
             Debug.Log("Movement Enabled");
         }
     }
@@ -194,7 +198,7 @@ public class PlayerStateMachine : MonoBehaviour
         foreach (var col in allCols)
             Physics.IgnoreLayerCollision(gameObject.layer, layer, ignore);
     }
-    
+
     /**
      * <summary>
      * Ignores collisions between the player and a specified GameObject.
@@ -208,6 +212,18 @@ public class PlayerStateMachine : MonoBehaviour
             foreach (var objCol in obj.GetComponents<Collider>())
                 Physics.IgnoreCollision(col, objCol, ignore);
     }
-    
+
     #endregion
+
+    public void LockMovementAndCam()
+    {
+        playerMovement.SendMessage("DisableMovement");
+        firstPersonCamera.SendMessage("DisableCamRotation");
+    }
+    
+    public void UnlockMovementAndCam()
+    {
+        playerMovement.SendMessage("EnableMovement");
+        firstPersonCamera.SendMessage("EnableCamRotation");
+    }
 }

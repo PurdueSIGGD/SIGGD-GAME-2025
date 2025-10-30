@@ -14,7 +14,6 @@ public class PlayerMovingState : StateMachineBehaviour
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
-        playerStateMachine = PlayerID.Instance.stateMachine;
         playerMovement = PlayerID.Instance.playerMovement;
         playerMovement.IsMoving = true;
     }
@@ -23,11 +22,11 @@ public class PlayerMovingState : StateMachineBehaviour
     {
         base.OnStateUpdate(animator, stateInfo, layerIndex);
 
-        Vector2 moveInput = PlayerInput.Instance.movementInput;
-        bool isSprinting = PlayerInput.Instance.sprintInput;
+        // Vector2 moveInput = PlayerInput.Instance.movementInput;
+        // bool isSprinting = PlayerInput.Instance.sprintInput;
 
-        float speed = isSprinting ? playerStateMachine.moveData.sprintSpeed :
-            playerStateMachine.moveData.walkSpeed;
+        // float speed = isSprinting ? playerStateMachine.moveData.sprintSpeed :
+        //     playerStateMachine.moveData.walkSpeed;
 
         // Debug.Log("Moving with speed: " + speed);
     }
