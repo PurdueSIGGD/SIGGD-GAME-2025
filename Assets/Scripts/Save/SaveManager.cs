@@ -5,23 +5,28 @@ using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
 {
-    public List<ISaveModule> modules;
-    [SerializeField] private Inventory inventory; //TEMP
 
-    public ISaveModule[] modules = {
-        new PlayerDataSaveModule(),
-        new InventoryDataSaveModule()
-    };
+    [SerializeField] private Inventory inventory; //TEMP
+    InventoryDataSaveModule inventoryModule;
+    PlayerDataSaveModule playerModule;
+
+    private ISaveModule[] modules;
 
     protected override void Awake()
     {
         base.Awake();
-        Load();
     }
 
     void Start()
     {
+        inventoryModule =new InventoryDataSaveModule();
+        playerModule = gameObject.AddComponent<PlayerDataSaveModule>();
+
         InventoryDataSaveModule.inventory = inventory; // TEMP
+
+        modules = new ISaveModule[] {inventoryModule, playerModule};
+
+        Load();
     }
 
     private void OnApplicationQuit()
@@ -31,9 +36,6 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Load()
     {
-        modules = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)
-                  .OfType<ISaveModule>()
-                  .ToList();
         foreach (var module in modules)
             module.deserialize();
 
@@ -42,12 +44,8 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Save()
     {
-        modules = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)
-                  .OfType<ISaveModule>()
-                  .ToList();
         foreach (var module in modules)
             module.serialize();
-
         return true;
     }
 }

@@ -8,7 +8,6 @@ public class CameraMovement : MonoBehaviour
 
     private Vector3 offset = new Vector3(0, 0, 0);
     private Vector3 fixedPos = new Vector3 { x = 0, y = 5, z = -10};
-    private Quaternion rotation = Quaternion.AngleAxis(30, Vector3.right);
 
     private bool followPlayer = true;
 

@@ -18,6 +18,9 @@ public class FirstPersonCamera : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        xRotation = PlayerDataSaveModule.playerData.Rotation.x;
+        yRotation = PlayerDataSaveModule.playerData.Rotation.y;
+        Debug.Log(xRotation + ", " + yRotation);
     }
 
     void Update()

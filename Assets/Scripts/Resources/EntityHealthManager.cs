@@ -7,7 +7,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     [SerializeField] private float maxHealth = 100f;
     public float MaxHealth => maxHealth; // => used for read-only property
 
-    public float CurrentHealth { get; private set; }
+    public float CurrentHealth { get; set; }
 
     [System.Serializable]
     public struct DamageContext

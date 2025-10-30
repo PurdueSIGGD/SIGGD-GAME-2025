@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerSaveData
 {
     public Vector3 Position;
-    public Quaternion Rotation;
+    public Vector3 Rotation;
     public PlayerStats Stats;
     public EntityHealthManager HealthManager;
 }
