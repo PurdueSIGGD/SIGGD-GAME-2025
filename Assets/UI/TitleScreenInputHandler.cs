@@ -6,6 +6,7 @@ using System.Collections;
 public class TitleScreenInputHandler : MonoBehaviour
 {
     public string mainSceneName;
+    public GameObject loadingPanel;
 
     // AsyncOperation loadScene;
 
@@ -35,7 +36,9 @@ public class TitleScreenInputHandler : MonoBehaviour
         // await loadScene; // Make sure we've actually loaded the scene at this point
         Debug.Log("HIIII");
 
+        loadingPanel.SetActive(true);
         SceneManager.LoadScene(mainSceneName, LoadSceneMode.Single);
+
 
         // not awaiting this because we don't need to
         // _ = SceneManager.UnloadSceneAsync("Assets/UI/titlescreen.unity");

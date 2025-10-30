@@ -11,7 +11,7 @@ public class Screenshot : MonoBehaviour
     void Start()
     {
         image = GetComponent<Image>();
-        image.color = new Color(0.5f, 0.5f, 0.5f);
+        // image.color = new Color(0.5f, 0.5f, 0.5f);
         string screenshotPath = ScreenshotSaveModule.savePath;
 
         if (FileManager.Instance.FileExists(screenshotPath))
