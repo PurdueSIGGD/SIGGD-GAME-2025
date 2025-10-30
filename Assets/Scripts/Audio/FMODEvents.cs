@@ -17,11 +17,8 @@ public class FMODEvents : SerializedMonoBehaviour
     public static bool initialized = false;
 
     [OdinSerialize] public Dictionary<string, EventReference> soundEvents = new Dictionary<string, EventReference>();
-<<<<<<< HEAD
-=======
 
     public List<EventReference> randomSounds = new List<EventReference>();
->>>>>>> dev
 
     private void Awake()
     {
@@ -34,141 +31,6 @@ public class FMODEvents : SerializedMonoBehaviour
         instance = this;
 
         _ = LoadSoundEventsPostBankLoading(); // we dont care about storing this beacause its only running once
-<<<<<<< HEAD
-    }
-
-    // loads all event references from all the given banks into the dictionary soundEvents using its name as the key
-    private async Task LoadSoundEventsPostBankLoading()
-    {
-        foreach (string name in bankNames)
-        {
-            RuntimeManager.LoadBank(name, true); // the true forces them to all load at once
-        }
-
-        // waiting to make sure everything is loaded right
-        while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized || !EventManager.IsInitialized)
-        {
-            await Task.Yield();
-        }
-
-        // The actual code
-        foreach (string name in bankNames)
-        {
-            // Adding bank:/ cuz its needed for the path to the bank
-            string filePath = "bank:/" + name.Replace(".bank", "");
-            FMOD.Studio.Bank bank;
-
-            // actually getting the bank after theyve been loaded
-            RuntimeManager.StudioSystem.getBank(filePath, out bank);
-
-            bank.getEventList(out FMOD.Studio.EventDescription[] eventDescriptions);
-
-            foreach (FMOD.Studio.EventDescription description in eventDescriptions)
-            {
-                description.getPath(out string eventPath);
-
-                EventReference eventRef = EventReference.Find(eventPath);
-
-                soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1), eventRef); // the replace just makes the names a little nicer
-            }
-        }
-
-        initialized = true;
-        Debug.Log("All " + soundEvents.Count + " events loaded");
-    }
-
-    public void playOneShot(string key, Vector3 position)
-    {
-        Debug.Log("one shot is working");
-        AudioManager.Instance.PlayOneShot(soundEvents[key], position);
-    }
-
-    // gets you an event instance based on the key you give it
-    public async Task<EventInstance> getEventInstance(string key)
-    {
-        // Wait until events are ready
-        while (!initialized)
-        {
-            await Task.Yield();
-        }
-
-        // tries to get the value
-        if (soundEvents.TryGetValue(key, out var eventRef))
-        {
-            return RuntimeManager.CreateInstance(eventRef);
-        }
-
-        // if it doesnt it logs what it couldnt find
-        Debug.Log("couldnt find key: " + key);
-        return default;
-    }
-
-    // literally just a copy paste of getEventInstance() but it doesnt delay because its not being called in an async method
-    public EventInstance getEventInstanceNOASYNC(string key)
-    {
-        if (soundEvents.TryGetValue(key, out var eventRef))
-        {
-            return RuntimeManager.CreateInstance(eventRef);
-        }
-
-        // if it doesnt it logs what it couldnt find
-        Debug.Log("couldnt find key: " + key);
-        return default;
-    }
-    
-    // something for ambience i dont understand it but i hope it works
-    public async Task<StudioEventEmitter> initializeEventEmitter(string key, GameObject emitterObject)
-    {
-        // Wait until events are ready
-        while (!initialized)
-        {
-            await Task.Yield();
-        }
-
-        if (soundEvents.TryGetValue(key, out var eventRef))
-        {
-            return AudioManager.Instance.InitializeEventEmitter(eventRef, emitterObject);
-        }
-
-        Debug.Log("couldnt find key: " + key);
-        return default;
-    }
-
-    public async Task<EventInstance> initializeMusic(string key)
-    {
-        // Wait until events are ready
-        while (!initialized)
-        {
-            await Task.Yield();
-        }
-
-        if (soundEvents.TryGetValue(key, out var eventRef))
-        {
-            AudioManager.Instance.InitializeMusic(eventRef);
-        }
-
-        Debug.Log("couldnt find key: " + key);
-        return default;
-    }
-
-    public async Task<EventInstance> initializeAmbience(string key)
-    {
-        // Wait until events are ready
-        while (!initialized)
-        {
-            await Task.Yield();
-        }
-
-        if (soundEvents.TryGetValue(key, out var eventRef))
-        {
-            AudioManager.Instance.InitializeAmbience(eventRef);
-        }
-
-        Debug.Log("couldnt find key: " + key);
-        return default;
-=======
-        _ = LoadRandomAmbienceList();
->>>>>>> dev
     }
 
     // loads all event references from all the given banks into the dictionary soundEvents using its name as the key
@@ -256,7 +118,7 @@ public class FMODEvents : SerializedMonoBehaviour
     }
 
     // gets you an event instance based on the key you give it
-    public async Task<EventInstance> GetEventInstance(string key)
+    public async Task<EventInstance> getEventInstance(string key)
     {
         // Wait until events are ready
         while (!initialized)
@@ -264,6 +126,19 @@ public class FMODEvents : SerializedMonoBehaviour
             await Task.Yield();
         }
 
+        // tries to get the value
+        if (soundEvents.TryGetValue(key, out var eventRef))
+        {
+            return RuntimeManager.CreateInstance(eventRef);
+        }
+
+        // if it doesnt it logs what it couldnt find
+        Debug.Log("couldnt find key: " + key);
+        return default;
+    }
+
+    public EventInstance getEventInstanceNOASYNC(string key)
+    {
         // tries to get the value
         if (soundEvents.TryGetValue(key, out var eventRef))
         {

@@ -22,16 +22,9 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector] public Rigidbody rb;
 
-<<<<<<< HEAD
-    // the async Start() is needed for getting the event instances set right
     private async void Start()
     {
-=======
-    private async void Start()
-    {
-        footsteps = await FMODEvents.instance.GetEventInstance("Footsteps");
         //music.start();
->>>>>>> dev
         rb = GetComponent<Rigidbody>();
 
         // as long as you format it like this and have it in a async Start() it should all work
@@ -42,11 +35,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-<<<<<<< HEAD
-            FMODEvents.instance.playOneShot("maledeath", this.transform.position);
-=======
             FMODEvents.instance.playOneShot("maleDeath", this.transform.position);
->>>>>>> dev
         }
 
         if (transform.position.y < -50)

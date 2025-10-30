@@ -33,12 +33,9 @@ public class AudioManager : MonoBehaviour
     {
         music = await FMODEvents.instance.initializeMusic("LevelMusic");
         ambience = await FMODEvents.instance.initializeAmbience("testAmbience");
-<<<<<<< HEAD
-=======
+
         ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
         UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
-
->>>>>>> dev
     }
 
     public void InitializeAmbience(EventReference ambienceEventReference)
