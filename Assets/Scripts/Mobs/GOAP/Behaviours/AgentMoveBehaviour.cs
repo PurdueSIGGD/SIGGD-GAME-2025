@@ -2,6 +2,7 @@ using CrashKonijn.Agent.Core;
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace SIGGD.Goap.Behaviours
 {
@@ -10,10 +11,13 @@ namespace SIGGD.Goap.Behaviours
         private AgentBehaviour agent;
         private ITarget currentTarget;
         private bool shouldMove;
+        public NavMeshAgent navMeshAgent;
+        //Vector3 dest = null;
 
         private void Awake()
         {
             this.agent = this.GetComponent<AgentBehaviour>();
+            this.navMeshAgent = this.GetComponent<NavMeshAgent>();
         }
 
         private void OnEnable()
@@ -66,8 +70,7 @@ namespace SIGGD.Goap.Behaviours
                 return;
 
             //Add Navmesh
-
-            this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.currentTarget.Position.x, this.transform.position.y, this.currentTarget.Position.z), Time.deltaTime * 5);
+            Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * 100);
         }
 
         private void OnDrawGizmos()
@@ -75,7 +78,12 @@ namespace SIGGD.Goap.Behaviours
             if (this.currentTarget == null)
                 return;
 
-            Gizmos.DrawLine(this.transform.position, this.currentTarget.Position);
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(this.currentTarget.Position, out hit, 10f, NavMesh.AllAreas))
+            {
+                Gizmos.DrawLine(this.transform.position, hit.position);
+            }
+            
         }
 
     }

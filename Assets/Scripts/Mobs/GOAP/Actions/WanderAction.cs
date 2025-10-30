@@ -37,6 +37,7 @@ namespace SIGGD.Goap
         // This method is required
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
+            //Debug.Log("LETS GOOOOO!!!!");
             return ActionRunState.Completed;
         }
 
