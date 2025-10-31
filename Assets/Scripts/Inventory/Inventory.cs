@@ -116,8 +116,6 @@ public class Inventory : Singleton<Inventory>, IInventory
         {
             Cursor.lockState = CursorLockMode.Confined;
         }
-
-            Debug.Log("Opening player inventory!");
     }
 
     public bool isEnabled() {

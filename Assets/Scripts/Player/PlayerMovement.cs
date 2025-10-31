@@ -184,7 +184,7 @@ public class PlayerMovement : MonoBehaviour
         if (rb.linearVelocity.magnitude != 0)
         {
             // NOTE: 3d attributes need to be set in order to play instances in 3d
-            ATTRIBUTES_3D attr = AudioManager.Instance.configAttributes3D(rb.position, rb.linearVelocity, transform.forward, Vector3.up);
+            ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(rb.position, rb.linearVelocity, transform.forward, Vector3.up);
             footsteps.set3DAttributes(attr);
 
             PLAYBACK_STATE playbackState;
