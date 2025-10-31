@@ -106,12 +106,18 @@ public class Inventory : Singleton<Inventory>, IInventory
     public void ShowInventory(bool enabled)
     {
         inventoryCanvas.enabled = enabled;
+        PlayerInput.Instance.DebugToggleInput(enabled);
+        Cursor.visible = enabled;
+        if (enabled)
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+        }
 
-        // Inventory ui is still not responsive
-
-        // Added: disable player movement and show cursor.
-        //PlayerInput.Instance.DebugToggleInput(enabled);
-        Debug.LogWarning("Opening player inventory!");
+            Debug.Log("Opening player inventory!");
     }
 
     public bool isEnabled() {
