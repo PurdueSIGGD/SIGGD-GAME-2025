@@ -3,22 +3,30 @@ using UnityEngine;
 public class SaveManager : Singleton<SaveManager>
 {
     public ISaveModule[] modules = {
-        new PlayerDataSaveModule()
+        new PlayerDataSaveModule(),
+        new ScreenshotSaveModule()
     };
 
     protected override void Awake()
     {
+        Debug.Log("AWAKE AWAKE AWAKE");
         base.Awake();
         Load();
     }
 
     void Start()
     {
-        PlayerDataSaveModule.player = PlayerID.Instance.gameObject;
+        Debug.Log("START START START");
+        if (PlayerID.Instance != null)
+        {
+            PlayerDataSaveModule.player = PlayerID.Instance.gameObject;
+            ScreenshotSaveModule.cam    = PlayerID.Instance.cam;
+        }
     }
 
     private void OnApplicationQuit()
     {
+        Debug.Log("ONAPPLICATIONQUIT");
         Save();
     }
 

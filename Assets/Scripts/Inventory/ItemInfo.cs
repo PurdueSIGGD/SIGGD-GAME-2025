@@ -14,6 +14,7 @@ public class ItemInfo : ScriptableObject
         Weapon,
         Resource,
         Container,
+        Trap,
         Empty
     };
 
@@ -21,6 +22,7 @@ public class ItemInfo : ScriptableObject
         Spear,
         Rock,
         RockSpear,
+        StunTrap,
         Empty
     };
 
@@ -37,6 +39,10 @@ public class ItemInfo : ScriptableObject
     [SerializeField] public int maxStackCount; // max number of this item in a stack
 
     [SerializeField] public string description; // description of the item
+
+    [SerializeReference] public IPlayerActionStrategy playerActionStrategy; // strategy pattern for player actions with the item
+
+    // Maybe include reference to gameobject for instantiating?
 
     public void log() { 
         Debug.Log("Item Type: " +  itemType);

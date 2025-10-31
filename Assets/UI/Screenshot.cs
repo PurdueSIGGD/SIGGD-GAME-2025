@@ -11,13 +11,14 @@ public class Screenshot : MonoBehaviour
     void Start()
     {
         image = GetComponent<Image>();
-        string screenshotPath = Application.persistentDataPath + "/screenshot.png";
+        // image.color = new Color(0.5f, 0.5f, 0.5f);
+        string screenshotPath = ScreenshotSaveModule.savePath;
 
-        if (File.Exists(screenshotPath))
+        if (FileManager.Instance.FileExists(screenshotPath))
         {
             Debug.Log("LOADING!!!");
             Texture2D texture = new Texture2D(2, 2);
-            texture.LoadImage(File.ReadAllBytes(screenshotPath));
+            texture.LoadImage(FileManager.Instance.ReadFile(screenshotPath));
             Debug.Log(texture.width);
             Debug.Log(texture.height);
             image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));

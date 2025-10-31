@@ -31,7 +31,7 @@ public class Singleton<T> : MonoBehaviour where T : Component
     /**
      * <summary>
      * IMPORTANT: Call base.Awake() at the start of all overriden Awake() methods.
-     * Ensures that only one instance of the singleton exists. If an instance already exists, the new one is destroyed.
+     * Ensures that only one instance of the singleton exists. If an instance already exists, the OLD one is destroyed.
      * </summary>
      */
     protected virtual void Awake()
@@ -42,7 +42,11 @@ public class Singleton<T> : MonoBehaviour where T : Component
         }
         else
         {
+            // Debug.Log("DESTROY");
+            // Debug.Log(_instance == this);
+            // Debug.Log(gameObject);
             Destroy(gameObject);
+            // Destroy(_instance.gameObject);
         }
     }
         
