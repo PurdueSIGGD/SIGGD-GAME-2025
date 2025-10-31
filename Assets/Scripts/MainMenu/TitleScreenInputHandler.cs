@@ -17,29 +17,17 @@ public class TitleScreenInputHandler : MonoBehaviour
         // loadScene.allowSceneActivation = false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
     public void QuitGame()
     {
-        Debug.Log("I AM QUITTING NOW...");
         Application.Quit();
     }
 
-    public async void StartGame()
+    public void StartGame()
     {
-        Debug.Log("STARTING");
-
         // loadScene.allowSceneActivation = true;
         // await loadScene; // Make sure we've actually loaded the scene at this point
-        Debug.Log("HIIII");
-
         loadingPanel.SetActive(true);
         SceneManager.LoadScene(mainSceneName, LoadSceneMode.Single);
-
-
         // not awaiting this because we don't need to
         // _ = SceneManager.UnloadSceneAsync("Assets/UI/titlescreen.unity");
     }
