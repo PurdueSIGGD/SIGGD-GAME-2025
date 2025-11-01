@@ -17,16 +17,16 @@ public class SpawnManager : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
-        foreach (var spawner in spawners)
-        {
-            if (!spawner.repeatSpawn)
+        for (int i = spawners.Count - 1; i >= 0; --i) {
+            Debug.Log(i);
+            if (!spawners[i].repeatSpawn)
             {
-                spawners.Remove(spawner);
-                SpawnMob(spawner);
-            } else if (timer > spawner.spawnInterval) {
+                SpawnMob(spawners[i]);
+                spawners.Remove(spawners[i]);
+            } else if (timer > spawners[i].spawnInterval) {
 
-                spawner.spawnInterval += timer;
-                SpawnMob(spawner);
+                spawners[i].spawnInterval += timer;
+                SpawnMob(spawners[i]);
             }
         }
     }

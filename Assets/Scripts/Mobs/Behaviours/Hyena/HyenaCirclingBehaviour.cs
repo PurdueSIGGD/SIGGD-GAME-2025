@@ -1,10 +1,12 @@
 using NUnit.Framework.Interfaces;
+using SIGGD.Goap;
+using Sirenix.OdinInspector.Editor;
+using Sirenix.Utilities;
 using System;
 using System.Collections;
 using System.Timers;
 using UnityEngine;
 using UnityEngine.AI;
-using SIGGD.Goap;
 using Utility;
 namespace SIGGD.Mobs.Hyena
 {
@@ -20,6 +22,7 @@ namespace SIGGD.Mobs.Hyena
         private AgentHuntBehaviour AgentHuntBehaviour;
         public bool finishedWalking;
         public bool finishedCircling;
+        private Vector3 lastTangent = Vector3.zero;
 
         Animator animator;
         private void Awake()
@@ -39,25 +42,82 @@ namespace SIGGD.Mobs.Hyena
         public IEnumerator Circle(Func<Vector3> GetTarget)
         {
             finishedCircling = false;
-            float duration = UnityEngine.Random.Range(3f, 5f);
+            float duration = UnityEngine.Random.Range(12f, 15f);
             float elapsed = 0f;
-            float maxRadius = 20f;
+            float maxRadius = 10f;
+            float circleSpeed = 10f;
+            float idealRadius = maxRadius;
             float radius = maxRadius;
-            Vector3 direction = new Vector3(0, UnityEngine.Random.Range(-1, 1) > 0 ? 1 : -1, 0);
+            float stuckTimer = 0f;
+            Vector3 lastPosition = rb.position;
+            float direction = UnityEngine.Random.value > 0.5f ? 1f : -1f;
+            float inwardsFactor = 0f;
+            float radiusMargin = 3f;
+            Vector3 lastDir = transform.forward;
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                Vector3 next = Vector3.Cross((GetTarget() - transform.position).normalized, direction);
-                float offset = UnityEngine.Random.Range(0.45f, 0.55f);
+                float distance = Vector3.Distance(GetTarget(), transform.position);
+                Vector3 toTarget = (GetTarget() - transform.position).normalized;
+                Vector3 tangent = Vector3.Cross(Vector3.up, toTarget).normalized * direction;
+                tangent = Vector3.Slerp(lastTangent, tangent, Time.deltaTime * 3).normalized;
+                lastTangent = tangent;
+                Debug.Log($"tangent{tangent}");
+                Debug.Log($"lastTangent{lastTangent}");
                 if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh) {
-                    Pathfinding.MovePartialPath(NavMeshAgent, next * offset * radius, Time.deltaTime * 50 * 100);
-                    radius = Mathf.Min(radius + Time.deltaTime * 5, maxRadius);
-                    Debug.Log(radius);
-                }else {
-                    Debug.Log(radius);
-                    radius = Mathf.Min(radius - Time.deltaTime * 5, 0);
+                    float distanceToGo = distance - idealRadius;
+                    float targetInward = Mathf.Clamp(distanceToGo / radiusMargin, -1f, 1f);
+                    if (Mathf.Abs(distanceToGo) < radiusMargin * 0.3f)
+                        targetInward = 0f;
+                    inwardsFactor = Mathf.Lerp(inwardsFactor, Mathf.Abs(targetInward), Time.deltaTime * 5f);
+                    Vector3 inward = toTarget * targetInward;
+
+                    Vector3 desired = (tangent + inward * 0.3f).normalized;
+                    Vector3 dir;
+                    NavMeshHit hit;
+                    NavMesh.Raycast(transform.position, transform.position + tangent * 3f, out hit, NavMesh.AllAreas);
+                    if (hit.distance < 2f)
+                    {
+                        Debug.Log("raycast hit");
+                        idealRadius = Mathf.Clamp(idealRadius - 2, 5, maxRadius);
+
+                    }
+                    Vector3 nextPos = transform.position + desired * circleSpeed * Time.deltaTime;
+
+                    if (NavMesh.SamplePosition(nextPos, out NavMeshHit hit2, 1.0f, NavMesh.AllAreas))
+                        nextPos = hit2.position;
+
+                    dir = (nextPos - transform.position).normalized;
+                    Debug.Log($"inwardsFactor{inwardsFactor}");
+                    if (dir == Vector3.zero)
+                    {
+                        dir = lastDir;
+                    } else
+                    {
+                        lastDir = dir;
+                    }
+                    if (dir.sqrMagnitude > 0.001f)
+                    {
+                        Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
+                        rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 20 * Time.deltaTime));
+                    }
+                    rb.MovePosition(rb.position + dir * circleSpeed * Time.deltaTime);
+                    Debug.Log($"idealRadius{idealRadius}");
                 }
-                Debug.Log(radius);
+                if (Vector3.Distance(rb.position, lastPosition) < circleSpeed * Time.deltaTime * 0.25f)
+                {
+                    stuckTimer += Time.deltaTime;
+                    if (stuckTimer > 1f)
+                    {
+                        idealRadius = Mathf.Max(idealRadius - 1, 5f);
+                    }
+                }
+                else
+                {
+                    stuckTimer = 0f;
+                }
+                lastPosition = rb.position;
+
                 yield return new WaitForFixedUpdate(); 
             }
             finishedCircling = true;
@@ -72,10 +132,9 @@ namespace SIGGD.Mobs.Hyena
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-
-                //if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh)
-                //    Pathfinding.MovePartialPath(NavMeshAgent, GetTarget(), Time.deltaTime * 35 * 100);
-                Vector3 dir = (Pathfinding.MovePartialPath(NavMeshAgent, GetTarget(), Time.deltaTime * 10) - transform.position).normalized;
+                if (Vector3.Distance(GetTarget(), transform.position) < 5f)
+                    break;
+                Vector3 dir = (Pathfinding.MovePartialPath2(NavMeshAgent, GetTarget(), Time.deltaTime * 10) - transform.position).normalized;
                 if (dir.sqrMagnitude > 0.01f)
                 {
                     Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);

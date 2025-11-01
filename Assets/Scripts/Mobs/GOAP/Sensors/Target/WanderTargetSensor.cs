@@ -33,7 +33,7 @@ namespace SIGGD.Goap.Sensors
         {
             var random = Random.insideUnitSphere * 10f;
             random += agent.Transform.position;
-
+            /*
             NavMeshHit hit;
             if (NavMesh.SamplePosition(random, out hit, 10f, NavMesh.AllAreas))
             {
@@ -43,9 +43,11 @@ namespace SIGGD.Goap.Sensors
                     return hit.position;
                 }
             }
+            */
 
             // Couldn't find a position on the navmesh, so just don't move
-            return agent.Transform.position;
+            //return agent.Transform.position;
+            return random;
         }
         public override void Update()
         {

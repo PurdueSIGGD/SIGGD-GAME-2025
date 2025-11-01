@@ -31,7 +31,6 @@ namespace SIGGD.Mobs
 
         public bool IsGrounded =>
             Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
-        public NavMeshAgent navMeshAgent;
         //Vector3 dest = null;
 
         private void Awake()
@@ -105,16 +104,16 @@ namespace SIGGD.Mobs
             }
 
             // Move the agent along towards their goal position
-            Vector3 dir = (Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * speed) - transform.position).normalized;
+            Vector3 dir = (Pathfinding.MovePartialPath2(navMeshAgent, this.currentTarget.Position, Time.deltaTime * speed) - transform.position).normalized;
             if (dir.sqrMagnitude > 0.01f)
             {
                 Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
-                rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 10f * Time.deltaTime));
+                rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, speed * Time.deltaTime));
             }
+            Debug.DrawRay(agent.transform.position, dir * speed * Time.deltaTime * 100, Color.green);
             rb.MovePosition(rb.position + dir * speed * Time.deltaTime);
-
             //Add Navmesh
-            Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * 100);
+            //Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * 100);
         }
 
         
