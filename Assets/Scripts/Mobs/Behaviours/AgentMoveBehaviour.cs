@@ -31,6 +31,8 @@ namespace SIGGD.Mobs
 
         public bool IsGrounded =>
             Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
+        public NavMeshAgent navMeshAgent;
+        //Vector3 dest = null;
 
         private void Awake()
         {
@@ -39,6 +41,7 @@ namespace SIGGD.Mobs
             rb = GetComponent<Rigidbody>();
             sprintAllowed = false;
             speed = 3f;
+            this.navMeshAgent = this.GetComponent<NavMeshAgent>();
         }
 
         private void OnEnable()
@@ -109,6 +112,9 @@ namespace SIGGD.Mobs
                 rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 10f * Time.deltaTime));
             }
             rb.MovePosition(rb.position + dir * speed * Time.deltaTime);
+
+            //Add Navmesh
+            Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * 100);
         }
 
         
@@ -117,7 +123,12 @@ namespace SIGGD.Mobs
             if (this.currentTarget == null)
                 return;
 
-            Gizmos.DrawLine(this.transform.position, this.currentTarget.Position);
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(this.currentTarget.Position, out hit, 10f, NavMesh.AllAreas))
+            {
+                Gizmos.DrawLine(this.transform.position, hit.position);
+            }
+            
         }
         public void EnableSprint()
         {

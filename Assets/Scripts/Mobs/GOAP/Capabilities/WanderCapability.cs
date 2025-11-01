@@ -17,7 +17,7 @@ namespace SIGGD.Goap.Capabilities
             builder.AddAction<WanderAction>()
                 .AddEffect<IsWandering>(EffectType.Increase)
                 .SetTarget<WanderTarget>()
-                .SetStoppingDistance(1)
+                .SetStoppingDistance(2)
                 .SetBaseCost(30);
             builder.AddTargetSensor<WanderTargetSensor>()
                 .SetTarget<WanderTarget>();

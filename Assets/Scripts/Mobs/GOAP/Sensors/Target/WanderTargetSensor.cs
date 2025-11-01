@@ -16,13 +16,12 @@ namespace SIGGD.Goap.Sensors
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
             var random = this.LocateRandomPosition(agent);
-            // if the position target exists, update it with a new random position
+            var randMesh = Pathfinding.ShiftTargetToNavMesh(random);
             if (existingTarget is PositionTarget positionTarget)
             {
-                return positionTarget.SetPosition(random);
+                return positionTarget.SetPosition(randMesh);
             }
-            // if the position target doesn't exist, create a new random target
-            return new PositionTarget(random);
+            return new PositionTarget(randMesh);
         }
         
         /// <summary>
