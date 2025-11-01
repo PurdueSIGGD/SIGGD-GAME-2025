@@ -73,6 +73,7 @@ public class AudioLogManager : MonoBehaviour
     }
     public void playAudioLog (string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
     {
+        // the most recently called audio log will take priority over the ones called before it 
         if (lastStarted != null)
         {
             StopCoroutine(lastStarted);
