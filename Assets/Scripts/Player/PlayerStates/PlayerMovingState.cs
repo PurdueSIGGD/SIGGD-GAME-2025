@@ -14,13 +14,13 @@ public class PlayerMovingState : StateMachineBehaviour
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
         playerMovement = PlayerID.Instance.playerMovement;
-        playerMovement.IsMoving = true;
+        //playerMovement.IsMoving = true;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateExit(animator, stateInfo, layerIndex);
-        playerMovement.IsMoving = false;
+        //playerMovement.IsMoving = false;
     }
 
 }

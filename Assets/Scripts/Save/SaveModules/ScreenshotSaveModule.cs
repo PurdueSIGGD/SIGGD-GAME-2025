@@ -9,11 +9,10 @@ public class ScreenshotSaveModule : ISaveModule
 
     public ScreenshotSaveModule()
     {
-        Debug.Log("I HAVE BEEN INSTANTIATED.");
     }
 
     // Returns PNG data of a screenshot from a camera
-    private byte[] makeScreenshot(Camera camera)
+    private byte[] MakeScreenshot(Camera camera)
     {
         int width = camera.pixelWidth, height = camera.pixelHeight;
 
@@ -44,10 +43,7 @@ public class ScreenshotSaveModule : ISaveModule
 
     public bool serialize()
     {
-        Debug.Log("Serializing...");
-        Debug.Log(cam);
-        FileManager.Instance.WriteFile(savePath, makeScreenshot(cam));
-
+        FileManager.Instance.WriteFile(savePath, MakeScreenshot(cam));
         return true;
     }
 }

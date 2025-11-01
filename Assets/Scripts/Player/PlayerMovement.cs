@@ -15,10 +15,8 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public Rigidbody rb;
 
     #region Movement Attributes
-
-    [HideInInspector] public Vector3 moveDirection; // The 3D direction the player is currently moving in.
-    public bool IsMoving { get; set; } // Whether the player is currently moving.
-    public bool IsClimbing => PlayerID.Instance.gameObject.GetComponent<ClimbAction>().IsClimbing();
+    private bool IsMoving => PlayerID.Instance.stateMachine.IsMoving;
+    public bool IsClimbing => PlayerID.Instance.stateMachine.IsClimbing;
 
     #endregion
 
@@ -27,11 +25,6 @@ public class PlayerMovement : MonoBehaviour
     public float GravityScale { get; private set; } = 1f; // A scale on gravity when applied to the player,
                                                           // relevant when the player is in situations like falling
                                                           // or hanging on a jump at the apex
-
-    [Header("Checks")]
-    [SerializeField] Transform groundCheckPoint;
-    [SerializeField] Vector3 groundCheckSize = new Vector3(0.49f, 0.3f, 0.49f);
-    [SerializeField] LayerMask groundLayer;
 
     // State params
     private PlayerStateMachine psm;
@@ -66,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
             Vector2 moveInput = PlayerInput.Instance.movementInput;
 
             float speed = (isSprinting && !isFalling) ? moveData.sprintSpeed : moveData.walkSpeed;
-            Run(moveInput, speed);
+            Run(moveInput, speed * Time.fixedDeltaTime);
         }
     }
 
@@ -84,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!canMove) return;
 
-        Transform cam = playerID.cam.transform;
+        Transform cam = playerID.cameraMovement.transform;
         Vector3 direction = moveInput.x * cam.right.SetY(0).normalized +
                                moveInput.y * cam.forward.SetY(0).normalized;
 
@@ -102,8 +95,6 @@ public class PlayerMovement : MonoBehaviour
      */
     public void MoveInDirectionWithSpeed(Vector3 direction, float speed, float lerpAmount = 1)
     {
-        moveDirection = direction;
-
         Vector3 targetSpeed = direction * speed;
         targetSpeed = Vector3.Lerp(rb.linearVelocity, targetSpeed, lerpAmount);
 
@@ -184,7 +175,7 @@ public class PlayerMovement : MonoBehaviour
         if (rb.linearVelocity.magnitude != 0)
         {
             // NOTE: 3d attributes need to be set in order to play instances in 3d
-            ATTRIBUTES_3D attr = AudioManager.Instance.configAttributes3D(rb.position, rb.linearVelocity, transform.forward, Vector3.up);
+            ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(rb.position, rb.linearVelocity, transform.forward, Vector3.up);
             footsteps.set3DAttributes(attr);
 
             PLAYBACK_STATE playbackState;

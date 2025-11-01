@@ -22,7 +22,7 @@ public class EscapeMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
-            ShowEscapeMenu(!isEnabled);
+            ShowEscapeMenu(!canvas.enabled);
         }
     }
 
@@ -30,6 +30,7 @@ public class EscapeMenu : MonoBehaviour
     {
         if (enable)
         {
+            ShowInventory(false);
             Cursor.lockState = CursorLockMode.Confined;
             Cursor.visible = true;
             canvas.enabled = true;
