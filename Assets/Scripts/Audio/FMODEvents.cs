@@ -31,6 +31,7 @@ public class FMODEvents : SerializedMonoBehaviour
         instance = this;
 
         _ = LoadSoundEventsPostBankLoading(); // we dont care about storing this beacause its only running once
+        _ = LoadRandomAmbienceList();
     }
 
     // loads all event references from all the given banks into the dictionary soundEvents using its name as the key

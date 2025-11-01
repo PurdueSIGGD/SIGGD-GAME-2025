@@ -5,7 +5,7 @@
 			<value>frog2</value>
 		</property>
 		<property name="outputFormat">
-			<value>1</value>
+			<value>2</value>
 		</property>
 		<relationship name="folder">
 			<destination>{1637840a-5fed-4bde-bc3d-48d6bd5c8dfd}</destination>
@@ -72,6 +72,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{7f996465-4911-48fc-89e3-e1837514a858}">
+		<property name="volume">
+			<value>5</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{a5cd2d46-d241-4a4b-bf25-dd421309611a}</destination>
 		</relationship>
@@ -96,6 +99,7 @@
 	<object class="MixerBusEffectChain" id="{a5cd2d46-d241-4a4b-bf25-dd421309611a}">
 		<relationship name="effects">
 			<destination>{9d24086e-608c-47de-b3c7-e4cabb956257}</destination>
+			<destination>{bca5cda9-54be-4cb0-97e0-e22dd3903adb}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{99de31f7-a510-47ee-829f-03d433cb13a5}" />
@@ -106,4 +110,5 @@
 	</object>
 	<object class="MixerBusFader" id="{5daeafeb-2fbf-4903-b892-b730138c681b}" />
 	<object class="MixerBusFader" id="{9d24086e-608c-47de-b3c7-e4cabb956257}" />
+	<object class="SpatialiserEffect" id="{bca5cda9-54be-4cb0-97e0-e22dd3903adb}" />
 </objects>

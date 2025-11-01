@@ -37,32 +37,32 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
 
-    private void Start()
+    private async void Start()
     {
-        //music.start();
+        rb = GetComponent<Rigidbody>(); 
+        playerID = GetComponent<PlayerID>();
         rb = GetComponent<Rigidbody>();
+        psm = playerID.stateMachine;
 
         // as long as you format it like this and have it in a async Start() it should all work
         footsteps = await FMODEvents.instance.getEventInstance("Footsteps");
 
-        playerID = GetComponent<PlayerID>();
-        rb = GetComponent<Rigidbody>();
-        psm = playerID.stateMachine;
+
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            FMODEvents.instance.playOneShot("maleDeath", this.transform.position);
-        }
+        //if (Input.GetKeyDown(KeyCode.E))
+        //{
+        //    FMODEvents.instance.playOneShot("maleDeath", this.transform.position);
+        //}
 
-        // Testing
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            UnityEngine.Debug.Log("it worked");
-            AudioLogManager.Instance.playAudioLog("Footsteps", gameObject); // pass in the object that the audio log is gonna play at
-        }
+        //// Testing
+        //if (Input.GetKeyDown(KeyCode.F))
+        //{
+        //    UnityEngine.Debug.Log("it worked");
+        //    AudioLogManager.Instance.playAudioLog("Footsteps", gameObject); // pass in the object that the audio log is gonna play at
+        //}
         if (Input.GetKeyDown(KeyCode.G))
         {
             UnityEngine.Debug.Log("Interuppting");
@@ -78,9 +78,9 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         ApplyGravity();
+        UpdateFootstepSound();
         if (IsMoving && canMove)
         {
-            UpdateSound();
             Vector2 moveInput = PlayerInput.Instance.movementInput;
 
             float speed = (isSprinting && !isFalling) ? moveData.sprintSpeed : moveData.walkSpeed;
@@ -195,13 +195,13 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(gravity, ForceMode.Acceleration);
     }
 
-    private void UpdateSound()
+    private void UpdateFootstepSound()
     {
-        if (rb.linearVelocity.magnitude != 0)
+        if ((rb.linearVelocity.magnitude >= 1) && (isGrounded))
         {
             // NOTE: 3d attributes need to be set in order to play instances in 3d
-            ATTRIBUTES_3D attr = AudioManager.Instance.configAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, rb.transform.up);
-            //ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(rb.position, rb.linearVelocity, transform.forward, Vector3.up);
+            //ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, rb.transform.up);
+            ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(rb.position, rb.linearVelocity, transform.forward, Vector3.up);
             footsteps.set3DAttributes(attr);
 
             PLAYBACK_STATE playbackState;

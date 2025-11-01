@@ -5,7 +5,7 @@
 			<value>hornbill</value>
 		</property>
 		<property name="outputFormat">
-			<value>1</value>
+			<value>2</value>
 		</property>
 		<relationship name="folder">
 			<destination>{1637840a-5fed-4bde-bc3d-48d6bd5c8dfd}</destination>
@@ -72,6 +72,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{8bd716e0-3a80-4557-af19-b8d2c011ad07}">
+		<property name="volume">
+			<value>5</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{e156c7cd-1be9-4107-b072-4c119beab875}</destination>
 		</relationship>
@@ -96,6 +99,7 @@
 	<object class="MixerBusEffectChain" id="{e156c7cd-1be9-4107-b072-4c119beab875}">
 		<relationship name="effects">
 			<destination>{68466499-3e16-4b53-8b39-92d67b35d984}</destination>
+			<destination>{b728ef6a-c0d4-4144-a44a-7d6b1fc5b054}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{6fc084be-e03f-4029-8b72-5b03ee3465a7}" />
@@ -106,4 +110,5 @@
 	</object>
 	<object class="MixerBusFader" id="{3546d725-fb5b-441b-80b4-fe78523dd312}" />
 	<object class="MixerBusFader" id="{68466499-3e16-4b53-8b39-92d67b35d984}" />
+	<object class="SpatialiserEffect" id="{b728ef6a-c0d4-4144-a44a-7d6b1fc5b054}" />
 </objects>

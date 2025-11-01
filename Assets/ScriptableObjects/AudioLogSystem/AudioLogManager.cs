@@ -49,7 +49,7 @@ public class AudioLogManager : MonoBehaviour
     {
         if(isPlaying && curPlayer != null)
         {
-            ATTRIBUTES_3D attr = AudioManager.Instance.configAttributes3D(playerRb.position, playerRb.linearVelocity, playerRb.transform.forward, playerRb.transform.up);
+            ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(playerRb.position, playerRb.linearVelocity, playerRb.transform.forward, playerRb.transform.up);
             logSoundEvent.set3DAttributes(attr);
         }
     }
