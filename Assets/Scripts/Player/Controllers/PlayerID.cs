@@ -13,6 +13,7 @@ public class PlayerID : Singleton<PlayerID>
     [HideInInspector] public Camera cam ; // Reference to the main camera in the scene. Can be serialized, but kept it hide for now cus seeing prefab changes in scene is kind of annoying
     [HideInInspector] public Rigidbody rb; // Reference to the Rigidbody component on the same GameObject.
     [HideInInspector] public PlayerStateMachine stateMachine; // Reference to the player's state machine on the same GameObject.
+    [HideInInspector] public CameraMovement cameraMovement;
     [HideInInspector] public PlayerMovement playerMovement; // Reference to player movement script
     public Inventory Inventory => Inventory.Instance;
     [HideInInspector] public PlayerInteractor playerInteractor;
@@ -34,6 +35,7 @@ public class PlayerID : Singleton<PlayerID>
         {
             cam = Camera.main;
         }
+        cameraMovement = cam.GetComponentInParent<CameraMovement>();
     }
 
     #endregion

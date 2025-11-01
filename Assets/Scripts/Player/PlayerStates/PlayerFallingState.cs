@@ -8,12 +8,12 @@ public class PlayerFallingState : StateMachineBehaviour
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
         playerMovement = PlayerID.Instance.playerMovement;
-        playerMovement.IsMoving = true;
+        //playerMovement.canMove = true;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateExit(animator, stateInfo, layerIndex);
-        playerMovement.IsMoving = false;
+        //playerMovement.IsMoving = false;
     }
 }

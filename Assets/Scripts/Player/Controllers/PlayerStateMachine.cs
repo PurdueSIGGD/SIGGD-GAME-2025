@@ -51,8 +51,6 @@ public class PlayerStateMachine : MonoBehaviour
     #endregion
     
     #region Movement Attributes
-    
-    [HideInInspector] public Vector3 moveDirection; // The 3D direction the player is currently moving in.
     public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f && !IsClimbing; // Whether the player is currently moving.
     public bool IsClimbing => PlayerID.Instance.gameObject.GetComponent<ClimbAction>().IsClimbing();
     

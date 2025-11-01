@@ -10,7 +10,6 @@ public class FirstPersonCamera : MonoBehaviour
     [SerializeField] float minY = -30;
     [SerializeField] float maxY = 30;
 
-    // Public Transform orientation;
     float xRotation;
     float yRotation;
 
@@ -30,6 +29,5 @@ public class FirstPersonCamera : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, minY, maxY);
         
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-        //orientation.rotation = Quaternion.Euler(0, yRotation, 0);   
     }
 }
