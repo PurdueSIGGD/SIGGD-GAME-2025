@@ -34,6 +34,4 @@ namespace SIGGD.Goap.Sensors
 
         }
     }
-
-
 }

@@ -1,71 +1,94 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
+using CrashKonijn.Agent.Runtime;
 using UnityEngine;
+using SIGGD.Goap.Interfaces;
+using SIGGD.Mobs;
 
 namespace SIGGD.Goap
 {
     [GoapId("KillPrey-28433bcc-6bfe-451a-887f-32d47769d859")]
-    public class KillPreyAction : GoapActionBase<KillPreyAction.Data>
+    public class KillPreyAction : GoapActionBase<CommonData> , IActionRunState, IInjectable
     {
-        // This method is called when the action is created
-        // This method is optional and can be removed
         public override void Created()
         {
         }
 
-        // This method is called every frame before the action is performed
-        // If this method returns false, the action will be stopped
-        // This method is optional and can be removed
-        public override bool IsValid(IActionReceiver agent, Data data)
+        public override bool IsValid(IActionReceiver agent, CommonData data)
         {
+
             return true;
         }
 
-        // This method is called when the action is started
-        // This method is optional and can be removed
-        public override void Start(IMonoAgent agent, Data data)
+
+        public override void Start(IMonoAgent agent, CommonData data)
         {
+            data.Timer = 20f;
+            data.mb.EnableSprint();
+        }
+        public override void BeforePerform(IMonoAgent agent, CommonData data)
+        {
+
+            float distance = Vector3.Distance(data.Target.Position, agent.Transform.position);
+            if (distance <= 25 && distance > 5)
+            {
+                data.am.StartAttackSequence(agent);
+                data.am.SetTarget(data.Target as TransformTarget);
+                data.am.isLunging = true;
+            }
         }
 
-        // This method is called once before the action is performed
-        // This method is optional and can be removed
-        public override void BeforePerform(IMonoAgent agent, Data data)
+        public override IActionRunState Perform(IMonoAgent agent, CommonData data, IActionContext context)
+        {
+            if (!data.am.isLunging)
+            {
+                return ActionRunState.Completed;
+            }
+            return ActionRunState.Continue;
+        }
+        public override void Stop(IMonoAgent agent, CommonData data)
         {
         }
-
-        // This method is called every frame while the action is running
-        // This method is required
-        public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
+        public override void End(IMonoAgent agent, CommonData data)
         {
-            return ActionRunState.Completed;
+            data.mb.DisableSprint();
+            this.Disable(agent, ActionDisabler.ForTime(0.0f));
+               
         }
 
-        // This method is called when the action is completed
-        // This method is optional and can be removed
-        public override void Complete(IMonoAgent agent, Data data)
+        public void Update(IAgent agent, IActionContext context)
         {
-            if (data.Target is not TransformTarget transformTarget)
-                return;
-            GameObject.Destroy(transformTarget.Transform.gameObject);
+            throw new System.NotImplementedException();
         }
 
-        // This method is called when the action is stopped
-        // This method is optional and can be removed
-        public override void Stop(IMonoAgent agent, Data data)
+        public bool ShouldStop(IAgent agent)
         {
+            throw new System.NotImplementedException();
         }
 
-        // This method is called when the action is completed or stopped
-        // This method is optional and can be removed
-        public override void End(IMonoAgent agent, Data data)
+        public bool ShouldPerform(IAgent agent)
         {
+            throw new System.NotImplementedException();
         }
 
-        // The action class itself must be stateless!
-        // All data should be stored in the data class
-        public class Data : IActionData
+        public bool IsCompleted(IAgent agent)
         {
-            public ITarget Target { get; set; }
+            throw new System.NotImplementedException();
+        }
+
+        public bool MayResolve(IAgent agent)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool IsRunning()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Inject(GoapInjector injector)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

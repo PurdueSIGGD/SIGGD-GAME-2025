@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Core;
 using CrashKonijn.Goap.Runtime;
-using SIGGD.Goap.Behaviours;
 using SIGGD.Mobs;
 using UnityEngine;
 

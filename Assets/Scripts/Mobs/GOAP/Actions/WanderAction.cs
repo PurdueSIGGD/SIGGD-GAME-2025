@@ -1,6 +1,9 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.AI;
+using CrashKonijn.Agent.Runtime;
 
 namespace SIGGD.Goap
 {
@@ -18,6 +21,22 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override bool IsValid(IActionReceiver agent, Data data)
         {
+            if (Vector3.Distance(agent.Transform.position, data.lastPosition) < 0.01f)
+            {
+                data.stuckTimer += Time.deltaTime;
+            } else
+            {
+                data.stuckTimer = 0f;
+            }
+            if (data.stuckTimer > 2f)
+            {
+                return false;
+            }
+            data.lastPosition = agent.Transform.position;
+            var targetPos = data.Target.GetValidPosition();
+            if (targetPos == null) return false;
+            if (data.navAgent.pathStatus == NavMeshPathStatus.PathInvalid) return false;
+            if (Vector3.Distance((Vector3)targetPos, agent.Transform.position) > 100f) return false;
             return true;
         }
 
@@ -25,6 +44,9 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override void Start(IMonoAgent agent, Data data)
         {
+            data.lastPosition = agent.Transform.position;
+            data.Timer = Random.Range(0.5f, 1.5f);
+            data.stuckTimer = 0f;
         }
 
         // This method is called once before the action is performed
@@ -37,6 +59,7 @@ namespace SIGGD.Goap
         // This method is required
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
+            //return ActionRunState.WaitThenComplete(data.Timer);
             //Debug.Log("LETS GOOOOO!!!!");
             return ActionRunState.Completed;
         }
@@ -45,6 +68,7 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override void Complete(IMonoAgent agent, Data data)
         {
+
         }
 
         // This method is called when the action is stopped
@@ -64,6 +88,12 @@ namespace SIGGD.Goap
         public class Data : IActionData
         {
             public ITarget Target { get; set; }
+            public float Timer { get; set; }
+            public float stuckTimer { get; set; }
+            [GetComponent]
+            public NavMeshAgent navAgent { get; set; }
+
+            public Vector3 lastPosition { get; set; }
         }
     }
 }

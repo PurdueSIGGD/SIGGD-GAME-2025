@@ -2,6 +2,7 @@ using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace SIGGD.Goap.Sensors
 {
@@ -9,6 +10,7 @@ namespace SIGGD.Goap.Sensors
     {
         public override void Created()
         {
+
         }
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
@@ -22,19 +24,34 @@ namespace SIGGD.Goap.Sensors
             return new PositionTarget(randMesh);
         }
         
+        /// <summary>
+        /// helper function to generate a random location in-world
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <returns></returns>
         private Vector3 LocateRandomPosition(IActionReceiver agent)
         {
-            var random = Random.insideUnitCircle * 10f;
-            var position = agent.Transform.position + new Vector3(random.x, 0, random.y);
+            var random = Random.insideUnitSphere * 10f;
+            random += agent.Transform.position;
+            /*
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(random, out hit, 10f, NavMesh.AllAreas))
+            {
+                NavMeshPath path = new NavMeshPath();
+                if (NavMesh.CalculatePath(agent.Transform.position, hit.position, NavMesh.AllAreas, path) &&
+                path.status == NavMeshPathStatus.PathComplete) {
+                    return hit.position;
+                }
+            }
+            */
 
-            return position;
-      
+            // Couldn't find a position on the navmesh, so just don't move
+            //return agent.Transform.position;
+            return random;
         }
         public override void Update()
         {
 
         }
     }
-
-
 }

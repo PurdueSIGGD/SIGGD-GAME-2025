@@ -2,12 +2,13 @@ using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Core;
 using SIGGD.Goap.Config;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace SIGGD.Goap.Interfaces
 {
     public class GoapInjector : MonoBehaviour, IGoapInjector
     {
-        public HungerConfigSO HungerConfigSO;
+        public BaseStatConfig BaseStatConfig;
         public void Inject(IAction action)
         {
             if (action is IInjectable injectable)

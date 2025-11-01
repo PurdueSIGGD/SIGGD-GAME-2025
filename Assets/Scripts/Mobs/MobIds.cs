@@ -6,7 +6,7 @@ namespace SIGGD.Mobs
     {
         public const string generic = "BaseAgent";
         public const string prey = "PreyAgent";
+        public const string hyena = "HyenaAgent";
         public const string buffalo = "Buffalo";
-
     }
 }
