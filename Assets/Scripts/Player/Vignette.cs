@@ -21,12 +21,6 @@ public class Effects : MonoBehaviour
 		}
 	}
 
-	private void Update()
-	{
-        if (Input.GetMouseButtonDown(1))
-            SpecialEffects.VignetteEffect(vignetteIntensity);
-	}
-
 	private void VignetteEffect(float intensity) 
 	{
 		if(vignetteTask != null)
