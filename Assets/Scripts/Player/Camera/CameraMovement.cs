@@ -3,11 +3,13 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
+    private Vector3 unmodifiedCameraPosition;
+
     private GameObject player;
     private Vector3 playerPos;
 
-    private Vector3 offset = new Vector3(0, 0, 0);
-    private Vector3 fixedPos = new Vector3 { x = 0, y = 5, z = -10};
+    [SerializeField] private Vector3 offset = new(0, 0, 0);
+    [SerializeField] private Vector3 fixedPos = new(0, 5, -10);
 
     private bool followPlayer = true;
 
@@ -43,12 +45,16 @@ public class CameraMovement : MonoBehaviour
         playerPos = player.transform.position;
         if (followPlayer)
         {
-            transform.position = playerPos + offset;
+            unmodifiedCameraPosition = transform.position = playerPos + offset;
         }
         else
         {
-            transform.position = fixedPos;
+            unmodifiedCameraPosition = transform.position = fixedPos;
         }
     }
 
+    public Vector3 GetUnmodCameraPos()
+    {
+        return unmodifiedCameraPosition;
+    } 
 }
