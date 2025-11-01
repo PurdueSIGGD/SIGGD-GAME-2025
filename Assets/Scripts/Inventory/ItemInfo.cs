@@ -36,7 +36,7 @@ public class ItemInfo : ScriptableObject
 
     [SerializeField] public bool isIngredient; // whether or not the item can be used as an ingredient for crafting
 
-    [SerializeField] public int maxStackCount; // max number of this item in a stack
+    [SerializeField] public int maxStackCount = 1; // max number of this item in a stack
 
     [SerializeField] public string description; // description of the item
 

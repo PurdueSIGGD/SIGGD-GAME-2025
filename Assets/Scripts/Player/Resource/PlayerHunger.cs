@@ -1,18 +1,18 @@
 using UnityEngine;
-using UnityEngine.Rendering;
 
-public class PlayerStats : MonoBehaviour
+public class PlayerHunger : MonoBehaviour
 {
-    public float maxHunger = 100f;
-    public float currentHunger;
-    public float hungerDecayRate = 1f;
+    [SerializeField] float maxHunger = 100f;
+    [SerializeField] float hungerDecayRate = 1f;
+    [SerializeField] float hungerDamageInterval = 10f; // seconds between starvation damage
+    [SerializeField] DamageContext hungerDamageContext;
 
+    public float MaxHunger => maxHunger;
+    public float CurrentHunger => currentHunger;
+    
+    private float currentHunger;
     private float hungerDamageTimer = 0f;     // tracks time since last starvation tick
-    [SerializeField] private float hungerDamageInterval = 10f; // seconds between starvation damage
-
     private EntityHealthManager playerHealth;
-
-
 
     void Start()
     {
@@ -27,27 +27,23 @@ public class PlayerStats : MonoBehaviour
         {
             currentHunger -= hungerDecayRate * Time.deltaTime;
             hungerDamageTimer = 0f; // Reset timer if not starving
-
-            // Debug.Log(currentHunger);
-        } 
+        }
         else 
         {
             //player is starving stuff
-            // Debug.Log("Starving");
- 
             hungerDamageTimer += Time.deltaTime;
 
             if (hungerDamageTimer >= hungerDamageInterval)
             {
                 hungerDamageTimer = 0f; // Reset timer
-                playerHealth.TakeDamage(1, gameObject, "Starving");
-                Debug.LogWarning("Starving - Took 1 damage");
+                playerHealth.TakeDamage(hungerDamageContext);
+                Debug.Log("Starving - Took 1 damage");
             }
         }
 
     }
 
-    public void ChangeHunger(float ammount)
+    public void UpdateHunger(float ammount)
     {
         currentHunger += ammount;
     }
