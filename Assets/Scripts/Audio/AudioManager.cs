@@ -153,9 +153,12 @@ public class AudioManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        foreach (StudioEventEmitter emitter in eventEmitters)
+        if (eventEmitters != null)
         {
-            emitter.Stop();
+            foreach (StudioEventEmitter emitter in eventEmitters)
+            {
+                emitter.Stop();
+            }
         }
     }
 }

@@ -9,14 +9,12 @@ public class SaveManager : Singleton<SaveManager>
 
     protected override void Awake()
     {
-        Debug.Log("AWAKE AWAKE AWAKE");
         base.Awake();
         Load();
     }
 
     void Start()
     {
-        Debug.Log("START START START");
         if (PlayerID.Instance != null)
         {
             PlayerDataSaveModule.player = PlayerID.Instance.gameObject;
@@ -26,7 +24,6 @@ public class SaveManager : Singleton<SaveManager>
 
     private void OnApplicationQuit()
     {
-        Debug.Log("ONAPPLICATIONQUIT");
         Save();
     }
 
