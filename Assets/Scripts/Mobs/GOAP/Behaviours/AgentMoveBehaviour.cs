@@ -2,6 +2,7 @@ using CrashKonijn.Agent.Core;
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace SIGGD.Goap.Behaviours
 {
@@ -11,16 +12,13 @@ namespace SIGGD.Goap.Behaviours
         private AgentSprintBehaviour sprint;
         private ITarget currentTarget;
         private bool shouldMove;
-        private bool sprintAllowed;
-        public float speed;
-
+        public NavMeshAgent navMeshAgent;
+        //Vector3 dest = null;
 
         private void Awake()
         {
             this.agent = this.GetComponent<AgentBehaviour>();
-            sprint = GetComponent<AgentSprintBehaviour>();
-            sprintAllowed = false;
-            speed = 1f;
+            this.navMeshAgent = this.GetComponent<NavMeshAgent>();
         }
 
         private void OnEnable()
@@ -73,17 +71,9 @@ namespace SIGGD.Goap.Behaviours
 
             if (this.currentTarget == null)
                 return;
-            speed = 1f;
-            if (sprintAllowed)
-            {
-                if (sprint.stamina > 0)
-                {
-                    speed = 2f;
-                    sprint.stamina -= 8 * Time.deltaTime;
-                }
-            }
-            this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(this.currentTarget.Position.x, this.transform.position.y, this.currentTarget.Position.z), Time.deltaTime * speed);
-            this.transform.LookAt(currentTarget.Position);
+
+            //Add Navmesh
+            Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * 100);
         }
 
         
@@ -92,7 +82,12 @@ namespace SIGGD.Goap.Behaviours
             if (this.currentTarget == null)
                 return;
 
-            Gizmos.DrawLine(this.transform.position, this.currentTarget.Position);
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(this.currentTarget.Position, out hit, 10f, NavMesh.AllAreas))
+            {
+                Gizmos.DrawLine(this.transform.position, hit.position);
+            }
+            
         }
     }
 }
