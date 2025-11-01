@@ -16,13 +16,13 @@ public class AudioLogManager : MonoBehaviour
 
     private EventInstance logSoundEvent;
 
-    public GameObject curPlayer; // to store player object after playAudioLog stops running
+    [HideInInspector] public GameObject curPlayer; // to store player object after playAudioLog stops running
     private Rigidbody playerRb;
 
     [SerializeField] private bool isPlaying = false;
 
     private Dictionary<string, AudioLogObject> audioNameToLogs = new();
-    public List<string> names = new List<string>();
+    [HideInInspector] public List<string> names = new List<string>();
 
 
     void Awake()
@@ -100,23 +100,23 @@ public class AudioLogManager : MonoBehaviour
         }
     }
 
-    // this will end the audio naturally once the clip is done playing if its not interrupted
-    private IEnumerator endAudioWhenDone()
-    {
-        PLAYBACK_STATE state;
+    //// this will end the audio naturally once the clip is done playing if its not interrupted
+    //private IEnumerator endAudioWhenDone()
+    //{
+    //    PLAYBACK_STATE state;
 
-        // for out current testing this wont work because footsteps doesnt end it just loops but this should work for more real events that we'll implement
-        logSoundEvent.getPlaybackState(out state);
-        while (state != PLAYBACK_STATE.STOPPED)
-        {
-            yield return null;
-        }
+    //    // for out current testing this wont work because footsteps doesnt end it just loops but this should work for more real events that we'll implement
+    //    logSoundEvent.getPlaybackState(out state);
+    //    while (state != PLAYBACK_STATE.STOPPED)
+    //    {
+    //        yield return null;
+    //    }
 
-        isPlaying = false;
-        curPlayer = null;
-        logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        logSoundEvent.release();
-    }
+    //    isPlaying = false;
+    //    curPlayer = null;
+    //    logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+    //    logSoundEvent.release();
+    //}
 
     // this can be used for interrupt
     public void StopCurrentAudio()
