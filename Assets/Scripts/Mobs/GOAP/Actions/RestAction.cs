@@ -9,10 +9,13 @@ namespace SIGGD.Goap
     [GoapId("Rest-04e4a6ed-6f2a-4909-b11c-8e4859f05b07")]
     public class RestAction : GoapActionBase<RestAction.Data>
     {
+        DamageContext healContext;
+
         // This method is called when the action is created
         // This method is optional and can be removed
         public override void Created()
         {
+            healContext = new DamageContext();
         }
 
         // This method is called every frame before the action is performed
@@ -42,7 +45,10 @@ namespace SIGGD.Goap
         {
             data.Timer -= context.DeltaTime;
             if (data.Timer < 0 || data.hm.CurrentHealth >= data.hm.MaxHealth) return ActionRunState.Completed;
-            data.hm.Heal(context.DeltaTime * 2f, agent.gameObject, "rested and healed");
+            healContext.attacker = agent.gameObject;
+            healContext.victim = agent.gameObject;
+            healContext.amount = context.DeltaTime * 2f;
+            data.hm.Heal(healContext);
             return ActionRunState.ContinueOrResolve;
         }
 
