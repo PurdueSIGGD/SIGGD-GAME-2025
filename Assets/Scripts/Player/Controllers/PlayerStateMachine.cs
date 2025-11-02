@@ -64,17 +64,14 @@ public class PlayerStateMachine : MonoBehaviour
         
         mainCol = GetComponent<Collider>();
         allCols = GetComponentsInChildren<Collider>();
+
+        PlayerInput.Instance.OnJump += OnJumpAction;
+        PlayerInput.Instance.OnAction += TriggerAction;
     }
 
     private void Update()
     {
         UpdateAnimatorParams();
-    }
-
-    private void OnEnable()
-    {
-        PlayerInput.Instance.OnJump += OnJumpAction;
-        PlayerInput.Instance.OnAction += TriggerAction;
     }
     
     private void OnDisable()
