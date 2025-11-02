@@ -5,7 +5,7 @@
 			<value>frog</value>
 		</property>
 		<property name="outputFormat">
-			<value>1</value>
+			<value>2</value>
 		</property>
 		<relationship name="folder">
 			<destination>{1637840a-5fed-4bde-bc3d-48d6bd5c8dfd}</destination>
@@ -59,7 +59,11 @@
 			<destination>{f6befc4d-34d1-4cef-9e33-cee132e5a557}</destination>
 		</relationship>
 	</object>
-	<object class="EventAutomatableProperties" id="{478a5172-eb88-475e-980f-1768ed0593f8}" />
+	<object class="EventAutomatableProperties" id="{478a5172-eb88-475e-980f-1768ed0593f8}">
+		<property name="maximumDistance">
+			<value>50</value>
+		</property>
+	</object>
 	<object class="MarkerTrack" id="{73427031-c138-488c-b9ba-69c45d11f020}" />
 	<object class="Timeline" id="{bdb8932f-8981-4ee0-a22b-eeb6e202002e}">
 		<property name="isProxyEnabled">
@@ -72,6 +76,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{52e33a8c-b156-4002-9d93-b81347e940fa}">
+		<property name="volume">
+			<value>-7</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{efe0d024-c43e-4c70-b2d2-42b696f6e78b}</destination>
 		</relationship>
@@ -96,6 +103,7 @@
 	<object class="MixerBusEffectChain" id="{efe0d024-c43e-4c70-b2d2-42b696f6e78b}">
 		<relationship name="effects">
 			<destination>{27c8a535-c973-458f-9bd1-d1ace586dd57}</destination>
+			<destination>{f82c3c45-d110-4fbc-85c4-01123d20e82e}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{8f2afbf8-d3e2-4bc6-9dfe-403e773f28e5}" />
@@ -106,4 +114,5 @@
 	</object>
 	<object class="MixerBusFader" id="{0450cf0c-3f6e-4e07-bc75-e6ca9b00104c}" />
 	<object class="MixerBusFader" id="{27c8a535-c973-458f-9bd1-d1ace586dd57}" />
+	<object class="SpatialiserEffect" id="{f82c3c45-d110-4fbc-85c4-01123d20e82e}" />
 </objects>
