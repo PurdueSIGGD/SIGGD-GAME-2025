@@ -63,8 +63,8 @@
 	<object class="MarkerTrack" id="{80dd0e84-9caa-48f7-9e0b-e135be0d7c39}" />
 	<object class="GroupTrack" id="{dcac262a-d15b-4196-a0ae-1836a9551822}">
 		<relationship name="modules">
-			<destination>{82e5c845-dff2-42da-86b6-b4329376c3cb}</destination>
-			<destination>{e522ae37-797a-4d26-a463-2534463ee8e7}</destination>
+			<destination>{6cfd25cb-3527-4c8c-bd53-f6dd9d05a3fb}</destination>
+			<destination>{b9fc8ea4-2774-4ef9-8872-946fa9aae9c2}</destination>
 		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{6940bac8-bd1c-4bc0-b64d-6355ad360cdf}</destination>
@@ -77,8 +77,8 @@
 	</object>
 	<object class="ParameterProxy" id="{2a72e626-3c94-45bc-868c-9f177e34a1d6}">
 		<relationship name="modules">
-			<destination>{82e5c845-dff2-42da-86b6-b4329376c3cb}</destination>
-			<destination>{e522ae37-797a-4d26-a463-2534463ee8e7}</destination>
+			<destination>{6cfd25cb-3527-4c8c-bd53-f6dd9d05a3fb}</destination>
+			<destination>{b9fc8ea4-2774-4ef9-8872-946fa9aae9c2}</destination>
 		</relationship>
 		<relationship name="preset">
 			<destination>{1e64c1bc-336d-4586-82fb-284760a76227}</destination>
@@ -101,20 +101,23 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{7379618f-fd54-49ff-8244-72966937358f}" />
-	<object class="EventSound" id="{82e5c845-dff2-42da-86b6-b4329376c3cb}">
-		<relationship name="event">
-			<destination>{42c96423-f4bb-472e-a9c4-b0d651db0d06}</destination>
-		</relationship>
-	</object>
-	<object class="EventSound" id="{e522ae37-797a-4d26-a463-2534463ee8e7}">
-		<property name="start">
-			<value>1</value>
-		</property>
+	<object class="EventSound" id="{6cfd25cb-3527-4c8c-bd53-f6dd9d05a3fb}">
 		<relationship name="event">
 			<destination>{caea2d70-afe2-4486-be8b-cfd741ccff5c}</destination>
 		</relationship>
 	</object>
+	<object class="EventSound" id="{b9fc8ea4-2774-4ef9-8872-946fa9aae9c2}">
+		<property name="start">
+			<value>1</value>
+		</property>
+		<relationship name="event">
+			<destination>{42c96423-f4bb-472e-a9c4-b0d651db0d06}</destination>
+		</relationship>
+	</object>
 	<object class="EventMixerGroup" id="{6940bac8-bd1c-4bc0-b64d-6355ad360cdf}">
+		<property name="volume">
+			<value>-40</value>
+		</property>
 		<property name="name">
 			<value>Audio 1</value>
 		</property>

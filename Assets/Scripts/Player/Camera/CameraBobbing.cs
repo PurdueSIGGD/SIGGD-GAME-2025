@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 
 // place this script on an empty gameobject with the main camera as a child
