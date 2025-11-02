@@ -1,52 +1,54 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using UnityEngine;
+using System.IO;
 
 public class SaveManager : Singleton<SaveManager>
 {
-    public ISaveModule[] modules = {
-        new PlayerDataSaveModule(),
-        new ScreenshotSaveModule()
-    };
+
+    [SerializeField] private Inventory inventory; //TEMP
+    InventoryDataSaveModule inventoryModule;
+    PlayerDataSaveModule playerModule;
+    ScreenshotSaveModule screenshotModule;
+
+    private ISaveModule[] modules;
 
     protected override void Awake()
     {
-        Debug.Log("AWAKE AWAKE AWAKE");
         base.Awake();
-        Load();
     }
 
     void Start()
     {
-        Debug.Log("START START START");
-        if (PlayerID.Instance != null)
-        {
-            PlayerDataSaveModule.player = PlayerID.Instance.gameObject;
-            ScreenshotSaveModule.cam    = PlayerID.Instance.cam;
-        }
+        inventoryModule = new InventoryDataSaveModule();
+        screenshotModule = new ScreenshotSaveModule();
+        playerModule = gameObject.AddComponent<PlayerDataSaveModule>();
+
+        InventoryDataSaveModule.inventory = inventory; // TEMP
+
+        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule};
+
+        Load();
     }
 
     private void OnApplicationQuit()
     {
-        Debug.Log("ONAPPLICATIONQUIT");
         Save();
     }
 
     public bool Load()
     {
-        foreach (ISaveModule i in modules)
-        {
-            i.deserialize();
-        }
+        foreach (var module in modules)
+            module.deserialize();
 
         return true;
     }
 
     public bool Save()
     {
-        foreach (ISaveModule i in modules)
-        {
-            i.serialize();
-        }
-
+        foreach (var module in modules)
+            module.serialize();
         return true;
     }
 }

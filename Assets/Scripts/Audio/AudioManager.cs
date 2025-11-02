@@ -10,32 +10,70 @@ public class AudioManager : MonoBehaviour
     private List<StudioEventEmitter> eventEmitters;
 
     private EventInstance ambience;
-    private EventInstance music;
+    private EventInstance levelMusic;
 
-    public static AudioManager Instance { get; private set; }
+    [HideInInspector] public static AudioManager Instance { get; private set; }
+
+
+    [SerializeField] bool initLevelMusic = true;
+    [SerializeField] bool initAmbiance = true;
 
     [SerializeField, MinMaxSlider(1, 20)] private Vector2 ambianceInterval = new(1, 20);
     [SerializeField, MinMaxSlider(0, 30)] private Vector2 ambianceSpawnDist = new(0, 30);
     private float ambianceTimer;
+    private bool pauseMusic;
 
     private void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         if (Instance != null)
         {
             // this hopefully will never be seen
             UnityEngine.Debug.Log("more than one audio manager in the scene");
+            Destroy(gameObject);
         }
-        Instance = this;
-
-        eventEmitters = new List<StudioEventEmitter>();
+        else
+        {
+            Instance = this;
+            eventEmitters = new List<StudioEventEmitter>();
+        }
     }
 
     private async void Start()
     {
-        music = await FMODEvents.instance.initializeMusic("LevelMusic");
-        ambience = await FMODEvents.instance.initializeAmbience("testAmbience");
+        if (initLevelMusic)
+        {
+            levelMusic = await FMODEvents.instance.initializeMusic("LevelMusic");
+        }
+        if (initAmbiance)
+        {
+            ambience = await FMODEvents.instance.initializeAmbience("testAmbience");
+        }
+
         ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
         UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            pauseMusic = !pauseMusic;
+            UnityEngine.Debug.Log("toggle music: " + pauseMusic);
+
+            levelMusic.setPaused(pauseMusic);
+        }
+
+        ambianceTimer -= Time.deltaTime;
+        if (ambience.isValid() && ambianceTimer < 0)
+        {
+            Vector3 randomDir = new(Random.Range(-1, 1), Random.Range(-1, 1));
+            float randomDist = Random.Range(ambianceSpawnDist.x, ambianceSpawnDist.y);
+            Vector3 ambianceSpawnLoc = PlayerID.Instance.transform.position + randomDir * randomDist;
+            PlayRandomAmbience(ambianceSpawnLoc);
+            ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
+            UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
+        }
     }
 
     public void InitializeAmbience(EventReference ambienceEventReference)
@@ -46,8 +84,8 @@ public class AudioManager : MonoBehaviour
 
     public void InitializeMusic(EventReference musicEventReference)
     {
-        music = CreateEventInstance(musicEventReference);
-        music.start();
+        levelMusic = CreateEventInstance(musicEventReference);
+        levelMusic.start();
     }
 
     public void SetAmbienceParameter(string parameterName, float parameterValue)
@@ -59,7 +97,7 @@ public class AudioManager : MonoBehaviour
     {
         // NOTE: - string area refers to the parameter sheet in FMOD called 'area'
         //       - enum is cast to float because thats what FMOD wants I guess
-        music.setParameterByName("area", (float)area);
+        levelMusic.setParameterByName("area", (float)area);
         UnityEngine.Debug.Log("setting music area to " + area);
     }
 
@@ -79,6 +117,7 @@ public class AudioManager : MonoBehaviour
     // NOTE: 3d attributes need to be set in order to play instances in 3d
     public ATTRIBUTES_3D ConfigAttributes3D(Vector3 position, Vector3 velocity, Vector3 forward, Vector3 up)
     {
+        // need to add a way to orthonganize forward and up so FMOD stops getting so mad
         VECTOR pos = new VECTOR { x = position.x, y = position.y, z = position.z };
         VECTOR vel = new VECTOR { x = velocity.x, y = velocity.y, z = velocity.z };
         VECTOR forw = new VECTOR { x = forward.x, y = forward.y, z = forward.z };
@@ -94,35 +133,14 @@ public class AudioManager : MonoBehaviour
         return emitter;
     }
 
-    private bool pauseMusic = false;
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            pauseMusic = !pauseMusic;
-            UnityEngine.Debug.Log("toggle music: " + pauseMusic);
 
-            music.setPaused(pauseMusic);
-        }
-
-        ambianceTimer -= Time.deltaTime;
-        if (ambianceTimer < 0)
-        {
-            Vector3 randomDir = new(Random.Range(-1, 1), Random.Range(-1, 1));
-            float randomDist = Random.Range(ambianceSpawnDist.x, ambianceSpawnDist.y);
-            Vector3 ambianceSpawnLoc = PlayerID.Instance.transform.position + randomDir * randomDist;
-            PlayRandomAmbience(ambianceSpawnLoc);
-            ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
-            UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
-        }
-    }
     public void PlayRandomAmbience(Vector3 worldPos)
     {
         var randomList = FMODEvents.instance.getRandomSoundsList();
 
         if (randomList == null || randomList.Count == 0)
         {
-            UnityEngine.Debug.LogWarning("Random ambience list is empty — skipping playback.");
+            UnityEngine.Debug.LogWarning("Random ambience list is empty ï¿½ skipping playback.");
             return;
         }
 
@@ -135,9 +153,12 @@ public class AudioManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        foreach (StudioEventEmitter emitter in eventEmitters)
+        if (eventEmitters != null)
         {
-            emitter.Stop();
+            foreach (StudioEventEmitter emitter in eventEmitters)
+            {
+                emitter.Stop();
+            }
         }
     }
 }
