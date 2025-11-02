@@ -50,6 +50,7 @@ public class EscapeMenu : MonoBehaviour
 
     public void LoadMainMenu()
     {
+        SaveManager.Instance.Save();
         SceneManager.LoadScene("Main Menu");
     }
 

@@ -17,6 +17,8 @@ public class FirstPersonCamera : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        xRotation = PlayerDataSaveModule.playerData.Rotation.x;
+        yRotation = PlayerDataSaveModule.playerData.Rotation.y;
     }
 
     void Update()
@@ -27,7 +29,12 @@ public class FirstPersonCamera : MonoBehaviour
         yRotation += mouseX;
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, minY, maxY);
-        
+
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+    }
+
+    public Vector2 GetRotation()
+    {
+        return new Vector2(xRotation, yRotation);
     }
 }
