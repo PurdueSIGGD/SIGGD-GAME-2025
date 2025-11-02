@@ -438,4 +438,9 @@ public class Inventory : Singleton<Inventory>, IInventory
     public ItemInfo GetItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
     }
+
+    public UISlot[] GetInventory()
+    {
+        return inventory;
+    }
 }

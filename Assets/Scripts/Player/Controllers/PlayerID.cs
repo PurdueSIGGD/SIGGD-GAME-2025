@@ -38,7 +38,7 @@ public class PlayerID : Singleton<PlayerID>
 
         if (cam == null)
         {
-            cam = Camera.main.GetComponent<FirstPersonCamera>();
+            cam = Camera.main.GetComponentInParent<FirstPersonCamera>();
             if (!cam) Debug.LogError("Multiple main camera in scene or missing FirstPersonCamera script");
         }
         cameraMovement = cam.GetComponentInParent<CameraMovement>();

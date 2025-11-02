@@ -10,7 +10,7 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
     public static GameObject player;
 
     public static FirstPersonCamera playerCam;
-    public static PlayerStats stats;
+    //public static PlayerStats stats;
     public static EntityHealthManager health;
 
     public bool deserialize()
@@ -34,12 +34,12 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
         //    playerData.Position = pid.stateMachine.LastGroundedPosition;
         //}
 
-        playerCam = PlayerID.Instance.GetComponentInChildren<FirstPersonCamera>();
+        playerCam = PlayerID.Instance.cam;
         player = PlayerID.Instance.rb.gameObject;
-        stats = player.GetComponent<PlayerStats>();
+        //stats = player.GetComponent<PlayerStats>();
         health = player.GetComponent<EntityHealthManager>();
 
-        if (player == null || playerCam == null || stats == null || health == null)
+        if (player == null || playerCam == null || health == null)
         {
             Debug.LogWarning("Aborting save");
             return false;

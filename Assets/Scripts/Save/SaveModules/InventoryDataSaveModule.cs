@@ -24,11 +24,11 @@ public class InventoryDataSaveModule : ISaveModule
         if (inventory == null) return false;
 
         inventoryData.inventory = new InventorySaveData.SlotSaveData[Inventory.InventoryLength + Inventory.HotBarLength];
-        Slot[] inventoryReference = inventory.getInventory();
+        UISlot[] inventoryReference = inventory.GetInventory();
 
         for (int i = 0; i < inventoryData.inventory.Length; i++)
         {
-            Slot slot = inventoryReference[i];
+            UISlot slot = inventoryReference[i];
 
             if (slot == null)
             {

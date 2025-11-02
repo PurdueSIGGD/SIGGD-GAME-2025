@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using UnityEngine;
+using System.IO;
 
 public class SaveManager : Singleton<SaveManager>
 {
@@ -9,6 +10,7 @@ public class SaveManager : Singleton<SaveManager>
     [SerializeField] private Inventory inventory; //TEMP
     InventoryDataSaveModule inventoryModule;
     PlayerDataSaveModule playerModule;
+    ScreenshotSaveModule screenshotModule;
 
     private ISaveModule[] modules;
 
@@ -19,12 +21,13 @@ public class SaveManager : Singleton<SaveManager>
 
     void Start()
     {
-        inventoryModule =new InventoryDataSaveModule();
+        inventoryModule = new InventoryDataSaveModule();
+        screenshotModule = new ScreenshotSaveModule();
         playerModule = gameObject.AddComponent<PlayerDataSaveModule>();
 
         InventoryDataSaveModule.inventory = inventory; // TEMP
 
-        modules = new ISaveModule[] {inventoryModule, playerModule};
+        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule};
 
         Load();
     }
