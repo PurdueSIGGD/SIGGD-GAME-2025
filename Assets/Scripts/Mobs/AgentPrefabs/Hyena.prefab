@@ -214,6 +214,11 @@ MonoBehaviour:
     m_Bits: 0
   idleModel: {fileID: 6897036464720518386}
   attackModel: {fileID: 9031909067457046153}
+  damageContext:
+    attacker: {fileID: 4822427246891486894}
+    victim: {fileID: 0}
+    amount: 5
+    xxtraContext: 
 --- !u!114 &4818079520512631353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,6 +271,11 @@ MonoBehaviour:
   <hunger>k__BackingField: 0
   foodCount: 0
   HungerConfig: {fileID: 11400000, guid: c791ccfee0abc86498340017db4d4953, type: 2}
+  hungerDamageContext:
+    attacker: {fileID: 4822427246891486894}
+    victim: {fileID: 4822427246891486894}
+    amount: 4
+    xxtraContext: 
   HealthManager: {fileID: 5136981766921995599}
 --- !u!114 &5136981766921995599
 MonoBehaviour:
@@ -280,7 +290,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  <CurrentHealth>k__BackingField: 0
 --- !u!114 &5040513272939026828
 MonoBehaviour:
   m_ObjectHideFlags: 0

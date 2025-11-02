@@ -6,8 +6,8 @@ using Unity.VisualScripting;
 
 public class Inventory : Singleton<Inventory>, IInventory
 {
-    const int HotBarLength = 9;
-    const int InventoryLength = 18;
+    public const int HotBarLength = 9;
+    public const int InventoryLength = 18;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
     [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength]; // hotbar buttons
@@ -106,12 +106,16 @@ public class Inventory : Singleton<Inventory>, IInventory
     public void ShowInventory(bool enabled)
     {
         inventoryCanvas.enabled = enabled;
-
-        // Inventory ui is still not responsive
-
-        // Added: disable player movement and show cursor.
-        //PlayerInput.Instance.DebugToggleInput(enabled);
-        Debug.LogWarning("Opening player inventory!");
+        PlayerInput.Instance.DebugToggleInput(enabled);
+        Cursor.visible = enabled;
+        if (enabled)
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+        }
     }
 
     public bool isEnabled() {
@@ -276,7 +280,6 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <returns>Number of items that could not be added to the inventory</returns>
     public int AddItem(ItemInfo itemInfo, int count) { // maybe change input type
         // first add to existing stacks
-        
         for (int i = 0; i < inventory.Length; i++) {
             if (inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName) // matches item
             {
@@ -285,9 +288,11 @@ public class Inventory : Singleton<Inventory>, IInventory
                     {
                         count -= itemInfo.maxStackCount - inventory[i].count;
                         inventory[i].count = itemInfo.maxStackCount;
+                        inventory[i].UpdateSlot(inventory[i]); // update UI
                     }
                     else { // has enough space for all items in same stack
                         inventory[i].count += count;
+                        inventory[i].UpdateSlot(inventory[i]); // update UI
                         count = 0;
                     }
                     Debug.Log("Added " + itemInfo.itemName + " to existing stack at index " + i + ". Current count is " + inventory[i].count);
@@ -305,10 +310,12 @@ public class Inventory : Singleton<Inventory>, IInventory
                         count -= itemInfo.maxStackCount;
                         inventory[i].itemInfo = itemInfo;
                         inventory[i].count = itemInfo.maxStackCount;
+                        inventory[i].UpdateSlot(inventory[i]); // update UI
                     }
                     else { // has enough space for all items in same stack
                         inventory[i].itemInfo = itemInfo;
                         inventory[i].count += count;
+                        inventory[i].UpdateSlot(inventory[i]); // update UI
                         count = 0;
                     }
                     Debug.Log("Added " + itemInfo.itemName + " to new stack at index " + i + ". Current count is " + inventory[i].count);
@@ -430,5 +437,10 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <returns>The </returns>
     public ItemInfo GetItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
+    }
+
+    public UISlot[] GetInventory()
+    {
+        return inventory;
     }
 }

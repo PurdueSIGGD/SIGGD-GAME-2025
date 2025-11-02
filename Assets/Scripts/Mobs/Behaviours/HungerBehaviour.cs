@@ -20,6 +20,8 @@ namespace SIGGD.Mobs
         [SerializeField]
         private BaseStatConfig HungerConfig;
 
+        [SerializeField] private DamageContext hungerDamageContext;
+
         private bool damageTickActive = false;
 
         [SerializeField]
@@ -41,7 +43,7 @@ namespace SIGGD.Mobs
             damageTickActive = true;
             while (hunger > HungerConfig.damageThreshold)
             {
-                HealthManager.TakeDamage(HungerConfig.damage, gameObject, "hunger damage tick");
+                HealthManager.TakeDamage(hungerDamageContext);
                 yield return new WaitForSeconds(HungerConfig.damageTickRate);
             }
             damageTickActive = false;

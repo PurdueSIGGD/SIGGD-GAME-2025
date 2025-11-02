@@ -6,24 +6,27 @@ namespace SIGGD.Mobs
     public class LeaveCarcassBehaviour : MonoBehaviour
     {
 
-        private EntityHealthManager healthManager;
+        //private EntityHealthManager healthManager;
         [SerializeField]
         private GameObject carcassPrefab;
         private void Awake()
         {
-            healthManager = GetComponent<EntityHealthManager>();
+            //healthManager = GetComponent<EntityHealthManager>();
         }
         private void OnEnable()
         {
-            healthManager.OnDeath += SpawnCarcass;
+            EntityHealthManager.OnDeath += SpawnCarcass;
         }
         private void OnDisable()
         {
-            healthManager.OnDeath -= SpawnCarcass;
+            EntityHealthManager.OnDeath -= SpawnCarcass;
         }
-        private void SpawnCarcass()
+        private void SpawnCarcass(DamageContext context)
         {
-            Instantiate(carcassPrefab, transform.position, Quaternion.identity);
+            if (context.victim == gameObject)
+            {
+                Instantiate(carcassPrefab, transform.position, Quaternion.identity);
+            }
         }
     }
 

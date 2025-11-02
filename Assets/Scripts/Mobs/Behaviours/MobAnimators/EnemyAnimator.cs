@@ -17,6 +17,7 @@ public class EnemyAnimator : MonoBehaviour
     private GameObject idleModel;
     [SerializeField]
     private GameObject attackModel;
+    [SerializeField] private DamageContext damageContext;
     void Awake()
 
     {
@@ -98,7 +99,8 @@ public class EnemyAnimator : MonoBehaviour
         EntityHealthManager hm = other.GetComponent<EntityHealthManager>();
         if (hm != null)
         {
-            hm.TakeDamage(4, this.gameObject, "hyena has lunge attacked");
+            damageContext.victim = hm.gameObject;
+            hm.TakeDamage(damageContext);
         }
     }
 }

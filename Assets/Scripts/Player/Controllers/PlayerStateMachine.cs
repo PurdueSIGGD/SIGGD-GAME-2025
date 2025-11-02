@@ -51,8 +51,6 @@ public class PlayerStateMachine : MonoBehaviour
     #endregion
     
     #region Movement Attributes
-    
-    [HideInInspector] public Vector3 moveDirection; // The 3D direction the player is currently moving in.
     public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f && !IsClimbing; // Whether the player is currently moving.
     public bool IsClimbing => PlayerID.Instance.gameObject.GetComponent<ClimbAction>().IsClimbing();
     
@@ -71,13 +69,6 @@ public class PlayerStateMachine : MonoBehaviour
     private void Update()
     {
         UpdateAnimatorParams();
-        CalculateGravity();
-        
-    }
-
-    private void FixedUpdate()
-    {
-        ApplyGravity();
     }
 
     private void OnEnable()
@@ -163,118 +154,6 @@ public class PlayerStateMachine : MonoBehaviour
         return null;
     }
 
-    #endregion
-
-    // This region contains public methods used to move the player. This can be refactored into 
-    // each individual state if this gets too cumbersome, but I am leaving it here for now because multiple
-    // states might use similar movement logic.
-    #region State Methods
-
-    /**
-     * <summary>
-     * Updates the player's movement based on the current moveDirection and camera orientation.
-     * </summary>
-     *
-     * <param name="moveInput">The input vector representing the desired movement direction (x for right/left, y for forward/backward).</param>
-     * <param name="speed">The speed at which the player should move.</param>
-     */
-    public void Run(Vector2 moveInput, float speed)
-    {
-        Transform cam = playerID.cam.transform;
-        Vector3 direction = moveInput.x * cam.right.SetY(0).normalized + 
-                               moveInput.y * cam.forward.SetY(0).normalized;
-        
-        MoveInDirectionWithSpeed(direction, speed, moveData.movementInterpolation);
-    }
-    
-    /**
-     * <summary>
-     * Moves the player in the specified direction using its rigidbody with optional smoothing.
-     * </summary>
-     *
-     * <param name="direction">The direction to move the player in.</param>
-     * <param name="speed">The target speed to move the player at.</param>
-     * <param name="lerpAmount">The amount to lerp the player's velocity towards the target speed. Default is 1 (no smoothing).</param>
-     */
-    public void MoveInDirectionWithSpeed(Vector3 direction, float speed, float lerpAmount = 1)
-    {
-        moveDirection = direction.normalized;
-        
-        Vector3 targetSpeed = direction * speed;
-        targetSpeed = Vector3.Lerp(playerID.rb.linearVelocity, targetSpeed, lerpAmount);
-
-
-        float accelRate;
-        if (IsGrounded)
-            accelRate = (Mathf.Abs(targetSpeed.magnitude) > 0.01f) ? moveData.runAccelAmount : moveData.runDecelAmount;
-        else
-            accelRate = (Mathf.Abs(targetSpeed.magnitude) > 0.01f) ? moveData.runAccelAmount * moveData.accelInAir : 
-                moveData.runDecelAmount * moveData.decelInAir;
-        
-        if (IsFalling && Mathf.Abs(playerID.rb.linearVelocity.y) < moveData.jumpHangSpeedThreshold)
-        {
-            accelRate *= moveData.jumpHangAccelerationMult;
-            targetSpeed *= moveData.jumpHangMaxSpeedMult;
-        }
-		
-        Vector3 speedDiff = targetSpeed - playerID.rb.linearVelocity.SetY(0);
-		
-        Vector3 movementForce = speedDiff * accelRate;
-        
-        playerID.rb.AddForce(movementForce, ForceMode.Acceleration);
-    }
-
-    /**
-     * <summary>
-     * Makes the player jump by applying an upward force based on the parameters in the scriptable object.
-     * </summary>
-     *
-     * <param name="force">The force to apply for the jump.</param>
-     */
-    public void Jump(float force)
-    {
-        playerID.rb.linearVelocity = playerID.rb.linearVelocity.SetY(0);
-        playerID.rb.AddForce(Vector3.up * force, ForceMode.VelocityChange);
-    }
-    
-    /**
-     * <summary>
-     * Calculates the appropriate gravity scale based on the player's vertical velocity and grounded state.
-     * </summary>
-     */
-    private void CalculateGravity()
-    {
-        if (!IsGrounded && Mathf.Abs(playerID.rb.linearVelocity.y) < moveData.jumpHangSpeedThreshold)
-        {
-            gravityScale = moveData.GravityScale * moveData.jumpHangGravityMult;
-        }
-        else if (playerID.rb.linearVelocity.y < 0)
-        {
-            gravityScale = moveData.GravityScale * moveData.fallGravityMult;
-            playerID.rb.linearVelocity = new Vector3(playerID.rb.linearVelocity.x, 
-                Mathf.Max(playerID.rb.linearVelocity.y, -moveData.maxFallSpeed), playerID.rb.linearVelocity.z);
-        }
-        else
-        {
-            gravityScale = moveData.GravityScale;
-        }
-    }
-    
-    /**
-     * <summary>
-     * Applies gravity to the player's rigidbody based on the calculated gravity scale.
-     * </summary>
-     */
-    private void ApplyGravity()
-    {
-        float usedGravityScale = gravityScale;
-        if (IsClimbing == true) { // while climbing, gravity is unaffected by gravity scale
-            usedGravityScale = 1;
-        }
-        Vector3 gravity = moveData.globalGravity * usedGravityScale * Vector3.up;
-        playerID.rb.AddForce(gravity, ForceMode.Acceleration);
-    }
-    
     #endregion
     
     #region Collision Methods

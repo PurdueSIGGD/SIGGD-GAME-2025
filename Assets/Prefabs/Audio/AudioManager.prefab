@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2801793908440318640}
   - component: {fileID: 2752780246185759755}
   - component: {fileID: 7340405253396289754}
+  - component: {fileID: 2504983815903588609}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -30,7 +31,8 @@ Transform:
   m_LocalPosition: {x: 0.50556946, y: 1.4185638, z: -2.1327295}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 299657510365079848}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2752780246185759755
@@ -42,58 +44,45 @@ MonoBehaviour:
   m_GameObject: {fileID: 6380674813148602992}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aab40705e78e024f8224f3605d52d5a, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ea6f9f95d912514eb78230b1698f5dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <ambience>k__BackingField:
-    Guid:
-      Data1: 872870680
-      Data2: 1146627109
-      Data3: -615735629
-      Data4: 1771223434
-    Path: event:/Ambience/testAmbience
-  <enemyDeath>k__BackingField:
-    Guid:
-      Data1: 152935984
-      Data2: 1146810873
-      Data3: -2024132175
-      Data4: 841946915
-    Path: event:/SFX/Player/maledeath
-  <footsteps>k__BackingField:
-    Guid:
-      Data1: -838718119
-      Data2: 1199901597
-      Data3: -801935183
-      Data4: -247095348
-    Path: event:/SFX/Player/Footsteps
-  <music>k__BackingField:
-    Guid:
-      Data1: -1063812193
-      Data2: 1132975378
-      Data3: -1089394018
-      Data4: -691204149
-    Path: event:/Music/LevelMusic
-  <serverNoise>k__BackingField:
-    Guid:
-      Data1: -743648344
-      Data2: 1266383529
-      Data3: -1099683929
-      Data4: -830716001
-    Path: event:/SFX/Server/ServerNoise
-  <testAmbienceOne>k__BackingField:
-    Guid:
-      Data1: 1721110956
-      Data2: 1105905899
-      Data3: 410714004
-      Data4: -758802338
-    Path: event:/SFX/RandomAmbience/Test
-  <testAmbienceTwo>k__BackingField:
-    Guid:
-      Data1: 1296620611
-      Data2: 1259876045
-      Data3: 658931375
-      Data4: -1577967609
-    Path: event:/SFX/RandomAmbience/TestTwo
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: soundEvents
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FMODUnity.EventReference,
+        FMODUnity]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
+        mscorlib]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  bankNames:
+  - Ambience
+  - Music
+  - SFX
+  - RandomAmbience
+  - VoiceLines
+  randomSounds: []
 --- !u!114 &7340405253396289754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,3 +95,79 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33c88bd5b921a8a4886f1f304eab742f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ambianceInterval: {x: 8.573113, y: 16.728773}
+  ambianceSpawnDist: {x: 14.413408, y: 25.47486}
+--- !u!114 &2504983815903588609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6380674813148602992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1629037976255684fb8c17efde0dbe40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1001 &4221441043355837944
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2801793908440318640}
+    m_Modifications:
+    - target: {fileID: 4520781318810504400, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 748.64307
+      objectReference: {fileID: 0}
+    - target: {fileID: 4520781318810504400, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 90.18848
+      objectReference: {fileID: 0}
+    - target: {fileID: 4520781318810504400, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -212.84625
+      objectReference: {fileID: 0}
+    - target: {fileID: 4520781318810504400, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4520781318810504400, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4520781318810504400, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4520781318810504400, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4520781318810504400, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4520781318810504400, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4520781318810504400, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9072923658001668513, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+      propertyPath: m_Name
+      value: AudioLogList
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+--- !u!4 &299657510365079848 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4520781318810504400, guid: 972e6adcac985db4bb73b9bd518a8018, type: 3}
+  m_PrefabInstance: {fileID: 4221441043355837944}
+  m_PrefabAsset: {fileID: 0}

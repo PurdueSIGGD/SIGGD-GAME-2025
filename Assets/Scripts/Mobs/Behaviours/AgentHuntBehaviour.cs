@@ -42,16 +42,19 @@ namespace SIGGD.Mobs
         public void SetHuntTarget(GameObject target)
         {
             if (currentTargetOfHunt != null)
-                currentTargetOfHunt.GetComponent<EntityHealthManager>().OnDeath -= FinishHunt;
+                EntityHealthManager.OnDeath -= FinishHunt;
             currentTargetOfHunt = target;
-            currentTargetOfHunt.GetComponent<EntityHealthManager>().OnDeath += FinishHunt;
+            EntityHealthManager.OnDeath += FinishHunt;
         }
         private void FixedUpdate()
         {
         }
-        private void FinishHunt()
+        private void FinishHunt(DamageContext context)
         {
-            currentTargetOfHunt = null;
+            if (context.victim == currentTargetOfHunt)
+            {
+                currentTargetOfHunt = null;
+            }
         }
     }
 }
