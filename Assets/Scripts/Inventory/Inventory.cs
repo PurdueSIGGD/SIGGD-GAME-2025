@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 
 public class Inventory : Singleton<Inventory>, IInventory
 {
-    public const int HotBarLength = 9;
+    public const int HotBarLength = 3;
     public const int InventoryLength = 18;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
