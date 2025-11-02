@@ -433,6 +433,15 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <summary>
     /// 
     /// </summary>
+    /// <returns>The selected item's count</returns>
+    public int GetSelectedItemCount()
+    {
+        return inventory[selected] ? inventory[selected].count : 0;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="index"></param>
     /// <returns>The </returns>
     public ItemInfo GetItem(int index) { // maybe change return type;

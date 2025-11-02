@@ -20,7 +20,7 @@ public class EscapeMenu : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             ShowEscapeMenu(!canvas.enabled);
         }
