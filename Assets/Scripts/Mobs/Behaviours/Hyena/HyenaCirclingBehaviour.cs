@@ -71,16 +71,19 @@ namespace SIGGD.Mobs.Hyena
                         targetInward = 0f;
                     inwardsFactor = Mathf.Lerp(inwardsFactor, Mathf.Abs(targetInward), Time.deltaTime * 5f);
                     Vector3 inward = toTarget * targetInward;
-
-                    Vector3 desired = (tangent + inward * 0.3f).normalized;
+                    Vector3 desired = (tangent + inward * 0.7f).normalized;
+                    Debug.Log($"desired{desired}");
                     Vector3 dir;
                     NavMeshHit hit;
                     NavMesh.Raycast(transform.position, transform.position + tangent * 3f, out hit, NavMesh.AllAreas);
                     if (hit.distance < 2f)
                     {
                         Debug.Log("raycast hit");
-                        idealRadius = Mathf.Clamp(idealRadius - 2, 5, maxRadius);
+                        idealRadius = Mathf.Clamp(idealRadius - 2, 0, maxRadius);
 
+                    } else
+                    {
+                        idealRadius = Mathf.Clamp(idealRadius + 1, 0, maxRadius);
                     }
                     Vector3 nextPos = transform.position + desired * circleSpeed * Time.deltaTime;
 
@@ -109,7 +112,7 @@ namespace SIGGD.Mobs.Hyena
                     stuckTimer += Time.deltaTime;
                     if (stuckTimer > 1f)
                     {
-                        idealRadius = Mathf.Max(idealRadius - 1, 5f);
+                        idealRadius = Mathf.Clamp(idealRadius - 2, 0, maxRadius);
                     }
                 }
                 else

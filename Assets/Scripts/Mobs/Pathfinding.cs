@@ -11,7 +11,7 @@ namespace SIGGD.Goap
         public static Vector3 ShiftTargetToNavMesh(Vector3 rawDest)
         {
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(rawDest, out hit, 10f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(rawDest, out hit, 2f, NavMesh.AllAreas))
             {
 
                 return hit.position;
@@ -35,10 +35,10 @@ namespace SIGGD.Goap
             NavMeshPath path = new NavMeshPath();
             if (!navMeshAgent.CalculatePath(destination, path) || path.corners.Length < 2)
             {
-                return Vector3.zero;
+                return navMeshAgent.transform.position;
             }
-            if (path.status != NavMeshPathStatus.PathComplete)
-                return Vector3.zero;
+            if (path.status == NavMeshPathStatus.PathInvalid)
+                return navMeshAgent.transform.position;
             Vector3 currentPosition = navMeshAgent.transform.position;
             float distanceRemaining = distanceToTravel;
 

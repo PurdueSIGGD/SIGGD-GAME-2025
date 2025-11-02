@@ -93,7 +93,7 @@ namespace SIGGD.Mobs
 
             if (this.currentTarget == null)
                 return;
-            speed = 3f;
+            speed = 8f;
             if (sprintAllowed)
             {
                 if (sprint.stamina > 0)
@@ -104,13 +104,13 @@ namespace SIGGD.Mobs
             }
 
             // Move the agent along towards their goal position
-            Vector3 dir = (Pathfinding.MovePartialPath2(navMeshAgent, this.currentTarget.Position, Time.deltaTime * speed) - transform.position).normalized;
+            Vector3 dir = (Pathfinding.MovePartialPath2(navMeshAgent, this.currentTarget.Position, speed * 0.05f) - transform.position).normalized;
             if (dir.sqrMagnitude > 0.01f)
             {
                 Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
                 rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, speed * Time.deltaTime));
             }
-            Debug.DrawRay(agent.transform.position, dir * speed * Time.deltaTime * 100, Color.green);
+            Debug.DrawRay(agent.transform.position, dir * speed * 100, Color.green);
             rb.MovePosition(rb.position + dir * speed * Time.deltaTime);
             //Add Navmesh
             //Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * 100);

@@ -39,15 +39,20 @@ namespace SIGGD.Goap.Sensors
             {
                 NavMeshPath path = new NavMeshPath();
                 if (NavMesh.CalculatePath(agent.Transform.position, hit.position, NavMesh.AllAreas, path) &&
-                path.status == NavMeshPathStatus.PathComplete) {
+                path.status == NavMeshPathStatus.PathComplete)
+                {
+                    Debug.DrawLine(agent.Transform.position, hit.position, Color.green, 1f);
                     return hit.position;
+                } else
+                {
+                    Debug.DrawLine(agent.Transform.position, hit.position, Color.red, 1f);
                 }
             }
             */
+            return random;
 
             // Couldn't find a position on the navmesh, so just don't move
             //return agent.Transform.position;
-            return random;
         }
         public override void Update()
         {
