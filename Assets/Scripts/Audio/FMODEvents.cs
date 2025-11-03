@@ -1,8 +1,6 @@
 using UnityEngine;
 using FMODUnity;
 using System.Collections.Generic;
-using System;
-using System.Collections;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using FMOD.Studio;
@@ -43,7 +41,12 @@ public class FMODEvents : SerializedMonoBehaviour
         }
 
         // waiting to make sure everything is loaded right
-        while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized || !EventManager.IsInitialized)
+        //while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized || !EventManager.IsInitialized)
+        //{
+        //    await Task.Yield();
+        //}
+        // ^^^^^ COMMENTED OUT FOR BUILD
+        while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized)
         {
             await Task.Yield();
         }
@@ -80,7 +83,12 @@ public class FMODEvents : SerializedMonoBehaviour
         RuntimeManager.LoadBank("RandomAmbience", true);
 
         // waiting to make sure everything is loaded right
-        while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized || !EventManager.IsInitialized)
+        //while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized || !EventManager.IsInitialized)
+        //{
+        //    await Task.Yield();
+        //}
+        // ^^^^^ COMMENTED OUT FOR BUILD
+        while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized)
         {
             await Task.Yield();
         }

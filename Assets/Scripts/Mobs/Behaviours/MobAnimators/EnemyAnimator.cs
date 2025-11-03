@@ -1,6 +1,4 @@
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.GameCenter;
 
 public class EnemyAnimator : MonoBehaviour
 {
