@@ -21,7 +21,7 @@ namespace SIGGD.Mobs
 
 
         public NavMeshAgent navMeshAgent;
-        
+
 
         public float speed;
 
@@ -39,7 +39,7 @@ namespace SIGGD.Mobs
             sprint = GetComponent<StaminaBehaviour>();
             rb = GetComponent<Rigidbody>();
             sprintAllowed = false;
-            speed = 3f;
+            speed = 5f;
             this.navMeshAgent = this.GetComponent<NavMeshAgent>();
         }
 
@@ -93,12 +93,12 @@ namespace SIGGD.Mobs
 
             if (this.currentTarget == null)
                 return;
-            speed = 3f;
+            speed = 5f;
             if (sprintAllowed)
             {
                 if (sprint.stamina > 0)
                 {
-                    speed = 8f;
+                    speed = 11f;
                     sprint.ReduceStamina(8 * Time.deltaTime);
                 }
             }
