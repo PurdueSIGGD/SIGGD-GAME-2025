@@ -25,7 +25,6 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
         if (Instance != null)
         {
             // this hopefully will never be seen
@@ -144,7 +143,7 @@ public class AudioManager : MonoBehaviour
         EventReference randomEvent = randomList[index];
 
         RuntimeManager.PlayOneShot(randomEvent, worldPos);
-        UnityEngine.Debug.Log("Played random ambience: " + randomEvent.Path);
+        UnityEngine.Debug.Log("Played random ambience: " + randomEvent);
     }
 
     private void OnDestroy()

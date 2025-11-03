@@ -1,8 +1,6 @@
 using UnityEngine;
 using FMOD.Studio;
 using FMOD;
-using FMODUnity;
-using UnityEditor.SearchService;
 using Utility;
 
 public class PlayerMovement : MonoBehaviour
