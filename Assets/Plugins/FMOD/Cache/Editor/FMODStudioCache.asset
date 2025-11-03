@@ -101,6 +101,7 @@ MonoBehaviour:
     Data3: -1089394018
     Data4: -691204149
   Banks:
+  - {fileID: 3549248484942726713}
   - {fileID: -7377250061199648658}
   IsStream: 1
   Is3D: 0
@@ -152,10 +153,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638977187854314340
+  lastModified: 638977271712375205
   FileSizes:
   - Name: Desktop
-    Value: 5015616
+    Value: 5015680
   Exists: 1
 --- !u!114 &-6516050509148880612
 MonoBehaviour:
@@ -362,38 +363,12 @@ MonoBehaviour:
   StudioPath: 
   Min: 0
   Max: 1
-  Default: 0
+  Default: 1
   ID:
     data1: 418031181
     data2: 2725838309
   Type: 2
-  IsGlobal: 0
-  Labels:
-  - GreyArea
-  - BlueArea
-  Exists: 1
---- !u!114 &-4611153022526918464
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
-  m_Name: parameter:/LevelMusic/area
-  m_EditorClassIdentifier: 
-  Name: area
-  StudioPath: 
-  Min: 0
-  Max: 1
-  Default: 0
-  ID:
-    data1: 418031181
-    data2: 2725838309
-  Type: 2
-  IsGlobal: 0
+  IsGlobal: 1
   Labels:
   - GreyArea
   - BlueArea
@@ -526,34 +501,6 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 50
   Length: 0
---- !u!114 &-2667035797092817930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/LevelMusic
-  m_EditorClassIdentifier: 
-  Path: event:/LevelMusic
-  Guid:
-    Data1: -1147462625
-    Data2: 1313153182
-    Data3: -1155305845
-    Data4: 575465975
-  Banks:
-  - {fileID: 3549248484942726713}
-  IsStream: 1
-  Is3D: 0
-  IsOneShot: 0
-  Parameters:
-  - {fileID: -4611153022526918464}
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 0
 --- !u!114 &-2572213772218339773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -569,10 +516,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 638977188325417407
+  lastModified: 638977251581179376
   FileSizes:
   - Name: Desktop
-    Value: 2516576
+    Value: 2516704
   Exists: 1
 --- !u!114 &-2255827826312962616
 MonoBehaviour:
@@ -933,10 +880,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638977187854329365
+  lastModified: 638977271712375205
   FileSizes:
   - Name: Desktop
-    Value: 3790
+    Value: 3748
   Exists: 1
 --- !u!114 &-382003323475202644
 MonoBehaviour:
@@ -991,7 +938,6 @@ MonoBehaviour:
   - {fileID: 1185779894575477197}
   - {fileID: 1842763992445152789}
   - {fileID: -1381333693639995233}
-  - {fileID: -2667035797092817930}
   - {fileID: 8701554826282837555}
   - {fileID: -8334861815915390728}
   - {fileID: 3394031063465426}
@@ -1046,12 +992,13 @@ MonoBehaviour:
   - {fileID: -5868812330602996598}
   - {fileID: 3819823532838860034}
   - {fileID: -1133766931321795163}
-  EditorParameters: []
+  EditorParameters:
+  - {fileID: 1544886469912071971}
   MasterBanks:
   - {fileID: -7377250061199648658}
   StringsBanks:
   - {fileID: -466881227775596725}
-  cacheTime: 638977188325417407
+  cacheTime: 638977275467070854
   cacheVersion: 131632
 --- !u!114 &3394031063465426
 MonoBehaviour:
@@ -1188,6 +1135,32 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 0
+--- !u!114 &1544886469912071971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/area
+  m_EditorClassIdentifier: 
+  Name: area
+  StudioPath: parameter:/area
+  Min: 0
+  Max: 1
+  Default: 1
+  ID:
+    data1: 418031181
+    data2: 2725838309
+  Type: 2
+  IsGlobal: 1
+  Labels:
+  - GreyArea
+  - BlueArea
+  Exists: 1
 --- !u!114 &1603497298114724342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1446,10 +1419,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 638977182752801627
+  lastModified: 638977271712770763
   FileSizes:
   - Name: Desktop
-    Value: 2849696
+    Value: 5439264
   Exists: 1
 --- !u!114 &3819823532838860034
 MonoBehaviour:
@@ -1682,7 +1655,7 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/VoiceLines.bank
   Name: VoiceLines
   StudioPath: bank:/VoiceLines
-  lastModified: 638977182761849009
+  lastModified: 638977275467070854
   FileSizes:
   - Name: Desktop
     Value: 1001696

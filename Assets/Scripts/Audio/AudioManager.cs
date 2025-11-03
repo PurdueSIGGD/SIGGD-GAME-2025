@@ -45,10 +45,6 @@ public class AudioManager : MonoBehaviour
         {
             levelMusic = await FMODEvents.instance.initializeMusic("LevelMusic");
         }
-        if (initAmbiance)
-        {
-            ambience = await FMODEvents.instance.initializeAmbience("testAmbience");
-        }
 
         ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
         UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
@@ -97,7 +93,7 @@ public class AudioManager : MonoBehaviour
     {
         // NOTE: - string area refers to the parameter sheet in FMOD called 'area'
         //       - enum is cast to float because thats what FMOD wants I guess
-        levelMusic.setParameterByName("area", (float)area);
+        levelMusic.setParameterByName("area", (int)area);
         UnityEngine.Debug.Log("setting music area to " + area);
     }
 
