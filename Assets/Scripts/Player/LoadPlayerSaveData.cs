@@ -17,6 +17,5 @@ public class LoadPlayerSaveData : MonoBehaviour
         playerCam = PlayerID.Instance.cam; 
         saveData = PlayerDataSaveModule.playerData;
         player.transform.position = saveData.Position;
-        //playerCam.transform.eulerAngles = saveData.Rotation;
     }
 }

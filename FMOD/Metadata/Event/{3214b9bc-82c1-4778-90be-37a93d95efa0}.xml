@@ -2,10 +2,10 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{3214b9bc-82c1-4778-90be-37a93d95efa0}">
 		<property name="name">
-			<value>FootstepSFX</value>
+			<value>HyenaFootstepSFX</value>
 		</property>
 		<property name="outputFormat">
-			<value>1</value>
+			<value>2</value>
 		</property>
 		<relationship name="folder">
 			<destination>{f9002338-5ed0-4d35-8b45-670e45892a0e}</destination>
@@ -64,6 +64,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{e482e5ef-c885-447b-823a-0fec443ae158}">
+		<relationship name="modulators">
+			<destination>{1e2d8188-8f52-451f-9612-7fcfcaf89093}</destination>
+		</relationship>
 		<relationship name="effectChain">
 			<destination>{8671b64d-fdd4-4a75-a91c-5bc7762bf156}</destination>
 		</relationship>
@@ -88,12 +91,22 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{48347a77-49b9-4401-8d9b-ad5e83ae3fea}" />
+	<object class="RandomizerModulator" id="{1e2d8188-8f52-451f-9612-7fcfcaf89093}">
+		<property name="nameOfPropertyBeingModulated">
+			<value>pitch</value>
+		</property>
+		<property name="amount">
+			<value>10.5</value>
+		</property>
+	</object>
 	<object class="MixerBusEffectChain" id="{8671b64d-fdd4-4a75-a91c-5bc7762bf156}">
 		<relationship name="effects">
 			<destination>{13649d14-95cc-48fc-acaf-81ec42735201}</destination>
+			<destination>{368ebc5a-54e3-47cf-8500-a5b936cb0fbb}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{aaa4b84c-f38e-4dd1-b1ad-354309609811}" />
 	<object class="MixerBusFader" id="{360f7232-090d-44d6-818c-9a84cfa46609}" />
 	<object class="MixerBusFader" id="{13649d14-95cc-48fc-acaf-81ec42735201}" />
+	<object class="SpatialiserEffect" id="{368ebc5a-54e3-47cf-8500-a5b936cb0fbb}" />
 </objects>

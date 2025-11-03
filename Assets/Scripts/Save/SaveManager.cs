@@ -23,7 +23,7 @@ public class SaveManager : Singleton<SaveManager>
     {
         inventoryModule = new InventoryDataSaveModule();
         screenshotModule = new ScreenshotSaveModule();
-        playerModule = gameObject.AddComponent<PlayerDataSaveModule>();
+        playerModule = new PlayerDataSaveModule();
 
         InventoryDataSaveModule.inventory = inventory; // TEMP
 

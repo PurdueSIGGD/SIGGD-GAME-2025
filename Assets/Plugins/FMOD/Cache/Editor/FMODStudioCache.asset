@@ -152,38 +152,11 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638977182747561142
+  lastModified: 638977187854314340
   FileSizes:
   - Name: Desktop
     Value: 5015616
   Exists: 1
---- !u!114 &-7178970974353880702
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/SFX/Hyena/FootstepSFX
-  m_EditorClassIdentifier: 
-  Path: event:/SFX/Hyena/FootstepSFX
-  Guid:
-    Data1: 840219068
-    Data2: 1199080129
-    Data3: -1455964528
-    Data4: -1594911427
-  Banks:
-  - {fileID: -2572213772218339773}
-  IsStream: 0
-  Is3D: 0
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 461
 --- !u!114 &-6516050509148880612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -596,10 +569,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 638977182759768045
+  lastModified: 638977188325417407
   FileSizes:
   - Name: Desktop
-    Value: 2516288
+    Value: 2516576
   Exists: 1
 --- !u!114 &-2255827826312962616
 MonoBehaviour:
@@ -837,6 +810,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 46139
+--- !u!114 &-1133766931321795163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/Hyena/HyenaFootstepSFX
+  m_EditorClassIdentifier: 
+  Path: event:/SFX/Hyena/HyenaFootstepSFX
+  Guid:
+    Data1: 840219068
+    Data2: 1199080129
+    Data3: -1455964528
+    Data4: -1594911427
+  Banks:
+  - {fileID: -2572213772218339773}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 461
 --- !u!114 &-1112043745512692037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -933,10 +933,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638977182747561142
+  lastModified: 638977187854329365
   FileSizes:
   - Name: Desktop
-    Value: 3784
+    Value: 3790
   Exists: 1
 --- !u!114 &-382003323475202644
 MonoBehaviour:
@@ -1044,14 +1044,14 @@ MonoBehaviour:
   - {fileID: 2172176327862270048}
   - {fileID: -1170783880116233329}
   - {fileID: -5868812330602996598}
-  - {fileID: 5213670937018406046}
-  - {fileID: -7178970974353880702}
+  - {fileID: 3819823532838860034}
+  - {fileID: -1133766931321795163}
   EditorParameters: []
   MasterBanks:
   - {fileID: -7377250061199648658}
   StringsBanks:
   - {fileID: -466881227775596725}
-  cacheTime: 638977182761849009
+  cacheTime: 638977188325417407
   cacheVersion: 131632
 --- !u!114 &3394031063465426
 MonoBehaviour:
@@ -1451,6 +1451,33 @@ MonoBehaviour:
   - Name: Desktop
     Value: 2849696
   Exists: 1
+--- !u!114 &3819823532838860034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/Hyena/HyenaOnNoticeSFX
+  m_EditorClassIdentifier: 
+  Path: event:/SFX/Hyena/HyenaOnNoticeSFX
+  Guid:
+    Data1: -913886673
+    Data2: 1261800695
+    Data3: -433522263
+    Data4: -88628821
+  Banks:
+  - {fileID: -2572213772218339773}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 1860
 --- !u!114 &4166174409339908431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1559,33 +1586,6 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 50
   Length: 0
---- !u!114 &5213670937018406046
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/SFX/Hyena/OnNoticeSFX
-  m_EditorClassIdentifier: 
-  Path: event:/SFX/Hyena/OnNoticeSFX
-  Guid:
-    Data1: -913886673
-    Data2: 1261800695
-    Data3: -433522263
-    Data4: -88628821
-  Banks:
-  - {fileID: -2572213772218339773}
-  IsStream: 0
-  Is3D: 1
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 1860
 --- !u!114 &5359839176776887322
 MonoBehaviour:
   m_ObjectHideFlags: 0
