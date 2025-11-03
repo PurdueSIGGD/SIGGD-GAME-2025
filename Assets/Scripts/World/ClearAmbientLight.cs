@@ -3,14 +3,27 @@ using UnityEngine;
 public class ClearAmbientLight : MonoBehaviour
 {
     [SerializeField] GameObject sun;
+    [SerializeField] bool lights;
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            RenderSettings.ambientLight = Color.black;
-            RenderSettings.ambientIntensity = 0f;
-            sun.SetActive(false);
-            Debug.Log("turned off");
+            if (!lights)
+            {
+                RenderSettings.ambientLight = Color.black;
+                RenderSettings.ambientIntensity = 0f;
+                RenderSettings.reflectionIntensity = 0f;
+                sun.SetActive(false);
+                Debug.Log("turned off");
+            }
+            else
+            {
+                RenderSettings.ambientLight = Color.white;
+                RenderSettings.ambientIntensity = 1f;
+                RenderSettings.reflectionIntensity = 1f;
+                sun.SetActive(true);
+                Debug.Log("turned on");
+            }
         }
     }
 }
