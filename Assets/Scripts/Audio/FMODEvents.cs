@@ -67,7 +67,7 @@ public class FMODEvents : SerializedMonoBehaviour
             {
                 description.getPath(out string eventPath);
 
-                EventReference eventRef = EventReference.Find(eventPath);
+                EventReference eventRef = RuntimeManager.PathToEventReference(eventPath);
 
                 soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1), eventRef); // the replace just makes the names a little nicer
             }
@@ -107,7 +107,7 @@ public class FMODEvents : SerializedMonoBehaviour
         {
             description.getPath(out string eventPath);
 
-            EventReference eventRef = EventReference.Find(eventPath);
+            EventReference eventRef = FMODUnity.RuntimeManager.PathToEventReference(eventPath);
 
             randomSounds.Add(eventRef); // the replace just makes the names a little nicer
         }
