@@ -13,6 +13,7 @@ public class ClearAmbientLight : MonoBehaviour
                 RenderSettings.ambientLight = Color.black;
                 RenderSettings.ambientIntensity = 0f;
                 RenderSettings.reflectionIntensity = 0f;
+                RenderSettings.fog = false;
                 sun.SetActive(false);
                 Debug.Log("turned off");
             }
@@ -21,6 +22,7 @@ public class ClearAmbientLight : MonoBehaviour
                 RenderSettings.ambientLight = Color.white;
                 RenderSettings.ambientIntensity = 1f;
                 RenderSettings.reflectionIntensity = 1f;
+                RenderSettings.fog = true;
                 sun.SetActive(true);
                 Debug.Log("turned on");
             }
