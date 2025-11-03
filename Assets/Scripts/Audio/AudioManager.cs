@@ -60,7 +60,7 @@ public class AudioManager : MonoBehaviour
         }
 
         ambianceTimer -= Time.deltaTime;
-        if (ambience.isValid() && ambianceTimer < 0)
+        if (ambianceTimer < 0)
         {
             Vector3 randomDir = new(Random.Range(-1, 1), Random.Range(-1, 1));
             float randomDist = Random.Range(ambianceSpawnDist.x, ambianceSpawnDist.y);
