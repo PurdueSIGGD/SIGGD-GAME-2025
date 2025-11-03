@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
-using System.IO;
 using System;
 
 public class ExitInputHandler : MonoBehaviour

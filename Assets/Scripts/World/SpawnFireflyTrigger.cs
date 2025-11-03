@@ -1,7 +1,4 @@
-using System.Drawing;
-using UnityEditor.TerrainTools;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class SpawnFireflyTrigger : MonoBehaviour
 {

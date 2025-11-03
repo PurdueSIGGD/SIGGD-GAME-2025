@@ -144,7 +144,7 @@ public class AudioManager : MonoBehaviour
         EventReference randomEvent = randomList[index];
 
         RuntimeManager.PlayOneShot(randomEvent, worldPos);
-        UnityEngine.Debug.Log("Played random ambience: " + randomEvent.Path);
+        UnityEngine.Debug.Log("Played random ambience: " + randomEvent);
     }
 
     private void OnDestroy()
