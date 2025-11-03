@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class EntityHealthManager : MonoBehaviour, IHealth
 {
@@ -50,6 +51,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         // disabling player death for now, remove after respawn is implemented
         if (gameObject == PlayerID.Instance.gameObject)
         {
+            SceneManager.LoadScene("Main Menu");
             return;
         }
 

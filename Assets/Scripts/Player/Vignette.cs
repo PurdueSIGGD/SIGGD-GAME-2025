@@ -33,13 +33,13 @@ public class Effects : MonoBehaviour
         var startRadius = intensity;
         var curRadius = startRadius;
 
-		for(float t = 0; curRadius != targetRadius; t += Time.deltaTime)
+		for (float t = 0; curRadius != targetRadius; t += Time.deltaTime)
 		{
 			curRadius = Mathf.Clamp(Mathf.Lerp(startRadius, targetRadius, t), 1, targetRadius);
 			vignetteMat.SetFloat("_VignettePower", curRadius);
 			yield return null;
 		}
-		for(float t = 0; curRadius < startRadius; t += Time.deltaTime)
+		for (float t = 0; curRadius < startRadius; t += Time.deltaTime)
 		{
 			curRadius = Mathf.Lerp(targetRadius, startRadius, t);
 			vignetteMat.SetFloat("_VignettePower", curRadius);

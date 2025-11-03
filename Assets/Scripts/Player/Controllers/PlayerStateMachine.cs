@@ -38,9 +38,10 @@ public class PlayerStateMachine : MonoBehaviour
     [SerializeField] public Transform groundCheckPoint;
     [SerializeField] public Vector3 groundCheckSize = new Vector3(0.49f, 0.3f, 0.49f);
     public LayerMask groundLayer;
-    
+
     public bool IsGrounded =>
-        Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
+        //Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
+        Physics.Raycast(groundCheckPoint.position, Vector3.down, 0.2f, groundLayer);
     
     private float lastTimeGrounded, lastTimeJumpPressed;
     
