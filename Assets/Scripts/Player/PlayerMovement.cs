@@ -86,6 +86,19 @@ public class PlayerMovement : MonoBehaviour
             float speed = (isSprinting && !isFalling) ? moveData.sprintSpeed : moveData.walkSpeed;
             Run(moveInput, speed * Time.fixedDeltaTime);
         }
+        else if (isGrounded)
+        {
+            Vector2 moveInput = PlayerInput.Instance.movementInput;
+
+            float speed = 0f;
+            Run(moveInput, speed * Time.fixedDeltaTime);
+        }
+
+        /*if (isGrounded && !IsMoving)
+        {
+            //rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
+            //rb.angularVelocity = new Vector3(0f, rb.angularVelocity.y, 0f);
+        } */
     }
 
     #region State Methods
@@ -140,6 +153,9 @@ public class PlayerMovement : MonoBehaviour
         Vector3 movementForce = speedDiff * accelRate;
         movementForce.y = 0; // prevent any vertical forces from being applied here
 
+        //TEMP FIX
+        if (isGrounded && !IsMoving && rb.linearVelocity.magnitude <= 0.05f) return;
+
         rb.AddForce(movementForce, ForceMode.Acceleration);
     }
 
@@ -186,6 +202,9 @@ public class PlayerMovement : MonoBehaviour
      */
     private void ApplyGravity()
     {
+        // TEST
+        //if (isGrounded) return;
+
         float usedGravityScale = GravityScale;
         if (IsClimbing == true)
         { // while climbing, gravity is unaffected by gravity scale
