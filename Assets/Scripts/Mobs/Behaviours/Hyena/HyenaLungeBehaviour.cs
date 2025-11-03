@@ -3,9 +3,11 @@ using NUnit.Framework.Interfaces;
 using System;
 using System.Collections;
 using System.Timers;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using Utility;
+using SIGGD.Goap;
 
 namespace SIGGD.Mobs.Hyena
 {
@@ -18,13 +20,16 @@ namespace SIGGD.Mobs.Hyena
         private Rigidbody rb;
         private NavMeshAgent NavMeshAgent;
         private AgentMoveBehaviour AgentMoveBehaviour;
-        public bool finished;
+        public bool finishedLunging;
+        public bool finishedExiting;
         public bool lungeArriving;
+        public bool exit = false;
 
         Animator animator;
         private void Awake()
         {
-            finished = false;
+            finishedLunging = false;
+            finishedExiting = false;
             rb = GetComponent<Rigidbody>();
             NavMeshAgent = GetComponent<NavMeshAgent>();
             AgentMoveBehaviour = GetComponent<AgentMoveBehaviour>();
@@ -40,15 +45,14 @@ namespace SIGGD.Mobs.Hyena
         {
             beginningAttackCooldown = UnityEngine.Random.Range(0.03f, 0.05f);
 
-            finished = false;
+            finishedLunging = false;
             lungeArriving = false;
             Vector3 target = GetTarget();
-            if ((target - transform.position).sqrMagnitude < 0f)
+            if ((target - transform.position).sqrMagnitude < 0.1f)
             {
-                finished = true;
+                ExitBehaviour();
                 yield break;
             }
-            AgentMoveBehaviour.enabled = false;
             NavMeshAgent.enabled = false;
             Quaternion targetRot = Quaternion.LookRotation(GetTarget() - transform.position);
             float elapsed = 0.0f;
@@ -60,7 +64,7 @@ namespace SIGGD.Mobs.Hyena
 
                 transform.rotation = UnityUtil.DampQuaternion(transform.rotation,
                     targetRot, 0.1f, elapsed * 10);
-                yield return null;
+                yield return new WaitForFixedUpdate();
             }
             yield return new WaitForSeconds(beginningAttackCooldown);
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
@@ -85,16 +89,49 @@ namespace SIGGD.Mobs.Hyena
             rb.linearVelocity = Vector3.zero;
             yield return new WaitForFixedUpdate();
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(transform.position, out hit, 3f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(transform.position, out hit, 8f, NavMesh.AllAreas))
             {
                 NavMeshAgent.Warp(hit.position);
             }
-            //NavMeshAgent.Warp(transform.position);
             rb.isKinematic = true;
-
+            yield return new WaitForFixedUpdate();
+            NavMeshAgent.enabled = true;
+            finishedLunging = true;
+        }
+        public IEnumerator ExitLunge(Func<Vector3> GetTarget)
+        {
+            finishedExiting = false;
+            float duration = UnityEngine.Random.Range(1f, 2f);
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                if (Vector3.Distance(GetTarget(), transform.position) > 5f)
+                    break;
+                Vector3 dir = (transform.position - Pathfinding.MovePartialPath2(NavMeshAgent, GetTarget(), Time.deltaTime * 10)).normalized;
+                //Vector3 dir = (transform.position - GetTarget()).normalized;
+                if (dir.sqrMagnitude > 0.01f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
+                    rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 10f * Time.deltaTime));
+                }
+                rb.MovePosition(rb.position + dir * 10 * Time.deltaTime);
+                yield return new WaitForFixedUpdate();
+            }
+            //NavMeshAgent.isStopped = true;
+            AgentMoveBehaviour.enabled = true;
+            finishedExiting = true;
+        }
+        public void ExitBehaviour()
+        {
+            lungeArriving = false;
+            rb.isKinematic = true;
             NavMeshAgent.enabled = true;
             AgentMoveBehaviour.enabled = true;
-            finished = true;
+            
+            finishedLunging = true;
+            finishedExiting = true;
+            exit = true;
         }
     }
 }

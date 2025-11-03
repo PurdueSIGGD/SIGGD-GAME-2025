@@ -31,33 +31,46 @@ namespace SIGGD.Mobs.Hyena
         }
         public void StartAttackSequence(IMonoAgent agent)
         {
+            Debug.Log("starting");
+            if (isLunging) return;
             try
             {
-                isLunging = true;
-                StartCoroutine(AttackSequence());
+                StartCoroutine(AttackSequenceWrapper());
             }
             catch (Exception e)
             {
                 Debug.Log(e);
-            } finally {
                 isLunging = false;
             }
 
         }
 
+        private IEnumerator AttackSequenceWrapper()
+        {
+            isLunging = true;
+            HyenaLungeBehaviour.exit = false;
+            HyenaCirclingBehaviour.exit = false;
+
+            yield return StartCoroutine(AttackSequence());
+
+            isLunging = false;
+        }
         private IEnumerator AttackSequence()
         {
-            StartCoroutine(HyenaCirclingBehaviour.Circle(GetTarget));
-            yield return new WaitUntil(() => HyenaCirclingBehaviour.finishedCircling);
-            StartCoroutine(HyenaCirclingBehaviour.WalkTowardsTarget(GetTarget));
-            yield return new WaitUntil(() => HyenaCirclingBehaviour.finishedWalking);
+            StartCoroutine(HyenaCirclingBehaviour.CircleLoop(GetTarget));
+            yield return new WaitUntil(() => HyenaCirclingBehaviour.finished || HyenaCirclingBehaviour.exit);
+            if (HyenaCirclingBehaviour.exit) yield break;
             StartCoroutine(HyenaLungeBehaviour.Lunge(GetTarget));
             animatorController.SetLungeModel();
-            yield return new WaitUntil(() => HyenaLungeBehaviour.lungeArriving);
+            yield return new WaitUntil(() => HyenaLungeBehaviour.lungeArriving || HyenaLungeBehaviour.exit);
+            if (HyenaLungeBehaviour.exit) yield break;
             Debug.Log($"{gameObject.name} has begun attack animation");
             animatorController.PlayAttack();
-            yield return new WaitUntil(() => HyenaLungeBehaviour.finished);
-            isLunging = false;
+            yield return new WaitUntil(() => HyenaLungeBehaviour.finishedLunging || HyenaLungeBehaviour.exit);
+            if (HyenaLungeBehaviour.exit) yield break;
+            StartCoroutine(HyenaLungeBehaviour.ExitLunge(GetTarget));
+            yield return new WaitUntil(() => HyenaLungeBehaviour.finishedExiting || HyenaLungeBehaviour.exit);
+            if (HyenaLungeBehaviour.exit) yield break;
         }
         public void SetTarget(TransformTarget target)
         {
@@ -65,5 +78,4 @@ namespace SIGGD.Mobs.Hyena
         }
         public Vector3 GetTarget() => this.currentTarget != null ? this.currentTarget.Position : new Vector3(0,0,0);
     }
-
 }

@@ -201,6 +201,11 @@ MonoBehaviour:
   <hunger>k__BackingField: 20
   foodCount: 0
   HungerConfig: {fileID: 11400000, guid: 1c2a12c7ad63f074d86a890f7c6116e6, type: 2}
+  hungerDamageContext:
+    attacker: {fileID: 0}
+    victim: {fileID: 0}
+    amount: 0
+    xxtraContext: 
   HealthManager: {fileID: 2490019792278416403}
 --- !u!114 &2490019792278416403
 MonoBehaviour:
@@ -215,7 +220,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 1
-  <CurrentHealth>k__BackingField: 0
 --- !u!114 &935154526049956516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -339,6 +343,6 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 1
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 16
   m_CollisionDetection: 0

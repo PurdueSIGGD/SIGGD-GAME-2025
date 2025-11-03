@@ -53,11 +53,11 @@ namespace SIGGD.Mobs
             if (HyenaAttackManager.isLunging) return;
             if (this.provider.CurrentPlan == null)
             {
-                this.provider.RequestGoal<WanderGoal, DontStarveGoal>(true);
+                this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal>(true);
                 return;
             } else if (HungerBehaviour.hunger > 50)
             {
-                this.provider.RequestGoal<WanderGoal, DontStarveGoal>(false);
+                this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal>(false);
                 return;
             }               
             //this.provider.ResolveAction();

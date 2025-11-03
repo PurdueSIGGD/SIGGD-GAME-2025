@@ -93,7 +93,7 @@ namespace SIGGD.Mobs
 
             if (this.currentTarget == null)
                 return;
-            speed = 8f;
+            speed = 6f;
             if (sprintAllowed)
             {
                 if (sprint.stamina > 0)
