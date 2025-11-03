@@ -88,7 +88,7 @@ namespace SIGGD.Mobs.Hyena
                         nextPos = hit2.position;
 
                     dir = (nextPos - transform.position).normalized;
-                    Debug.Log($"inwardsFactor{inwardsFactor}");
+                    //Debug.Log($"inwardsFactor{inwardsFactor}");
                     if (dir == Vector3.zero)
                     {
                         dir = lastDir;
