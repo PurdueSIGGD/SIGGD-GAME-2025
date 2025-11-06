@@ -62,6 +62,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     private void OnNumberKeyInput(InputAction.CallbackContext context) {
         float value = context.ReadValue<float>();
         int index = (int)(value) - 1;
+        if (index >= HotBarLength) return; // since hotbar is only length 3 right now
         Select(index);
     }
 
@@ -69,53 +70,17 @@ public class Inventory : Singleton<Inventory>, IInventory
     {
 
         // Update inventory to match manually placed items in scene/saved items
-        // Load inventory info from save
-        if (InventoryDataSaveModule.inventoryData.inventory != null) // load from save data
-        {
-            string name;
-            for (int i = 0; i < InventoryDataSaveModule.inventoryData.inventory.Length; i++)
-            {
-                inventory[i].count = InventoryDataSaveModule.inventoryData.inventory[i].count;
-                name = InventoryDataSaveModule.inventoryData.inventory [i].name;
-                if (inventory[i].count != 0)
-                {
-                    // make iteminfo based on name
-                    for (int j = 0; j < itemInfos.Length; j++) {
-                        if (itemNames[j].Equals(name)) {
-                            inventory[i].itemInfo = itemInfos[j];
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    // make it an empty iteminfo
-                    inventory[i].itemInfo = itemInfos[0];
-                }
-            }
-        }
-        else // initialize empty
-        {
-            for (int i = 0; i < inventory.Length; i++)
-            {
-                inventory[i].itemInfo = itemInfos[0];
-            }
-        }
-
-        // update UISlots based on loaded info
+        // get UI slots from scene
         for (int i = 0; i < HotBarLength; i++)
         {
             // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
             if (hotbarSlots[i] == null) continue;
 
-            // TODO: Add to the existing code below to load in saved items here 
             if (!hotbarSlots[i].TryGetComponent<UISlot>(out UISlot slot))
             {
                 slot = hotbarSlots[i].AddComponent<UISlot>();
             }
-            slot.index = i;
-            slot.itemInfo = inventory[i].itemInfo;
-            slot.count = inventory[i].count;
+            inventory[i] = slot;
             //SetHotbarSlot(slot.index, slot);
 
             hotbarSlots[i].onClick.AddListener(() => OnSlotSelected(slot));
@@ -126,20 +91,58 @@ public class Inventory : Singleton<Inventory>, IInventory
             // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
             if (inventorySlots[i] == null) continue;
 
-            // TODO: Add to the existing code below to load in saved items here 
             if (!inventorySlots[i].TryGetComponent<UISlot>(out UISlot slot))
             {
                 slot = inventorySlots[i].AddComponent<UISlot>();
             }
-            slot.index = i + HotBarLength;
-            slot.itemInfo = inventory[i + HotBarLength].itemInfo;
-            slot.count = inventory[i + HotBarLength].count;
+            inventory[i + HotBarLength] = slot;
             //SetInventorySlot(slot.index, slot);
 
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
 
-        
+        // Load inventory info from save
+        if (InventoryDataSaveModule.inventoryData.inventory != null) // load from save data
+        {
+            Debug.Log("Initializing inventory from save");
+            string name;
+            for (int i = 0; i < InventoryDataSaveModule.inventoryData.inventory.Length; i++)
+            {
+                inventory[i].index = i;
+                inventory[i].count = InventoryDataSaveModule.inventoryData.inventory[i].count;
+                name = InventoryDataSaveModule.inventoryData.inventory[i].name;
+                if (inventory[i].count != 0)
+                {
+                    // make iteminfo based on name
+                    for (int j = 0; j < itemInfos.Length; j++)
+                    {
+                        if (itemNames[j].Equals(name))
+                        {
+                            inventory[i].itemInfo = itemInfos[j];
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    // make it an empty iteminfo
+                    inventory[i].itemInfo = itemInfos[0];
+                }
+                inventory[i].UpdateSlot();
+            }
+        }
+        else // initialize empty
+        {
+            Debug.Log("Initializing empty inventory");
+            for (int i = 0; i < inventory.Length; i++)
+            {
+                inventory[i].index = i;
+                inventory[i].count = 0;
+                inventory[i].itemInfo = itemInfos[0];
+                inventory[i].UpdateSlot();
+            }
+        }
+        PrintInventory();
     }
 
     /// <summary>
@@ -164,65 +167,65 @@ public class Inventory : Singleton<Inventory>, IInventory
         return inventoryCanvas.enabled;
     }
 
-    /// <summary>
-    /// Returns a slot of the hotbar
-    /// </summary>
-    /// <param name="index">Index of slot to return</param>
-    /// <returns>Slot at specified index</returns>
-    private UISlot GetHotbarSlot(int index)
-    {
-        if (index >= HotBarLength || index < 0)
-        {
-            Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
-            return null;
-        }
-        return inventory[index];
-    }
+    ///// <summary>
+    ///// Returns a slot of the hotbar
+    ///// </summary>
+    ///// <param name="index">Index of slot to return</param>
+    ///// <returns>Slot at specified index</returns>
+    //private UISlot GetHotbarSlot(int index)
+    //{
+    //    if (index >= HotBarLength || index < 0)
+    //    {
+    //        Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
+    //        return null;
+    //    }
+    //    return inventory[index];
+    //}
 
 
-    /// <summary>
-    /// Sets a specific hotbar slot to a given slot object
-    /// </summary>
-    /// <param name="index">Index of slot to set</param>
-    /// <param name="slot">Reference slot to update backend slot with</param>
-    private void SetHotbarSlot(int index, UISlot uiSlot)
-    {
-        if (index >= HotBarLength || index < 0)
-        {
-            Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
-            return;
-        }
-        if (inventory[index] == null)
-        {
-            Debug.Log("null");
-            inventory[index] = uiSlot;
-        }
-        inventory[index].UpdateSlot(uiSlot);
-    }
+    ///// <summary>
+    ///// Sets a specific hotbar slot to a given slot object
+    ///// </summary>
+    ///// <param name="index">Index of slot to set</param>
+    ///// <param name="slot">Reference slot to update backend slot with</param>
+    //private void SetHotbarSlot(int index, UISlot uiSlot)
+    //{
+    //    if (index >= HotBarLength || index < 0)
+    //    {
+    //        Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
+    //        return;
+    //    }
+    //    if (inventory[index] == null)
+    //    {
+    //        Debug.Log("null");
+    //        inventory[index] = uiSlot;
+    //    }
+    //    inventory[index].UpdateSlot();
+    //}
 
-    private UISlot GetInventorySlot(int index)
-    {
-        if (index < HotBarLength || index >= HotBarLength + InventoryLength)
-        {
-            Debug.LogWarning("Inventory size " + InventoryLength + ", index = " + index);
-            return null;
-        }
-        return inventory[index];
-    }
+    //private UISlot GetInventorySlot(int index)
+    //{
+    //    if (index < HotBarLength || index >= HotBarLength + InventoryLength)
+    //    {
+    //        Debug.LogWarning("Inventory size " + InventoryLength + ", index = " + index);
+    //        return null;
+    //    }
+    //    return inventory[index];
+    //}
 
-    private void SetInventorySlot(int index, UISlot uiSlot)
-    {
-        if (index < HotBarLength || index >= HotBarLength + InventoryLength)
-        {
-            Debug.LogWarning("Inventory size " + InventoryLength + ", index + " + index);
-            return;
-        }
-        if (inventory[index] == null)
-        {
-            inventory[index] = uiSlot;
-        }
-        inventory[index].UpdateSlot(uiSlot);
-    }
+    //private void SetInventorySlot(int index, UISlot uiSlot)
+    //{
+    //    if (index < HotBarLength || index >= HotBarLength + InventoryLength)
+    //    {
+    //        Debug.LogWarning("Inventory size " + InventoryLength + ", index + " + index);
+    //        return;
+    //    }
+    //    if (inventory[index] == null)
+    //    {
+    //        inventory[index] = uiSlot;
+    //    }
+    //    inventory[index].UpdateSlot();
+    //}
 
     void OnSlotSelected(UISlot uiUISlot)
     {
@@ -276,7 +279,7 @@ public class Inventory : Singleton<Inventory>, IInventory
         if (inventory[selected].count == 0) {
             inventory[selected].itemInfo = null;
         }
-        inventory[selected].UpdateSlot(inventory[selected]);
+        inventory[selected].UpdateSlot();
     }
 
     /// <summary>
@@ -311,11 +314,11 @@ public class Inventory : Singleton<Inventory>, IInventory
                     {
                         count -= itemInfo.maxStackCount - inventory[i].count;
                         inventory[i].count = itemInfo.maxStackCount;
-                        inventory[i].UpdateSlot(inventory[i]); // update UI
+                        inventory[i].UpdateSlot(); // update UI
                     }
                     else { // has enough space for all items in same stack
                         inventory[i].count += count;
-                        inventory[i].UpdateSlot(inventory[i]); // update UI
+                        inventory[i].UpdateSlot(); // update UI
                         count = 0;
                     }
                     Debug.Log("Added " + itemInfo.itemName + " to existing stack at index " + i + ". Current count is " + inventory[i].count);
@@ -333,12 +336,12 @@ public class Inventory : Singleton<Inventory>, IInventory
                         count -= itemInfo.maxStackCount;
                         inventory[i].itemInfo = itemInfo;
                         inventory[i].count = itemInfo.maxStackCount;
-                        inventory[i].UpdateSlot(inventory[i]); // update UI
+                        inventory[i].UpdateSlot(); // update UI
                     }
                     else { // has enough space for all items in same stack
                         inventory[i].itemInfo = itemInfo;
                         inventory[i].count += count;
-                        inventory[i].UpdateSlot(inventory[i]); // update UI
+                        inventory[i].UpdateSlot(); // update UI
                         count = 0;
                     }
                     Debug.Log("Added " + itemInfo.itemName + " to new stack at index " + i + ". Current count is " + inventory[i].count);
