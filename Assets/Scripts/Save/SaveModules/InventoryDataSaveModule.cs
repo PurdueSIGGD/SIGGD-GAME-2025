@@ -12,7 +12,6 @@ public class InventoryDataSaveModule : ISaveModule
     public bool deserialize()
     {
         if (!FileManager.Instance.FileExists(savePath)) return false;
-
         byte[] bytes = FileManager.Instance.ReadFile(savePath);
         inventoryData = SerializationUtility.DeserializeValue<InventorySaveData>(bytes, DataFormat.Binary);
 
@@ -21,10 +20,8 @@ public class InventoryDataSaveModule : ISaveModule
 
     public bool serialize()
     {
-        if (inventory == null) return false;
-
         inventoryData.inventory = new InventorySaveData.SlotSaveData[Inventory.InventoryLength + Inventory.HotBarLength];
-        UISlot[] inventoryReference = inventory.GetInventory();
+        UISlot[] inventoryReference = Inventory.Instance.GetInventory();
 
         for (int i = 0; i < inventoryData.inventory.Length; i++)
         {

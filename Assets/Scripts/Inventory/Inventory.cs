@@ -277,7 +277,7 @@ public class Inventory : Singleton<Inventory>, IInventory
         inventory[selected].count--;
         Debug.Log("Used " + inventory[selected].itemInfo.itemName + ", " + inventory[selected].count + " remaining");
         if (inventory[selected].count == 0) {
-            inventory[selected].itemInfo = null;
+            inventory[selected].itemInfo = itemInfos[0];
         }
         inventory[selected].UpdateSlot();
     }
