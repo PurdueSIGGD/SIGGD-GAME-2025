@@ -18,7 +18,7 @@ public class PlayerHealth : MonoBehaviour
     private void TriggerOnDamagePulse(DamageContext context)
     {
         if (context.victim != PlayerID.Instance.gameObject) return;
-
+        if (context.amount <= 0) return;
         SpecialEffects.VignetteEffect(damagePulseIntensity);
     }
 }

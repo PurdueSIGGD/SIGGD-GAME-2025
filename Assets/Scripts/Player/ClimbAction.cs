@@ -181,6 +181,18 @@ public class ClimbAction : MonoBehaviour
 
             // tries to exit climbing mode if allowed
             TryToExitClimbMode();
+
+            /*if (Input.GetKeyDown(KeyCode.R))
+            {
+                if (isClimbing)
+                {
+                    ExitClimbMode();
+                }
+                else
+                {
+                    EnterClimbMode();
+                }
+            }*/
         }
     }
     #endregion

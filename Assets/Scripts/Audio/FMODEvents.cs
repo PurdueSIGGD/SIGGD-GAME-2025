@@ -1,8 +1,6 @@
 using UnityEngine;
 using FMODUnity;
 using System.Collections.Generic;
-using System;
-using System.Collections;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using FMOD.Studio;
@@ -43,7 +41,12 @@ public class FMODEvents : SerializedMonoBehaviour
         }
 
         // waiting to make sure everything is loaded right
-        while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized || !EventManager.IsInitialized)
+        //while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized || !EventManager.IsInitialized)
+        //{
+        //    await Task.Yield();
+        //}
+        // ^^^^^ COMMENTED OUT FOR BUILD
+        while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized)
         {
             await Task.Yield();
         }
@@ -64,9 +67,10 @@ public class FMODEvents : SerializedMonoBehaviour
             {
                 description.getPath(out string eventPath);
 
-                EventReference eventRef = EventReference.Find(eventPath);
+                EventReference eventRef = RuntimeManager.PathToEventReference(eventPath);
 
                 soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1), eventRef); // the replace just makes the names a little nicer
+                Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
             }
         }
 
@@ -80,7 +84,12 @@ public class FMODEvents : SerializedMonoBehaviour
         RuntimeManager.LoadBank("RandomAmbience", true);
 
         // waiting to make sure everything is loaded right
-        while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized || !EventManager.IsInitialized)
+        //while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized || !EventManager.IsInitialized)
+        //{
+        //    await Task.Yield();
+        //}
+        // ^^^^^ COMMENTED OUT FOR BUILD
+        while (RuntimeManager.AnySampleDataLoading() || !RuntimeManager.IsInitialized)
         {
             await Task.Yield();
         }
@@ -99,7 +108,7 @@ public class FMODEvents : SerializedMonoBehaviour
         {
             description.getPath(out string eventPath);
 
-            EventReference eventRef = EventReference.Find(eventPath);
+            EventReference eventRef = FMODUnity.RuntimeManager.PathToEventReference(eventPath);
 
             randomSounds.Add(eventRef); // the replace just makes the names a little nicer
         }

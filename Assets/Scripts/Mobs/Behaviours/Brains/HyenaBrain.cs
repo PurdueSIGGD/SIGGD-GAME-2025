@@ -87,9 +87,15 @@ namespace SIGGD.Mobs
         protected override void OnActionStart(IAction action)
         {
             if (this.provider.CurrentPlan.Action is KillPreyAction)
+            {
                 //AgentMoveBehaviour.EnableSprint();
+            }
             if (this.provider.CurrentPlan.Goal is KillPlayerGoal)
             {
+                if (AudioManager.Instance)
+                {
+                    AudioManager.Instance.PlayOneShot(FMODEvents.instance.soundEvents["HyenaOnNoticeSFX"], transform.position);       
+                }
                 //AgentMoveBehaviour.EnableSprint();
             }
         }

@@ -83,7 +83,7 @@ public class MoveData : ScriptableObject
 
         #region Variable Ranges
         runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, walkSpeed);
-        runDeceleration = Mathf.Clamp(runDeceleration, 0.01f, walkSpeed);
+        runDeceleration = Mathf.Clamp(runDeceleration, 0.01f, walkSpeed * 100f);
         #endregion
     }
 

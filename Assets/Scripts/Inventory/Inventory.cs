@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 
 public class Inventory : Singleton<Inventory>, IInventory
 {
-    public const int HotBarLength = 9;
+    public const int HotBarLength = 3;
     public const int InventoryLength = 18;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
@@ -428,6 +428,15 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <returns>The selected item</returns>
     public ItemInfo GetSelectedItem() { // maybe change return type
         return inventory[selected] ? inventory[selected].itemInfo : null;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>The selected item's count</returns>
+    public int GetSelectedItemCount()
+    {
+        return inventory[selected] ? inventory[selected].count : 0;
     }
 
     /// <summary>

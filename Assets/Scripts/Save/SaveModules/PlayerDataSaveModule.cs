@@ -1,7 +1,7 @@
 using Sirenix.Serialization;
 using UnityEngine;
 
-public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
+public class PlayerDataSaveModule : ISaveModule
 {
     private static string savePath = $"{FileManager.savesDirectory}/playerData";
 
@@ -15,15 +15,14 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
 
     public bool deserialize()
     {
-        if (!FileManager.Instance.FileExists(savePath)) return false;
-        byte[] bytes = FileManager.Instance.ReadFile(savePath);
-        playerData = SerializationUtility.DeserializeValue<PlayerSaveData>(bytes, DataFormat.JSON);
-        
         if (!player) player = PlayerID.Instance.gameObject;
         if (!playerCam) playerCam = PlayerID.Instance.GetComponent<FirstPersonCamera>();
         playerData ??= new PlayerSaveData();
+
+        if (!FileManager.Instance.FileExists(savePath)) return false;
+        byte[] bytes = FileManager.Instance.ReadFile(savePath);
+        playerData = SerializationUtility.DeserializeValue<PlayerSaveData>(bytes, DataFormat.Binary);
         
-        player.transform.position = playerData.Position;
         return true;
     }
 
@@ -48,7 +47,7 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
         playerData.Position = player.transform.position;
         playerData.Rotation = playerCam.GetRotation();
         
-        byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.JSON);
+        byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);
         FileManager.Instance.WriteFile(savePath, bytes);
 
         return true;

@@ -31,6 +31,25 @@ namespace SIGGD.Goap.Sensors
         /// <returns></returns>
         private Vector3 LocateRandomPosition(IActionReceiver agent)
         {
+            //var random = Random.insideUnitSphere * 50f;
+            //random += agent.Transform.position;
+            ///*
+            //NavMeshHit hit;
+            //if (NavMesh.SamplePosition(random, out hit, 10f, NavMesh.AllAreas))
+            //{
+            //    NavMeshPath path = new NavMeshPath();
+            //    if (NavMesh.CalculatePath(agent.Transform.position, hit.position, NavMesh.AllAreas, path) &&
+            //    path.status == NavMeshPathStatus.PathComplete) {
+            //        return hit.position;
+            //    }
+            //}
+            //*/
+
+            //// Couldn't find a position on the navmesh, so just don't move
+            ////return agent.Transform.position;
+            //return random;
+
+
             var randomInCircle = Random.insideUnitCircle * 50f;
             var random3D = new Vector3(randomInCircle.x, UnityEngine.Random.Range(-10f, 10f), randomInCircle.y);
             random3D += agent.Transform.position;
