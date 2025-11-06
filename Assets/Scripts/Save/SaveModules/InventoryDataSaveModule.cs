@@ -35,7 +35,8 @@ public class InventoryDataSaveModule : ISaveModule
                 inventoryData.inventory[i] = new InventorySaveData.SlotSaveData
                 {
                     name = "",
-                    count = 0
+                    count = 0,
+                    index = i
                 };
             }
             else
@@ -43,7 +44,8 @@ public class InventoryDataSaveModule : ISaveModule
                 inventoryData.inventory[i] = new InventorySaveData.SlotSaveData
                 {
                     name = slot.itemInfo == null ? "" : slot.itemInfo.itemName.ToString(),
-                    count = slot.count
+                    count = slot.count,
+                    index = i
                 };
             }
         }

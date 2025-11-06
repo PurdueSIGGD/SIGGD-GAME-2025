@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 public class Inventory : Singleton<Inventory>, IInventory
 {
     public const int HotBarLength = 3;
-    public const int InventoryLength = 18;
+    public const int InventoryLength = 9;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
     [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength]; // hotbar buttons
@@ -16,7 +16,8 @@ public class Inventory : Singleton<Inventory>, IInventory
     private List<ItemInfo> lastClickedItems = new();
 
     private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
-    [SerializeField] public GameObject[] items = new GameObject[1]; // array of all of the different types of items; used for instantiating
+    [SerializeField] public ItemInfo[] itemInfos = new ItemInfo[7]; // array of all of the different types of item infos; used for loading from file
+    [SerializeField] public string[] itemNames = new string[7];
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
     private UISlot _tempUISlot; // temporary slot for holding item that is being moved
@@ -66,7 +67,42 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     void Start()
     {
+
         // Update inventory to match manually placed items in scene/saved items
+        // Load inventory info from save
+        if (InventoryDataSaveModule.inventoryData.inventory != null) // load from save data
+        {
+            string name;
+            for (int i = 0; i < InventoryDataSaveModule.inventoryData.inventory.Length; i++)
+            {
+                inventory[i].count = InventoryDataSaveModule.inventoryData.inventory[i].count;
+                name = InventoryDataSaveModule.inventoryData.inventory [i].name;
+                if (inventory[i].count != 0)
+                {
+                    // make iteminfo based on name
+                    for (int j = 0; j < itemInfos.Length; j++) {
+                        if (itemNames[j].Equals(name)) {
+                            inventory[i].itemInfo = itemInfos[j];
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    // make it an empty iteminfo
+                    inventory[i].itemInfo = itemInfos[0];
+                }
+            }
+        }
+        else // initialize empty
+        {
+            for (int i = 0; i < inventory.Length; i++)
+            {
+                inventory[i].itemInfo = itemInfos[0];
+            }
+        }
+
+        // update UISlots based on loaded info
         for (int i = 0; i < HotBarLength; i++)
         {
             // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
@@ -78,7 +114,9 @@ public class Inventory : Singleton<Inventory>, IInventory
                 slot = hotbarSlots[i].AddComponent<UISlot>();
             }
             slot.index = i;
-            SetHotbarSlot(slot.index, slot);
+            slot.itemInfo = inventory[i].itemInfo;
+            slot.count = inventory[i].count;
+            //SetHotbarSlot(slot.index, slot);
 
             hotbarSlots[i].onClick.AddListener(() => OnSlotSelected(slot));
         }
@@ -94,10 +132,14 @@ public class Inventory : Singleton<Inventory>, IInventory
                 slot = inventorySlots[i].AddComponent<UISlot>();
             }
             slot.index = i + HotBarLength;
-            SetInventorySlot(slot.index, slot);
+            slot.itemInfo = inventory[i + HotBarLength].itemInfo;
+            slot.count = inventory[i + HotBarLength].count;
+            //SetInventorySlot(slot.index, slot);
 
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
+
+        
     }
 
     /// <summary>
@@ -227,25 +269,6 @@ public class Inventory : Singleton<Inventory>, IInventory
         } 
     }
 
-    /// <summary>
-    /// Uses the currently selected item
-    /// </summary>
-    //public void Use() {
-    //    if (!inventory[selected] || inventory[selected].count == 0 || inventory[selected].itemInfo == null) return;
-    //    ItemInfo itemInfo = inventory[selected].itemInfo;
-    //    if (itemInfo.itemType == ItemInfo.ItemType.Trap) {
-    //        if (itemInfo.itemName == ItemInfo.ItemName.StunTrap) {
-    //            GameObject newStunTrap = Instantiate(items[0]);
-    //            newStunTrap.GetComponent<StunTrap>().Use();
-    //            Decrement();
-    //            Debug.Log("Used " + itemInfo.itemName + ", " + inventory[selected].count + " remaining");
-    //        }
-    //    }
-    //}
-
-    /// <summary>
-    /// Decrements the count of the selected item by one
-    /// </summary>
     public void Decrement()
     {
         inventory[selected].count--;

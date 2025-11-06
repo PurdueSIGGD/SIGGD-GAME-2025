@@ -11,5 +11,6 @@ public class InventorySaveData
     {
         public string name;
         public int count;
+        public int index;
     }
 }
