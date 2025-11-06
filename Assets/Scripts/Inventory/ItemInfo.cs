@@ -23,6 +23,8 @@ public class ItemInfo : ScriptableObject
         Rock,
         RockSpear,
         StunTrap,
+        Apple,
+        CaptureOrb,
         Empty
     };
 

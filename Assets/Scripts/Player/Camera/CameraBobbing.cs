@@ -61,10 +61,10 @@ public class CameraBobbing : MonoBehaviour
     private void Update()
     {
         float verticalSpeed = GetVerticalSpeed();
-        if (verticalSpeed >= airborneSpeedCutoff) {
-            targetBobPositionX = targetBobPositionY = 0;
-        } else {
+        if (PlayerID.Instance.stateMachine.IsGrounded) {
             GroundedBobbingUpdate();
+        } else {
+            targetBobPositionX = targetBobPositionY = 0;
         }
         UpdateBobPosition();
     }

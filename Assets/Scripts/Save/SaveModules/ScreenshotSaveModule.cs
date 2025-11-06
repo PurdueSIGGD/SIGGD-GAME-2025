@@ -5,10 +5,11 @@ public class ScreenshotSaveModule : ISaveModule
 {
     public static string savePath = $"{FileManager.savesDirectory}/screenshot.png";
 
-    public static Camera cam;
+    public Camera cam;
 
     public ScreenshotSaveModule()
     {
+        cam = Camera.main;
     }
 
     // Returns PNG data of a screenshot from a camera
@@ -43,7 +44,11 @@ public class ScreenshotSaveModule : ISaveModule
 
     public bool serialize()
     {
-        FileManager.Instance.WriteFile(savePath, MakeScreenshot(cam));
-        return true;
+        if (cam)
+        {
+            FileManager.Instance.WriteFile(savePath, MakeScreenshot(Camera.main));
+            return true;
+        }
+        return false;
     }
 }

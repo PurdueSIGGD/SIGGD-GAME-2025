@@ -6,8 +6,8 @@ using Unity.VisualScripting;
 
 public class Inventory : Singleton<Inventory>, IInventory
 {
-    const int HotBarLength = 9;
-    const int InventoryLength = 18;
+    public const int HotBarLength = 3;
+    public const int InventoryLength = 18;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
     [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength]; // hotbar buttons
@@ -433,9 +433,23 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <summary>
     /// 
     /// </summary>
+    /// <returns>The selected item's count</returns>
+    public int GetSelectedItemCount()
+    {
+        return inventory[selected] ? inventory[selected].count : 0;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="index"></param>
     /// <returns>The </returns>
     public ItemInfo GetItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
+    }
+
+    public UISlot[] GetInventory()
+    {
+        return inventory;
     }
 }

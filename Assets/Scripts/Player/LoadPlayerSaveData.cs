@@ -7,12 +7,14 @@ public class LoadPlayerSaveData : MonoBehaviour
 {
     private GameObject player;
     private PlayerSaveData saveData;
+    private FirstPersonCamera playerCam;
 
     // Loading data here as SaveManager executes prior to PlayerID instance
     void Start()
     {
         // load in data saved from PlayerSaveData, if possible
         player = PlayerID.Instance.gameObject;
+        playerCam = PlayerID.Instance.cam; 
         saveData = PlayerDataSaveModule.playerData;
         player.transform.position = saveData.Position;
     }

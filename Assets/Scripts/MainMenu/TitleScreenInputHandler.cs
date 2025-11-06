@@ -7,6 +7,7 @@ public class TitleScreenInputHandler : MonoBehaviour
 {
     public string mainSceneName;
     public GameObject loadingPanel;
+    [SerializeField] OverrideStartMusic titleMusic;
 
     // AsyncOperation loadScene;
 
@@ -27,6 +28,7 @@ public class TitleScreenInputHandler : MonoBehaviour
         // loadScene.allowSceneActivation = true;
         // await loadScene; // Make sure we've actually loaded the scene at this point
         loadingPanel.SetActive(true);
+        titleMusic.StopActiveMusic();
         SceneManager.LoadScene(mainSceneName, LoadSceneMode.Single);
         // not awaiting this because we don't need to
         // _ = SceneManager.UnloadSceneAsync("Assets/UI/titlescreen.unity");

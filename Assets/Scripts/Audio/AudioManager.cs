@@ -10,9 +10,13 @@ public class AudioManager : MonoBehaviour
     private List<StudioEventEmitter> eventEmitters;
 
     private EventInstance ambience;
-    private EventInstance music;
+    private EventInstance levelMusic;
 
-    public static AudioManager Instance { get; private set; }
+    [HideInInspector] public static AudioManager Instance { get; private set; }
+
+
+    [SerializeField] bool initLevelMusic = true;
+    [SerializeField] bool initAmbiance = true;
 
     [SerializeField, MinMaxSlider(1, 20)] private Vector2 ambianceInterval = new(1, 20);
     [SerializeField, MinMaxSlider(0, 30)] private Vector2 ambianceSpawnDist = new(0, 30);
@@ -25,16 +29,21 @@ public class AudioManager : MonoBehaviour
         {
             // this hopefully will never be seen
             UnityEngine.Debug.Log("more than one audio manager in the scene");
+            Destroy(gameObject);
         }
-        Instance = this;
-
-        eventEmitters = new List<StudioEventEmitter>();
+        else
+        {
+            Instance = this;
+            eventEmitters = new List<StudioEventEmitter>();
+        }
     }
 
     private async void Start()
     {
-        music = await FMODEvents.instance.initializeMusic("LevelMusic");
-        ambience = await FMODEvents.instance.initializeAmbience("testAmbience");
+        if (initLevelMusic)
+        {
+            levelMusic = await FMODEvents.instance.initializeMusic("LevelMusic");
+        }
 
         ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
         UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
@@ -47,7 +56,7 @@ public class AudioManager : MonoBehaviour
             pauseMusic = !pauseMusic;
             UnityEngine.Debug.Log("toggle music: " + pauseMusic);
 
-            music.setPaused(pauseMusic);
+            levelMusic.setPaused(pauseMusic);
         }
 
         ambianceTimer -= Time.deltaTime;
@@ -70,8 +79,8 @@ public class AudioManager : MonoBehaviour
 
     public void InitializeMusic(EventReference musicEventReference)
     {
-        music = CreateEventInstance(musicEventReference);
-        music.start();
+        levelMusic = CreateEventInstance(musicEventReference);
+        levelMusic.start();
     }
 
     public void SetAmbienceParameter(string parameterName, float parameterValue)
@@ -83,7 +92,7 @@ public class AudioManager : MonoBehaviour
     {
         // NOTE: - string area refers to the parameter sheet in FMOD called 'area'
         //       - enum is cast to float because thats what FMOD wants I guess
-        music.setParameterByName("area", (float)area);
+        levelMusic.setParameterByName("area", (int)area);
         UnityEngine.Debug.Log("setting music area to " + area);
     }
 
@@ -134,14 +143,17 @@ public class AudioManager : MonoBehaviour
         EventReference randomEvent = randomList[index];
 
         RuntimeManager.PlayOneShot(randomEvent, worldPos);
-        UnityEngine.Debug.Log("Played random ambience: " + randomEvent.Path);
+        UnityEngine.Debug.Log("Played random ambience: " + randomEvent);
     }
 
     private void OnDestroy()
     {
-        foreach (StudioEventEmitter emitter in eventEmitters)
+        if (eventEmitters != null)
         {
-            emitter.Stop();
+            foreach (StudioEventEmitter emitter in eventEmitters)
+            {
+                emitter.Stop();
+            }
         }
     }
 }
