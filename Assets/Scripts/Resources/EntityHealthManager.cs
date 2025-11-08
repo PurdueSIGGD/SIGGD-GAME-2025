@@ -58,6 +58,8 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         // disabling player death for now, remove after respawn is implemented
         if (gameObject == PlayerID.Instance.gameObject)
         {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             SceneManager.LoadScene("Main Menu");
             return;
         }
