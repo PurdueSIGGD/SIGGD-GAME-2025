@@ -13,5 +13,10 @@ public enum StatType
 
     // movement
     walkSpeed,
-    sprintSpeed
+    sprintSpeed,
+
+    // added at the bottom in case changing the order messes with stuff
+    maxStamina,
+    staminaDecayRate,
+    staminaRegenRate
 }
