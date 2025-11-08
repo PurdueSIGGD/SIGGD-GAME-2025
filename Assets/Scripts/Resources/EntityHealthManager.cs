@@ -9,8 +9,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     // default max health to 100
     [SerializeField] private float maxHealth = 100f;
     public float MaxHealth => maxHealth; // => used for read-only property
-    [SerializeField] private Button killPlayer;
-
+ 
     public float CurrentHealth { get; set; }
 
     // possible events we may want?
@@ -23,15 +22,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         CurrentHealth = maxHealth; // start at full health
         //yield return new WaitForSeconds(10);
         DamageContext damageContext = new DamageContext();
-        killPlayer.onClick.AddListener(() =>
-        {
-            DamageContext damageContext = new DamageContext
-            {
-                attacker = gameObject, // or whatever entity is responsible
-                amount = maxHealth // instantly kills player
-            };
-            Die(damageContext);
-        });
+      
 
     }
 
@@ -77,5 +68,12 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         OnDeath?.Invoke(damageContext);
         Destroy(gameObject);
     }
-
+    public void Update()
+    {
+        DamageContext damageContext = new DamageContext();
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            Die(damageContext);
+        }
+    }
 }
