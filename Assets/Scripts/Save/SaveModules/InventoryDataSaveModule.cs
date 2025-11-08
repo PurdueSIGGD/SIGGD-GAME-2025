@@ -22,6 +22,7 @@ public class InventoryDataSaveModule : ISaveModule
     {
         inventoryData.inventory = new InventorySaveData.SlotSaveData[Inventory.InventoryLength + Inventory.HotBarLength];
         UISlot[] inventoryReference = Inventory.Instance.GetInventory();
+        inventoryData.selected = Inventory.Instance.GetSelected();
 
         for (int i = 0; i < inventoryData.inventory.Length; i++)
         {

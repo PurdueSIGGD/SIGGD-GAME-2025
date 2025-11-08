@@ -105,6 +105,7 @@ public class Inventory : Singleton<Inventory>, IInventory
         if (InventoryDataSaveModule.inventoryData.inventory != null) // load from save data
         {
             Debug.Log("Initializing inventory from save");
+            selected = InventoryDataSaveModule.inventoryData.selected;
             string name;
             for (int i = 0; i < InventoryDataSaveModule.inventoryData.inventory.Length; i++)
             {
@@ -133,6 +134,7 @@ public class Inventory : Singleton<Inventory>, IInventory
         }
         else // initialize empty
         {
+            selected = 0;
             Debug.Log("Initializing empty inventory");
             for (int i = 0; i < inventory.Length; i++)
             {
@@ -166,67 +168,6 @@ public class Inventory : Singleton<Inventory>, IInventory
     public bool isEnabled() {
         return inventoryCanvas.enabled;
     }
-
-    ///// <summary>
-    ///// Returns a slot of the hotbar
-    ///// </summary>
-    ///// <param name="index">Index of slot to return</param>
-    ///// <returns>Slot at specified index</returns>
-    //private UISlot GetHotbarSlot(int index)
-    //{
-    //    if (index >= HotBarLength || index < 0)
-    //    {
-    //        Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
-    //        return null;
-    //    }
-    //    return inventory[index];
-    //}
-
-
-    ///// <summary>
-    ///// Sets a specific hotbar slot to a given slot object
-    ///// </summary>
-    ///// <param name="index">Index of slot to set</param>
-    ///// <param name="slot">Reference slot to update backend slot with</param>
-    //private void SetHotbarSlot(int index, UISlot uiSlot)
-    //{
-    //    if (index >= HotBarLength || index < 0)
-    //    {
-    //        Debug.LogWarning("Hotbar size " + HotBarLength + ", index " + index);
-    //        return;
-    //    }
-    //    if (inventory[index] == null)
-    //    {
-    //        Debug.Log("null");
-    //        inventory[index] = uiSlot;
-    //    }
-    //    inventory[index].UpdateSlot();
-    //}
-
-    //private UISlot GetInventorySlot(int index)
-    //{
-    //    if (index < HotBarLength || index >= HotBarLength + InventoryLength)
-    //    {
-    //        Debug.LogWarning("Inventory size " + InventoryLength + ", index = " + index);
-    //        return null;
-    //    }
-    //    return inventory[index];
-    //}
-
-    //private void SetInventorySlot(int index, UISlot uiSlot)
-    //{
-    //    if (index < HotBarLength || index >= HotBarLength + InventoryLength)
-    //    {
-    //        Debug.LogWarning("Inventory size " + InventoryLength + ", index + " + index);
-    //        return;
-    //    }
-    //    if (inventory[index] == null)
-    //    {
-    //        inventory[index] = uiSlot;
-    //    }
-    //    inventory[index].UpdateSlot();
-    //}
-
     void OnSlotSelected(UISlot uiUISlot)
     {
         Debug.Log("Hotbar slot #" + uiUISlot.index + " clicked");
@@ -463,6 +404,15 @@ public class Inventory : Singleton<Inventory>, IInventory
     public int GetSelectedItemCount()
     {
         return inventory[selected] ? inventory[selected].count : 0;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>The index of the selected item (for saving)</returns>
+    public int GetSelected()
+    {
+        return selected;
     }
 
     /// <summary>

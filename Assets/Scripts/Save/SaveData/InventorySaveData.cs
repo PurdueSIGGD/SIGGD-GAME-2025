@@ -5,6 +5,7 @@ using UnityEngine;
 public class InventorySaveData
 {
     [SerializeReference] public SlotSaveData[] inventory;
+    public int selected;
 
     [Serializable]
     public struct SlotSaveData
