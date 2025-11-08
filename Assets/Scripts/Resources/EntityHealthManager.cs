@@ -70,12 +70,5 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         OnDeath?.Invoke(damageContext);
         Destroy(gameObject);
     }
-    public void Update()
-    {
-        DamageContext damageContext = new DamageContext();
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            Die(damageContext);
-        }
-    }
+   
 }
