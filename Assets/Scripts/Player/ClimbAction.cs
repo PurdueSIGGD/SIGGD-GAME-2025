@@ -275,6 +275,7 @@ public class ClimbAction : MonoBehaviour
         InputHand(true, Hand.RightHand, true);
         if (isHandAttached()) {
             isClimbing = true;
+            stateMachine.ToggleCrouch(false);
             SetPhantomHand(true);
         } else {
             ExitClimb(); // removes held down hands
@@ -467,7 +468,7 @@ public class ClimbAction : MonoBehaviour
             isReaching = true;
 
             RaycastHit hit;
-            Vector3 rayOrigin = transform.position;
+            Vector3 rayOrigin = cameraTransform.position;
             Vector3 cameraDirection = GetCameraDirection();
 
             bool rayHit = Physics.Raycast(rayOrigin, cameraDirection, out hit, grabRange, climbingLayerMask);
