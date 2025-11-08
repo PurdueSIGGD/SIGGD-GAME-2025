@@ -1,11 +1,4 @@
-using JetBrains.Annotations;
-using System.Runtime.CompilerServices;
-using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
-using Utility;
-using static UnityEngine.UI.Image;
 
 // KNOWN JANK HERE:
 /*
@@ -521,6 +514,7 @@ public class ClimbAction : MonoBehaviour
 
     // returns true if the object is climbable and false otherwise
     private bool IsObjectClimbable(GameObject obj) {
+        return true;
         // if it has a climbable layer, and is static, it is climbable
         bool staticTest = obj.isStatic;
 
