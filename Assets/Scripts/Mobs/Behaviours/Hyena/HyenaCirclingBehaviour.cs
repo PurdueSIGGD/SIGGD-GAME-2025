@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using SIGGD.Mobs.PackScripts;
+using Utility;
 namespace SIGGD.Mobs.Hyena
 {
     public class HyenaCirclingBehaviour : MonoBehaviour
@@ -60,7 +62,7 @@ namespace SIGGD.Mobs.Hyena
         public IEnumerator Circle(Func<Vector3> GetTarget)
         {
             AgentMoveBehaviour.enabled = false;
-            NavMeshAgent.radius = 0.0f;
+            NavMeshAgent.enabled = false;
             offset = PackBehavior.addRandomPackOffset(0.1f);
             if (offset == 0f)
             {
@@ -82,8 +84,7 @@ namespace SIGGD.Mobs.Hyena
             while (elapsed < duration)
             {
                 if (exit) yield break;
-                Debug.Log(offset);
-                elapsed += Time.deltaTime;
+                elapsed += Time.fixedDeltaTime;
                 float distance = Vector3.Distance(GetTarget(), transform.position);
                 if (distance > 50f)
                 {
@@ -92,34 +93,31 @@ namespace SIGGD.Mobs.Hyena
                 }
                 Vector3 toTarget = (GetTarget() - transform.position).normalized;
                 Vector3 tangent = Vector3.Cross(Vector3.up, toTarget).normalized * direction;
-                tangent = Vector3.Slerp(lastTangent, tangent, Time.deltaTime * 3).normalized;
+                tangent = UnityUtil.DampVector3Spherical(lastTangent, tangent, 3f, Time.fixedDeltaTime).normalized;
                 lastTangent = tangent;
                 float distanceToGo = distance - idealRadius;
                 float targetInward = Mathf.Clamp(distanceToGo / radiusMargin, -1f, 1f);
                 if (Mathf.Abs(distanceToGo) < radiusMargin * 0.3f)
                     targetInward = 0f;
-                inwardsFactor = Mathf.Lerp(inwardsFactor, Mathf.Abs(targetInward), Time.deltaTime * 5f);
+                inwardsFactor = UnityUtil.Damp(inwardsFactor, Mathf.Abs(targetInward), 5f, Time.fixedDeltaTime);
                 Vector3 inward = toTarget * targetInward;
                 Vector3 desired = (tangent + inward * 0.7f).normalized;
                 Vector3 dir;
-                NavMeshHit hit;
-                NavMesh.Raycast(transform.position, transform.position + tangent * 3f, out hit, NavMesh.AllAreas);
-                if (hit.distance < 3f)
+                NavMesh.Raycast(transform.position, transform.position + tangent * 3f, out NavMeshHit hit1, NavMesh.AllAreas);
+                if (hit1.distance < 3f)
                 {
-                    Debug.Log("raycast hit");
                     idealRadius = Mathf.Clamp(idealRadius - 2, 0, maxRadius);
 
                 } else
                 {
                     idealRadius = Mathf.Clamp(idealRadius + 0.5f, 0f, maxRadius);
                 }
-                Vector3 nextPos = transform.position + desired * circleSpeed * Time.deltaTime;
+                Vector3 nextPos = transform.position + desired * circleSpeed * Time.fixedDeltaTime;
 
                 if (NavMesh.SamplePosition(nextPos, out NavMeshHit hit2, 1.0f, NavMesh.AllAreas))
                     nextPos = hit2.position;
 
                 dir = (nextPos - transform.position).normalized;
-                //Debug.Log($"inwardsFactor{inwardsFactor}");
                 if (dir == Vector3.zero)
                 {
                     dir = lastDir;
@@ -134,18 +132,18 @@ namespace SIGGD.Mobs.Hyena
                 if (count > 0)
                 {
                     away /= count;
-                    dir = Vector3.Slerp(lastDir, (dir + away).normalized, Time.deltaTime * 2f);
+                    dir = UnityUtil.DampVector3Spherical(lastDir, (dir + away).normalized, 2f, Time.fixedDeltaTime);
                 }
                 if (dir.sqrMagnitude > 0.001f)
                 {
                     Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
-                    rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 20 * Time.deltaTime));
+                    rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 20f, Time.fixedDeltaTime));
                 }
-                rb.MovePosition(rb.position + dir * circleSpeed * Time.deltaTime);
+                rb.MovePosition(rb.position + dir * circleSpeed * Time.fixedDeltaTime);
                 lastDir = dir;
-                if (Vector3.Distance(rb.position, lastPosition) < circleSpeed * Time.deltaTime * 0.25f)
+                if (Vector3.Distance(rb.position, lastPosition) < circleSpeed * Time.fixedDeltaTime * 0.25f)
                 {
-                    stuckTimer += Time.deltaTime;
+                    stuckTimer += Time.fixedDeltaTime;
                     if (stuckTimer > 1f)
                     {
                         idealRadius = Mathf.Clamp(idealRadius - 2f, 0, maxRadius);
@@ -159,9 +157,13 @@ namespace SIGGD.Mobs.Hyena
 
                 yield return new WaitForFixedUpdate(); 
             }
+            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit3, 1f, NavMesh.AllAreas))
+            {
+                NavMeshAgent.Warp(hit3.position);
+            }
+            NavMeshAgent.enabled = true;
+            PackBehavior.removePackOffset(offset);
             finishedCircling = true;
-            NavMeshAgent.radius = 0.1f;
-            this.PackBehavior.removePackOffset(offset);
         }
         public IEnumerator WalkTowardsTarget(Func<Vector3> GetTarget)
         {
@@ -172,19 +174,18 @@ namespace SIGGD.Mobs.Hyena
 
             while (elapsed < maxDuration)
             {
-                elapsed += Time.deltaTime;
+                elapsed += Time.fixedDeltaTime;
                 if (Vector3.Distance(GetTarget(), transform.position) < randDist)
                     break;
-                Vector3 dir = (Pathfinding.MovePartialPath2(NavMeshAgent, GetTarget(), Time.deltaTime * 10) - transform.position).normalized;
+                Vector3 dir = (Pathfinding.MovePartialPath2(NavMeshAgent, GetTarget(), Time.fixedDeltaTime * 10) - transform.position).normalized;
                 if (dir.sqrMagnitude > 0.01f)
                 {
                     Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
-                    rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 10f * Time.deltaTime));
+                    rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 10f, Time.fixedDeltaTime));
                 }
-                rb.MovePosition(rb.position + dir * 10 * Time.deltaTime);
+                rb.MovePosition(rb.position + dir * 10 * Time.fixedDeltaTime);
                 yield return new WaitForFixedUpdate();
             }
-            NavMeshAgent.isStopped = true;
             yield return new WaitUntil(() => NavMeshAgent.pathPending != true);
             if (elapsed >= maxDuration)
             {
@@ -197,10 +198,9 @@ namespace SIGGD.Mobs.Hyena
             finishedCircling = false;
             finishedWalking = false;
             finished = false;
-            NavMeshAgent.radius = 0.1f;
-            NavMeshAgent.isStopped = false;
+            NavMeshAgent.enabled = true;
             AgentMoveBehaviour.enabled = true;
-            this.PackBehavior.removePackOffset(offset);
+            PackBehavior.removePackOffset(offset);
             exit = true;
         }
     }

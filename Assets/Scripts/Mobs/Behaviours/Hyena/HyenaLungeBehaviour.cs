@@ -31,7 +31,6 @@ namespace SIGGD.Mobs.Hyena
             rb = GetComponent<Rigidbody>();
             NavMeshAgent = GetComponent<NavMeshAgent>();
             AgentMoveBehaviour = GetComponent<AgentMoveBehaviour>();
-          //  rb.freezeRotation = true;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
         }
         void Start()
@@ -53,21 +52,19 @@ namespace SIGGD.Mobs.Hyena
             }
             NavMeshAgent.enabled = false;
             Quaternion targetRot = Quaternion.LookRotation(GetTarget() - transform.position);
-            float elapsed = 0.0f;
             float timeout = 2f;
             while (Mathf.Abs(Quaternion.Angle(transform.rotation, targetRot)) > 20f && timeout > 0)
             {
-                timeout -= Time.deltaTime;
-                elapsed += Time.deltaTime;
+                timeout -= Time.fixedDeltaTime;
 
                 transform.rotation = UnityUtil.DampQuaternion(transform.rotation,
-                    targetRot, 0.1f, elapsed * 10);
+                    targetRot, 1f, Time.fixedDeltaTime);
                 yield return new WaitForFixedUpdate();
             }
             yield return new WaitForSeconds(beginningAttackCooldown);
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rb.isKinematic = false;
-            float gravity = Math.Abs(Physics.gravity.y);
+            float gravity = Mathf.Abs(Physics.gravity.y);
             float xDistance = target.x - transform.position.x;
             float zDistance = target.z - transform.position.z;
             Vector3 flatDir = new Vector3(xDistance, 0, zDistance).normalized;
@@ -81,18 +78,21 @@ namespace SIGGD.Mobs.Hyena
             if (time < 0.25f) time = 0.25f;
             yield return new WaitForSeconds(time - 0.125f);
             lungeArriving = true;
-            yield return new WaitForSeconds(0.125f);
-            //yield return new WaitUntil(() => AgentMoveBehaviour.IsGrounded);
+            float elapsed = 0f;
+            timeout = 1f;
+            while (elapsed < timeout && AgentMoveBehaviour.IsGrounded)
+            {
+                elapsed += Time.fixedDeltaTime;
+                yield return new WaitForFixedUpdate();
+            }
             rb.angularVelocity = Vector3.zero;
             rb.linearVelocity = Vector3.zero;
             yield return new WaitForFixedUpdate();
-            NavMeshHit hit;
-            if (NavMesh.SamplePosition(transform.position, out hit, 8f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 8f, NavMesh.AllAreas))
             {
                 NavMeshAgent.Warp(hit.position);
             }
             rb.isKinematic = true;
-            yield return new WaitForFixedUpdate();
             NavMeshAgent.enabled = true;
             finishedLunging = true;
         }
@@ -103,20 +103,18 @@ namespace SIGGD.Mobs.Hyena
             float elapsed = 0f;
             while (elapsed < duration)
             {
-                elapsed += Time.deltaTime;
+                elapsed += Time.fixedDeltaTime;
                 if (Vector3.Distance(GetTarget(), transform.position) > 5f)
                     break;
-                Vector3 dir = (transform.position - Pathfinding.MovePartialPath2(NavMeshAgent, GetTarget(), Time.deltaTime * 10)).normalized;
-                //Vector3 dir = (transform.position - GetTarget()).normalized;
+                Vector3 dir = (transform.position - Pathfinding.MovePartialPath2(NavMeshAgent, GetTarget(), Time.fixedDeltaTime * 10)).normalized;
                 if (dir.sqrMagnitude > 0.01f)
                 {
                     Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
-                    rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 10f * Time.deltaTime));
+                    rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 10f, Time.fixedDeltaTime));
                 }
-                rb.MovePosition(rb.position + dir * 10 * Time.deltaTime);
+                rb.MovePosition(rb.position + dir * 10 * Time.fixedDeltaTime);
                 yield return new WaitForFixedUpdate();
             }
-            //NavMeshAgent.isStopped = true;
             AgentMoveBehaviour.enabled = true;
             finishedExiting = true;
         }
@@ -126,7 +124,6 @@ namespace SIGGD.Mobs.Hyena
             rb.isKinematic = true;
             NavMeshAgent.enabled = true;
             AgentMoveBehaviour.enabled = true;
-            
             finishedLunging = true;
             finishedExiting = true;
             exit = true;

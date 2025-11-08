@@ -8,10 +8,10 @@ namespace SIGGD.Goap
         // Function to move along the navmesh path for a certain distance (before reanalyzing the path as it still moves)
         public static Vector3 ERR_VECTOR = new Vector3(-9999999, -9999999, -999999);
 
-        public static Vector3 ShiftTargetToNavMesh(Vector3 rawDest)
+        public static Vector3 ShiftTargetToNavMesh(Vector3 rawDest, float maxDistance = 2f)
         {
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(rawDest, out hit, 2f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(rawDest, out hit, maxDistance, NavMesh.AllAreas))
             {
 
                 return hit.position;

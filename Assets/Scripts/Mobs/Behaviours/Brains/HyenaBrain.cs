@@ -32,6 +32,7 @@ namespace SIGGD.Mobs
         protected override void Start()
         {
             this.provider.RequestGoal<WanderGoal>(true);
+            this.provider.SetDistanceMultiplierSpeed(6f);
         }
         private void Update()
         {
@@ -47,7 +48,6 @@ namespace SIGGD.Mobs
             base.OnDisable();
             FieldOfView.OnPlayerDetected -= PlayerDetected;
         }
-
         protected override void OnActionEnd(IAction action)
         {
             if (HyenaAttackManager.isLunging) return;
