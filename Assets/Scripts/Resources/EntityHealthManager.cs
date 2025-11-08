@@ -1,5 +1,7 @@
 using UnityEngine;
 using System;
+using UnityEngine.UI;
+using Unity.UI;using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class EntityHealthManager : MonoBehaviour, IHealth
@@ -7,6 +9,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     // default max health to 100
     [SerializeField] private float maxHealth = 100f;
     public float MaxHealth => maxHealth; // => used for read-only property
+    [SerializeField] private Button killPlayer;
 
     public float CurrentHealth { get; set; }
 
@@ -16,7 +19,20 @@ public class EntityHealthManager : MonoBehaviour, IHealth
 
     private void Awake()
     {
+       
         CurrentHealth = maxHealth; // start at full health
+        //yield return new WaitForSeconds(10);
+        DamageContext damageContext = new DamageContext();
+        killPlayer.onClick.AddListener(() =>
+        {
+            DamageContext damageContext = new DamageContext
+            {
+                attacker = gameObject, // or whatever entity is responsible
+                amount = maxHealth // instantly kills player
+            };
+            Die(damageContext);
+        });
+
     }
 
     public void TakeDamage(DamageContext damageContext)
