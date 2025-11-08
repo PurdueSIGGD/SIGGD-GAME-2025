@@ -1,7 +1,8 @@
 using UnityEngine;
 using System;
 using UnityEngine.UI;
-using Unity.UI;using System.Collections;
+using Unity.UI;
+using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class EntityHealthManager : MonoBehaviour, IHealth
