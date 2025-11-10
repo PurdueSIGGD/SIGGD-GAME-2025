@@ -94,13 +94,11 @@ namespace ProceduralAnimation.Runtime {
             origin.rotation *= Quaternion.Euler((angI + angA - Mathf.PI / 2) * Mathf.Rad2Deg, 0, 0);
             joints[0].jointOrigin.localRotation = Quaternion.Euler(-angB * Mathf.Rad2Deg, 0, 0);
 
-            //  Vector from the end of the second joint to the target's position
-            Vector3 v = (target.position - joints[1].jointOrigin.position).normalized;
 
             //  Calculate the angle to bring the last joint down by to reach target
             float angC = Mathf.Atan2(
-                Vector3.Dot(v, -joints[0].jointOrigin.forward),
-                Vector3.Dot(v, joints[0].jointOrigin.up)
+                Vector3.Dot(target.up, -joints[0].jointOrigin.forward),
+                Vector3.Dot(target.up, joints[0].jointOrigin.up)
             );
 
             //  Bring last joint down by angC
