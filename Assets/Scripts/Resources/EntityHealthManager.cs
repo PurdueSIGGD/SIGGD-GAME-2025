@@ -7,72 +7,56 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     [SerializeField] private float maxHealth = 100f;
     public float MaxHealth => maxHealth; // => used for read-only property
 
-    public float CurrentHealth { get; private set; }
-
-    [System.Serializable]
-    public struct DamageContext
-    {
-        public GameObject Attacker; // who caused the damage
-        public GameObject Victim;   // who is taking the damage
-        public string ExtraContext; // any additional context, e.g., "Critical Hit", "Poisoned"
-    }
+    public float CurrentHealth { get; set; }
 
     // possible events we may want?
-    public Action<DamageContext> OnHealthChanged;
-    public Action OnDeath;
+    public static Action<DamageContext> OnHealthChanged;
+    public static Action<DamageContext> OnDeath;
 
     private void Awake()
     {
         CurrentHealth = maxHealth; // start at full health
-
     }
 
-    public void TakeDamage(float amount, GameObject attacker, string extra)
+    public void TakeDamage(DamageContext damageContext)
     {
-        DamageContext attackContext = new DamageContext
-        {
-            Attacker = attacker,
-            Victim = gameObject,
-            ExtraContext = extra
-        };
-
         if (CurrentHealth <= 0) return; // already dead, do nothing
 
         // reduce health but not below zero
-        CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
+        CurrentHealth = Mathf.Max(CurrentHealth - damageContext.amount, 0);
 
-        OnHealthChanged?.Invoke(attackContext); // return info about the damage
+        OnHealthChanged?.Invoke(damageContext); // return info about the damage
 
-        Debug.Log($"{gameObject.name} took {amount} damage from {attacker.name}. Current Health: {CurrentHealth}/{maxHealth}");
+        Debug.Log($"{gameObject.name} took {damageContext.amount} damage from {damageContext.attacker}. Current Health: {CurrentHealth}/{maxHealth}");
 
         if (CurrentHealth <= 0)
         {
-            Die();
+            Die(damageContext);
         }
     }
 
-    public void Heal(float amount, GameObject healer, string extra)
+    public void Heal(DamageContext healContext)
     {
-        DamageContext healContext = new DamageContext
-        {
-            Attacker = healer,
-            Victim = gameObject,
-            ExtraContext = extra
-        };
-
         if (CurrentHealth <= 0) return; // prob a design thing, maybe ability to revive dead creatures in the future?
 
         // increase health but not above max, maybe change in future to allow overheal?
-        CurrentHealth = Mathf.Min(CurrentHealth + amount, maxHealth);
+        CurrentHealth = Mathf.Min(CurrentHealth + healContext.amount, maxHealth);
 
         OnHealthChanged?.Invoke(healContext);
     }
 
-    public void Die()
+    public void Die(DamageContext damageContext)
     {
+        // disabling player death for now, remove after respawn is implemented
+        if (gameObject == PlayerID.Instance.gameObject)
+        {
+            return;
+        }
+
+
         // TODO: Add death logic here, for now just destroying game object
         Debug.Log($"{gameObject.name} has died.");
-        OnDeath?.Invoke();
+        OnDeath?.Invoke(damageContext);
         Destroy(gameObject);
     }
 
