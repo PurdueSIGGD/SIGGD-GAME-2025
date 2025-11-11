@@ -70,7 +70,7 @@ public class FMODEvents : SerializedMonoBehaviour
                 EventReference eventRef = RuntimeManager.PathToEventReference(eventPath);
 
                 soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1), eventRef); // the replace just makes the names a little nicer
-                Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
+                //Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
             }
         }
 
