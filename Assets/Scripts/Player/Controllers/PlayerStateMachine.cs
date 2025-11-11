@@ -40,8 +40,8 @@ public class PlayerStateMachine : MonoBehaviour
     public LayerMask groundLayer;
 
     public bool IsGrounded =>
-        //Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
-        Physics.Raycast(groundCheckPoint.position, Vector3.down, 0.2f, groundLayer);
+        Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
+        //Physics.Raycast(groundCheckPoint.position, Vector3.down, 0.2f, groundLayer);
     
     private float lastTimeGrounded, lastTimeJumpPressed;
     
