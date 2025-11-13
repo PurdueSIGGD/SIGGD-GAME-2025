@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 1797437593989339751}
   - component: {fileID: 8014338528662627821}
   - component: {fileID: 67860415516876075}
-  - component: {fileID: 1409705529442115303}
   - component: {fileID: 4612202550344339494}
+  - component: {fileID: -2821092964014562735}
   m_Layer: 0
   m_Name: Stun Trap
   m_TagString: Untagged
@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 3721857542095983164}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalPosition: {x: 0, y: 1.498, z: 0}
   m_LocalScale: {x: 0.32118, y: 0.32118, z: 0.32118}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -110,7 +110,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &1409705529442115303
+--- !u!114 &4612202550344339494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3721857542095983164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3205d86901aefa1489200c972986755d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  throwForce: 5
+--- !u!54 &-2821092964014562735
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -137,16 +150,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &4612202550344339494
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3721857542095983164}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3205d86901aefa1489200c972986755d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  throwForce: 5
