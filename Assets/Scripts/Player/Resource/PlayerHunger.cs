@@ -8,8 +8,12 @@ public class PlayerHunger : MonoBehaviour
     [SerializeField] DamageContext hungerDamageContext;
 
     public float MaxHunger => maxHunger;
-    public float CurrentHunger => currentHunger;
-    
+    public float CurrentHunger
+    {
+        get => currentHunger;
+        set => currentHunger = Mathf.Clamp(value, 0, maxHunger);
+    }
+
     private float currentHunger;
     private float hungerDamageTimer = 0f;     // tracks time since last starvation tick
     private EntityHealthManager playerHealth;
