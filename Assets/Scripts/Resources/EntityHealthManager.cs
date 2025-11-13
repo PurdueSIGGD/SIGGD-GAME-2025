@@ -1,5 +1,8 @@
 using UnityEngine;
 using System;
+using UnityEngine.UI;
+using Unity.UI;
+using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class EntityHealthManager : MonoBehaviour, IHealth
@@ -7,7 +10,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     // default max health to 100
     [SerializeField] private float maxHealth = 100f;
     public float MaxHealth => maxHealth; // => used for read-only property
-
+ 
     public float CurrentHealth { get; set; }
 
     // possible events we may want?
@@ -16,7 +19,12 @@ public class EntityHealthManager : MonoBehaviour, IHealth
 
     private void Awake()
     {
+       
         CurrentHealth = maxHealth; // start at full health
+        //yield return new WaitForSeconds(10);
+        DamageContext damageContext = new DamageContext();
+      
+
     }
 
     public void TakeDamage(DamageContext damageContext)
@@ -51,6 +59,8 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         // disabling player death for now, remove after respawn is implemented
         if (gameObject == PlayerID.Instance.gameObject)
         {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             SceneManager.LoadScene("Main Menu");
             return;
         }
@@ -61,5 +71,5 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         OnDeath?.Invoke(damageContext);
         Destroy(gameObject);
     }
-
+   
 }
