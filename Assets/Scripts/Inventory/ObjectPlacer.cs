@@ -1,8 +1,9 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class ObjectPlacer : MonoBehaviour
 {
+    public static ObjectPlacer Instance { get; private set; }
+
     [Header("Placement Parameters")]
     private GameObject placeableObjectPrefab;
     private GameObject previewObjectPrefab;
@@ -23,7 +24,18 @@ public class ObjectPlacer : MonoBehaviour
     private Vector3 _currentPlacementPosition = Vector3.zero;
     private bool _inPlacementMode = false;
     private bool _validPreviewState = false;
+    public bool startPlaceMode = false;
 
+    private ItemInfo itemInfo;
+
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+            Destroy(this.gameObject);
+        else
+            Instance = this;
+    }
 
     public void SetPlacementPrefabs(GameObject prefab, GameObject previewObject)
     {
@@ -56,34 +68,42 @@ public class ObjectPlacer : MonoBehaviour
 
     private void Update()
     {
-        if (_inPlacementMode)
+        if (startPlaceMode) 
         {
-            UpdateCurrentPlacementPosition();
-
-            if (CanPlaceObject())
-                SetValidPreviewState();
-            else
-                SetInvalidPreviewState();
-
-            if (Input.GetKeyDown(KeyCode.F))
+            if (_inPlacementMode)
             {
-                Debug.Log("Placing Object, Position: " + _currentPlacementPosition);
-                PlaceObject();
-            }
-                
-        }
-        else
-        {
-            if (Input.GetButtonDown("Fire1"))
-            {
-                ItemInfo itemInfo = Inventory.Instance.GetSelectedItem();
-                if (itemInfo != null && itemInfo.itemPlacementPrefab != null && itemInfo.itemPrefab != null)
+                UpdateCurrentPlacementPosition();
+
+                if (CanPlaceObject())
+                    SetValidPreviewState();
+                else
+                    SetInvalidPreviewState();
+
+                if (Input.GetKeyDown(KeyCode.F))
                 {
-                    SetPlacementPrefabs(itemInfo.itemPrefab, itemInfo.itemPlacementPrefab);
-                    EnterPlacementMode();
+                    Debug.Log("Attempting to place object, Position: " + _currentPlacementPosition);
+                    PlaceObject();
+                }
+                else if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    ExitPlacementMode();
+                    startPlaceMode = false;
+                }
+            }
+            else
+            {
+                if (Input.GetButtonDown("Fire1"))
+                {
+                    itemInfo = Inventory.Instance.GetSelectedItem();
+                    if (itemInfo != null && itemInfo.itemPlacementPrefab != null && itemInfo.itemPrefab != null)
+                    {
+                        SetPlacementPrefabs(itemInfo.itemPrefab, itemInfo.itemPlacementPrefab);
+                        EnterPlacementMode();
+                    }
                 }
             }
         }
+        
     }
 
     private void UpdateCurrentPlacementPosition()
@@ -136,5 +156,8 @@ public class ObjectPlacer : MonoBehaviour
         Instantiate(placeableObjectPrefab, _currentPlacementPosition, rotation, transform);
 
         ExitPlacementMode();
+
+        // remove one trap from inventory
+        Inventory.Instance.RemoveItem(itemInfo, 1);
     }
 }
