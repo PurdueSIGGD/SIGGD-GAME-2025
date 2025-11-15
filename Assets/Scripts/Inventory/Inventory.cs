@@ -16,7 +16,10 @@ public class Inventory : Singleton<Inventory>, IInventory
     private List<ItemInfo> lastClickedItems = new();
 
     private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
-    [SerializeField] public ItemInfo[] itemInfos = new ItemInfo[7]; // array of all of the different types of item infos; used for loading from file
+    // [SerializeField] public ItemInfo[] itemInfos = new ItemInfo[7]; // array of all of the different types of item infos; used for loading from file
+
+    private Dictionary<string, ItemInfo> itemInfos;
+
     [SerializeField] public string[] itemNames = new string[7];
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
@@ -95,10 +98,17 @@ public class Inventory : Singleton<Inventory>, IInventory
             {
                 slot = inventorySlots[i].AddComponent<UISlot>();
             }
+            // Check if slot has a non-null slot.iteminfo
+            Debug.Log(slot.GetComponent<UISlot>().itemInfo == null ? "inv slot has null iteminfo!" : "inv slot good");
             inventory[i + HotBarLength] = slot;
             //SetInventorySlot(slot.index, slot);
 
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
+        }
+
+        itemInfos = new();
+        foreach (var entry in RecipeInfo.Instance.NamesToItemInfos) {
+            itemInfos[entry.Key.ToString()] = entry.Value;
         }
 
         // Load inventory info from save
@@ -114,6 +124,8 @@ public class Inventory : Singleton<Inventory>, IInventory
                 name = InventoryDataSaveModule.inventoryData.inventory[i].name;
                 if (inventory[i].count != 0)
                 {
+                    inventory[i].itemInfo = itemInfos[name];
+                    /*
                     // make iteminfo based on name
                     for (int j = 0; j < itemInfos.Length; j++)
                     {
@@ -123,11 +135,13 @@ public class Inventory : Singleton<Inventory>, IInventory
                             break;
                         }
                     }
+                    */
                 }
                 else
                 {
+                    inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
                     // make it an empty iteminfo
-                    inventory[i].itemInfo = itemInfos[0];
+                    // inventory[i].itemInfo = itemInfos[0];
                 }
                 inventory[i].UpdateSlot();
             }
@@ -140,11 +154,21 @@ public class Inventory : Singleton<Inventory>, IInventory
             {
                 inventory[i].index = i;
                 inventory[i].count = 0;
-                inventory[i].itemInfo = itemInfos[0];
+                inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
                 inventory[i].UpdateSlot();
             }
         }
         PrintInventory();
+
+        for (int i = 0; i < InventoryLength; i++)
+        {
+            // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
+            if (inventorySlots[i] == null) continue;
+
+            var uiSlot = inventorySlots[i].GetComponent<UISlot>();
+            // Check if slot has a non-null slot.iteminfo
+            Debug.Log(uiSlot.itemInfo == null ? "inv slot has null iteminfo!" : "inv slot good");
+        }
     }
 
     /// <summary>
@@ -177,10 +201,14 @@ public class Inventory : Singleton<Inventory>, IInventory
     void DebugOnInvSlotSelected(UISlot uiSlot)
     {
         ItemInfo item = uiSlot.itemInfo;
+        if (item == null)
+        {
+            Debug.Log("why is ui slot iteminfo still null?");
+        }
         lastClickedItems.Add(item);
         if (lastClickedItems.Count >= 2)
         {
-            var recipeInfo = RecipeInfo.Get();
+            var recipeInfo = RecipeInfo.Instance;
             Debug.Log(recipeInfo == null ? "null recipeInfo" : "recipeInfo NOT null");
 
             var a = lastClickedItems[^2].itemName; 
@@ -218,7 +246,8 @@ public class Inventory : Singleton<Inventory>, IInventory
         inventory[selected].count--;
         Debug.Log("Used " + inventory[selected].itemInfo.itemName + ", " + inventory[selected].count + " remaining");
         if (inventory[selected].count == 0) {
-            inventory[selected].itemInfo = itemInfos[0];
+            // inventory[selected].itemInfo = itemInfos[0];
+            inventory[selected].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
         }
         inventory[selected].UpdateSlot();
     }
