@@ -72,18 +72,22 @@ public class ObjectPlacer : MonoBehaviour
         {
             if (_inPlacementMode)
             {
+                // update preview object position
                 UpdateCurrentPlacementPosition();
 
+                // update preview object material based on validity
                 if (CanPlaceObject())
                     SetValidPreviewState();
                 else
                     SetInvalidPreviewState();
 
+                // press f to place object
                 if (Input.GetKeyDown(KeyCode.F))
                 {
                     Debug.Log("Attempting to place object, Position: " + _currentPlacementPosition);
                     PlaceObject();
                 }
+                // press escape to exit placement mode
                 else if (Input.GetKeyDown(KeyCode.Escape))
                 {
                     ExitPlacementMode();
@@ -92,18 +96,15 @@ public class ObjectPlacer : MonoBehaviour
             }
             else
             {
-                if (Input.GetButtonDown("Fire1"))
+                // gets info from the SO of the currently selected inventory item and starts placement mode
+                itemInfo = Inventory.Instance.GetSelectedItem();
+                if (itemInfo != null && itemInfo.itemPlacementPrefab != null && itemInfo.itemPrefab != null)
                 {
-                    itemInfo = Inventory.Instance.GetSelectedItem();
-                    if (itemInfo != null && itemInfo.itemPlacementPrefab != null && itemInfo.itemPrefab != null)
-                    {
-                        SetPlacementPrefabs(itemInfo.itemPrefab, itemInfo.itemPlacementPrefab);
-                        EnterPlacementMode();
-                    }
+                    SetPlacementPrefabs(itemInfo.itemPrefab, itemInfo.itemPlacementPrefab);
+                    EnterPlacementMode();
                 }
             }
         }
-        
     }
 
     private void UpdateCurrentPlacementPosition()
@@ -121,6 +122,7 @@ public class ObjectPlacer : MonoBehaviour
             _currentPlacementPosition = hitInfo.point;
         }
 
+        // Update preview object position and rotation
         Quaternion rotation = Quaternion.Euler(0f, playerCamera.transform.eulerAngles.y, 0f);
         _previewObject.transform.position = _currentPlacementPosition;
         _previewObject.transform.rotation = rotation;
