@@ -330,25 +330,28 @@ public class Inventory : Singleton<Inventory>, IInventory
      * </summary>
      * <param name="item">Item to remove</param>
      * <param name="count">Amount of items to remove</param>
-     * <returns>Whether or not the removal was successful</returns>
      */
-    public bool RemoveItem(ItemInfo item, int count)
+    public void RemoveItem(ItemInfo item, int count)
     {
-        int index = Find(item.itemName);
-        if (index == -1) return false; // item not found
-
-        if (inventory[index].count >= count)
-        {
-            inventory[index].count -= count;
-            if (inventory[index].count == 0)
-            {
-                inventory[index].itemInfo = null;
+        for (int i = 0; i < inventory.Length; i++) { // take into account removing across multiple stacks
+            if (inventory[i].itemInfo.itemName == item.itemName) {
+                if (inventory[i].count >= count)
+                { // has enough in this stack; remove from this stack and stop looping
+                    inventory[i].count -= count;
+                    if (inventory[i].count == 0)
+                    { // check for empty slot
+                        inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                    }
+                    inventory[i].UpdateSlot();
+                    return; // done removing
+                }
+                else { // not enough in this stack; remove entire stack and keep looping
+                    count -= inventory[i].count; // reduce the number of items left that need to be removed
+                    inventory[i].count = 0; // make the slot empty
+                    inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                    inventory[i].UpdateSlot();
+                }
             }
-            return true;
-        }
-        else
-        {
-            return false; // not enough items to remove
         }
     }
 
@@ -364,7 +367,7 @@ public class Inventory : Singleton<Inventory>, IInventory
         // remove item
         inventory[index].count--;
         if (inventory[index].count <= 0) {
-            inventory[index].itemInfo = null;
+            inventory[index].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
         }
         
         return true;
