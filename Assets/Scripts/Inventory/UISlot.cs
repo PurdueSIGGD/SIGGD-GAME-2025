@@ -14,10 +14,8 @@ public class UISlot : MonoBehaviour
         textDisplay = GetComponentInChildren<TextMeshProUGUI>();
     }
 
-    public void UpdateSlot(UISlot uiSlot)
+    public void UpdateSlot()
     {
-        itemInfo = uiSlot.itemInfo;
-        count = uiSlot.count;
         if (itemInfo)
         {
             if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check

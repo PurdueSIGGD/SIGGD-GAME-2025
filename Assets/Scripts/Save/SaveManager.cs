@@ -25,7 +25,7 @@ public class SaveManager : Singleton<SaveManager>
         screenshotModule = new ScreenshotSaveModule();
         playerModule = new PlayerDataSaveModule();
 
-        InventoryDataSaveModule.inventory = inventory; // TEMP
+        //InventoryDataSaveModule.inventory = inventory; // TEMP
 
         modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule};
 

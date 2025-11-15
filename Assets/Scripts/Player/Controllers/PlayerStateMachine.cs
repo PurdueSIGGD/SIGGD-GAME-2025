@@ -1,7 +1,10 @@
 using System;
+using System.Text.RegularExpressions;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Utility;
+using static UnityEngine.UI.Image;
 
 /**
  * State machine for managing player states, using a StateController.
@@ -40,8 +43,8 @@ public class PlayerStateMachine : MonoBehaviour
     public LayerMask groundLayer;
 
     public bool IsGrounded =>
-        //Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
-        Physics.Raycast(groundCheckPoint.position, Vector3.down, 0.2f, groundLayer);
+        Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
+        //Physics.Raycast(groundCheckPoint.position, Vector3.down, 0.2f, groundLayer);
     
     private float lastTimeGrounded, lastTimeJumpPressed;
     
@@ -54,11 +57,12 @@ public class PlayerStateMachine : MonoBehaviour
     #region Movement Attributes
     public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f && !IsClimbing; // Whether the player is currently moving.
     public bool IsClimbing => PlayerID.Instance.gameObject.GetComponent<ClimbAction>().IsClimbing();
-    
+    public bool IsCrouched = false;
+
     #endregion
-    
+
     #region MonoBehaviour Callbacks
-    
+
     private void Start()
     {
         playerID = PlayerID.Instance; // Running this in Start to ensure PlayerID is initialized first
@@ -72,6 +76,7 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Update()
     {
+        UpdateCrouchState();
         UpdateAnimatorParams();
     }
     
@@ -93,7 +98,7 @@ public class PlayerStateMachine : MonoBehaviour
     private void OnJumpAction(InputAction.CallbackContext context)
     {
         if (context.phase != InputActionPhase.Performed) return;
-        
+
         lastTimeJumpPressed = moveData.jumpInputBufferTime;
     }
 
@@ -108,6 +113,7 @@ public class PlayerStateMachine : MonoBehaviour
      */
     private void UpdateAnimatorParams()
     {
+        animator.SetBool(Animator.StringToHash("isCrouched"), IsCrouched);
         animator.SetBool(Animator.StringToHash("isClimbing"), IsClimbing);
         if (IsGrounded)
         {
@@ -128,6 +134,17 @@ public class PlayerStateMachine : MonoBehaviour
             animator.SetTrigger(Animator.StringToHash("Jumping"));
             lastTimeJumpPressed = 0;
             lastTimeGrounded = 0;
+        }
+    }
+
+    private void UpdateCrouchState() {
+        bool crouchInput = PlayerInput.Instance.crouchInput;
+        bool isclimb = IsClimbing;
+
+        if ((crouchInput == true && CanCrouch() || isclimb == true) && IsCrouched == false) {
+            ToggleCrouch(true);
+        } else if ((crouchInput == false || IsGrounded == false) && IsCrouched == true && isclimb == false) {
+            ToggleCrouch(false);
         }
     }
 
@@ -177,7 +194,77 @@ public class PlayerStateMachine : MonoBehaviour
         foreach (var col in allCols)
             col.enabled = true;
     }
-    
+
+    /**
+     * <summary>
+     * Sets the collider height of the player. 
+     * This is forced to be more than the radius*2 of the collider.
+     * Returns false and does not set the height if there is something in the way.
+     * </summary>
+     */
+    public bool SetColliderHeight(float colliderHeight)
+    {
+        CapsuleCollider playerCollider = (CapsuleCollider)mainCol;
+        colliderHeight = Mathf.Max(playerCollider.radius * 2, colliderHeight);
+
+
+        float oldHeight = playerCollider.height;
+        float heightDifference = colliderHeight - oldHeight; // difference in heights
+        float positionDifference = 0.5f * heightDifference; // how much the player's collider shifts
+
+        if (heightDifference > 0) {
+            float radius = playerCollider.radius;
+            Vector3 p1 = playerCollider.center + transform.position;
+
+            int circlePrecision = 16;
+            float angleIncrement = 360f / circlePrecision;
+
+            // fires (circlePrecision) rays in a circle around the player, if any collide, then explode blow up kablam.
+            for (int i = 0; i < circlePrecision; i++) {
+                float angle = i * angleIncrement;
+                float angleRad = angle * Mathf.Deg2Rad;
+
+                Vector3 originP = p1;
+                originP.x += radius * Mathf.Cos(angleRad);
+                originP.z += radius * Mathf.Sin(angleRad);
+                if (Physics.Raycast(originP, Vector3.up, oldHeight / 2f + heightDifference, groundLayer)) {
+                    return false;
+                }
+            }
+        }
+
+
+        playerCollider.height = colliderHeight;
+        playerCollider.center += new Vector3(0, positionDifference, 0);
+
+        foreach (Collider col in allCols) {
+            if (col is CapsuleCollider) {
+                // only the lateral collider should be edited here, which has the same sizes as player collider
+                ((CapsuleCollider)col).height = playerCollider.height;
+                ((CapsuleCollider)col).center = playerCollider.center;
+            }
+        }
+
+        return true;
+    }
+
+
+    // returns true if the player can initiate a crouch
+    public bool CanCrouch() {
+        return IsGrounded == true;
+    }
+
+    // if toggle == true, begin crouching. Otherwise, uncrouch. Returns false if unable to uncrouch.
+    public bool ToggleCrouch(bool toggle) {
+        bool returnedValue = SetColliderHeight(toggle ? moveData.crouchingPlayerHeight : moveData.standingPlayerHeight);
+
+        if (returnedValue == true) {
+            IsCrouched = toggle;
+        }
+
+        return returnedValue;
+    }
+
     /**
      * <summary>
      * Ignores collisions between the player and a specified layer.

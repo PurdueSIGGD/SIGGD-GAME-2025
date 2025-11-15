@@ -12,7 +12,6 @@ public class InventoryDataSaveModule : ISaveModule
     public bool deserialize()
     {
         if (!FileManager.Instance.FileExists(savePath)) return false;
-
         byte[] bytes = FileManager.Instance.ReadFile(savePath);
         inventoryData = SerializationUtility.DeserializeValue<InventorySaveData>(bytes, DataFormat.Binary);
 
@@ -21,10 +20,9 @@ public class InventoryDataSaveModule : ISaveModule
 
     public bool serialize()
     {
-        if (inventory == null) return false;
-
         inventoryData.inventory = new InventorySaveData.SlotSaveData[Inventory.InventoryLength + Inventory.HotBarLength];
-        UISlot[] inventoryReference = inventory.GetInventory();
+        UISlot[] inventoryReference = Inventory.Instance.GetInventory();
+        inventoryData.selected = Inventory.Instance.GetSelected();
 
         for (int i = 0; i < inventoryData.inventory.Length; i++)
         {
@@ -35,7 +33,8 @@ public class InventoryDataSaveModule : ISaveModule
                 inventoryData.inventory[i] = new InventorySaveData.SlotSaveData
                 {
                     name = "",
-                    count = 0
+                    count = 0,
+                    index = i
                 };
             }
             else
@@ -43,7 +42,8 @@ public class InventoryDataSaveModule : ISaveModule
                 inventoryData.inventory[i] = new InventorySaveData.SlotSaveData
                 {
                     name = slot.itemInfo == null ? "" : slot.itemInfo.itemName.ToString(),
-                    count = slot.count
+                    count = slot.count,
+                    index = i
                 };
             }
         }

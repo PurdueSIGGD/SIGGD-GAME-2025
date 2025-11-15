@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     private PlayerStateMachine psm;
     private bool isGrounded;
     private bool isSprinting;
+    private bool isCrouching;
     private bool isFalling;
     public bool canMove = true;
 
@@ -69,6 +70,7 @@ public class PlayerMovement : MonoBehaviour
 
         CalculateGravity();
         isSprinting = PlayerInput.Instance.sprintInput;
+        isCrouching = psm.IsCrouched;
         isGrounded = psm.IsGrounded;
         isFalling = psm.IsFalling;
     }
@@ -82,6 +84,10 @@ public class PlayerMovement : MonoBehaviour
             Vector2 moveInput = PlayerInput.Instance.movementInput;
 
             float speed = (isSprinting && !isFalling) ? moveData.sprintSpeed : moveData.walkSpeed;
+            if (isCrouching == true) {
+                speed = moveData.crouchSpeed;
+            }
+
             Run(moveInput, speed * Time.fixedDeltaTime);
         }
         else if (isGrounded)

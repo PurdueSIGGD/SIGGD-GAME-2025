@@ -57,8 +57,8 @@ namespace SIGGD.Mobs.Hyena
                 Vector3 tangent = Vector3.Cross(Vector3.up, toTarget).normalized * direction;
                 tangent = Vector3.Slerp(lastTangent, tangent, Time.deltaTime * 3).normalized;
                 lastTangent = tangent;
-                Debug.Log($"tangent{tangent}");
-                Debug.Log($"lastTangent{lastTangent}");
+                //Debug.Log($"tangent{tangent}");
+                //Debug.Log($"lastTangent{lastTangent}");
                 if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh) {
                     float distanceToGo = distance - idealRadius;
                     float targetInward = Mathf.Clamp(distanceToGo / radiusMargin, -1f, 1f);
@@ -97,7 +97,7 @@ namespace SIGGD.Mobs.Hyena
                         rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, 20 * Time.deltaTime));
                     }
                     rb.MovePosition(rb.position + dir * circleSpeed * Time.deltaTime);
-                    Debug.Log($"idealRadius{idealRadius}");
+                    //Debug.Log($"idealRadius{idealRadius}");
                 }
                 if (Vector3.Distance(rb.position, lastPosition) < circleSpeed * Time.deltaTime * 0.25f)
                 {
