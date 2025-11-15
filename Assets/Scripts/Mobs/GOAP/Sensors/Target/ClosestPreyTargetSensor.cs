@@ -19,7 +19,6 @@ namespace SIGGD.Goap.Sensors
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
             var AgentHuntBehaviour = references.GetCachedComponent<AgentHuntBehaviour>();
-            //Debug.Log($"current target is null {AgentHuntBehaviour.currentTargetOfHunt == null}");
             if (AgentHuntBehaviour.currentTargetOfHunt != null && AgentHuntBehaviour.currentTargetOfHunt.activeInHierarchy)
                 return new TransformTarget(AgentHuntBehaviour.currentTargetOfHunt.transform);
             var closestPrey = Closest(prey, agent.Transform.position);

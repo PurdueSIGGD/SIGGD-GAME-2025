@@ -1,6 +1,7 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Core;
 using SIGGD.Goap.Config;
+using SIGGD.Mobs;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,6 +10,7 @@ namespace SIGGD.Goap.Interfaces
     public class GoapInjector : MonoBehaviour, IGoapInjector
     {
         public BaseStatConfig BaseStatConfig;
+
         public void Inject(IAction action)
         {
             if (action is IInjectable injectable)

@@ -16,7 +16,6 @@ namespace SIGGD.Mobs
         private ITarget currentTarget;
         private bool shouldMove;
         private bool sprintAllowed;
-
         private Rigidbody rb;        
 
 
@@ -31,7 +30,6 @@ namespace SIGGD.Mobs
 
         public bool IsGrounded =>
             Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
-        //Vector3 dest = null;
 
         private void Awake()
         {
@@ -102,8 +100,6 @@ namespace SIGGD.Mobs
                     sprint.ReduceStamina(8 * Time.deltaTime);
                 }
             }
-
-            // Move the agent along towards their goal position
             Vector3 dir = (Pathfinding.MovePartialPath2(navMeshAgent, this.currentTarget.Position, speed * 0.05f) - transform.position).normalized;
             if (dir.sqrMagnitude > 0.01f)
             {
@@ -112,8 +108,9 @@ namespace SIGGD.Mobs
             }
             Debug.DrawRay(agent.transform.position, dir * speed * 100, Color.green);
             rb.MovePosition(rb.position + dir * speed * Time.deltaTime);
-            //Add Navmesh
+
             //Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * 100);
+
         }
 
         

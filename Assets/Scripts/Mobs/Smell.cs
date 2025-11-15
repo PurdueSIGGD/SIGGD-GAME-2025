@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using UnityEngine.Windows.Speech;
+using CrashKonijn.Agent.Runtime;
 
 public class Smell : MonoBehaviour
 {
@@ -25,7 +26,9 @@ public class Smell : MonoBehaviour
     private List<Vector3> predatorPositions;
     private List<(Vector3 position, float decay)> smellValues;
     private Vector3 playerPos;
+    [SerializeField]
     private LayerMask playerLayer;
+    [SerializeField]
     private LayerMask mobLayer;
     private Vector3 position;
     private Vector3 smellPos;
@@ -33,8 +36,6 @@ public class Smell : MonoBehaviour
     {
         HungerBehaviour = GetComponent<HungerBehaviour>();
         PreyBehaviour = GetComponent<PreyBehaviour>();
-        playerLayer = LayerMask.NameToLayer("Player");
-        mobLayer = LayerMask.NameToLayer("Mob");
         smellPos = Vector3.zero;
         smellValues = new();
     }
@@ -65,7 +66,7 @@ public class Smell : MonoBehaviour
     private void SmellCheck()
     {
         smellValues.Clear();
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, playerLayer | mobLayer);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, mobLayer | playerLayer);
         foreach (Collider collider in hitColliders)
         {
             if (collider.GetComponentInParent<AgentHuntBehaviour>() != null) { 
@@ -79,6 +80,7 @@ public class Smell : MonoBehaviour
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, playerLayer);
         if (hitColliders.Length < 1) return;
+        Debug.Log("TEST");
         playerPos = hitColliders[0].transform.position;
     }
     private void CalculateSmellIntensity()
@@ -108,7 +110,7 @@ public class Smell : MonoBehaviour
         }
         smellPos = pos;
     }
-    public Vector3 GetSmellPos() => isPredator ? smellPos + playerPos * 5f : smellPos;
+    public Vector3 GetSmellPos() => isPredator ? (smellPos + playerPos) : smellPos;
     public Vector3 GetPlayerPos() => playerPos;
     void OnDrawGizmosSelected()
     {

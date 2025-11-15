@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace SIGGD.Mobs
 {
@@ -20,11 +21,17 @@ namespace SIGGD.Mobs
         private int maxPower = 0;
         private int maxDesperation = 0;
         private int maxAggression = 0;
+        public NavMeshQueryFilter filter { get; private set; }
 
         private void Awake()
         {
             EntityHealthManager healthManager = GetComponent<EntityHealthManager>();
             StaminaBehaviour staminaBehaviour = GetComponent<StaminaBehaviour>();
+            var filter = new NavMeshQueryFilter
+            {
+                //agentTypeID = NavMesh.GetSettingsByID(1).agentTypeID,
+                areaMask = NavMesh.AllAreas
+            };
         }
         void Start()
         {

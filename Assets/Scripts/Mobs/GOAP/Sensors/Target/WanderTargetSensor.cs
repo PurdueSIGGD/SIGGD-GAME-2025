@@ -1,29 +1,38 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
+using SIGGD.Goap.Interfaces;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.AI;
+using SIGGD.Mobs;
+using CrashKonijn.Goap.Core;
 
 namespace SIGGD.Goap.Sensors
 {
     public class WanderTargetSensor : LocalTargetSensorBase
     {
         private Smell smell;
+       // private NavMeshQueryFilter filter;
         public override void Created()
         {
         }
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
+            //this.filter = references.GetCachedComponent<AgentData>().filter;
             smell = references.GetCachedComponent<Smell>();
             var random = this.LocateRandomPosition(agent, smell);
-            var randMesh = Pathfinding.ShiftTargetToNavMesh(random, 10f);
+            var navPos = Pathfinding.ShiftTargetToNavMesh(random, 10f);
+            NavMeshPath path = new NavMeshPath();
+            bool validPath = NavMesh.CalculatePath(agent.Transform.position, navPos, NavMesh.AllAreas, path) && path.status == NavMeshPathStatus.PathComplete;
+            if (!validPath) return null;
             if (existingTarget is PositionTarget positionTarget)
             {
-                return positionTarget.SetPosition(randMesh);
+                return positionTarget.SetPosition(navPos);
             }
-            return new PositionTarget(randMesh);
+            return new PositionTarget(navPos);
         }
         
         /// <summary>
@@ -42,6 +51,7 @@ namespace SIGGD.Goap.Sensors
             float biasStrength = 0.7f;
             Vector3 smellPos = smell.GetSmellPos();
             Vector3 dir;
+            Debug.Log(smellPos);
             if (smellPos != Vector3.zero)
             {
                 Vector3 toSmell = (smell.GetSmellPos() - agent.Transform.position);
@@ -50,11 +60,12 @@ namespace SIGGD.Goap.Sensors
             {
                 dir = toRandom;
             }
-            return agent.Transform.position + dir * 50f;
+            return agent.Transform.position + dir * 10f;
         }
         public override void Update()
         {
 
         }
+
     }
 }

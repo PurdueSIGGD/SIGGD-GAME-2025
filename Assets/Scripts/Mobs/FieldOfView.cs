@@ -25,7 +25,7 @@ public class FieldOfView : MonoBehaviour
         targetMask = LayerMask.GetMask("Player");
         targetRef = null;
         canSeeTarget = false;
-        loseSightDelay = 1f;
+        loseSightDelay = 7f;
         lastDir = Vector3.zero;
         StartCoroutine(FOVRoutine());
 
@@ -48,7 +48,6 @@ public class FieldOfView : MonoBehaviour
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
         bool sawThisFrame = false;
-        targetRef = null;
         if (hitColliders.Length < 1) return;
         foreach (Collider collider in hitColliders)
         {
@@ -61,7 +60,6 @@ public class FieldOfView : MonoBehaviour
                     float distanceToTarget = Vector3.Distance(transform.position, target.position);
                     if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
                     {
-                        OnPlayerDetected?.Invoke(collider.gameObject.transform);
                         sawThisFrame = true;
                         lastSeenTime = Time.time;
                         targetRef = collider.gameObject;
@@ -72,5 +70,11 @@ public class FieldOfView : MonoBehaviour
             }
         }
         canSeeTarget = sawThisFrame || Time.time - lastSeenTime < loseSightDelay;
+        if (canSeeTarget && targetRef != null)
+            OnPlayerDetected?.Invoke(targetRef.transform);
+        else
+        {
+            targetRef = null;
+        }
     }
 }

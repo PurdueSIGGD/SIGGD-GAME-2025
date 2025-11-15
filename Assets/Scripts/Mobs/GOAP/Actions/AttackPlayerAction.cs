@@ -61,7 +61,7 @@ namespace SIGGD.Goap
         public override void End(IMonoAgent agent, CommonData data)
         {
             data.mb.DisableSprint();
-            this.Disable(agent, ActionDisabler.ForTime(0.5f));
+            //this.Disable(agent, ActionDisabler.ForTime(0.5f));
 
         }
     }

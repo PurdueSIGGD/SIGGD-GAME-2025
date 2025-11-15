@@ -70,7 +70,7 @@ namespace SIGGD.Mobs
             if (this.provider.CurrentPlan == null) return;
             if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
             {
-                this.provider.RequestGoal<DontStarveGoal>(true);
+                this.provider.RequestGoal<DontStarveGoal, WanderGoal>(true);
             } else
             {
                 this.provider.RequestGoal<WanderGoal>(true);
@@ -103,10 +103,10 @@ namespace SIGGD.Mobs
         {
             this.provider.RequestGoal<WanderGoal>(true);
         }
-
+        // action for smell for when preyy detected 
         void PlayerDetected(Transform player)
         {
-            if (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 50)
+            if (this.provider.CurrentPlan == null || (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 50))
             {
                // AgentMoveBehaviour.EnableSprint();
                 this.provider.RequestGoal<KillPlayerGoal>(true);
