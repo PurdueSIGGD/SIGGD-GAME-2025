@@ -256,7 +256,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// Determines if the inventory contains a certain number of an item
     /// </summary>
     /// <param name="itemName">Name of the item</param>
-    /// <parm name="count"></parm>
+    /// <parm name="count">The number of items to check that the inventory has</parm>
     /// <returns>Whether or not the inventory contains enough of the item</returns>
     public bool Contains(ItemInfo.ItemName itemName, int count) {
         int found = 0;
