@@ -253,18 +253,23 @@ public class Inventory : Singleton<Inventory>, IInventory
     }
 
     /// <summary>
-    /// Searches for item in inventory and returns the index
+    /// Determines if the inventory contains a certain number of an item
     /// </summary>
     /// <param name="itemName">Name of the item</param>
-    /// <returns>Index of the item or -1 if not found</returns>
-    public int Find(ItemInfo.ItemName itemName) {
+    /// <parm name="count"></parm>
+    /// <returns>Whether or not the inventory contains enough of the item</returns>
+    public bool Contains(ItemInfo.ItemName itemName, int count) {
+        int found = 0;
         for (int i = 0; i < inventory.Length; i++) {
             if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemName)
             {
-                return i;
+                found += inventory[i].count;
+                if (found >= count) {
+                    return true;
+                }
             }
         }
-        return -1;
+        return false;
     }
 
     /// <summary>
