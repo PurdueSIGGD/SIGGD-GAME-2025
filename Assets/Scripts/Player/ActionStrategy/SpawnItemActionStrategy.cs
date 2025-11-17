@@ -9,7 +9,11 @@ public class SpawnItemActionStrategy : IPlayerActionStrategy
         base.OnEnter();
         // GameObject.Instantiate(prefab);
 
-        if (Inventory.Instance.GetSelectedItem().itemType == ItemInfo.ItemType.Trap)
+        // get currently selected item from inventory
+        ItemInfo selectedItem = Inventory.Instance.GetSelectedItem();
+
+        // check if the selected item is a trap and has valid prefabs
+        if (selectedItem.itemType == ItemInfo.ItemType.Trap && selectedItem.itemPrefab != null && selectedItem.itemPlacementPrefab != null)
         {
             ObjectPlacer.Instance.startPlaceMode = true;
         }

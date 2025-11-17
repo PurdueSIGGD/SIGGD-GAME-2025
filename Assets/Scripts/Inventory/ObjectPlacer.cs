@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// attach this script to an empty GameObject in the scene
+
 public class ObjectPlacer : MonoBehaviour
 {
     public static ObjectPlacer Instance { get; private set; }
@@ -24,13 +26,14 @@ public class ObjectPlacer : MonoBehaviour
     private Vector3 _currentPlacementPosition = Vector3.zero;
     private bool _inPlacementMode = false;
     private bool _validPreviewState = false;
-    public bool startPlaceMode = false;
+    [HideInInspector] public bool startPlaceMode = false;
 
     private ItemInfo itemInfo;
 
 
     private void Awake()
     {
+        // singleton stuff
         if (Instance != null && Instance != this)
             Destroy(this.gameObject);
         else
@@ -64,6 +67,7 @@ public class ObjectPlacer : MonoBehaviour
         Destroy(_previewObject);
         _previewObject = null;
         _inPlacementMode = false;
+        startPlaceMode = false;
     }
 
     private void Update()
@@ -96,7 +100,7 @@ public class ObjectPlacer : MonoBehaviour
             }
             else
             {
-                // gets info from the SO of the currently selected inventory item and starts placement mode
+                // gets info from the SO of the currently selected inventory item and starts the placement mode loop
                 itemInfo = Inventory.Instance.GetSelectedItem();
                 if (itemInfo != null && itemInfo.itemPlacementPrefab != null && itemInfo.itemPrefab != null)
                 {
@@ -154,6 +158,7 @@ public class ObjectPlacer : MonoBehaviour
         if (!_inPlacementMode || !_validPreviewState)
             return;
 
+        // instantiate the placeable object at the current placement position
         Quaternion rotation = Quaternion.Euler(0f, playerCamera.transform.eulerAngles.y, 0f);
         Instantiate(placeableObjectPrefab, _currentPlacementPosition, rotation, transform);
 
