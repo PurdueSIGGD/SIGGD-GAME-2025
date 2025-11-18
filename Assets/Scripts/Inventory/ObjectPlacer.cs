@@ -22,6 +22,11 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private float raycastStartVerticalOffset;
     [SerializeField] private float raycastDistance;
 
+    [Header("Adjustment Variables for Placement Location")]
+    [SerializeField] private float minDistance = 1.5f;
+    [SerializeField] private float maxDistance = 5f;
+    [SerializeField] private float distanceChangeSpeed = 1f;
+
     private GameObject _previewObject = null;
     private Vector3 _currentPlacementPosition = Vector3.zero;
     private bool _inPlacementMode = false;
@@ -29,7 +34,6 @@ public class ObjectPlacer : MonoBehaviour
     [HideInInspector] public bool startPlaceMode = false;
 
     private ItemInfo itemInfo;
-
 
     private void Awake()
     {
@@ -70,43 +74,46 @@ public class ObjectPlacer : MonoBehaviour
         startPlaceMode = false;
     }
 
+    public void StartPlacement(ItemInfo item)
+    {
+        itemInfo = item; // chosen item from inventory button
+        SetPlacementPrefabs(item.itemPrefab, item.itemPlacementPrefab);
+        EnterPlacementMode();
+    }
+
     private void Update()
     {
-        if (startPlaceMode) 
+        if (_inPlacementMode)
         {
-            if (_inPlacementMode)
+
+            // change distance from player with mouse scroll
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (scroll != 0f)
             {
-                // update preview object position
-                UpdateCurrentPlacementPosition();
-
-                // update preview object material based on validity
-                if (CanPlaceObject())
-                    SetValidPreviewState();
-                else
-                    SetInvalidPreviewState();
-
-                // press f to place object
-                if (Input.GetKeyDown(KeyCode.F))
-                {
-                    Debug.Log("Attempting to place object, Position: " + _currentPlacementPosition);
-                    PlaceObject();
-                }
-                // press escape to exit placement mode
-                else if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    ExitPlacementMode();
-                    startPlaceMode = false;
-                }
+                objectDistanceFromPlayer += scroll * distanceChangeSpeed;
+                objectDistanceFromPlayer = Mathf.Clamp(objectDistanceFromPlayer, minDistance, maxDistance);
             }
+
+            // update preview object position
+            UpdateCurrentPlacementPosition();
+
+            // update preview object material based on validity
+            if (CanPlaceObject())
+                SetValidPreviewState();
             else
+                SetInvalidPreviewState();
+
+            // press f to place object
+            if (Input.GetKeyDown(KeyCode.F))
             {
-                // gets info from the SO of the currently selected inventory item and starts the placement mode loop
-                itemInfo = Inventory.Instance.GetSelectedItem();
-                if (itemInfo != null && itemInfo.itemPlacementPrefab != null && itemInfo.itemPrefab != null)
-                {
-                    SetPlacementPrefabs(itemInfo.itemPrefab, itemInfo.itemPlacementPrefab);
-                    EnterPlacementMode();
-                }
+                Debug.Log("Attempting to place object, Position: " + _currentPlacementPosition);
+                PlaceObject();
+            }
+            // press escape to exit placement mode
+            else if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                ExitPlacementMode();
+                startPlaceMode = false;
             }
         }
     }

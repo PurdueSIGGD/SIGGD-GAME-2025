@@ -10,19 +10,12 @@ public class PreviewObjectValidChecker : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.LogWarning("Collided with invalid layer: " + LayerMask.LayerToName(other.gameObject.layer));
-
         // Check if the collided object's layer is in the invalid layers
         if (((1 << other.gameObject.layer) & invalidLayers) != 0)
         {
             _collidingObjects.Add(other);
             IsValid = false;
         }
-    }
-
-    private void Start()
-    {
-        Debug.Log("Invalid Layers: " + LayerMask.LayerToName(invalidLayers));
     }
 
     private void OnTriggerExit(Collider other)

@@ -15,7 +15,7 @@ public class SpawnItemActionStrategy : IPlayerActionStrategy
         // check if the selected item is a trap and has valid prefabs
         if (selectedItem.itemType == ItemInfo.ItemType.Trap && selectedItem.itemPrefab != null && selectedItem.itemPlacementPrefab != null)
         {
-            ObjectPlacer.Instance.startPlaceMode = true;
+            ObjectPlacer.Instance.StartPlacement(selectedItem);
         }
 
         // Inventory.Instance.Decrement();
