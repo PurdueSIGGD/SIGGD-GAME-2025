@@ -9,18 +9,18 @@ namespace SIGGD.Goap.Sensors
     public class PlayerTargetSensor : LocalTargetSensorBase, IInjectable
     {
         private Collider[] colliders = new Collider[1];
-        private BaseStatConfig statConfig;
-        private LayerMask playerLayer;
+        private BaseStats stats;
+        private PerceptionManager perceptionManager;
         public override void Created()
         {
-            playerLayer = LayerMask.GetMask("Player");
         }
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
-            if (Physics.OverlapSphereNonAlloc(agent.Transform.position, 70, colliders, playerLayer) > 0)
+            perceptionManager = references.GetCachedComponent<PerceptionManager>();
+            if (perceptionManager.CanSeePlayer)
             {
-                return new TransformTarget(colliders[0].transform);
+                return new TransformTarget(perceptionManager.PlayerTarget);
             }
             return null;
         }
@@ -31,7 +31,7 @@ namespace SIGGD.Goap.Sensors
         }
         public void Inject(GoapInjector injector)
         {
-            statConfig = injector.BaseStatConfig;
+            stats = injector.BaseStats;
         }
 
     }

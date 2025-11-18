@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 709337006311690065}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0414, y: 0.0521, z: 0.0145}
+  m_LocalPosition: {x: -0.0414, y: 0.0457, z: -0.0038}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -76,12 +76,14 @@ GameObject:
   - component: {fileID: 1109127171278550248}
   - component: {fileID: 3493779462686176508}
   - component: {fileID: 7847603909362594319}
-  - component: {fileID: 2730226122031635450}
   - component: {fileID: 1543149076714685445}
   - component: {fileID: 1146671127817523176}
   - component: {fileID: 1678282325086424}
   - component: {fileID: 8980174472637998831}
   - component: {fileID: 3991707681122442122}
+  - component: {fileID: 7812564173331032301}
+  - component: {fileID: -6871212686035477808}
+  - component: {fileID: 4042660576636541797}
   m_Layer: 9
   m_Name: Hyena
   m_TagString: Predator
@@ -233,9 +235,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewRadius: 30
-  targetMask:
+  playerMask:
     serializedVersion: 2
     m_Bits: 64
+  mobMask:
+    serializedVersion: 2
+    m_Bits: 512
   obstacleMask:
     serializedVersion: 2
     m_Bits: 0
@@ -255,7 +260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <stamina>k__BackingField: 0
-  statConfig: {fileID: 11400000, guid: 1c2a12c7ad63f074d86a890f7c6116e6, type: 2}
+  stats: {fileID: 11400000, guid: c791ccfee0abc86498340017db4d4953, type: 2}
   energyLevel: 1
 --- !u!114 &1901737769215062089
 MonoBehaviour:
@@ -368,28 +373,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerLevel: 0
   Data: {fileID: 11400000, guid: a8523c93a4033ba4698d5c22572e8f3d, type: 2}
---- !u!64 &2730226122031635450
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4822427246891486894}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 2808646624526887753, guid: 4df42859eb638434dafc4e5e5ed861ea, type: 3}
 --- !u!54 &1543149076714685445
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -416,7 +399,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!114 &1146671127817523176
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -447,7 +430,6 @@ MonoBehaviour:
   beginningAttackCooldown: 0
   attackOffset: 0
   arcHeight: 2
-  speed: 2
 --- !u!114 &8980174472637998831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -485,6 +467,59 @@ MonoBehaviour:
   powerLevel: 0
   energyLevel: 0
   aggressionLevel: 0
+--- !u!114 &7812564173331032301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4822427246891486894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 581c35eadc897db4da1b1f2fd2f4703a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preyTargets: []
+--- !u!114 &-6871212686035477808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4822427246891486894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 454339f393dde5f4cb124a3697745d27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 8
+  baseSpeed: 12
+  rotationSpeed: 12
+  pathUpdateRate: 0.1
+  sprintAllowed: 0
+--- !u!136 &4042660576636541797
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4822427246891486894}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.1
+  m_Height: 0.1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.1, z: 0}
 --- !u!1 &5406888589616393604
 GameObject:
   m_ObjectHideFlags: 0
@@ -510,7 +545,7 @@ Transform:
   m_GameObject: {fileID: 5406888589616393604}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.006399998, z: -0.0183}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -602,7 +637,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 43c1b1a5f17d4a246894676acc4d8459, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -633,11 +668,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4df42859eb638434dafc4e5e5ed861ea, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.0011
+      value: -0.005299998
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4df42859eb638434dafc4e5e5ed861ea, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.054686185
+      value: -0.072986186
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4df42859eb638434dafc4e5e5ed861ea, type: 3}
       propertyPath: m_LocalRotation.w
@@ -673,7 +708,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4df42859eb638434dafc4e5e5ed861ea, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4df42859eb638434dafc4e5e5ed861ea, type: 3}
       propertyPath: m_TagString

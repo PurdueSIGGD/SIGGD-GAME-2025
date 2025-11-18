@@ -24,6 +24,7 @@ namespace SIGGD.Mobs.Hyena
         private float gravity = Mathf.Abs(Physics.gravity.y);
         public float attackInterval;
         public float telegraph;
+        private Movement move;
         public float beginningAttackCooldown;
         public float attackOffset;
         public float arcHeight = 2f;
@@ -34,6 +35,7 @@ namespace SIGGD.Mobs.Hyena
         Animator animator;
         private void Awake()
         {
+            move = GetComponent<Movement>();
             rb = GetComponent<Rigidbody>();
             NavMeshAgent = GetComponent<NavMeshAgent>();
             AgentMoveBehaviour = GetComponent<AgentMoveBehaviour>();
@@ -49,7 +51,7 @@ namespace SIGGD.Mobs.Hyena
         public IEnumerator Lunge(Func<Vector3> GetTarget)
         {
             beginningAttackCooldown = UnityEngine.Random.Range(0.03f, 0.05f);
-
+            finishedExiting = false;
             finishedLunging = false;
             lungeArriving = false;
             Vector3 target = GetTarget();
@@ -82,25 +84,14 @@ namespace SIGGD.Mobs.Hyena
             float zVelocity = (zDist * speed) / dist2D;
             float yVelocity = (yDist * speed) / dist2D + (4.9f * dist2D) / speed;
             Vector3 forceVector = Vector3.ClampMagnitude(new Vector3(xVelocity, yVelocity, zVelocity), 100);
+            lungeDir = UnityUtil.ToVector2(forceVector).normalized;
             rb.linearVelocity = forceVector;
-            /*
-            float xDistance = target.x - transform.position.x;
-            float zDistance = target.z - transform.position.z;
-            Vector3 flatDir = new Vector3(xDistance, 0, zDistance).normalized;
-            lungeDir = flatDir;
-            float horizontalDistance = new Vector2(xDistance, zDistance).magnitude;
-            float yVelocity = Mathf.Sqrt(2 * gravity * arcHeight);
-            float time = (2 * yVelocity) / gravity;
-            float horizontalSpeed = horizontalDistance / time;
-            Vector3 forceVector = flatDir * horizontalSpeed + Vector3.up * yVelocity;
-            rb.linearVelocity = forceVector;
-            */
             float time = (2 * yVelocity) / gravity;
             if (time < 0.25f) time = 0.25f;
             yield return new WaitForSeconds(time - 0.125f);
             lungeArriving = true;
             float elapsed = 0f;
-            timeout = 1f;
+            timeout = 0.25f;
             while (elapsed < timeout && AgentMoveBehaviour.IsGrounded)
             {
                 elapsed += Time.fixedDeltaTime;
@@ -119,29 +110,31 @@ namespace SIGGD.Mobs.Hyena
         }
         public IEnumerator ExitLunge(Func<Vector3> GetTarget)
         {
+            Debug.Log("EXITTT");
             finishedExiting = false;
             AgentMoveBehaviour.enabled = false;
 
             float duration = UnityEngine.Random.Range(1f, 2f);
             float elapsed = 0f;
 
-            Vector3 targetPos = GetTarget();
-            Vector3 awayPos = targetPos + Vector3.Cross(lungeDir, Vector3.up).normalized * 6f;
+            Vector3 awayDirPerpendicular = Vector3.Cross(lungeDir, Vector3.up).normalized;
+
+            Vector3 awayDir = (lungeDir * 0.8f + awayDirPerpendicular * 0.2f).normalized;
+  
+
             while (elapsed < duration)
             {
                 elapsed += Time.fixedDeltaTime;
-                if (Vector3.Distance(targetPos, transform.position) > 8f)
+
+                if (Vector3.Distance(GetTarget(), transform.position) > 8f)
                     break;
-                
-                Vector3 dir = (transform.position - Pathfinding.MovePartialPath2(NavMeshAgent, awayPos, Time.fixedDeltaTime * 10)).normalized;
-                if (dir.sqrMagnitude > 0.01f)
-                {
-                    Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
-                    rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 10f, Time.fixedDeltaTime));
-                }
-                rb.MovePosition(rb.position + dir * 10 * Time.fixedDeltaTime);
+                Vector3 awayPoint = transform.position + awayDir * 6f;
+                Vector3 dir = NavSteering.GetSteeringDirection(NavMeshAgent, awayPoint, 0.1f);
+
+                move.MoveTowards(dir, 1.2f);
                 yield return new WaitForFixedUpdate();
             }
+
             AgentMoveBehaviour.enabled = true;
             finishedExiting = true;
         }
@@ -151,8 +144,8 @@ namespace SIGGD.Mobs.Hyena
             rb.isKinematic = true;
             NavMeshAgent.enabled = true;
             AgentMoveBehaviour.enabled = true;
-            finishedLunging = true;
-            finishedExiting = true;
+            finishedLunging = false;
+            finishedExiting = false;
             exit = true;
         }
     }

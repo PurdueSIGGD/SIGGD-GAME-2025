@@ -21,7 +21,7 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override bool IsValid(IActionReceiver agent, CommonData data)
         {
-            return true;
+            return data.pm.CanSeePlayer;
         }
 
         // This method is called when the action is started
@@ -40,6 +40,7 @@ namespace SIGGD.Goap
                 {
                     data.am.StartAttackSequence(agent);
                     data.am.SetTarget(data.Target as TransformTarget);
+                    data.am.isLunging = true;
                 }
             } else
             {

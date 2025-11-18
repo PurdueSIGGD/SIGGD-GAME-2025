@@ -5,24 +5,44 @@ using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using Utility;
+using System.Collections.Generic;
+using Unity.Collections;
+using CrashKonijn.Goap.Runtime;
+using Unity.Hierarchy;
 
 public class FieldOfView : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public float viewRadius;
-    public LayerMask targetMask;
+    public LayerMask playerMask;
+    public LayerMask mobMask;
     public LayerMask obstacleMask;
     [Range(0, 360)]
     public float angleRange;
     public bool canSeeTarget = true;
     public GameObject targetRef;
-    public static event Action<Transform> OnPlayerDetected;
     private float loseSightDelay;
     private float lastSeenTime;
     private Vector3 lastDir;
-    void Start()
+    private Dictionary<Transform, DetectedTarget> detected = new();
+    private List<GameObject> seenTargets = new List<GameObject>();
+
+    struct DetectedTarget
     {
-        targetMask = LayerMask.GetMask("Player");
+        public GameObject gameObject;
+        public int hierarchy;
+        public float lastSeenTime;
+        public DetectedTarget(GameObject gameObject, int hierarchy, float lastSeenTime)
+        {
+            this.gameObject = gameObject;
+            this.hierarchy = hierarchy;
+            this.lastSeenTime = lastSeenTime;
+        }
+    }
+    void Start()
+    {   
+        playerMask = LayerMask.GetMask("Player");
+        mobMask = LayerMask.GetMask("Mob");
         targetRef = null;
         canSeeTarget = false;
         loseSightDelay = 7f;
@@ -30,6 +50,12 @@ public class FieldOfView : MonoBehaviour
         StartCoroutine(FOVRoutine());
 
     }
+    public enum TargetType
+    {
+        Player,
+        Prey,
+        Predator
+    } 
 
     // Update is called once per frame
     void Update()
@@ -42,39 +68,50 @@ public class FieldOfView : MonoBehaviour
         while (true) {
             yield return wait;
             FOVCheck();
+            CleanExpiredTargets();
         }
     }
     private void FOVCheck()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
-        bool sawThisFrame = false;
-        if (hitColliders.Length < 1) return;
-        foreach (Collider collider in hitColliders)
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, viewRadius, playerMask | mobMask);
+        if (hitColliders.Length == 0) return;
+        for (int i = 0; i < hitColliders.Length; i++)
         {
             {
-                Transform target = collider.transform;
+                Transform target = hitColliders[i].transform;
                 Vector3 directionToTarget = (target.position - transform.position).normalized;
-                UnityUtil.DampVector3Spherical(lastDir, directionToTarget, 10f, Time.deltaTime);
-                if (Vector3.Angle(transform.forward, directionToTarget) < angleRange / 2)
-                {
-                    float distanceToTarget = Vector3.Distance(transform.position, target.position);
-                    if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
-                    {
-                        sawThisFrame = true;
-                        lastSeenTime = Time.time;
-                        targetRef = collider.gameObject;
-                        break;
-                    }
-                }
-                lastDir = directionToTarget;
+                if (Vector3.Angle(transform.forward, directionToTarget) > angleRange / 2f)
+                    continue;
+
+                float distanceToTarget = Vector3.Distance(transform.position, target.position);
+
+                if (Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
+                    continue;
+
+                detected[target] = new DetectedTarget(hitColliders[i].gameObject, 1, Time.time);
+                //seenTargets.Add(collider.gameObject);
+                //if (gameObject.CompareTag("Player")) playerTarget = collider.gameObject;
             }
         }
-        canSeeTarget = sawThisFrame || Time.time - lastSeenTime < loseSightDelay;
-        if (canSeeTarget && targetRef != null)
-            OnPlayerDetected?.Invoke(targetRef.transform);
-        else
-        {
-            targetRef = null;
-        }
     }
+    private void CleanExpiredTargets()
+    {
+        seenTargets.Clear();
+        PlayerTarget = null;
+        List<Transform> toRemove = new();
+        foreach (KeyValuePair<Transform, DetectedTarget> pair in detected)
+        {
+            if (Time.time - pair.Value.lastSeenTime > loseSightDelay)
+            {
+                toRemove.Add(pair.Key);
+                continue;
+            }
+            seenTargets.Add(pair.Value.gameObject);
+            if (pair.Value.gameObject.CompareTag("Player")) PlayerTarget = pair.Value.gameObject;
+        }
+        foreach (var v in toRemove)
+            detected.Remove(v);
+    }
+    public GameObject PlayerTarget { get; private set; }
+    public List<GameObject> GetSeenTargets() => seenTargets;
 }

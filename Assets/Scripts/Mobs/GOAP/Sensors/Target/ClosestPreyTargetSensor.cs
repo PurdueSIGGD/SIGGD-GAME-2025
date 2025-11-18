@@ -10,36 +10,36 @@ namespace SIGGD.Goap.Sensors
     public class ClosestPreyTargetSensor : LocalTargetSensorBase
     {
 
-        private PreyBehaviour[] prey;
-        
+        //private List<PreyBehaviour> prey;
+        private PerceptionManager perceptionManager;
+
         public override void Created()
         {
         }
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
+            perceptionManager = references.GetCachedComponent<PerceptionManager>();
             var AgentHuntBehaviour = references.GetCachedComponent<AgentHuntBehaviour>();
             if (AgentHuntBehaviour.currentTargetOfHunt != null && AgentHuntBehaviour.currentTargetOfHunt.activeInHierarchy)
                 return new TransformTarget(AgentHuntBehaviour.currentTargetOfHunt.transform);
-            var closestPrey = Closest(prey, agent.Transform.position);
+            var closestPrey = Closest(perceptionManager.preyTargets, agent.Transform.position);
             if (closestPrey == null)
                 return null;
 
             AgentHuntBehaviour.SetHuntTarget(closestPrey.gameObject);
-            Debug.Log(closestPrey.gameObject);
             if (existingTarget is TransformTarget transformTarget)
                 return transformTarget.SetTransform(closestPrey.transform);
             return new TransformTarget(closestPrey.transform);
         }
-        private T Closest<T>(IEnumerable<T> list, Vector3 position)
-            where T : MonoBehaviour
+        private GameObject Closest(List<GameObject> list, Vector3 position)
         {
-            T closest = null;
+            GameObject closest = null;
             var closestDistance = float.MaxValue;
 
             foreach (var item in list)
             {
-                var distance = Vector3.Distance(item.gameObject.transform.position, position);
+                var distance = Vector3.Distance(item.transform.position, position);
 
                 if (!(distance < closestDistance))
                     continue;
@@ -52,7 +52,6 @@ namespace SIGGD.Goap.Sensors
         }
         public override void Update()
         {
-            this.prey = Object.FindObjectsByType<PreyBehaviour>(FindObjectsSortMode.None);
         }
     }
 }

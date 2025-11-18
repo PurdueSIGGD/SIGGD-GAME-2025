@@ -7,6 +7,7 @@ using SIGGD.Mobs.PackScripts;
 using Utility;
 using JetBrains.Annotations;
 using Unity.Cinemachine;
+using SIGGD.Goap.Config;
 namespace SIGGD.Mobs.Hyena
 {
     public class HyenaCirclingBehaviour : MonoBehaviour
@@ -19,7 +20,9 @@ namespace SIGGD.Mobs.Hyena
         private NavMeshAgent NavMeshAgent;
         private AgentMoveBehaviour AgentMoveBehaviour;
         private AgentHuntBehaviour AgentHuntBehaviour;
+        private HyenaStats circleConfig;
         private PackBehavior PackBehavior;
+        private Movement move;
         public bool finishedWalking;
         public bool finishedCircling;
         private Vector3 lastTangent = Vector3.zero;
@@ -31,6 +34,8 @@ namespace SIGGD.Mobs.Hyena
         Animator animator;
         private void Awake()
         {
+            move = GetComponent<Movement>();
+
             finishedCircling = false;
             finishedWalking = false;
             finished = false;
@@ -47,7 +52,7 @@ namespace SIGGD.Mobs.Hyena
         public IEnumerator CircleLoop(Func<Vector3> GetTarget)
         {
             finished = false;
-            if (Vector3.Distance(GetTarget(), transform.position) < 15f && UnityEngine.Random.Range(0f, 1f) > 0.0f)
+            if (Vector3.Distance(GetTarget(), transform.position) < 9f && UnityEngine.Random.Range(0f, 1f) > 0.3f)
             {
                 yield return StartCoroutine(WalkTowardsTarget(GetTarget));
                 yield return new WaitUntil(() => finishedWalking || exit);
@@ -118,7 +123,8 @@ namespace SIGGD.Mobs.Hyena
 
                 Vector3 toTarget = (targetPos - rb.position).normalized;
 
-                Vector3 tangent = Vector3.Cross(Vector3.up, toTarget).normalized * direction;
+                Vector3 tangent = Vector3.Cross(Vector3.up, toTarget).normalized;
+
                 tangent = UnityUtil.DampVector3Spherical(lastTangent, tangent, 6f, Time.fixedDeltaTime).normalized;
                 lastTangent = tangent;
 
@@ -158,15 +164,6 @@ namespace SIGGD.Mobs.Hyena
                     }
                 }
 
-                Vector3 nextPos = rb.position + desired * circleSpeed * Time.fixedDeltaTime;
-
-                if (NavMesh.SamplePosition(nextPos, out NavMeshHit hit2, 1.0f, NavMesh.AllAreas))
-                    nextPos = hit2.position;
-
-                Vector3 dir = (nextPos - rb.position).normalized;
-                if (dir == Vector3.zero)
-                    dir = lastDir;
-
                 Vector3 awayForce = Vector3.zero;
                 int count = 0;
 
@@ -185,16 +182,18 @@ namespace SIGGD.Mobs.Hyena
                 if (count > 0)
                 {
                     awayForce /= count;
-                    dir = UnityUtil.DampVector3Spherical(lastDir, (dir + awayForce).normalized, 2f, Time.fixedDeltaTime);
+                    desired = UnityUtil.DampVector3Spherical(lastDir, (desired + awayForce).normalized, 2f, Time.fixedDeltaTime);
                 }
+                Vector3 nextPos = rb.position + desired * circleSpeed * Time.fixedDeltaTime;
 
-                if (dir.sqrMagnitude > 0.001f)
-                {
-                    Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
-                    rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 20f, Time.fixedDeltaTime));
+                if (NavMesh.SamplePosition(nextPos, out var hit, 3f, NavMesh.AllAreas)) {
+                    nextPos = hit.position;
                 }
-
+                Vector3 dir = (nextPos - rb.position).normalized;
                 rb.MovePosition(rb.position + dir * circleSpeed * Time.fixedDeltaTime);
+
+                Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
+                rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 10f, Time.fixedDeltaTime));
 
                 if (Vector3.Distance(rb.position, lastPosition) < circleSpeed * Time.fixedDeltaTime * 0.25f)
                 {
@@ -207,7 +206,7 @@ namespace SIGGD.Mobs.Hyena
                 {
                     stuckTimer = 0f;
                 }
-                lastDir = dir;
+                lastDir = desired;
                 lastPosition = rb.position;
 
                 yield return new WaitForFixedUpdate();
@@ -225,6 +224,7 @@ namespace SIGGD.Mobs.Hyena
             AgentMoveBehaviour.enabled = false;
             finishedWalking = false;
             failedWalking = false;
+
             float maxDuration = UnityEngine.Random.Range(5f, 6f);
             float elapsed = 0f;
             float stopDist = UnityEngine.Random.Range(3f, 10f);
@@ -236,22 +236,18 @@ namespace SIGGD.Mobs.Hyena
             while (elapsed < maxDuration && !exit)
             {
                 elapsed += Time.fixedDeltaTime;
+
                 Vector3 targetPos = GetTarget();
                 if (Vector3.Distance(targetPos, transform.position) < stopDist)
                     break;
-                Vector3 dir = (Pathfinding.MovePartialPath2(NavMeshAgent, GetTarget(), 0.04f) - transform.position).normalized;
-                if (dir.sqrMagnitude > 0.01f)
-                    currentdir = UnityUtil.DampVector3Spherical(currentdir, dir, 6f, Time.fixedDeltaTime);
-                rb.MovePosition(rb.position + currentdir * 10 * Time.fixedDeltaTime);
-                Vector3 lookDir = (targetPos - transform.position).normalized;
-                Quaternion targetRot = Quaternion.LookRotation(lookDir, Vector3.up);
-                rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 10f, Time.fixedDeltaTime));
+
+                Vector3 dir = NavSteering.GetSteeringDirection(NavMeshAgent, targetPos, 0.1f);
+                move.MoveTowards(dir, 1.2f);
                 yield return new WaitForFixedUpdate();
             }
             yield return new WaitUntil(() => NavMeshAgent.pathPending != true);
             if (elapsed >= maxDuration)
             {
-                Debug.Log("failed");
                 failedWalking = true;
             }
             finishedWalking = true;

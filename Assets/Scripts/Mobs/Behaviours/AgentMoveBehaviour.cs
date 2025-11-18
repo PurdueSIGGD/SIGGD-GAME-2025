@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using SIGGD.Goap;
 using UnityEngine.Polybrush;
+using Utility;
 
 namespace SIGGD.Mobs
 {
@@ -16,7 +17,8 @@ namespace SIGGD.Mobs
         private ITarget currentTarget;
         private bool shouldMove;
         private bool sprintAllowed;
-        private Rigidbody rb;        
+        private Rigidbody rb;
+        private Movement move;
 
 
         public NavMeshAgent navMeshAgent;
@@ -26,13 +28,20 @@ namespace SIGGD.Mobs
 
         [SerializeField] public Transform groundCheckPoint;
         [SerializeField] public Vector3 groundCheckSize = new Vector3(0.49f, 0.3f, 0.49f);
+        Vector3 smoothDir = Vector3.zero;
+        Vector3 velocity = Vector3.zero;
         public LayerMask groundLayer;
+        float nextPathUpdate = 0f;
+        float pathUpdateInterval = 0.1f;
+        private Vector3 cachedNavPoint = Vector3.zero;
+        private Vector3 smoothedNavPoint = Vector3.zero;
 
         public bool IsGrounded =>
             Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
 
         private void Awake()
         {
+            move = GetComponent<Movement>();
             this.agent = this.GetComponent<AgentBehaviour>();
             sprint = GetComponent<StaminaBehaviour>();
             rb = GetComponent<Rigidbody>();
@@ -81,7 +90,7 @@ namespace SIGGD.Mobs
         }
         
 
-        public void Update()
+        public void FixedUpdate()
         {
             if (this.agent.IsPaused)
                 return;
@@ -96,24 +105,26 @@ namespace SIGGD.Mobs
             {
                 if (sprint.stamina > 0)
                 {
-                    speed = 11f;
-                    sprint.ReduceStamina(8 * Time.deltaTime);
+                    speed = 1.5f;
+                    sprint.ReduceStamina(8 * Time.fixedDeltaTime);
                 }
             }
-            Vector3 dir = (Pathfinding.MovePartialPath2(navMeshAgent, this.currentTarget.Position, speed * 0.05f) - transform.position).normalized;
-            if (dir.sqrMagnitude > 0.01f)
-            {
-                Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
-                rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, speed * Time.deltaTime));
-            }
-            Debug.DrawRay(agent.transform.position, dir * speed * 100, Color.green);
-            rb.MovePosition(rb.position + dir * speed * Time.deltaTime);
+            Vector3 desiredDirection = NavSteering.GetSteeringDirection(navMeshAgent, currentTarget.Position, 0.1f);
 
-            //Pathfinding.MovePartialPath(navMeshAgent, this.currentTarget.Position, Time.deltaTime * 100);
+            move.MoveTowards(desiredDirection, 1.5f);
 
         }
+        public void Move(Vector3 dir, float speed)
+        {
 
-        
+            rb.MovePosition(rb.position + velocity * Time.fixedDeltaTime);
+            if (dir.sqrMagnitude > 0.001f)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(velocity, Vector3.up);
+                rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 12f, Time.fixedDeltaTime));
+            }
+        }
+
         private void OnDrawGizmos()
         {
             if (this.currentTarget == null)

@@ -9,8 +9,8 @@ namespace SIGGD.Goap.Interfaces
 {
     public class GoapInjector : MonoBehaviour, IGoapInjector
     {
-        public BaseStatConfig BaseStatConfig;
-
+        public BaseStats BaseStats;
+        
         public void Inject(IAction action)
         {
             if (action is IInjectable injectable)

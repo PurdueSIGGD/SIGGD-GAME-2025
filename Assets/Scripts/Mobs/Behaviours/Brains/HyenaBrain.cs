@@ -17,6 +17,7 @@ namespace SIGGD.Mobs
         private AgentHuntBehaviour HuntBehaviour;
         private PackBehavior PackBehaviour;
         private HyenaAttackManager HyenaAttackManager;
+        private PerceptionManager PerceptionManager;
         protected override void Awake()
         {
             this.goap = FindFirstObjectByType<GoapBehaviour>();
@@ -28,6 +29,7 @@ namespace SIGGD.Mobs
             HungerBehaviour = this.GetComponent<HungerBehaviour>();
             PackBehaviour = this.GetComponent<PackBehavior>();
             HyenaAttackManager = this.GetComponent<HyenaAttackManager>();
+            PerceptionManager = this.GetComponent<PerceptionManager>();
         }
         protected override void Start()
         {
@@ -41,12 +43,12 @@ namespace SIGGD.Mobs
         protected override void OnEnable()
         {
             base.OnEnable();
-            FieldOfView.OnPlayerDetected += PlayerDetected;
+            PerceptionManager.OnPlayerDetected += PlayerDetected;
         }
         protected override void OnDisable()
         {
             base.OnDisable();
-            FieldOfView.OnPlayerDetected -= PlayerDetected;
+            PerceptionManager.OnPlayerDetected -= PlayerDetected;
         }
         protected override void OnActionEnd(IAction action)
         {
@@ -108,7 +110,7 @@ namespace SIGGD.Mobs
         {
             if (this.provider.CurrentPlan == null || (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 50))
             {
-               // AgentMoveBehaviour.EnableSprint();
+               //AgentMoveBehaviour.EnableSprint();
                 this.provider.RequestGoal<KillPlayerGoal>(true);
             } else
             {
