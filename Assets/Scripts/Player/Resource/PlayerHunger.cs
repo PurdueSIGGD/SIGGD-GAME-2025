@@ -14,13 +14,16 @@ public class PlayerHunger : MonoBehaviour
         set => currentHunger = Mathf.Clamp(value, 0, maxHunger);
     }
 
-    private float currentHunger;
+    private float currentHunger = -1f;
     private float hungerDamageTimer = 0f;     // tracks time since last starvation tick
     private EntityHealthManager playerHealth;
 
     void Start()
     {
-        currentHunger = maxHunger;
+        if (currentHunger < 0)
+        {
+            currentHunger = maxHunger;
+        }
         playerHealth = GetComponent<EntityHealthManager>();
     }
 

@@ -26,8 +26,23 @@ public class PlayerDataSaveModule : ISaveModule
         playerData = SerializationUtility.DeserializeValue<PlayerSaveData>(bytes, DataFormat.Binary);
         
         player.transform.position = playerData.Position;
-        health.CurrentHealth = playerData.curHealth;
-        hunger.CurrentHunger = playerData.curHunger;
+        if (playerData.curHealth < 0)
+        {
+            health.CurrentHealth = health.MaxHealth;
+        }
+        else
+        {
+            health.CurrentHealth = playerData.curHealth;
+        }
+
+        if (playerData.curHunger < 0)
+        {
+            hunger.CurrentHunger = hunger.MaxHunger;
+        }
+        else
+        {
+            hunger.CurrentHunger = playerData.curHunger;
+        }
 
         return true;
     }
