@@ -838,16 +838,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56f95ac11603413f81dd0374fa57c154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  receiverType: 0
   questOutcome: {fileID: 11400000, guid: 5b9178e1e167c488db3130da6209ad2f, type: 2}
   executionStrategy:
-    rid: 6772710492548366432
-  canBeDeactivated: 1
+    rid: 6772710560966901762
   references:
     version: 2
     RefIds:
-    - rid: 6772710492548366432
-      type: {class: TestExecutionStrategy, ns: , asm: Assembly-CSharp}
-      data: 
+    - rid: 6772710560966901762
+      type: {class: ModifyTimerExecutionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        eventBroadcaster: {fileID: 1219471552}
+        modificationType: 5
+        timeValue: 0
 --- !u!114 &883850265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -993,6 +996,100 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &1219471549
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1219471550}
+  - component: {fileID: 1219471552}
+  - component: {fileID: 1219471551}
+  - component: {fileID: 1219471553}
+  m_Layer: 0
+  m_Name: TimerEvent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1219471550
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219471549}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1422573645}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1219471551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219471549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56f95ac11603413f81dd0374fa57c154, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  receiverType: 2
+  questOutcome: {fileID: 11400000, guid: ba6f0d1b114b34e1c896f7a0143e5887, type: 2}
+  executionStrategy:
+    rid: 6772710560966901851
+  references:
+    version: 2
+    RefIds:
+    - rid: 6772710560966901851
+      type: {class: TriggerExternalEventExecutionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        externalEventTriggerer: {fileID: 1219471553}
+--- !u!114 &1219471552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219471549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af569df637aa4208a730abcf22e46b70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectiveKey: {fileID: 11400000, guid: ebfd24e7f56774aac8231c523cf4740c, type: 2}
+  conditionStrategy:
+    rid: 6772710560966901760
+  references:
+    version: 2
+    RefIds:
+    - rid: 6772710560966901760
+      type: {class: TimerConditionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        duration: 5
+        timeScale: 1
+        pauseOnComplete: 0
+        singleUse: 0
+--- !u!114 &1219471553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219471549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e6b016daae948308ed5409a1b471ee3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1263047025
 GameObject:
   m_ObjectHideFlags: 0
@@ -1190,6 +1287,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 883850262}
+  - {fileID: 1219471550}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1422573646

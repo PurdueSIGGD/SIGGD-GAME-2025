@@ -10,8 +10,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Quest Outcome", menuName = "Quests/Quest Outcome")]
 public class QuestOutcome : QuestObjective
 {
-    public int maxCompletions = 1;
-    
     [Header("Quest Condition")]
     [SerializeReference] public ICondition<QuestOutcome> questCondition;
 

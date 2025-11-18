@@ -8,12 +8,24 @@ using UnityEngine;
  */
 public class QuestEventReceiver : MonoBehaviour
 {
+    public enum ReceiverType
+    {
+        TriggerOnceAlways, // cannot be reset once triggered after a positive broadcast
+        CanBeDeactivatedToRetrigger, // can be reset when negatively broadcasted
+        // and retriggered when positively broadcasted again
+        AlwaysTriggers, // always triggers when the event is positively broadcasted
+    }
+    
+    public ReceiverType receiverType = ReceiverType.TriggerOnceAlways;
+    
     public QuestOutcome questOutcome;
     [SerializeReference] public IQuestExecutionStrategy executionStrategy;
     
-    public bool canBeDeactivated = true;
+    private bool CanBeDeactivated => receiverType != ReceiverType.TriggerOnceAlways;
 
     private EventBinding<QuestBroadcastEvent> eventBinding;
+    
+    private bool AlwaysActive => receiverType == ReceiverType.AlwaysTriggers;
     
     private bool isTriggered;
 
@@ -60,7 +72,7 @@ public class QuestEventReceiver : MonoBehaviour
 
     private void TryTrigger()
     {
-        if (!isTriggered)
+        if (!isTriggered || AlwaysActive)
         {
             Debug.Log($"QuestEventReceiver: Triggering quest outcome");
             var instance = QuestManager.Instance.GetOrCreateInstance(questOutcome);
@@ -81,7 +93,7 @@ public class QuestEventReceiver : MonoBehaviour
     
     private void Deactivate()
     {
-        if (isTriggered && canBeDeactivated)
+        if (isTriggered && CanBeDeactivated)
         {
             isTriggered = false;
             executionStrategy?.Deactivate();

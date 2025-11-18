@@ -25,7 +25,7 @@ public class QuestObjectiveInstance
     public QuestObjectiveInstance(QuestObjective objective)
     {
         this.objective = objective;
-        this.maxCompletions = objective is QuestOutcome q ? q.maxCompletions : 1;
+        this.maxCompletions = objective.maxCompletions;
     }
 
     /**
@@ -45,6 +45,7 @@ public class QuestObjectiveInstance
             return false;
         }
         
+        Debug.Log($"[QuestOutcomeInstance] Marking conditions met for objective: {objective.name}. Current count: {conditionsMetCount}, Max completions: {maxCompletions}.");
         conditionsMetCount = Mathf.Clamp(conditionsMetCount + 1, 0, maxCompletions > 0 ? maxCompletions : int.MaxValue);
         Debug.Log($"[QuestOutcomeInstance] Conditions met: {objective.name} (Count: {conditionsMetCount}/{maxCompletions})");
         return true;
@@ -81,6 +82,7 @@ public class QuestObjectiveInstance
      */
     public void ResetCompletions()
     {
+        Debug.Log($"[QuestOutcomeInstance] Resetting objective {objective.name}.");
         conditionsMetCount = 0;
     }
 }

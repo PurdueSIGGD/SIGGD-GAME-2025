@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   description: Enter the trigger in scene 1, then load scene 2, then enter either
     trigger in that scene
-  maxCompletions: 0
+  maxCompletions: 4
   questCondition:
     rid: 6772710492548366426
   references:
@@ -24,12 +24,7 @@ MonoBehaviour:
       type: {class: 'AndCondition`1[[QuestOutcome, Assembly-CSharp]]', ns: Extensions.CustomMath.LogicComposition, asm: Assembly-CSharp}
       data:
         children:
-        - rid: 6772710492548366427
         - rid: 6772710492548366428
-    - rid: 6772710492548366427
-      type: {class: ObjectiveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        objectiveKey: {fileID: 11400000, guid: fcbd7b2f0af5f4672a50e9c39b1cc275, type: 2}
     - rid: 6772710492548366428
       type: {class: 'OrCondition`1[[QuestOutcome, Assembly-CSharp]]', ns: Extensions.CustomMath.LogicComposition, asm: Assembly-CSharp}
       data:

@@ -10,4 +10,5 @@ public class QuestObjective : ScriptableObject
 {
     [Header("Objective Description")]
     [TextArea] public string description;
+    public int maxCompletions = 1;
 }

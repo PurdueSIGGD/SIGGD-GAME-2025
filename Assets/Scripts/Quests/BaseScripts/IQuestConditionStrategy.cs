@@ -97,13 +97,15 @@ public abstract class IQuestConditionStrategy
      * <returns>True if the condition is met, false otherwise.</returns>
      */
     public abstract bool Evaluate();
+    
 
     /**
      * <summary>
-     * Indicates whether the strategy should continue to check the condition after it has been triggered.
+     * Indicates whether the strategy should continue to run update-based logic after it has been triggered.
      * </summary>
      *
-     * <returns>True if the strategy should stop checking after being triggered, false otherwise.</returns>
+     * <returns>True if the strategy should stop running logic each frame after being triggered,
+     * false otherwise.</returns>
      */
     public abstract bool StopIfTriggered();
 }
