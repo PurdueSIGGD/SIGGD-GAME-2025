@@ -25,7 +25,6 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
         if (Instance != null)
         {
             // this hopefully will never be seen
@@ -45,10 +44,6 @@ public class AudioManager : MonoBehaviour
         {
             levelMusic = await FMODEvents.instance.initializeMusic("LevelMusic");
         }
-        if (initAmbiance)
-        {
-            ambience = await FMODEvents.instance.initializeAmbience("testAmbience");
-        }
 
         ambianceTimer = Random.Range(ambianceInterval.x, ambianceInterval.y);
         UnityEngine.Debug.Log($"Next random ambience in {ambianceTimer:F1} seconds");
@@ -65,7 +60,7 @@ public class AudioManager : MonoBehaviour
         }
 
         ambianceTimer -= Time.deltaTime;
-        if (ambience.isValid() && ambianceTimer < 0)
+        if (ambianceTimer < 0)
         {
             Vector3 randomDir = new(Random.Range(-1, 1), Random.Range(-1, 1));
             float randomDist = Random.Range(ambianceSpawnDist.x, ambianceSpawnDist.y);
@@ -97,7 +92,7 @@ public class AudioManager : MonoBehaviour
     {
         // NOTE: - string area refers to the parameter sheet in FMOD called 'area'
         //       - enum is cast to float because thats what FMOD wants I guess
-        levelMusic.setParameterByName("area", (float)area);
+        levelMusic.setParameterByName("area", (int)area);
         UnityEngine.Debug.Log("setting music area to " + area);
     }
 
@@ -148,7 +143,7 @@ public class AudioManager : MonoBehaviour
         EventReference randomEvent = randomList[index];
 
         RuntimeManager.PlayOneShot(randomEvent, worldPos);
-        UnityEngine.Debug.Log("Played random ambience: " + randomEvent.Path);
+        UnityEngine.Debug.Log("Played random ambience: " + randomEvent);
     }
 
     private void OnDestroy()

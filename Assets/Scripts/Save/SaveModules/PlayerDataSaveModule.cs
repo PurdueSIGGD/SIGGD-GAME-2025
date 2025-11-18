@@ -1,7 +1,7 @@
 using Sirenix.Serialization;
 using UnityEngine;
 
-public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
+public class PlayerDataSaveModule : ISaveModule
 {
     private static string savePath = $"{FileManager.savesDirectory}/playerData";
 
@@ -15,15 +15,15 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
 
     public bool deserialize()
     {
-        if (!FileManager.Instance.FileExists(savePath)) return false;
-        byte[] bytes = FileManager.Instance.ReadFile(savePath);
-        playerData = SerializationUtility.DeserializeValue<PlayerSaveData>(bytes, DataFormat.JSON);
-        
         if (!player) player = PlayerID.Instance.gameObject;
         if (!playerCam) playerCam = PlayerID.Instance.GetComponent<FirstPersonCamera>();
         if (!health) health = PlayerID.Instance.GetComponent<EntityHealthManager>();
         if (!hunger) hunger = PlayerID.Instance.GetComponent<PlayerHunger>();
         playerData ??= new PlayerSaveData();
+
+        if (!FileManager.Instance.FileExists(savePath)) return false;
+        byte[] bytes = FileManager.Instance.ReadFile(savePath);
+        playerData = SerializationUtility.DeserializeValue<PlayerSaveData>(bytes, DataFormat.Binary);
         
         player.transform.position = playerData.Position;
         health.CurrentHealth = playerData.curHealth;
@@ -55,7 +55,7 @@ public class PlayerDataSaveModule : MonoBehaviour, ISaveModule
         playerData.curHealth = health.CurrentHealth;
         playerData.curHunger = hunger.CurrentHunger;
         
-        byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.JSON);
+        byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);
         FileManager.Instance.WriteFile(savePath, bytes);
 
         return true;

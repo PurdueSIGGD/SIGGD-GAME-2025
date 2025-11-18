@@ -1,8 +1,6 @@
 using UnityEngine;
 using FMOD.Studio;
 using FMOD;
-using FMODUnity;
-using UnityEditor.SearchService;
 using Utility;
 
 public class PlayerMovement : MonoBehaviour
@@ -32,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     private PlayerStateMachine psm;
     private bool isGrounded;
     private bool isSprinting;
+    private bool isCrouching;
     private bool isFalling;
     public bool canMove = true;
 
@@ -71,6 +70,7 @@ public class PlayerMovement : MonoBehaviour
 
         CalculateGravity();
         isSprinting = PlayerInput.Instance.sprintInput;
+        isCrouching = psm.IsCrouched;
         isGrounded = psm.IsGrounded;
         isFalling = psm.IsFalling;
     }
@@ -84,8 +84,25 @@ public class PlayerMovement : MonoBehaviour
             Vector2 moveInput = PlayerInput.Instance.movementInput;
 
             float speed = (isSprinting && !isFalling) ? moveData.sprintSpeed : moveData.walkSpeed;
+            if (isCrouching == true) {
+                speed = moveData.crouchSpeed;
+            }
+
             Run(moveInput, speed * Time.fixedDeltaTime);
         }
+        else if (isGrounded)
+        {
+            Vector2 moveInput = PlayerInput.Instance.movementInput;
+
+            float speed = 0f;
+            Run(moveInput, speed * Time.fixedDeltaTime);
+        }
+
+        /*if (isGrounded && !IsMoving)
+        {
+            //rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
+            //rb.angularVelocity = new Vector3(0f, rb.angularVelocity.y, 0f);
+        } */
     }
 
     #region State Methods
@@ -140,6 +157,9 @@ public class PlayerMovement : MonoBehaviour
         Vector3 movementForce = speedDiff * accelRate;
         movementForce.y = 0; // prevent any vertical forces from being applied here
 
+        //TEMP FIX
+        if (isGrounded && !IsMoving && rb.linearVelocity.magnitude <= 0.05f) return;
+
         rb.AddForce(movementForce, ForceMode.Acceleration);
     }
 
@@ -186,6 +206,9 @@ public class PlayerMovement : MonoBehaviour
      */
     private void ApplyGravity()
     {
+        // TEST
+        //if (isGrounded) return;
+
         float usedGravityScale = GravityScale;
         if (IsClimbing == true)
         { // while climbing, gravity is unaffected by gravity scale
