@@ -34,8 +34,6 @@ public class ItemInfo : ScriptableObject
 
     [SerializeField] public Image itemImage; // image icon for item in inventory
 
-    [SerializeField] public bool isCraftable; // whether or not the item can be crafted
-
     [SerializeField] public bool isIngredient; // whether or not the item can be used as an ingredient for crafting
 
     [SerializeField] public int maxStackCount = 1; // max number of this item in a stack
@@ -49,7 +47,6 @@ public class ItemInfo : ScriptableObject
     public void log() { 
         Debug.Log("Item Type: " +  itemType);
         Debug.Log("Item Name: " + itemName);
-        Debug.Log("Is Craftable: " + isCraftable);
         Debug.Log("Is Ingredient: " + isIngredient);
         Debug.Log("Max Stack Count: " + maxStackCount);
         Debug.Log("Description: " + description);

@@ -328,15 +328,18 @@ public class Inventory : Singleton<Inventory>, IInventory
         // otherwise replace current selected item
 
     }
-    
+
     /**
      * <summary>
-     * Removes item from inventory
+     * Removes an item from the inventory. Returns true if the item was successfully removed, false otherwise.
      * </summary>
-     * <param name="item">Item to remove</param>
-     * <param name="count">Amount of items to remove</param>
+     *
+     * <param name="item">The item to remove.</param>
+     * <param name="count">The number of items to remove.</param>
+     *
+     * <returns>True if the item was successfully removed, false otherwise.</returns>
      */
-    public void RemoveItem(ItemInfo item, int count)
+    public bool RemoveItem(ItemInfo item, int count)
     {
         for (int i = 0; i < inventory.Length; i++) { // take into account removing across multiple stacks
             if (inventory[i].itemInfo.itemName == item.itemName) {
@@ -348,7 +351,7 @@ public class Inventory : Singleton<Inventory>, IInventory
                         inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
                     }
                     inventory[i].UpdateSlot();
-                    return; // done removing
+                    return true; // done removing
                 }
                 else { // not enough in this stack; remove entire stack and keep looping
                     count -= inventory[i].count; // reduce the number of items left that need to be removed
@@ -358,6 +361,7 @@ public class Inventory : Singleton<Inventory>, IInventory
                 }
             }
         }
+        return false;
     }
 
     /// <summary>
