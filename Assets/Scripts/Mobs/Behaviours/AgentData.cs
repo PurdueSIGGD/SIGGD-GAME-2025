@@ -13,6 +13,7 @@ namespace SIGGD.Mobs
         // Use this for initialization
         private EntityHealthManager healthManager;
         private StaminaBehaviour staminaBehaviour;
+        private NavMeshAgent agent;
         public int desperationLevel;
         public int powerLevel;
         public float energyLevel;
@@ -25,13 +26,20 @@ namespace SIGGD.Mobs
 
         private void Awake()
         {
+            agent = GetComponent<NavMeshAgent>();
             EntityHealthManager healthManager = GetComponent<EntityHealthManager>();
             StaminaBehaviour staminaBehaviour = GetComponent<StaminaBehaviour>();
+            NavMeshQueryFilter filter = new NavMeshQueryFilter();
+            filter.agentTypeID = agent.agentTypeID;
+            filter.areaMask = NavMesh.AllAreas;
+            /*
             var filter = new NavMeshQueryFilter
             {
-                //agentTypeID = NavMesh.GetSettingsByID(1).agentTypeID,
+                agentTypeID = agent.agentTypeID, 
                 areaMask = NavMesh.AllAreas
             };
+            */
+           // NavMeshQueryFilter navMeshQueryFilter = new nav
         }
         void Start()
         {
@@ -41,7 +49,6 @@ namespace SIGGD.Mobs
             aggressionLevel = 1;
         }
 
-        // Update is called once per frame
         void Update()
         {
 

@@ -29,7 +29,6 @@ namespace SIGGD.Goap
                 return;
             }
             navMeshAgent.SetDestination(meshDest);
-            Debug.Log(meshDest);
         }
         public static Vector3 MovePartialPath2(NavMeshAgent navMeshAgent, Vector3 destination, float distanceToTravel) {
             NavMeshPath path = new NavMeshPath();

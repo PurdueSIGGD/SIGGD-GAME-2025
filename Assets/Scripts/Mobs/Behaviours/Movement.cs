@@ -2,11 +2,13 @@ using UnityEngine;
 using UnityEngine.AI;
 using Utility;
 using SIGGD.Mobs;
+using Sirenix.OdinInspector;
 namespace SIGGD.Mobs
 {
     public class Movement : MonoBehaviour
     {
-        public float speed = 12f;
+        [ShowInInspector]
+        private float speed;
         public float baseSpeed = 12f;
         public float rotationSpeed = 25f;
         public float pathUpdateRate = 0.2f;
@@ -23,8 +25,8 @@ namespace SIGGD.Mobs
         {
             rb = GetComponent<Rigidbody>();
             agent = GetComponent<NavMeshAgent>();
-
             agent.updateRotation = false;
+            speed = baseSpeed;
         }
 
         public void MoveTowards(Vector3 desiredDir, float speedMulti)

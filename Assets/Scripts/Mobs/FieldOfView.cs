@@ -50,14 +50,6 @@ public class FieldOfView : MonoBehaviour
         StartCoroutine(FOVRoutine());
 
     }
-    public enum TargetType
-    {
-        Player,
-        Prey,
-        Predator
-    } 
-
-    // Update is called once per frame
     void Update()
     {
     }
@@ -89,8 +81,6 @@ public class FieldOfView : MonoBehaviour
                     continue;
 
                 detected[target] = new DetectedTarget(hitColliders[i].gameObject, 1, Time.time);
-                //seenTargets.Add(collider.gameObject);
-                //if (gameObject.CompareTag("Player")) playerTarget = collider.gameObject;
             }
         }
     }

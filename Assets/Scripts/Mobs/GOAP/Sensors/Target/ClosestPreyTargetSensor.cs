@@ -10,16 +10,13 @@ namespace SIGGD.Goap.Sensors
     public class ClosestPreyTargetSensor : LocalTargetSensorBase
     {
 
-        //private List<PreyBehaviour> prey;
-        private PerceptionManager perceptionManager;
-
         public override void Created()
         {
         }
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
-            perceptionManager = references.GetCachedComponent<PerceptionManager>();
+            var perceptionManager = references.GetCachedComponent<PerceptionManager>();
             var AgentHuntBehaviour = references.GetCachedComponent<AgentHuntBehaviour>();
             if (AgentHuntBehaviour.currentTargetOfHunt != null && AgentHuntBehaviour.currentTargetOfHunt.activeInHierarchy)
                 return new TransformTarget(AgentHuntBehaviour.currentTargetOfHunt.transform);

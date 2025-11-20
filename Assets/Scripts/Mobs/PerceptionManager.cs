@@ -21,17 +21,17 @@ public class PerceptionManager : MonoBehaviour
     void LateUpdate()
     {
         UpdateVision();
+        UpdateSmell();
         UpdatePerception();
     }
     private void UpdateVision()
     {
         PlayerTarget = fov.PlayerTarget != null ? fov.PlayerTarget.transform : null;
-        CanSeePlayer = PlayerTarget != null;
         preyTargets.Clear();
         var seen = fov.GetSeenTargets();
         foreach (var target in seen)
         {
-            if (target.TryGetComponent<PreyBehaviour>(out _))
+            if (target != null && target.TryGetComponent<PreyBehaviour>(out _))
             {
                 preyTargets.Add(target);
             }
@@ -41,7 +41,17 @@ public class PerceptionManager : MonoBehaviour
     {
         if (PlayerTarget != null)
         {
-            OnPlayerDetected?.Invoke(PlayerTarget.transform);
+            if (!CanSeePlayer)
+            {
+                OnPlayerDetected?.Invoke(PlayerTarget.transform);
+                CanSeePlayer = true;
+            }
+        } else
+        {
+            CanSeePlayer = false;
         }
+    }
+    private void UpdateSmell()
+    {
     }
 }

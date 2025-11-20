@@ -80,7 +80,6 @@ public class Smell : MonoBehaviour
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, playerLayer);
         if (hitColliders.Length < 1) return;
-        Debug.Log("TEST");
         playerPos = hitColliders[0].transform.position;
     }
     private void CalculateSmellIntensity()

@@ -31,7 +31,6 @@ namespace SIGGD.Mobs.Hyena
         }
         public void StartAttackSequence(IMonoAgent agent)
         {
-            Debug.Log("starting");
             if (isLunging) return;
             try
             {
@@ -39,7 +38,6 @@ namespace SIGGD.Mobs.Hyena
             }
             catch (Exception e)
             {
-                Debug.Log(e);
                 isLunging = false;
             }
 

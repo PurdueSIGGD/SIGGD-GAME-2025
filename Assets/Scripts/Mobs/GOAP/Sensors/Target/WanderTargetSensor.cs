@@ -21,7 +21,7 @@ namespace SIGGD.Goap.Sensors
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
-            //this.filter = references.GetCachedComponent<AgentData>().filter;
+            //var filter = references.GetCachedComponent<AgentData>().filter;
             smell = references.GetCachedComponent<Smell>();
             var random = this.LocateRandomPosition(agent, smell);
             var navPos = Pathfinding.ShiftTargetToNavMesh(random, 10f);
@@ -51,7 +51,6 @@ namespace SIGGD.Goap.Sensors
             float biasStrength = 0.7f;
             Vector3 smellPos = smell.GetSmellPos();
             Vector3 dir;
-            Debug.Log(smellPos);
             if (smellPos != Vector3.zero)
             {
                 Vector3 toSmell = (smell.GetSmellPos() - agent.Transform.position);

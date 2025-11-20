@@ -17,7 +17,6 @@ public class SpawnManager : MonoBehaviour
     {
         timer += Time.deltaTime;
         for (int i = spawners.Count - 1; i >= 0; --i) {
-            Debug.Log(i);
             if (!spawners[i].repeatSpawn)
             {
                 SpawnMob(spawners[i]);

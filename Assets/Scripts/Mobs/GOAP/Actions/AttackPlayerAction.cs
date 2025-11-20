@@ -42,9 +42,6 @@ namespace SIGGD.Goap
                     data.am.SetTarget(data.Target as TransformTarget);
                     data.am.isLunging = true;
                 }
-            } else
-            {
-                Debug.Log("realy bad i think");
             }
         }
 

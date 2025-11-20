@@ -79,7 +79,6 @@ namespace SIGGD.Mobs.Hyena
             float yDist = vectDist3D.y;
             float zDist = vectDist3D.z;
             float dist2D = Mathf.Sqrt(xDist * xDist + zDist * zDist);
-            Debug.Log(speed);
             float xVelocity = (xDist * speed) / dist2D;
             float zVelocity = (zDist * speed) / dist2D;
             float yVelocity = (yDist * speed) / dist2D + (4.9f * dist2D) / speed;
@@ -110,7 +109,6 @@ namespace SIGGD.Mobs.Hyena
         }
         public IEnumerator ExitLunge(Func<Vector3> GetTarget)
         {
-            Debug.Log("EXITTT");
             finishedExiting = false;
             AgentMoveBehaviour.enabled = false;
 
