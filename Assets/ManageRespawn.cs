@@ -9,6 +9,8 @@ public class ManageRespawn : MonoBehaviour
     [SerializeField] GameObject Player;
     UnityEngine.Vector3 respawnPoint;
     Boolean respawnSet = false;
+    public GameObject graveObj;
+    GameObject curGrave = null;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -26,9 +28,7 @@ public class ManageRespawn : MonoBehaviour
             }
             else
             {
-                Player.transform.position = respawnPoint;
-                Debug.Log("Respawned");
-
+                death();
             }
         }
     }
@@ -36,6 +36,17 @@ public class ManageRespawn : MonoBehaviour
     {
         respawnPoint = spawnPoint.position;
         respawnSet = true;
+    }
+    
+    public void death()
+    {   
+        if (curGrave)
+        {
+            Destroy(curGrave);
+        }
+        curGrave = Instantiate(graveObj, transform.position, transform.rotation);
+        Player.transform.position = respawnPoint;
+        Debug.Log("Respawned");
     }
 
 }
