@@ -90,7 +90,26 @@ public class QuestEventReceiver : MonoBehaviour
             }
         }
     }
-    
+
+    /**
+     * <summary>
+     * Forcefully stops the execution strategy regardless of receiver type.
+     * </summary>
+     *
+     * <returns>True if the strategy was active and is now stopped, false if it was not active.</returns>
+     */
+    public bool ForceStop()
+    {
+        if (isTriggered)
+        {
+            isTriggered = false;
+            executionStrategy?.Deactivate();
+            return true;
+        }
+
+        return false; // was not active
+    }
+
     private void Deactivate()
     {
         if (isTriggered && CanBeDeactivated)
