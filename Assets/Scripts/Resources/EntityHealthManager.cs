@@ -47,9 +47,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     }
 
     public void Die(DamageContext damageContext)
-    {
-        SceneManager.LoadScene("Main Menu");
-        return;
+    {  
         // disabling player death for now, remove after respawn is implemented
         if (gameObject == PlayerID.Instance.gameObject)
         {
@@ -63,13 +61,6 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         OnDeath?.Invoke(damageContext);
         Destroy(gameObject);
     }
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            DamageContext damageContext = new DamageContext();
-            Die(damageContext);
-        }
-    }
+    
 
 }
