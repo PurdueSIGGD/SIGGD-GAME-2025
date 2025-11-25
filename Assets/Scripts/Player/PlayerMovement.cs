@@ -5,8 +5,6 @@ using Utility;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private PlayerID playerID;
-
     [Header("Parameter SOs")]
     public MoveData moveData; // ScriptableObject containing movement parameters.
 
@@ -39,9 +37,8 @@ public class PlayerMovement : MonoBehaviour
     private async void Start()
     {
         rb = GetComponent<Rigidbody>(); 
-        playerID = GetComponent<PlayerID>();
         rb = GetComponent<Rigidbody>();
-        psm = playerID.stateMachine;
+        psm = PlayerID.Instance.stateMachine;
 
         // as long as you format it like this and have it in a async Start() it should all work
         footsteps = await FMODEvents.instance.getEventInstance("Footsteps");
@@ -69,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         CalculateGravity();
-        isSprinting = PlayerInput.Instance.sprintInput;
+        isSprinting = psm.IsSprinting;
         isCrouching = psm.IsCrouched;
         isGrounded = psm.IsGrounded;
         isFalling = psm.IsFalling;
@@ -119,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!canMove) return;
 
-        Transform cam = playerID.cameraMovement.transform;
+        Transform cam = PlayerID.Instance.cameraMovement.transform;
         Vector3 direction = moveInput.x * cam.right.SetY(0).normalized +
                                moveInput.y * cam.forward.SetY(0).normalized;
 
