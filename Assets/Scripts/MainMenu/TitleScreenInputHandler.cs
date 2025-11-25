@@ -16,6 +16,8 @@ public class TitleScreenInputHandler : MonoBehaviour
     {
         // loadScene = SceneManager.LoadSceneAsync(mainSceneName, LoadSceneMode.Additive);
         // loadScene.allowSceneActivation = false;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void QuitGame()
