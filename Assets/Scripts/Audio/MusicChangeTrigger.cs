@@ -10,7 +10,7 @@ public class MusicChangeTrigger : MonoBehaviour
     {
         if (collider.CompareTag("Player"))
         {
-            Debug.Log("touched area");
+            Debug.Log("crossfading musci to " + area);
             AudioManager.Instance.SetMusicArea(area);
         }
     }

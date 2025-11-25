@@ -13,13 +13,14 @@ public class FileManager : Singleton<FileManager>
 
     public FileManager()
     {
-
+        Debug.Log("FileManager Constructed!!!");
     }
 
     protected override void Awake()
     {
+        Debug.Log("FileManager Awake!!!");
+
         base.Awake();
-        Debug.Log("file manager loaded");
         mainDirectory = Path.Combine(Application.persistentDataPath, "Data");
 
         InitializeDirectoryStructure();

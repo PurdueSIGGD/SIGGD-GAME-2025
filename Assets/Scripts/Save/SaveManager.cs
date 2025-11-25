@@ -1,21 +1,35 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using UnityEngine;
+using System.IO;
 
 public class SaveManager : Singleton<SaveManager>
 {
-    public ISaveModule[] modules = {
-        new PlayerDataSaveModule()
-    };
+
+    [SerializeField] private Inventory inventory; //TEMP
+    InventoryDataSaveModule inventoryModule;
+    PlayerDataSaveModule playerModule;
+    ScreenshotSaveModule screenshotModule;
+
+    private ISaveModule[] modules;
 
     protected override void Awake()
     {
         base.Awake();
-        Debug.Log("Save Manager loaded");
-        Load();
     }
 
     void Start()
     {
-        PlayerDataSaveModule.player = PlayerID.Instance.gameObject;
+        inventoryModule = new InventoryDataSaveModule();
+        screenshotModule = new ScreenshotSaveModule();
+        playerModule = new PlayerDataSaveModule();
+
+        //InventoryDataSaveModule.inventory = inventory; // TEMP
+
+        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule};
+
+        Load();
     }
 
     private void OnApplicationQuit()
@@ -25,21 +39,16 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Load()
     {
-        foreach (ISaveModule i in modules)
-        {
-            i.deserialize();
-        }
+        foreach (var module in modules)
+            module.deserialize();
 
         return true;
     }
 
     public bool Save()
     {
-        foreach (ISaveModule i in modules)
-        {
-            i.serialize();
-        }
-
+        foreach (var module in modules)
+            module.serialize();
         return true;
     }
 }

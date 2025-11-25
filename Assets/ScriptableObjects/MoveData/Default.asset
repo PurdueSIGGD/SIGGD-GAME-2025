@@ -12,7 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 550d969026bcb49c9aa2f95d6c810d62, type: 3}
   m_Name: Default
   m_EditorClassIdentifier: 
-  walkSpeed: 10
-  sprintSpeed: 15
-  runAccelAmount: 7
-  runDecelAmount: 7
+  walkSpeed: 200
+  crouchSpeed: 125
+  sprintSpeed: 350
+  runAcceleration: 100
+  runAccelAmount: 100
+  runDeceleration: 10000
+  runDecelAmount: 10000
+  movementInterpolation: 0.5
+  standingPlayerHeight: 2
+  crouchingPlayerHeight: 1
+  jumpHeight: 1
+  jumpTimeToApex: 0.3
+  globalGravity: -9.81
+  fallGravityMult: 1
+  maxFallSpeed: 18
+  jumpHangGravityMult: 1
+  jumpHangSpeedThreshold: 2
+  jumpHangAccelerationMult: 1
+  jumpHangMaxSpeedMult: 1
+  accelInAir: 0.05
+  decelInAir: 0.05
+  coyoteTime: 0.05
+  jumpInputBufferTime: 0.14
