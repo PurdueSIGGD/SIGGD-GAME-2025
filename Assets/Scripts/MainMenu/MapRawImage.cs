@@ -9,7 +9,6 @@ public class MapRawImage : MonoBehaviour
     void Start()
     {
         SceneManager.LoadScene(mapSceneName, LoadSceneMode.Additive);
-        Debug.Log("MAP SCENE LOADED!!!");
     }
 
     // Update is called once per frame
