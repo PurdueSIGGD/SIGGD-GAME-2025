@@ -3,22 +3,20 @@ using UnityEngine;
 
 public class PlayerDataSaveModule : ISaveModule
 {
-    private static string savePath = $"{FileManager.savesDirectory}/playerData";
+    public PlayerSaveData playerData;
 
-    public static PlayerSaveData playerData;
-
-    public static GameObject player;
-
-    public static FirstPersonCamera playerCam;
-    public static PlayerHunger hunger;
-    public static EntityHealthManager health;
+    private readonly string savePath = $"{FileManager.savesDirectory}/playerData";
+    private GameObject player;
+    private FirstPersonCamera playerCam;
+    private PlayerHunger hunger;
+    private EntityHealthManager health;
 
     public bool deserialize()
     {
         if (!player) player = PlayerID.Instance.gameObject;
-        if (!playerCam) playerCam = PlayerID.Instance.GetComponent<FirstPersonCamera>();
-        if (!health) health = PlayerID.Instance.GetComponent<EntityHealthManager>();
-        if (!hunger) hunger = PlayerID.Instance.GetComponent<PlayerHunger>();
+        if (!playerCam) playerCam = PlayerID.Instance.cam;
+        if (!health) health = PlayerID.Instance.playerHealth;
+        if (!hunger) hunger = PlayerID.Instance.playerHunger;
         playerData ??= new PlayerSaveData();
 
         if (!FileManager.Instance.FileExists(savePath)) return false;
@@ -26,40 +24,21 @@ public class PlayerDataSaveModule : ISaveModule
         playerData = SerializationUtility.DeserializeValue<PlayerSaveData>(bytes, DataFormat.Binary);
         
         player.transform.position = playerData.Position;
-        if (playerData.curHealth < 0)
-        {
-            health.CurrentHealth = health.MaxHealth;
-        }
-        else
-        {
-            health.CurrentHealth = playerData.curHealth;
-        }
-
-        if (playerData.curHunger < 0)
-        {
-            hunger.CurrentHunger = hunger.MaxHunger;
-        }
-        else
-        {
-            hunger.CurrentHunger = playerData.curHunger;
-        }
+        playerCam.SetRotation(playerData.Rotation);
+        health.CurrentHealth = playerData.curHealth;
+        hunger.CurrentHunger = playerData.curHunger;
 
         return true;
     }
 
     public bool serialize()
     {
-        //if (player && player.TryGetComponent(out PlayerID pid))
-        //{
-        //    playerData.Position = pid.stateMachine.LastGroundedPosition;
-        //}
-
         playerCam = PlayerID.Instance.cam;
-        player = PlayerID.Instance.rb.gameObject;
-        hunger = PlayerID.Instance.GetComponent<PlayerHunger>();
-        health = PlayerID.Instance.GetComponent<EntityHealthManager>();
+        player = PlayerID.Instance.gameObject;
+        hunger = PlayerID.Instance.playerHunger;
+        health = PlayerID.Instance.playerHealth;
 
-        if (player == null || playerCam == null || health == null)
+        if (player == null || playerCam == null || hunger == null || health == null)
         {
             Debug.LogWarning("Aborting save");
             return false;
