@@ -2,7 +2,6 @@ using FMOD;
 using FMOD.Studio;
 using FMODUnity;
 using Sirenix.OdinInspector;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +10,7 @@ using Debug = UnityEngine.Debug;
 
 public class AudioManager : Singleton<AudioManager>
 {
+    [Header("If we should keep level music or ambiance on player entering this scene")]
     [SerializeField] bool initLevelMusic;
     [SerializeField] bool initRandomAmbience;
 
@@ -25,24 +25,23 @@ public class AudioManager : Singleton<AudioManager>
 
     protected override void Awake()
     {
-        base.Awake();
-        eventEmitters = new();
+        if (_instance == null)
+        {
+            _instance = this;
+            eventEmitters = new();
+        }
+        else
+        {
+            // Pass the new manager's serializefields to the existing one
+            _instance.UpdateManagerParam(initLevelMusic, initRandomAmbience, ambianceInterval, ambianceSpawnDist);
+            Destroy(gameObject);
+        }
     }
 
     private void Start()
     {
-        if (initLevelMusic)
-        {
-            FMODEvents.Instance.GetEventInstance("Level Music", instance => { 
-                levelMusic = instance;
-                levelMusic.start();
-            });
-        }
-        if (initRandomAmbience)
-        {
-            ambiancePlayer = gameObject.AddComponent<RandomAmbiancePlayer>();
-            ambiancePlayer.Init(ambianceInterval, ambianceSpawnDist, this);
-        }
+        InitMusic();
+        InitAmbience();
     }
 
     private void Update()
@@ -58,11 +57,31 @@ public class AudioManager : Singleton<AudioManager>
 #endif
     }
 
+    protected override void OnDestroy()
+    {
+        if (ambiancePlayer != null)
+        {
+            Destroy(ambiancePlayer);
+        }
+        if (eventEmitters != null)
+        {
+            foreach (StudioEventEmitter emitter in eventEmitters)
+            {
+                emitter.Stop();
+            }
+        }
+        base.OnDestroy();
+    }
+
+    #region Public Methods
+
     /// <summary>
     /// Change level music to a different region's
     /// </summary>
     public void SetMusicArea(MusicArea area)
     {
+        // TODO change is abrupt rn. Need to update to use Multi-instrument and crossfade
+        // between tracks in FMOD : )
         levelMusic.setParameterByName("area", (int)area);
         Debug.Log("setting music area to " + area);
     }
@@ -71,8 +90,6 @@ public class AudioManager : Singleton<AudioManager>
     /// Play a one shot track. Will wait until banks are loaded prior to playing. Suited for
     /// tracks like music tracks.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="worldPos"></param>
     public void PlayOneShot(string name, Vector3 worldPos = default)
     {
         StartCoroutine(PlayOneShotCoroutine(name, worldPos));
@@ -81,8 +98,6 @@ public class AudioManager : Singleton<AudioManager>
     /// <summary>
     /// Play one shot track. Suited for tracks that are better voided rather than delayed, like sfx
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="worldPos"></param>
     public void PlayOneShotNoAsync(string name, Vector3 worldPos = default)
     {
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
@@ -94,9 +109,8 @@ public class AudioManager : Singleton<AudioManager>
 
     /// <summary>
     /// When you want a sound to play continuously until it's told to stop
+    /// IMPORTANT: EventInstances must be freed via eventInstance.release after it has finished playing
     /// </summary>
-    /// <param name="eventReference"></param>
-    /// <returns></returns>
     public EventInstance CreateEventInstance(EventReference eventReference)
     {
         EventInstance eventInstance = RuntimeManager.CreateInstance(eventReference);
@@ -130,20 +144,55 @@ public class AudioManager : Singleton<AudioManager>
         return emitter;
     }
 
-    protected override void OnDestroy()
+    #endregion
+
+    #region Helper Methods    
+    /// <summary>
+    /// Allows us to update fields between scene to scene
+    /// </summary>
+    public void UpdateManagerParam(bool initLevelMusic, bool initRandomAmbience, Vector2 ambianceInterval, Vector2 ambianceSpawnDist)
     {
-        if (ambiancePlayer != null)
+        if (this.initLevelMusic != initLevelMusic)
+        {
+            this.initLevelMusic = initLevelMusic;
+            InitMusic();
+        }
+
+        this.initRandomAmbience = initRandomAmbience;
+        this.ambianceInterval = ambianceInterval;
+        this.ambianceSpawnDist = ambianceSpawnDist;
+        InitAmbience();
+    }
+
+    private void InitAmbience()
+    {
+        if (initRandomAmbience)
+        {
+            ambiancePlayer = gameObject.GetComponent<RandomAmbiancePlayer>();
+            if (ambiancePlayer == null) ambiancePlayer = gameObject.AddComponent<RandomAmbiancePlayer>();
+            ambiancePlayer.Init(ambianceInterval, ambianceSpawnDist, this);
+        }
+        else if (ambiancePlayer)
         {
             Destroy(ambiancePlayer);
         }
-        if (eventEmitters != null)
+    }
+
+    private void InitMusic()
+    {
+        if (initLevelMusic)
         {
-            foreach (StudioEventEmitter emitter in eventEmitters)
+            FMODEvents.Instance.GetEventInstance("LevelMusic", instance =>
             {
-                emitter.Stop();
-            }
+                levelMusic = instance;
+                levelMusic.start();
+            });
         }
-        base.OnDestroy();
+        else if (levelMusic.isValid())
+        {
+            levelMusic.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            levelMusic.release();
+        }
     }
 
     private IEnumerator PlayOneShotCoroutine(string name, Vector3 pos = default)
@@ -155,9 +204,11 @@ public class AudioManager : Singleton<AudioManager>
             RuntimeManager.PlayOneShot(eventRef, pos);
         }
     }
+    #endregion
 }
 
-[Serializable]
+#region Ambience player
+// Clearly I dont know how to spell ambience, I forefeit
 class RandomAmbiancePlayer : MonoBehaviour
 {
     AudioManager manager;
@@ -198,3 +249,4 @@ class RandomAmbiancePlayer : MonoBehaviour
         manager.PlayOneShot("Random Ambience", worldPos);
     }
 }
+#endregion
