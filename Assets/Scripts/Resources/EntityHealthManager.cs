@@ -14,9 +14,9 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     public static Action<DamageContext> OnHealthChanged;
     public static Action<DamageContext> OnDeath;
 
-    private void Awake()
+    void Start()
     {
-        CurrentHealth = maxHealth; // start at full health
+        if (CurrentHealth == 0) CurrentHealth = maxHealth; // start at full health
     }
 
     public void TakeDamage(DamageContext damageContext)
