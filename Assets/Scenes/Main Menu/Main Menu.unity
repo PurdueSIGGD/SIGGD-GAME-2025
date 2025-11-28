@@ -589,30 +589,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 360965240}
   m_CullTransparentMesh: 1
---- !u!1 &374519722 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6380674813148602992, guid: 79cd81a77463569c894f32f489709205, type: 3}
-  m_PrefabInstance: {fileID: 1446328672}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &374519727
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 374519722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f53200bd3d0b4b740b34687e0ddc3008, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  music:
-    Guid:
-      Data1: 314801143
-      Data2: 1250045883
-      Data3: 814641793
-      Data4: 1216042466
-    Path: event:/Music/MainMenu
 --- !u!1 &791806646
 GameObject:
   m_ObjectHideFlags: 0
@@ -1378,14 +1354,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2504983815903588609, guid: 79cd81a77463569c894f32f489709205, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2752780246185759755, guid: 79cd81a77463569c894f32f489709205, type: 3}
-      propertyPath: serializationData.Prefab
-      value: 
-      objectReference: {fileID: 2752780246185759755, guid: 79cd81a77463569c894f32f489709205, type: 3}
     - target: {fileID: 2801793908440318640, guid: 79cd81a77463569c894f32f489709205, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.50556946
@@ -1431,20 +1399,13 @@ PrefabInstance:
       value: AudioManager
       objectReference: {fileID: 0}
     - target: {fileID: 7340405253396289754, guid: 79cd81a77463569c894f32f489709205, type: 3}
-      propertyPath: initAmbiance
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7340405253396289754, guid: 79cd81a77463569c894f32f489709205, type: 3}
-      propertyPath: initLevelMusic
-      value: 0
+      propertyPath: initRandomAmbience
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6380674813148602992, guid: 79cd81a77463569c894f32f489709205, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 374519727}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79cd81a77463569c894f32f489709205, type: 3}
 --- !u!1 &1836892051
 GameObject:
@@ -1456,6 +1417,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1836892053}
   - component: {fileID: 1836892052}
+  - component: {fileID: 1836892054}
   m_Layer: 0
   m_Name: InputHandler
   m_TagString: Untagged
@@ -1477,7 +1439,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainSceneName: TestTerrainScene
   loadingPanel: {fileID: 1437764389}
-  titleMusic: {fileID: 374519727}
+  titleMusic: {fileID: 1836892054}
 --- !u!4 &1836892053
 Transform:
   m_ObjectHideFlags: 0
@@ -1493,6 +1455,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1836892054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1836892051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f53200bd3d0b4b740b34687e0ddc3008, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  music:
+    Guid:
+      Data1: 314801143
+      Data2: 1250045883
+      Data3: 814641793
+      Data4: 1216042466
+    Path: event:/Music/MainMenu
 --- !u!1 &1883493174
 GameObject:
   m_ObjectHideFlags: 0

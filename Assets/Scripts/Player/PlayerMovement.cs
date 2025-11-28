@@ -36,38 +36,19 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
 
-    private async void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody>(); 
         playerID = GetComponent<PlayerID>();
         rb = GetComponent<Rigidbody>();
         psm = playerID.stateMachine;
 
-        // as long as you format it like this and have it in a async Start() it should all work
-        footsteps = await FMODEvents.instance.getEventInstance("Footsteps");
-
+        FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
 
     }
 
     private void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.E))
-        //{
-        //    FMODEvents.instance.playOneShot("maleDeath", this.transform.position);
-        //}
-
-        //// Testing
-        //if (Input.GetKeyDown(KeyCode.F))
-        //{
-        //    UnityEngine.Debug.Log("it worked");
-        //    AudioLogManager.Instance.playAudioLog("Footsteps", gameObject); // pass in the object that the audio log is gonna play at
-        //}
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            UnityEngine.Debug.Log("Interuppting");
-            AudioLogManager.Instance.StopCurrentAudio();
-        }
-
         CalculateGravity();
         isSprinting = PlayerInput.Instance.sprintInput;
         isCrouching = psm.IsCrouched;
@@ -237,7 +218,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            footsteps.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            footsteps.stop(STOP_MODE.ALLOWFADEOUT);
         }
     }
 
