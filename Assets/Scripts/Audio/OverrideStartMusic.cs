@@ -9,7 +9,6 @@ public class OverrideStartMusic : MonoBehaviour
 
     void Start()
     {
-        //RuntimeManager.PlayOneShot(music);
         musicInstance = RuntimeManager.CreateInstance(music);
         musicInstance.start();
     }
