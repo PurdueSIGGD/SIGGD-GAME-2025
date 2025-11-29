@@ -6,7 +6,7 @@ using UnityEngine;
  */
 public class Singleton<T> : MonoBehaviour where T : Component
 {
-    private static T _instance;
+    protected static T _instance;
 
     public static T Instance // Public accessor for the singleton instance.
     {
