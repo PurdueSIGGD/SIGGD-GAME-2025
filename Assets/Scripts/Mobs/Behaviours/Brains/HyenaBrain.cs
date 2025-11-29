@@ -17,6 +17,7 @@ namespace SIGGD.Mobs
         private AgentHuntBehaviour HuntBehaviour;
         private PackBehavior PackBehaviour;
         private HyenaAttackManager HyenaAttackManager;
+        private PerceptionManager PerceptionManager;
         protected override void Awake()
         {
             this.goap = FindFirstObjectByType<GoapBehaviour>();
@@ -28,10 +29,12 @@ namespace SIGGD.Mobs
             HungerBehaviour = this.GetComponent<HungerBehaviour>();
             PackBehaviour = this.GetComponent<PackBehavior>();
             HyenaAttackManager = this.GetComponent<HyenaAttackManager>();
+            PerceptionManager = this.GetComponent<PerceptionManager>();
         }
         protected override void Start()
         {
             this.provider.RequestGoal<WanderGoal>(true);
+            this.provider.SetDistanceMultiplierSpeed(6f);
         }
         private void Update()
         {
@@ -40,24 +43,23 @@ namespace SIGGD.Mobs
         protected override void OnEnable()
         {
             base.OnEnable();
-            FieldOfView.OnPlayerDetected += PlayerDetected;
+            PerceptionManager.OnPlayerDetected += PlayerDetected;
         }
         protected override void OnDisable()
         {
             base.OnDisable();
-            FieldOfView.OnPlayerDetected -= PlayerDetected;
+            PerceptionManager.OnPlayerDetected -= PlayerDetected;
         }
-
         protected override void OnActionEnd(IAction action)
         {
             if (HyenaAttackManager.isLunging) return;
             if (this.provider.CurrentPlan == null)
             {
-                this.provider.RequestGoal<WanderGoal, DontStarveGoal>(true);
+                this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal>(true);
                 return;
             } else if (HungerBehaviour.hunger > 50)
             {
-                this.provider.RequestGoal<WanderGoal, DontStarveGoal>(false);
+                this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal>(false);
                 return;
             }               
             //this.provider.ResolveAction();
@@ -70,7 +72,7 @@ namespace SIGGD.Mobs
             if (this.provider.CurrentPlan == null) return;
             if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
             {
-                this.provider.RequestGoal<DontStarveGoal>(true);
+                this.provider.RequestGoal<DontStarveGoal, WanderGoal>(true);
             } else
             {
                 this.provider.RequestGoal<WanderGoal>(true);
@@ -103,12 +105,12 @@ namespace SIGGD.Mobs
         {
             this.provider.RequestGoal<WanderGoal>(true);
         }
-
+        // action for smell for when preyy detected 
         void PlayerDetected(Transform player)
         {
-            if (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 50)
+            if (this.provider.CurrentPlan == null || (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 50))
             {
-               // AgentMoveBehaviour.EnableSprint();
+               //AgentMoveBehaviour.EnableSprint();
                 this.provider.RequestGoal<KillPlayerGoal>(true);
             } else
             {

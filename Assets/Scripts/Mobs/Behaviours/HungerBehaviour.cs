@@ -18,7 +18,7 @@ namespace SIGGD.Mobs
         public int foodCount = 0;
 
         [SerializeField]
-        private BaseStatConfig HungerConfig;
+        private BaseStats HungerConfig;
 
         [SerializeField] private DamageContext hungerDamageContext;
 
