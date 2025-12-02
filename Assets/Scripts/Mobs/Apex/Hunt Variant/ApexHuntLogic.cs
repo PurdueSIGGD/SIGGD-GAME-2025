@@ -16,6 +16,9 @@ public class ApexHuntLogic : MonoBehaviour
     [Header("Attacking")]
     [Tooltip("Visual is the magenta circle around apex")]
     [SerializeField] float attackRange;
+    [Tooltip("Currently, the attack is set to one shot, so setting dmg in editor will not matter")]
+    [SerializeField] DamageContext attackContext;
+    [SerializeField] LayerMask attackLayerMask;
 
     [Header("Hunting")]
     [Tooltip("Time the apex will pursue the player without line of sight")]
@@ -181,9 +184,20 @@ public class ApexHuntLogic : MonoBehaviour
 
     #region Animation Func
 
+    // a one-shot attack on all entities in range, called from animator
     private void DoAnAttackThingyHere()
     {
-
+        Collider[] hits = Physics.OverlapSphere(transform.position, attackRange, attackLayerMask);
+        foreach (Collider col in hits)
+        {
+            EntityHealthManager health = col.GetComponent<EntityHealthManager>();
+            if (col != null)
+            {
+                attackContext.victim = col.gameObject;
+                attackContext.amount = health.MaxHealth;
+                health.TakeDamage(attackContext);
+            }
+        }
     }
 
     private void ExitAttackBehaviour() // called by the animator to resume updating states
