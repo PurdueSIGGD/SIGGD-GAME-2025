@@ -22,5 +22,8 @@ namespace SIGGD.Goap
 
         [GetComponent]
         public AgentMoveBehaviour mb { get; set; }
+
+        [GetComponent]
+        public PerceptionManager pm { get; set; }
     }
 }
