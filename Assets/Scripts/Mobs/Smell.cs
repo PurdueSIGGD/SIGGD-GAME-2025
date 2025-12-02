@@ -69,7 +69,7 @@ public class Smell : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, mobLayer | playerLayer);
         foreach (Collider collider in hitColliders)
         {
-            if (collider.GetComponentInParent<AgentHuntBehaviour>() != null) { 
+            if (collider.GetComponentInParent<AgentHuntBehaviour>() == null) { 
                 smellValues.Add((collider.transform.position, 0.7f));
             }
             //Transform target = collider.transform;
@@ -109,7 +109,18 @@ public class Smell : MonoBehaviour
         }
         smellPos = pos;
     }
-    public Vector3 GetSmellPos() => isPredator ? (smellPos + playerPos) : smellPos;
+    public Vector3 GetSmellPos()
+    {
+        if (smellPos == Vector3.zero) {
+            return Vector3.zero;
+        }
+        if (isPredator) {
+            return smellPos;
+        } else
+        {
+            return smellPos;
+        }
+    }
     public Vector3 GetPlayerPos() => playerPos;
     void OnDrawGizmosSelected()
     {

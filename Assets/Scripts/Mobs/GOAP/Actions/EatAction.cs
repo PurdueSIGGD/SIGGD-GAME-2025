@@ -11,6 +11,7 @@ namespace SIGGD.Goap
     {
         public override void Created()
         {
+
         }
 
         public override bool IsValid(IActionReceiver agent, Data data)

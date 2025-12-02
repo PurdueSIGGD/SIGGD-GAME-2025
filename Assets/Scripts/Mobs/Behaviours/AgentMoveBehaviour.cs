@@ -23,9 +23,6 @@ namespace SIGGD.Mobs
 
         public NavMeshAgent navMeshAgent;
 
-
-        public float speed;
-
         [SerializeField] public Transform groundCheckPoint;
         [SerializeField] public Vector3 groundCheckSize = new Vector3(0.49f, 0.3f, 0.49f);
         Vector3 smoothDir = Vector3.zero;
@@ -46,7 +43,6 @@ namespace SIGGD.Mobs
             sprint = GetComponent<StaminaBehaviour>();
             rb = GetComponent<Rigidbody>();
             sprintAllowed = false;
-            speed = 5f;
             this.navMeshAgent = this.GetComponent<NavMeshAgent>();
         }
 
@@ -100,18 +96,9 @@ namespace SIGGD.Mobs
 
             if (this.currentTarget == null)
                 return;
-            speed = 5f;
-            if (sprintAllowed)
-            {
-                if (sprint.stamina > 0)
-                {
-                    speed = 1.5f;
-                    sprint.ReduceStamina(8 * Time.fixedDeltaTime);
-                }
-            }
             Vector3 desiredDirection = NavSteering.GetSteeringDirection(navMeshAgent, currentTarget.Position, 0.1f);
 
-            move.MoveTowards(desiredDirection, 1.5f);
+            move.MoveTowards(desiredDirection, 1.0f);
 
         }
         public void Move(Vector3 dir, float speed)
@@ -137,14 +124,5 @@ namespace SIGGD.Mobs
             }
             
         }
-        public void EnableSprint()
-        {
-            sprintAllowed = true;
-        }
-        public void DisableSprint()
-        {
-            sprintAllowed = false;
-        }
-
     }
 }

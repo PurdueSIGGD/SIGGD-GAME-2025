@@ -14,6 +14,7 @@ namespace SIGGD.Mobs
         private EntityHealthManager healthManager;
         private StaminaBehaviour staminaBehaviour;
         private NavMeshAgent agent;
+        public GameObject boundaryObject;
         public int desperationLevel;
         public int powerLevel;
         public float energyLevel;
@@ -22,24 +23,20 @@ namespace SIGGD.Mobs
         private int maxPower = 0;
         private int maxDesperation = 0;
         private int maxAggression = 0;
+       // public Boundary boundary;
         public NavMeshQueryFilter filter { get; private set; }
 
         private void Awake()
         {
+            //boundary = boundaryObject.GetComponent<Boundary>();
             agent = GetComponent<NavMeshAgent>();
             EntityHealthManager healthManager = GetComponent<EntityHealthManager>();
             StaminaBehaviour staminaBehaviour = GetComponent<StaminaBehaviour>();
-            NavMeshQueryFilter filter = new NavMeshQueryFilter();
-            filter.agentTypeID = agent.agentTypeID;
-            filter.areaMask = NavMesh.AllAreas;
-            /*
-            var filter = new NavMeshQueryFilter
-            {
-                agentTypeID = agent.agentTypeID, 
-                areaMask = NavMesh.AllAreas
-            };
-            */
-           // NavMeshQueryFilter navMeshQueryFilter = new nav
+           // filter = new NavMeshQueryFilter
+            ////{
+            //   agentTypeID = agent.agentTypeID, 
+           //    areaMask = NavMesh.AllAreas
+           // };
         }
         void Start()
         {

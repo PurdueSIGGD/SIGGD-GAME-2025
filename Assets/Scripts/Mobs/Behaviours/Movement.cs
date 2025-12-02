@@ -25,17 +25,22 @@ namespace SIGGD.Mobs
         {
             rb = GetComponent<Rigidbody>();
             agent = GetComponent<NavMeshAgent>();
+            sprint = GetComponent<StaminaBehaviour>();
             agent.updateRotation = false;
             speed = baseSpeed;
         }
 
         public void MoveTowards(Vector3 desiredDir, float speedMulti)
         {
+            
             if (sprintAllowed) {
                 if (sprint.stamina > 0) {
                     speed = baseSpeed * 1.5f;
-                    sprint.ReduceStamina(8 * Time.fixedDeltaTime);
+                    sprint.ReduceStamina(50 * Time.fixedDeltaTime);
                 }
+            } else
+            {
+                speed = baseSpeed;
             }
             if (desiredDir.sqrMagnitude < 0.0001f)
                 return;

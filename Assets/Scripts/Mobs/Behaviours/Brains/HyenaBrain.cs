@@ -12,7 +12,7 @@ namespace SIGGD.Mobs
 {
     public class HyenaBrain : BaseAgentBrain
     {
-        private AgentMoveBehaviour AgentMoveBehaviour;
+        private Movement Movement;
         private HungerBehaviour HungerBehaviour;
         private AgentHuntBehaviour HuntBehaviour;
         private PackBehavior PackBehaviour;
@@ -24,7 +24,7 @@ namespace SIGGD.Mobs
             this.agent = this.GetComponent<AgentBehaviour>();
             this.provider = this.GetComponent<GoapActionProvider>();
             this.provider.AgentType = this.goap.GetAgentType(MobIds.hyena);
-            AgentMoveBehaviour = this.GetComponent<AgentMoveBehaviour>();
+            Movement = this.GetComponent<Movement>();
             HuntBehaviour = this.GetComponent<AgentHuntBehaviour>();
             HungerBehaviour = this.GetComponent<HungerBehaviour>();
             PackBehaviour = this.GetComponent<PackBehavior>();
@@ -90,27 +90,23 @@ namespace SIGGD.Mobs
         {
             if (this.provider.CurrentPlan.Action is KillPreyAction)
             {
-                //AgentMoveBehaviour.EnableSprint();
+                //Movement.EnableSprint();
             }
             if (this.provider.CurrentPlan.Goal is KillPlayerGoal)
             {
                 if (AudioManager.Instance)
                 {
-                    AudioManager.Instance.PlayOneShot(FMODEvents.instance.soundEvents["HyenaOnNoticeSFX"], transform.position);       
+                    AudioManager.Instance.PlayOneShot(FMODEvents.instance.soundEvents["HyenaOnNoticeSFX"], transform.position);
                 }
-                //AgentMoveBehaviour.EnableSprint();
+                //Movement.EnableSprint();
             }
-        }
-        private void DecideGoal()
-        {
-            this.provider.RequestGoal<WanderGoal>(true);
         }
         // action for smell for when preyy detected 
         void PlayerDetected(Transform player)
         {
             if (this.provider.CurrentPlan == null || (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 50))
             {
-               //AgentMoveBehaviour.EnableSprint();
+                Movement.EnableSprint();
                 this.provider.RequestGoal<KillPlayerGoal>(true);
             } else
             {
