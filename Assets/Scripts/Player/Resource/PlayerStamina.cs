@@ -6,6 +6,8 @@ public class PlayerStamina : MonoBehaviour
     [SerializeField] float maxStamina = 100f;
     [SerializeField] float staminaDecayRate = 2f;
     [SerializeField] float staminaRegenRate = 1f;
+    
+    private float currentStamina;
 
     public float MaxStamina => maxStamina;
     public float CurrentStamina => currentStamina;
@@ -13,11 +15,10 @@ public class PlayerStamina : MonoBehaviour
     public float currentHunger => GetComponent<PlayerHunger>().CurrentHunger;
     public float maxHunger => GetComponent<PlayerHunger>().MaxHunger;
 
-    private float currentStamina;
-
     private PlayerStateMachine psm;
 
     private bool isSprinting;
+    private bool isClimbing;
 
 
     void Start()
@@ -30,42 +31,36 @@ public class PlayerStamina : MonoBehaviour
     void Update()
     {
         isSprinting = psm.IsSprinting;
+        isClimbing = psm.IsClimbing;
         // TODO make different decay rates for each type of activity
         // TODO make a way to tell if the player is climbing/sprinting/etc
 
         // stamina decays while exerting effort (climb, sprint; jump triggers once?)
 
         Debug.Log("Stamina: " + currentStamina);
-        if (currentStamina <= 0) // if the player runs out of stamina
+        if (currentStamina <= 0) // if player runs out of stamina, stop the action they're doing
         {
-            /*if (climbing == true)
-            {
-                // fall off wall
-            }
-            else */
             if (isSprinting)
             {
                 Debug.Log("Ran out of stamina, stopped sprinting");
             }
+            if (isClimbing)
+            {
+                Debug.Log("Ran out of stamina, stopped climbing");
+            }
             // jumping should trigger once, don't need to keep checking
         }
-        /*else if (climbing == true)
+        else if (isClimbing || isSprinting)
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
         }
-        */
-        else if (isSprinting == true)
+        
+        else if (currentStamina < maxStamina) // stamina regens while not exerting effort, but can't go over max
         {
-            currentStamina -= staminaDecayRate * Time.deltaTime;
-        }
-        // stamina regens while not exerting effort
-        else if (currentStamina < maxStamina)// if the player isn't doing effort (has stamina & isn't climbing or sprinting)
-        {
-            currentStamina += staminaRegenRate * (currentHunger / maxHunger) * Time.deltaTime;
+            currentStamina += staminaRegenRate * (currentHunger / maxHunger) * Time.deltaTime; // regen stamina slower as hunger goes down
             Debug.Log("Stamina rate: " + staminaRegenRate * (currentHunger / maxHunger));
         }
     }
-
 
     public void UpdateStamina(float ammount)
     {
