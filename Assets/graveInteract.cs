@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class graveInteract : MonoBehaviour, IInteractable<IInteractor>
 {
+    private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
+
     public void OnHoverEnter(InteractableUI ui)
     {
         ui.ActivateUI(this);
@@ -18,5 +20,9 @@ public class graveInteract : MonoBehaviour, IInteractable<IInteractor>
     {
         Destroy(this.gameObject); // Remove the item from the scene
 
+    }
+    public void doSomething()
+    {
+        
     }
 }
