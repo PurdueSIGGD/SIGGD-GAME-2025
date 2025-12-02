@@ -46,6 +46,7 @@ public class ManageRespawn : MonoBehaviour
         }
         curGrave = Instantiate(graveObj, transform.position, transform.rotation);
         Player.transform.position = respawnPoint;
+        curGrave.GetComponent<graveInteract>().doSomething();
         Debug.Log("Respawned");
     }
 
