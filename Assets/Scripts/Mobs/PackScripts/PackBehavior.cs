@@ -22,6 +22,7 @@ namespace SIGGD.Mobs.PackScripts
         [SerializeField] public PackBehaviorData Data;
         PackBehavior lastNearesNeighbor;
 
+
         void Start()
         {
             myBrain = GetComponent<BaseAgentBrain>();
@@ -52,6 +53,16 @@ namespace SIGGD.Mobs.PackScripts
             {
                 myPack.RemoveFromPack(this);
             }
+        }
+        public float addRandomPackOffset(float offset)
+        {
+            if (myPack == null) return 0;
+            return myPack.addOffset(offset);
+        }
+        public void removePackOffset(float offset)
+        {
+            if (myPack == null) return;
+            myPack.removeOffset(offset);
         }
         public int GetPowerLevel()
         {

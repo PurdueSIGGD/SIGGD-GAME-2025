@@ -32,6 +32,7 @@ public class EnemyAnimator : MonoBehaviour
     }
 
     public void PlayAttack() => animator.SetTrigger("Attack");
+
     /*
     public void AttackHitboxCheck()
     {
