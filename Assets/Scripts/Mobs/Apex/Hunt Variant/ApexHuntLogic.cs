@@ -191,7 +191,7 @@ public class ApexHuntLogic : MonoBehaviour
         foreach (Collider col in hits)
         {
             EntityHealthManager health = col.GetComponent<EntityHealthManager>();
-            if (col != null)
+            if (health != null && col.gameObject != gameObject)
             {
                 attackContext.victim = col.gameObject;
                 attackContext.amount = health.MaxHealth;

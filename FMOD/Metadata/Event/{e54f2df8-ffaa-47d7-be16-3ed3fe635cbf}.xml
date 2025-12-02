@@ -5,7 +5,7 @@
 			<value>Derek1</value>
 		</property>
 		<property name="outputFormat">
-			<value>2</value>
+			<value>0</value>
 		</property>
 		<relationship name="folder">
 			<destination>{94799302-c027-4149-ba2a-d2fd74f3b9f1}</destination>
@@ -99,7 +99,9 @@
 	<object class="MixerBusEffectChain" id="{398d7dd2-bdcd-475f-bf57-1c9f09ee8dc7}">
 		<relationship name="effects">
 			<destination>{c931cf17-55fb-4044-8119-6c89b451d3de}</destination>
-			<destination>{7b3662a5-b4a4-41da-9316-6d449d206666}</destination>
+			<destination>{a4d35896-2f67-49b2-aeb1-a5bcbb34af29}</destination>
+			<destination>{8cac1df7-61ec-4fa5-b935-07b318803d1e}</destination>
+			<destination>{572115ed-24fd-4dca-85f0-398d05ace089}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{e8415d12-18f0-4943-8b85-1c307731e74e}" />
@@ -110,5 +112,25 @@
 	</object>
 	<object class="MixerBusFader" id="{d0c52594-22f5-4a7c-8eb9-2802359f5865}" />
 	<object class="MixerBusFader" id="{c931cf17-55fb-4044-8119-6c89b451d3de}" />
-	<object class="SpatialiserEffect" id="{7b3662a5-b4a4-41da-9316-6d449d206666}" />
+	<object class="DistortionEffect" id="{a4d35896-2f67-49b2-aeb1-a5bcbb34af29}">
+		<property name="level">
+			<value>0.969999969</value>
+		</property>
+	</object>
+	<object class="ThreeEQEffect" id="{8cac1df7-61ec-4fa5-b935-07b318803d1e}">
+		<property name="lowGain">
+			<value>-57</value>
+		</property>
+		<property name="highGain">
+			<value>-57</value>
+		</property>
+		<property name="crossoverSlope">
+			<value>2</value>
+		</property>
+	</object>
+	<object class="CompressorEffect" id="{572115ed-24fd-4dca-85f0-398d05ace089}">
+		<property name="gain">
+			<value>-30</value>
+		</property>
+	</object>
 </objects>
