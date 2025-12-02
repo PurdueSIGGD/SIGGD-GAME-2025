@@ -5,7 +5,7 @@ using UnityEngine;
 public class OverrideStartMusic : MonoBehaviour
 {
     [SerializeField] EventReference music;
-    private EventInstance musicInstance;
+    public EventInstance musicInstance;
 
     void Start()
     {
