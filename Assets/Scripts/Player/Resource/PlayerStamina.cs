@@ -35,27 +35,40 @@ public class PlayerStamina : MonoBehaviour
 
         // stamina decays while exerting effort (climb, sprint; jump triggers once?)
         Debug.Log("Stamina: " + currentStamina);
-        if (currentStamina <= 0) // if player runs out of stamina, stop the action they're doing
+        //if (currentStamina <= 0) // if player runs out of stamina, stop the action they're doing
+        //{
+        //    if (isSprinting)
+        //    {
+        //        Debug.Log("Ran out of stamina, stopped sprinting");
+        //    }
+        //    if (isClimbing)
+        //    {
+        //        Debug.Log("Ran out of stamina, stopped climbing");
+        //    }
+        //    // jumping should trigger once, don't need to keep checking
+        //}
+        if (isSprinting && currentStamina <= 0)
         {
-            if (isSprinting)
-            {
-                Debug.Log("Ran out of stamina, stopped sprinting");
-            }
-            if (isClimbing)
-            {
-                Debug.Log("Ran out of stamina, stopped climbing");
-            }
-            // jumping should trigger once, don't need to keep checking
+            Debug.Log("Ran out of stamina, stopped sprinting");
+        } 
+        else if (isClimbing && currentStamina <= 0)
+        {
+            Debug.Log("Ran out of stamina, stopped climbing");
         }
         else if (isClimbing || isSprinting)
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
+            if (currentStamina < 0)
+            {
+                currentStamina = 0f;
+            }
         }
-        
         else if (currentStamina < maxStamina) // stamina regens while not exerting effort, but can't go over max
         {
-            currentStamina += staminaRegenRate * (currentHunger / maxHunger) * Time.deltaTime; // regen stamina slower as hunger goes down
-            Debug.Log("Stamina rate: " + staminaRegenRate * (currentHunger / maxHunger));
+            currentStamina += staminaRegenRate * Time.deltaTime;
+            Debug.Log("Stamina rate: " + staminaRegenRate);
+            //currentStamina += staminaRegenRate * (currentHunger / maxHunger) * Time.deltaTime; // regen stamina slower as hunger goes down
+            //Debug.Log("Stamina rate: " + staminaRegenRate * (currentHunger / maxHunger));
         }
     }
 
