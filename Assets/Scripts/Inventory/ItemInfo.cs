@@ -32,7 +32,7 @@ public class ItemInfo : ScriptableObject
 
     [SerializeField] public ItemName itemName; // name of item
 
-    [SerializeField] public Image itemImage; // image icon for item in inventory
+    [SerializeField] public Sprite itemImage; // image icon for item in inventory
 
     [SerializeField] public bool isIngredient; // whether or not the item can be used as an ingredient for crafting
 

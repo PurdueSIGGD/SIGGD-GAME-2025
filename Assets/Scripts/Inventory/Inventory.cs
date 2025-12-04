@@ -261,7 +261,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     public bool Contains(ItemInfo.ItemName itemName, int count) {
         int found = 0;
         for (int i = 0; i < inventory.Length; i++) {
-            if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemName)
+            if (inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == itemName)
             {
                 found += inventory[i].count;
                 if (found >= count) {
@@ -270,6 +270,44 @@ public class Inventory : Singleton<Inventory>, IInventory
             }
         }
         return false;
+    }
+
+    /// <summary>
+    /// Crafts an item by removing the ingredients from the inventory
+    /// and adding the crafted item.
+    /// </summary>
+    /// <param name="recipe">Recipe to craft</param>
+    public void Craft(Recipe recipe) {
+        // remove the necessary amount of both items from the inventory
+        int amountToRemove = 0;
+        for (int ingredients = 0; ingredients < recipe.counts.Count; ingredients++)
+        {
+            amountToRemove = recipe.counts[ingredients];
+            for (int i = 0; i < inventory.Length; i++)
+            {
+                if (amountToRemove > 0 && inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == recipe.ingredients[ingredients].itemName)
+                {
+                    if (inventory[i].count <= amountToRemove) // remove entire stack
+                    {
+                        amountToRemove -= inventory[i].count;
+                        inventory[i].count = 0;
+                        inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                        inventory[i].UpdateSlot();
+                    }
+                    else
+                    { // remove the rest from this stack
+                        inventory[i].count -= amountToRemove;
+                        amountToRemove = 0;
+                        inventory[i].UpdateSlot();
+                    }
+                    if (amountToRemove == 0) {
+                        break;
+                    }
+                }
+            }
+        }
+        // add crafted item
+        AddItem(recipe.output, 1);
     }
 
     /// <summary>
