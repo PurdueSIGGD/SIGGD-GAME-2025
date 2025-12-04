@@ -2,7 +2,6 @@ using SIGGD.Goap;
 using SIGGD.Mobs;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
 
 public class ApexHuntLogic : MonoBehaviour
 {
@@ -28,6 +27,11 @@ public class ApexHuntLogic : MonoBehaviour
     [SerializeField] float roamRadius = 12f;
     [SerializeField] float roamInterval = 5f;
 
+    [Header("Despawn Logic")]
+    [SerializeField] float timeToDespawn = 30f;
+    [SerializeField] MeshRenderer mesh;
+
+
     private Movement move;
     private NavMeshAgent agent;
     private PerceptionManager perception;
@@ -36,11 +40,13 @@ public class ApexHuntLogic : MonoBehaviour
     private State curState = State.Hunting;
     private GameObject currentTarget;
     private float lostSightTimer;
+    private float despawnTimer;
 
     private bool isAttacking;
     private Vector3 guardLoc;
     private float roamTimer;
     private Vector3 roamTarget;
+    private Camera playerCam;
 
     void Start()
     {
@@ -50,6 +56,8 @@ public class ApexHuntLogic : MonoBehaviour
         animator = GetComponent<Animator>();
         roamTarget = transform.position;
         roamTimer = roamInterval * 0.5f;
+
+        playerCam = PlayerID.Instance.cam.GetComponentInChildren<Camera>();
     }
 
     void FixedUpdate()
@@ -66,6 +74,7 @@ public class ApexHuntLogic : MonoBehaviour
                 guardLoc = currentTarget.transform.position;
                 ChaseTarget(currentTarget.transform.position);
                 lostSightTimer = 0f;
+                despawnTimer = 0f;
                 break;
             case State.Guarding:
                 if (guardLoc == default) guardLoc = transform.position;
@@ -97,7 +106,7 @@ public class ApexHuntLogic : MonoBehaviour
         }
 
         // if can't see player, but within grace period, still prio player
-        lostSightTimer += Time.deltaTime;
+        lostSightTimer += Time.fixedDeltaTime;
         if (lostSightTimer < lostSightDuration)
         {
             if (currentTarget != null && currentTarget.CompareTag("Player"))
@@ -135,6 +144,13 @@ public class ApexHuntLogic : MonoBehaviour
             currentTarget = closest;
             curState = State.Guarding;
             return;
+        }
+
+        despawnTimer += Time.fixedDeltaTime;
+        // despawn if not see player for too long, and player don't see it 
+        if (curState == State.TBagging && despawnTimer > timeToDespawn && !IsRenderedOnScreen())
+        {
+            Destroy(gameObject);
         }
 
         currentTarget = null;
@@ -180,6 +196,14 @@ public class ApexHuntLogic : MonoBehaviour
 
         if (dist < attackRange) return true;
         return false;
+    }
+
+    private bool IsRenderedOnScreen()
+    {
+        if (!playerCam) return true;
+
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(playerCam);
+        return GeometryUtility.TestPlanesAABB(planes, mesh.bounds);
     }
 
     #region Animation Func
