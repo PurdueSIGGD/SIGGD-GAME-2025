@@ -32,11 +32,8 @@ public class PlayerStamina : MonoBehaviour
     {
         isSprinting = psm.IsSprinting;
         isClimbing = psm.IsClimbing;
-        // TODO make different decay rates for each type of activity
-        // TODO make a way to tell if the player is climbing/sprinting/etc
 
         // stamina decays while exerting effort (climb, sprint; jump triggers once?)
-
         Debug.Log("Stamina: " + currentStamina);
         if (currentStamina <= 0) // if player runs out of stamina, stop the action they're doing
         {
@@ -62,9 +59,9 @@ public class PlayerStamina : MonoBehaviour
         }
     }
 
-    public void UpdateStamina(float ammount)
+    public void UpdateStamina(float amount)
     {
-        currentStamina += ammount;
+        currentStamina += amount;
     }
 }
 
