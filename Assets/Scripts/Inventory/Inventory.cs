@@ -368,6 +368,19 @@ public class Inventory : Singleton<Inventory>, IInventory
         }
         return copy;
     }
+    public void SetInventory(UISlot[] newInv)
+    {
+        Debug.Log("here");
+        Array.Copy(newInv, inventory, newInv.Length);
+        
+        for (int i = 0; i < inventory.Length; i++)
+        {
+            //inventory[i].count = newInv[i].count;
+            //inventory[i].itemInfo = newInv[i].itemInfo;
+            inventory[i].UpdateSlot();
+        }
+        
+    }
 
     /// <summary>
     /// Drop item at index

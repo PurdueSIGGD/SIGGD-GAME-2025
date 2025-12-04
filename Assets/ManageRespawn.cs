@@ -7,6 +7,9 @@ using UnityEngine.UIElements;
 public class ManageRespawn : MonoBehaviour
 {
     [SerializeField] GameObject Player;
+    [SerializeField] GameObject inv;
+    private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
+
     UnityEngine.Vector3 respawnPoint;
     Boolean respawnSet = false;
     public GameObject graveObj;
@@ -46,7 +49,7 @@ public class ManageRespawn : MonoBehaviour
         }
         curGrave = Instantiate(graveObj, transform.position, transform.rotation);
         Player.transform.position = respawnPoint;
-        curGrave.GetComponent<graveInteract>().doSomething();
+        curGrave.GetComponent<graveInteract>().FillGrave(inv);
         Debug.Log("Respawned");
     }
 
