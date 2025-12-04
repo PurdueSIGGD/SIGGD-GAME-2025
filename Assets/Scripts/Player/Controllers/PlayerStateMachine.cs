@@ -133,7 +133,7 @@ public class PlayerStateMachine : MonoBehaviour
         animator.SetBool(Animator.StringToHash("isGrounded"), IsGrounded); 
         animator.SetBool(Animator.StringToHash("isFalling"), IsFalling);
         animator.SetBool(Animator.StringToHash("isSprinting"), PlayerInput.Instance.sprintInput);
-        animator.SetBool(Animator.StringToHash("hasStamina"), HasStamina);
+        //animator.SetBool(Animator.StringToHash("hasStamina"), HasStamina);
 
 
         if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0 && IsClimbing == false)

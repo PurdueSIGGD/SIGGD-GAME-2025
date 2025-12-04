@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
@@ -20,12 +21,16 @@ public class PlayerStamina : MonoBehaviour
     private bool isSprinting;
     private bool isClimbing;
 
+    private Animator anim;
+
+    private IEnumerator coroutine;
 
     void Start()
     {
         currentStamina = maxStamina;
         //playerStamina = GetComponent<EntityHealthManager>(); //entitystaminamanager?
         psm = PlayerID.Instance.stateMachine;
+        anim = PlayerID.Instance.GetComponent<Animator>();
     }
 
     void Update()
@@ -50,22 +55,25 @@ public class PlayerStamina : MonoBehaviour
         if (isSprinting && currentStamina <= 0)
         {
             Debug.Log("Ran out of stamina, stopped sprinting");
+            if (coroutine == null)
+            {
+                coroutine = DisableStamina();
+                StartCoroutine(coroutine);
+            }
+            
         } 
         else if (isClimbing && currentStamina <= 0)
         {
             Debug.Log("Ran out of stamina, stopped climbing");
         }
-        else if (isClimbing || isSprinting)
+        if (isClimbing || isSprinting)
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
-            if (currentStamina < 0)
-            {
-                currentStamina = 0f;
-            }
         }
         else if (currentStamina < maxStamina) // stamina regens while not exerting effort, but can't go over max
         {
             currentStamina += staminaRegenRate * Time.deltaTime;
+            currentStamina = Mathf.Min(MaxStamina, CurrentStamina);
             Debug.Log("Stamina rate: " + staminaRegenRate);
             //currentStamina += staminaRegenRate * (currentHunger / maxHunger) * Time.deltaTime; // regen stamina slower as hunger goes down
             //Debug.Log("Stamina rate: " + staminaRegenRate * (currentHunger / maxHunger));
@@ -75,6 +83,14 @@ public class PlayerStamina : MonoBehaviour
     public void UpdateStamina(float amount)
     {
         currentStamina += amount;
+    }
+
+    private IEnumerator DisableStamina()
+    {
+        anim.SetBool("hasStamina", false);
+        yield return new WaitForSeconds(5);
+        anim.SetBool("hasStamina", true);
+        coroutine = null;
     }
 }
 
