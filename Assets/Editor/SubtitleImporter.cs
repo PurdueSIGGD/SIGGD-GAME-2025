@@ -37,7 +37,7 @@ public class SubtitleImporter : EditorWindow
         }
 
         // first we get folder name (inside quotations for now)
-        Match folderMatch = Regex.Match(input, "‘([^’]+)’");
+        Match folderMatch = Regex.Match(input, @"['‘]([^'’]+)['’]");
 
         // if a folder name isnt in the input
         if (!folderMatch.Success)
@@ -64,7 +64,7 @@ public class SubtitleImporter : EditorWindow
             AssetDatabase.CreateFolder("Assets/ScriptableObjects/AudioLogs", folderName);
         }
 
-        string[] splitInput = input.Split(new[] { "-------------------------" }, StringSplitOptions.RemoveEmptyEntries);
+        string[] splitInput = input.Split(new[] { "~" }, StringSplitOptions.RemoveEmptyEntries);
 
         // this dictionary stores the object name and the data that will eventually be used to make an AudioLogObject
         Dictionary<string, List<AudioLogObject.lineInfo>> audioLines = new Dictionary<string, List<AudioLogObject.lineInfo>>();
@@ -93,8 +93,11 @@ public class SubtitleImporter : EditorWindow
                 // make sure its not empty before we parse
                 if (string.IsNullOrEmpty(trimmed)) continue;
 
-                // cut out the stage directions
-                if (trimmed.StartsWith("[") && trimmed.EndsWith("]")) continue;
+                Match stageDirectionMatch = Regex.Match(trimmed, @"^\[.*\]$");
+                if (stageDirectionMatch.Success)
+                {
+                    continue;
+                }
 
                 // getting name between {}
                 Match nameMatch = Regex.Match(trimmed, @"\{([^}]+)\}");
@@ -104,7 +107,8 @@ public class SubtitleImporter : EditorWindow
                     continue;
                 }
 
-                float secLength = -1f; // if it stays -1 then no time is found and itll error
+                float secLength = 0;
+
                 // getting timestamp between <>
                 Match timeMatch = Regex.Match(trimmed, @"<([^>]+)>");
                 if (timeMatch.Success)
@@ -119,6 +123,10 @@ public class SubtitleImporter : EditorWindow
                     trimmed = Regex.Replace(trimmed, @"<([^>]+)>", "").Trim();
                 }
 
+                trimmed = Regex.Replace(trimmed, @"\[[^\]]*\]", "").Trim();
+                trimmed = Regex.Replace(trimmed, "[\"“”]", "").Trim();
+                trimmed = trimmed.Replace("1 MC:", "").Trim();
+
                 // checking if there are multiple lines broken up by \
                 bool continuing = trimmed.EndsWith("\\");
                 if (continuing)
@@ -127,17 +135,21 @@ public class SubtitleImporter : EditorWindow
                 }
 
                 // if a time was found
-                if (secLength > 0)
+                if (secLength > 0f)
                 {
                     // make sure text has content
                     if (!string.IsNullOrEmpty(text))
                     {
-                        // store the lineInfo in the list until we make the scriptable objects later
-                        parsedLines.Add(new AudioLogObject.lineInfo
+                        if (currentSecLength > 0f)
                         {
-                            line = text.Trim(),
-                            seconds = currentSecLength
-                        });
+                            // store the lineInfo in the list until we make the scriptable objects later
+                            parsedLines.Add(new AudioLogObject.lineInfo
+                            {
+                                line = text.Trim(),
+                                seconds = currentSecLength
+                            });
+                        }
+                        
                     }
 
                     text = "";
@@ -145,26 +157,29 @@ public class SubtitleImporter : EditorWindow
                 }
 
                 // adding trimmed text to the current line
-                if (text.Length > 0)
+                if (text.Length > 0f)
                 {
                     text += " ";
                 }
 
                 text += trimmed;
-                /*
-                // the line doesnt end wtih \ so we add it to the list
-                if (!continuing && secLength > -1f && secLength != 0)
-                {
-                    parsedLines.Add(new AudioLogObject.lineInfo
-                    {
-                        line = text.Trim(),
-                        seconds = currentSecLength
-                    });
 
+                // the line doesnt end wtih \ so we add it to the list
+                if (!continuing)
+                {
+                    if (currentSecLength > 0f)
+                    {
+                        parsedLines.Add(new AudioLogObject.lineInfo
+                        {
+                            line = text.Trim(),
+                            seconds = currentSecLength
+                        });
+                    }
+                    
                     // reset for next line
                     text = "";
                     currentSecLength = 0f;
-                }*/
+                }
             }
 
             // if nothing was parsed skip the rest of the loop
