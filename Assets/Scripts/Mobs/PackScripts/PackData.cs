@@ -21,6 +21,9 @@ namespace SIGGD.Mobs.PackScripts
         Func<PackData, bool> disbandMethod; // set to 'remove from pack list' by PackManager
         bool locked = false; // handle edge cases
 
+        [SerializeField]
+        private HashSet<int> enemyCircleOffsets = new HashSet<int>();
+
         public PackData(List<PackBehavior> starterMembers, int max_members = int.MaxValue)
         {
             if (starterMembers.Count == 0)
@@ -95,6 +98,26 @@ namespace SIGGD.Mobs.PackScripts
             if (packAlpha == null) UpdateAlpha();
 
             return removedMember;
+        }
+        public float addOffset(float offset)
+        {
+            int offsetInt = (int)(offset * 10);
+            foreach (int f in enemyCircleOffsets) {
+                Debug.Log(f);
+            }
+            if (offsetInt < 0) return 0f;
+            while (enemyCircleOffsets.Contains(offsetInt))
+            {
+                offsetInt += 5;
+                if (offsetInt > 100) return 0f;
+            }
+            enemyCircleOffsets.Add(offsetInt);
+            return offsetInt * 0.1f;
+        }
+        public void removeOffset(float offset)
+        {
+            //int offsetInt = Mathf.RoundToInt(offset);
+            enemyCircleOffsets.Remove((int)(offset * 10));
         }
         public void ValidateSize(int size, int packCount)
         {
