@@ -21,7 +21,7 @@ public class CraftingMenu : Singleton<CraftingMenu>
     [SerializeField] public Button craftButton;
     [SerializeField] public Image outputImage;
 
-    [SerializeField] public Recipe test;
+    [SerializeField] public List<Recipe> testRecipes;
     public const int SPACING_DISTRIBUTION = 300;
 
     private Recipe selected;
@@ -33,7 +33,9 @@ public class CraftingMenu : Singleton<CraftingMenu>
         craftButton.onClick.AddListener(() => Craft());
         canvas = GetComponentInChildren<Canvas>();
         // Test recipe
-        AddRecipe(test);
+        foreach (Recipe recipe in testRecipes) {
+            AddRecipe(recipe);
+        }
         Disable();
     }
 
@@ -134,8 +136,8 @@ public class CraftingMenu : Singleton<CraftingMenu>
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Backslash)) {
-            AddRecipe(test);
-            Debug.Log("Added " + test.output.itemName);
+            AddRecipe(testRecipes[0]);
+            Debug.Log("Added " + testRecipes[0].output.itemName);
         }
         if (Input.GetKeyDown(KeyCode.P)) {
             if (canvas.enabled)
