@@ -54,7 +54,7 @@ public class AudioLogManager : MonoBehaviour
         }
     }
 
-    private IEnumerator startSubtitles(AudioLogObject curAudio)
+    private IEnumerator StartSubtitles(AudioLogObject curAudio)
     {
         subtitles.enabled = true;
 
@@ -71,7 +71,7 @@ public class AudioLogManager : MonoBehaviour
         logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         logSoundEvent.release();
     }
-    public void playAudioLog (string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
+    public void PlayAudioLog (string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
     {
         // the most recently called audio log will take priority over the ones called before it 
         if (lastStarted != null)
@@ -82,15 +82,14 @@ public class AudioLogManager : MonoBehaviour
 
         if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
         {
-            logSoundEvent = FMODEvents.instance.getEventInstanceNOASYNC(audioName); // audio shouldnt need to be delayed since its not being called in the start
             curPlayer = player;
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
 
-            // now that isPlaying is true nad logSoundEvent exists the 3d attributes will be getting updated and we can start the event
-            logSoundEvent.start();
+            // now that isPlaying is true and logSoundEvent exists the 3d attributes will be getting updated and we can start the event
+            AudioManager.Instance.PlayOneShot(audioName);
 
-            lastStarted = StartCoroutine(startSubtitles(foundAudio));
+            lastStarted = StartCoroutine(StartSubtitles(foundAudio));
 
             //StartCoroutine(endAudioWhenDone());
         }

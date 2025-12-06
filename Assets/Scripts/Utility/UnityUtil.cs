@@ -162,7 +162,21 @@ namespace Utility
         {
             return Vector3.Lerp(a, b, BaseDamp(damping, dt));
         }
-
+        /**
+         *
+         * <summary>
+         * Damps a Vector3 value towards a target Vector3 using spherical linear interpolation (slerp).
+         * </summary>
+         *
+         * <param name="a">The current Vector3.</param>
+         * <param name="b">The target Vector3.</param>
+         * <param name="damping">The damping factor (higher values result in faster damping).</param>
+         * <param name="dt">The delta time (time since last frame).</param>
+         */
+        public static Vector3 DampVector3Spherical(Vector3 a, Vector3 b, float damping, float dt)
+        {
+            return Vector3.Slerp(a, b, BaseDamp(damping, dt));
+        }
         /**
          *
          * <summary>
