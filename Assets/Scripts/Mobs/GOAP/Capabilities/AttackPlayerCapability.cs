@@ -13,7 +13,7 @@ namespace SIGGD.Goap.Capabilities
             var builder = new CapabilityBuilder("AttackPlayerCapability");
             builder.AddGoal<KillPlayerGoal>()
                 .AddCondition<PlayerHealth>(Comparison.SmallerThanOrEqual, 1)
-                .SetBaseCost(20);
+                .SetBaseCost(10);
             builder.AddAction<AttackPlayerAction>()
                 .AddEffect<PlayerHealth>(EffectType.Decrease)
                 .SetTarget<PlayerLocation>()

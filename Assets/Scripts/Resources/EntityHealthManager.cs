@@ -14,9 +14,9 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     public static Action<DamageContext> OnHealthChanged;
     public static Action<DamageContext> OnDeath;
 
-    private void Awake()
+    void Start()
     {
-        CurrentHealth = maxHealth; // start at full health
+        if (CurrentHealth == 0) CurrentHealth = maxHealth; // start at full health
     }
 
     public void TakeDamage(DamageContext damageContext)
@@ -47,7 +47,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     }
 
     public void Die(DamageContext damageContext)
-    {
+    {  
         // disabling player death for now, remove after respawn is implemented
         if (gameObject == PlayerID.Instance.gameObject)
         {
@@ -61,5 +61,6 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         OnDeath?.Invoke(damageContext);
         Destroy(gameObject);
     }
+    
 
 }
