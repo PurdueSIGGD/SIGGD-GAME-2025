@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-public class graveInteract : MonoBehaviour, IInteractable<IInteractor>
+public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
 {
     private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
     ItemInfo[] info;
@@ -16,13 +15,13 @@ public class graveInteract : MonoBehaviour, IInteractable<IInteractor>
         ui.ActivateUI(this);
         //Debug.Log($"Hovering over item: {itemInfo.itemName}");
     }
-    
+
     public void OnHoverExit(InteractableUI ui)
     {
         ui.DeactivateUI();
         //Debug.Log($"Stopped hovering over item: {itemInfo.itemName}");
     }
-    
+
     public void OnInteract(IInteractor interactor)
     {
         inventoryObj.SetInventory(info, count);

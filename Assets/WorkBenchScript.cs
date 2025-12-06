@@ -12,7 +12,7 @@ public class WorkBenchScript : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Player.GetComponent<ManageRespawn>().updateSpawnPoint(transform);
+            Player.GetComponent<ManageRespawn>().UpdateSpawnPoint(transform);
             Debug.Log("RespawnPoint set");
         }
     }
