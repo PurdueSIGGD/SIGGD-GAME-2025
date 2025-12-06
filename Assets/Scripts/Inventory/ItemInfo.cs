@@ -43,6 +43,9 @@ public class ItemInfo : ScriptableObject
     [SerializeReference] public IPlayerActionStrategy playerActionStrategy; // strategy pattern for player actions with the item
 
     // Maybe include reference to gameobject for instantiating?
+    // needed for placing items in the world
+    public GameObject itemPrefab; // prefab for the item in the world
+    public GameObject itemPlacementPrefab; // prefab for the item placement variant when previewing placement
 
     public void log() { 
         Debug.Log("Item Type: " +  itemType);
