@@ -39,6 +39,10 @@ namespace SIGGD.Mobs
             }
         }
         */
+        public void SatisfiedWithHunt()
+        {
+            
+        }
         public void SetHuntTarget(GameObject target)
         {
             if (currentTargetOfHunt != null)

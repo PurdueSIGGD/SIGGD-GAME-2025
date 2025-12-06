@@ -1,6 +1,7 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace SIGGD.Goap.Sensors
 {

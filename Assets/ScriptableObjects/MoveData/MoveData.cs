@@ -14,7 +14,10 @@ public class MoveData : ScriptableObject
     
     [Tooltip("Standard movement speed.")]
     public float walkSpeed = 10f;
-    
+
+    [Tooltip("Crouching movement speed.")]
+    public float crouchSpeed = 150f;
+
     [Tooltip("Sprint movement speed.")]
     public float sprintSpeed = 15f;
     
@@ -34,6 +37,12 @@ public class MoveData : ScriptableObject
 
     [Tooltip("How smoothly to interpolate between speeds. 1 is instant, 0 is no movement.")]
     public float movementInterpolation = 1;
+
+    [Header("Player Heights")]
+    [Tooltip("Collider height when standing")]
+    [SerializeField] public float standingPlayerHeight = 2f;
+    [Tooltip("Collider height when crouching. (NOTE: this value cannot be less than collider radius * 2.")]
+    [SerializeField] public float crouchingPlayerHeight = 1f;
     
     [Header("Air Movement Parameters")]
     

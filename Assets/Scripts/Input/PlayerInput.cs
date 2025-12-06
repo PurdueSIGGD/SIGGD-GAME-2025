@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class PlayerInput : Singleton<PlayerInput>
 {
     private ClimbAction climbingScript;
+    private PlayerStateMachine stateMachine;
 
     // input variable
     private PlayerInputActions inputActions = null;
@@ -31,6 +32,7 @@ public class PlayerInput : Singleton<PlayerInput>
         base.Awake();
         inputActions = new PlayerInputActions();
         climbingScript = gameObject.GetComponent<ClimbAction>();
+        stateMachine = gameObject.GetComponent<PlayerStateMachine>();
     }
 
     ////// when enabled, activate inputs
@@ -125,8 +127,26 @@ public class PlayerInput : Singleton<PlayerInput>
     private void InputCrouch(InputAction.CallbackContext callbackValue) {
         if (callbackValue.performed) { // player is holding down crouch
             crouchInput = true;
+
+            if (stateMachine.IsCrouched == false) { 
+                if (stateMachine.CanCrouch() == true) {
+                    // begin a player crouch
+                    stateMachine.ToggleCrouch(true);
+                }
+            }
         } else if (callbackValue.canceled) { // player let go of crouch
             crouchInput = false;
+
+            if (stateMachine.IsCrouched == true) { 
+                // begin a player crouch
+                bool didUnCrouch = stateMachine.ToggleCrouch(false);
+                if (didUnCrouch == false) {
+                    // oh god oh no we gotta do something the player doesn't wanna crouch anymore but
+                    // whats this?
+                    // they're still crouched!
+                    // all hope is lost.
+                }
+            }
         }
     }
     private void InputSprint(InputAction.CallbackContext callbackValue) {

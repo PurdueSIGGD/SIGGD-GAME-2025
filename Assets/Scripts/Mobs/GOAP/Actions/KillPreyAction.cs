@@ -28,14 +28,16 @@ namespace SIGGD.Goap
         }
         public override void BeforePerform(IMonoAgent agent, CommonData data)
         {
-
             float distance = Vector3.Distance(data.Target.Position, agent.Transform.position);
-            if (distance <= 25 && distance > 5)
+            if (distance <= 100 && distance > 0)
             {
-                data.am.StartAttackSequence(agent);
-                data.am.SetTarget(data.Target as TransformTarget);
-                data.am.isLunging = true;
-            }
+                if (!data.am.isLunging)
+                {
+                    data.am.StartAttackSequence(agent);
+                    data.am.SetTarget(data.Target as TransformTarget);
+                    data.am.isLunging = true;
+                }
+            } 
         }
 
         public override IActionRunState Perform(IMonoAgent agent, CommonData data, IActionContext context)

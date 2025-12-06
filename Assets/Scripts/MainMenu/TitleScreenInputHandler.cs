@@ -1,7 +1,5 @@
 using UnityEngine;
-using System;
 using UnityEngine.SceneManagement;
-using System.Collections;
 
 public class TitleScreenInputHandler : MonoBehaviour
 {
@@ -16,6 +14,8 @@ public class TitleScreenInputHandler : MonoBehaviour
     {
         // loadScene = SceneManager.LoadSceneAsync(mainSceneName, LoadSceneMode.Additive);
         // loadScene.allowSceneActivation = false;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void QuitGame()

@@ -1,11 +1,4 @@
-using JetBrains.Annotations;
-using System.Runtime.CompilerServices;
-using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
-using Utility;
-using static UnityEngine.UI.Image;
 
 // KNOWN JANK HERE:
 /*
@@ -275,6 +268,7 @@ public class ClimbAction : MonoBehaviour
         InputHand(true, Hand.RightHand, true);
         if (isHandAttached()) {
             isClimbing = true;
+            stateMachine.ToggleCrouch(false);
             SetPhantomHand(true);
         } else {
             ExitClimb(); // removes held down hands
@@ -467,7 +461,7 @@ public class ClimbAction : MonoBehaviour
             isReaching = true;
 
             RaycastHit hit;
-            Vector3 rayOrigin = transform.position;
+            Vector3 rayOrigin = cameraTransform.position;
             Vector3 cameraDirection = GetCameraDirection();
 
             bool rayHit = Physics.Raycast(rayOrigin, cameraDirection, out hit, grabRange, climbingLayerMask);
@@ -521,10 +515,7 @@ public class ClimbAction : MonoBehaviour
 
     // returns true if the object is climbable and false otherwise
     private bool IsObjectClimbable(GameObject obj) {
-        // if it has a climbable layer, and is static, it is climbable
-        bool staticTest = obj.isStatic;
-
-        return staticTest == true;
+        return true;
     }
     #endregion
 
