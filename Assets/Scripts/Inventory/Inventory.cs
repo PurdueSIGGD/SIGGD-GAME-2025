@@ -178,16 +178,6 @@ public class Inventory : Singleton<Inventory>, IInventory
     public void ShowInventory(bool enabled)
     {
         inventoryCanvas.enabled = enabled;
-        PlayerInput.Instance.DebugToggleInput(enabled);
-        Cursor.visible = enabled;
-        if (enabled)
-        {
-            Cursor.lockState = CursorLockMode.None;
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Confined;
-        }
     }
 
     public bool isEnabled() {
@@ -254,18 +244,61 @@ public class Inventory : Singleton<Inventory>, IInventory
     }
 
     /// <summary>
-    /// Searches for item in inventory and returns the index
+    /// Determines if the inventory contains a certain number of an item
     /// </summary>
     /// <param name="itemName">Name of the item</param>
-    /// <returns>Index of the item or -1 if not found</returns>
-    public int Find(ItemInfo.ItemName itemName) {
+    /// <parm name="count">The number of items to check that the inventory has</parm>
+    /// <returns>Whether or not the inventory contains enough of the item</returns>
+    public bool Contains(ItemInfo.ItemName itemName, int count) {
+        int found = 0;
         for (int i = 0; i < inventory.Length; i++) {
-            if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemName)
+            if (inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == itemName)
             {
-                return i;
+                found += inventory[i].count;
+                if (found >= count) {
+                    return true;
+                }
             }
         }
-        return -1;
+        return false;
+    }
+
+    /// <summary>
+    /// Crafts an item by removing the ingredients from the inventory
+    /// and adding the crafted item.
+    /// </summary>
+    /// <param name="recipe">Recipe to craft</param>
+    public void Craft(Recipe recipe) {
+        // remove the necessary amount of both items from the inventory
+        int amountToRemove = 0;
+        for (int ingredients = 0; ingredients < recipe.counts.Count; ingredients++)
+        {
+            amountToRemove = recipe.counts[ingredients];
+            for (int i = 0; i < inventory.Length; i++)
+            {
+                if (amountToRemove > 0 && inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == recipe.ingredients[ingredients].itemName)
+                {
+                    if (inventory[i].count <= amountToRemove) // remove entire stack
+                    {
+                        amountToRemove -= inventory[i].count;
+                        inventory[i].count = 0;
+                        inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                        inventory[i].UpdateSlot();
+                    }
+                    else
+                    { // remove the rest from this stack
+                        inventory[i].count -= amountToRemove;
+                        amountToRemove = 0;
+                        inventory[i].UpdateSlot();
+                    }
+                    if (amountToRemove == 0) {
+                        break;
+                    }
+                }
+            }
+        }
+        // add crafted item
+        AddItem(recipe.output, 1);
     }
 
     /// <summary>
@@ -324,13 +357,16 @@ public class Inventory : Singleton<Inventory>, IInventory
         // otherwise replace current selected item
 
     }
-    
+
     /**
      * <summary>
-     * Removes item from inventory
+     * Removes an item from the inventory. Returns true if the item was successfully removed, false otherwise.
      * </summary>
-     * <param name="item">Item to remove</param>
-     * <param name="count">Amount of items to remove</param>
+     *
+     * <param name="item">The item to remove.</param>
+     * <param name="count">The number of items to remove.</param>
+     *
+     * <returns>True if the item was successfully removed, false otherwise.</returns>
      */
     public bool RemoveItem(ItemInfo item, int count)
     {
