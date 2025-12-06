@@ -437,6 +437,7 @@ GameObject:
   - component: {fileID: 8144347535701236505}
   - component: {fileID: 3119809957531148067}
   - component: {fileID: 8883527331259138025}
+  - component: {fileID: 2382692356741175953}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -864,10 +865,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f59992f81fbb574b930ee14a1647b16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 0}
-  inv: {fileID: 0}
   respawnPoint: {x: 0, y: 0, z: 0}
   graveObj: {fileID: 0}
+--- !u!114 &2382692356741175953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696392301619895344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f517356cdf7dd44eb71d01b464b5501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  placementSurfaceLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
+  previewMaterial: {fileID: 2100000, guid: d8a6f60ec94ab444f8180accc3076314, type: 2}
+  validColor: {r: 0.2216981, g: 0.80244476, b: 1, a: 0}
+  invalidColor: {r: 0.5660378, g: 0.19490923, b: 0.19490923, a: 0}
+  objectDistanceFromPlayer: 2
+  raycastStartVerticalOffset: 1
+  raycastDistance: 8
+  minDistance: 1.5
+  maxDistance: 5
+  distanceChangeSpeed: 1
+  startPlaceMode: 0
 --- !u!1 &4791394868699375998
 GameObject:
   m_ObjectHideFlags: 0

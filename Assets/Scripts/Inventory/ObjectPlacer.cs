@@ -18,9 +18,9 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private Color invalidColor;
 
     [Header("Raycast Parameters")]
-    [SerializeField] private float objectDistanceFromPlayer;
-    [SerializeField] private float raycastStartVerticalOffset;
-    [SerializeField] private float raycastDistance;
+    [SerializeField] private float objectDistanceFromPlayer = 2;
+    [SerializeField] private float raycastStartVerticalOffset = 1;
+    [SerializeField] private float raycastDistance = 8;
 
     [Header("Adjustment Variables for Placement Location")]
     [SerializeField] private float minDistance = 1.5f;
