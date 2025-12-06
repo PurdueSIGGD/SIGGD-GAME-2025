@@ -204,6 +204,39 @@ public class AudioManager : Singleton<AudioManager>
             RuntimeManager.PlayOneShot(eventRef, pos);
         }
     }
+
+    private IEnumerator MusicCrossFade(EventInstance to, EventInstance from, float duration)
+    {
+        float curTime = 0f;
+
+        // if to isnt already playing play it
+        to.getPlaybackState(out PLAYBACK_STATE state);
+        if (state != PLAYBACK_STATE.PLAYING)
+        {
+            to.start();
+        }
+
+        // resetting vals to make sure it transfers right
+        from.setVolume(1f);
+        to.setVolume(0f);
+
+        while (curTime < duration)
+        {
+            curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
+            float t = curTime / duration;
+
+            from.setVolume(1f - t); // decrease
+            to.setVolume(t); // increase
+
+            yield return null; // wait for a frame in between loop runs
+        }
+
+        from.setVolume(0f);
+        to.setVolume(1f);
+
+        from.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        from.release();
+    }
     #endregion
 }
 
