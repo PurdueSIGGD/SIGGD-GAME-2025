@@ -3,7 +3,10 @@ using UnityEngine;
 
 public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
 {
+    public Action<ItemInfo, IInteractor> OnItemPickUp;
+
     public ItemInfo itemInfo;
+    
 
     public void OnHoverEnter(InteractableUI ui)
     {
@@ -21,6 +24,7 @@ public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
     {
         Debug.Log(interactor.Inventory.AddItem(itemInfo, 1));
         Debug.Log($"Item {itemInfo.itemName} picked up by interactor.");
+        OnItemPickUp?.Invoke(itemInfo, interactor);
         Destroy(this.gameObject); // Remove the item from the scene
     }
 }
