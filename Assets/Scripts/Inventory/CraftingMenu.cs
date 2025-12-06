@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.Universal.Internal;
 using UnityEngine.UI;
 
 public class CraftingMenu : Singleton<CraftingMenu>
@@ -21,6 +22,7 @@ public class CraftingMenu : Singleton<CraftingMenu>
     [SerializeField] public Image outputImage;
 
     [SerializeField] public Recipe test;
+    public const int SPACING_DISTRIBUTION = 300;
 
     private Recipe selected;
 
@@ -30,7 +32,20 @@ public class CraftingMenu : Singleton<CraftingMenu>
         base.Awake();
         craftButton.onClick.AddListener(() => Craft());
         canvas = GetComponentInChildren<Canvas>();
+        // Test recipe
+        AddRecipe(test);
         Disable();
+    }
+
+    public void ShowCraftingMenu(bool enabled) {
+        if (enabled)
+        {
+            Enable();
+        }
+        else
+        {
+            Disable();
+        }
     }
 
     public void Enable()
@@ -89,16 +104,16 @@ public class CraftingMenu : Singleton<CraftingMenu>
         ingredientPanel.gameObject.SetActive(true);
         outputName.text = recipe.output.itemName.ToString();
         description.text = recipe.output.description;
-        // TODO: set output image
-        // outputImage.sprite = recipe.output.itemImage;
+        outputImage.sprite = recipe.output.itemImage;
         craftButton.interactable = IsCraftable();
+        // update spacing of horizontal layout group based on number of ingredients in the recipe
+        ingredientPanel.gameObject.GetComponent<HorizontalLayoutGroup>().spacing = SPACING_DISTRIBUTION / recipe.ingredients.Count;
         // make list of icons and text boxes
         for (int i = 0; i < recipe.ingredients.Count; i++) {
             GameObject ingredientGroup = Instantiate(ingredientTemplate, ingredientPanel);
             ingredientGroup.transform.Find("Ingredient Name").GetComponent<TMP_Text>().text = recipe.ingredients[i].itemName.ToString();
             ingredientGroup.transform.Find("Ingredient Count").GetComponent<TMP_Text>().text = "x " + recipe.counts[i];
-            // TODO: set the image
-            // ingredientGroup.transform.Find("Ingredient Image").GetComponent<Image>().sprite = recipe.ingredients[i].itemImage;
+            ingredientGroup.transform.Find("Ingredient Image").GetComponent<Image>().sprite = recipe.ingredients[i].itemImage;
             ingredientGroups.Add(ingredientGroup);
             if (i != recipe.ingredients.Count - 1) 
             {
@@ -112,8 +127,7 @@ public class CraftingMenu : Singleton<CraftingMenu>
     public void AddRecipe(Recipe recipe) {
         GameObject button = Instantiate(buttonTemplate, contentPanel);
         button.GetComponentInChildren<TMP_Text>().text = recipe.output.itemName.ToString();
-        // TODO: set image to sprite of the item
-        // button.GetComponentInChildren<Image>().sprite = recipe.output.itemImage;
+        button.GetComponentInChildren<Image>().sprite = recipe.output.itemImage;
         button.GetComponent<Button>().onClick.AddListener(() => Select(recipe));
     }
 

@@ -177,16 +177,6 @@ public class Inventory : Singleton<Inventory>, IInventory
     public void ShowInventory(bool enabled)
     {
         inventoryCanvas.enabled = enabled;
-        PlayerInput.Instance.DebugToggleInput(enabled);
-        Cursor.visible = enabled;
-        if (enabled)
-        {
-            Cursor.lockState = CursorLockMode.None;
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Confined;
-        }
     }
 
     public bool isEnabled() {
