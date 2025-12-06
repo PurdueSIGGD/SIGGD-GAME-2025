@@ -28,6 +28,8 @@ public class Effects : MonoBehaviour
 		
 		vignetteMat?.SetFloat(_vignettePowerID, 10f);
 	}
+	
+	u
 
 	private float LerpByFunction(float start, float end, float t, Func<float, float> lerpFunction)
 	{
@@ -44,6 +46,8 @@ public class Effects : MonoBehaviour
     {
         var startRadius = 10f;
         var targetRadius = intensity;
+        
+        vignetteMat.SetFloat(_vignettePowerID, startRadius);
         
         float elapsed = 0f;
 		while (elapsed < duration)
