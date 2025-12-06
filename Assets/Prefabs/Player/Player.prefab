@@ -436,6 +436,7 @@ GameObject:
   - component: {fileID: 8821265434696849541}
   - component: {fileID: 5638831800853894958}
   - component: {fileID: 8144347535701236505}
+  - component: {fileID: 6118724045015178113}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -804,6 +805,32 @@ MonoBehaviour:
   interactionDistance: 3
   interactableUI: {fileID: 3814576680118724864}
   playerID: {fileID: 0}
+--- !u!114 &6118724045015178113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696392301619895344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f517356cdf7dd44eb71d01b464b5501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 0}
+  placementSurfaceLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
+  previewMaterial: {fileID: 2100000, guid: d8a6f60ec94ab444f8180accc3076314, type: 2}
+  validColor: {r: 0, g: 0.7499314, b: 0.9716981, a: 0}
+  invalidColor: {r: 0.6650944, g: 0.2101949, b: 0.2101949, a: 0}
+  objectDistanceFromPlayer: 2
+  raycastStartVerticalOffset: 1
+  raycastDistance: 8
+  minDistance: 1.5
+  maxDistance: 5
+  distanceChangeSpeed: 1
+  startPlaceMode: 0
 --- !u!1 &4791394868699375998
 GameObject:
   m_ObjectHideFlags: 0

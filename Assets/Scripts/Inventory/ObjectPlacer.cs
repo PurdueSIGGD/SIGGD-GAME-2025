@@ -9,7 +9,7 @@ public class ObjectPlacer : MonoBehaviour
     [Header("Placement Parameters")]
     private GameObject placeableObjectPrefab;
     private GameObject previewObjectPrefab;
-    [SerializeField] private Camera playerCamera;
+    private Camera playerCamera;
     [SerializeField] private LayerMask placementSurfaceLayerMask;
 
     [Header("Preview Material")]
@@ -42,6 +42,11 @@ public class ObjectPlacer : MonoBehaviour
             Destroy(this.gameObject);
         else
             Instance = this;
+    }
+
+    void Start()
+    {
+        playerCamera = PlayerID.Instance.cam.GetComponentInChildren<Camera>();
     }
 
     public void SetPlacementPrefabs(GameObject prefab, GameObject previewObject)
@@ -167,7 +172,7 @@ public class ObjectPlacer : MonoBehaviour
 
         // instantiate the placeable object at the current placement position
         Quaternion rotation = Quaternion.Euler(0f, playerCamera.transform.eulerAngles.y, 0f);
-        Instantiate(placeableObjectPrefab, _currentPlacementPosition, rotation, transform);
+        Instantiate(placeableObjectPrefab, _currentPlacementPosition, rotation);
 
         ExitPlacementMode();
 
