@@ -5,6 +5,7 @@ using UnityEngine;
 public class ObjectPlacer : MonoBehaviour
 {
     public static ObjectPlacer Instance { get; private set; }
+    public bool InPlacementMode => _inPlacementMode;
 
     [Header("Placement Parameters")]
     private GameObject placeableObjectPrefab;

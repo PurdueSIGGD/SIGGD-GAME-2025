@@ -54,6 +54,7 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     private void OnScroll(InputAction.CallbackContext context)
     {
+        if (ObjectPlacer.Instance.InPlacementMode) return;
         float scrollValue = context.ReadValue<float>();
         if (scrollValue == 0) return;
         int index = (selected + (int)(scrollValue)) % HotBarLength;
@@ -64,6 +65,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     }
 
     private void OnNumberKeyInput(InputAction.CallbackContext context) {
+        if (ObjectPlacer.Instance.InPlacementMode) return;
         float value = context.ReadValue<float>();
         int index = (int)(value) - 1;
         if (index >= HotBarLength) return; // since hotbar is only length 3 right now
