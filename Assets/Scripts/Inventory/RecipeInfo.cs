@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static ItemInfo;
 
 /// <summary>
 /// Singleton object in the scene.
 /// </summary>
-public class RecipeInfo : MonoBehaviour {
+public class RecipeInfo : Singleton<RecipeInfo> {
     // No, these combos don't really make any sense.
     private Dictionary<(ItemName, ItemName), ItemName> recipeBook = new() // dictionary containing all possible crafting combos
     {
@@ -28,30 +29,25 @@ public class RecipeInfo : MonoBehaviour {
         {
             name = recipeBook[key];
         }
-        return namesToItemInfos[name];
+        return NamesToItemInfos[name];
     }
 
-    private Dictionary<ItemName, ItemInfo> namesToItemInfos = new(); 
+    public Dictionary<ItemName, ItemInfo> NamesToItemInfos; 
     public RecipeInfo() {}
 
     public void Awake()
     {
+        base.Awake();
+        
+        NamesToItemInfos = new();
+        // TODO Replace potentially since runtime cost and build gets screwed up
         var items = Resources.LoadAll("", typeof(ItemInfo));
 
         foreach (var rawItemInfo in items)
         {
             var itemInfo = rawItemInfo as ItemInfo;
-            namesToItemInfos[itemInfo.itemName] = itemInfo;
+            NamesToItemInfos[itemInfo.itemName] = itemInfo;
         }
-    }
-    private static RecipeInfo instance;
-    public static RecipeInfo Get()
-    {
-        if (instance == null)
-        {
-            instance = FindFirstObjectByType<RecipeInfo>();
-        }
-        return instance;
     }
 }
 
