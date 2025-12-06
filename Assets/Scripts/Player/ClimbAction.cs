@@ -516,10 +516,6 @@ public class ClimbAction : MonoBehaviour
     // returns true if the object is climbable and false otherwise
     private bool IsObjectClimbable(GameObject obj) {
         return true;
-        // if it has a climbable layer, and is static, it is climbable
-        bool staticTest = obj.isStatic;
-
-        return staticTest == true;
     }
     #endregion
 

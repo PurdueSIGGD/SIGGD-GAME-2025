@@ -8,15 +8,19 @@ public class PlayerHunger : MonoBehaviour
     [SerializeField] DamageContext hungerDamageContext;
 
     public float MaxHunger => maxHunger;
-    public float CurrentHunger => currentHunger;
-    
-    private float currentHunger;
-    private float hungerDamageTimer = 0f;     // tracks time since last starvation tick
+    public float CurrentHunger
+    {
+        get => currentHunger;
+        set => currentHunger = Mathf.Clamp(value, 0, maxHunger);
+    }
+
+    private float currentHunger = -1;
+    private float hungerDamageTimer;     // tracks time since last starvation tick
     private EntityHealthManager playerHealth;
 
     void Start()
     {
-        currentHunger = maxHunger;
+        if (currentHunger < 0) currentHunger = maxHunger;
         playerHealth = GetComponent<EntityHealthManager>();
     }
 
@@ -25,7 +29,7 @@ public class PlayerHunger : MonoBehaviour
         //hunger goes down and takes health when starving
         if (currentHunger > 0)
         {
-            currentHunger -= hungerDecayRate * Time.deltaTime;
+            currentHunger = Mathf.Max(currentHunger - hungerDecayRate * Time.deltaTime, 0);
             hungerDamageTimer = 0f; // Reset timer if not starving
         }
         else 
@@ -40,7 +44,6 @@ public class PlayerHunger : MonoBehaviour
                 Debug.Log("Starving - Took 1 damage");
             }
         }
-
     }
 
     public void UpdateHunger(float ammount)
