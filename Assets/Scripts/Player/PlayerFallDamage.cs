@@ -142,7 +142,7 @@ public class PlayerFallDamage : MonoBehaviour
         {
             // player is in the air
             // are they falling to their death?
-            if (wasFalling == false)
+            if (wasFalling == false && rb.linearVelocity.y < 0)
             {
                 wasFalling = true;
                 timeFalling = 0;
