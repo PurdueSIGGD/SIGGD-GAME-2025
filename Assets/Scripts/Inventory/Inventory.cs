@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting;
+using System;
 
 public class Inventory : Singleton<Inventory>, IInventory
 {
@@ -391,6 +392,34 @@ public class Inventory : Singleton<Inventory>, IInventory
         }
         return false;
     }
+    public void RemoveInventory()
+    {
+        //UISlot[] copy = new UISlot[inventory.Length];
+        //Array.Copy(inventory, copy, inventory.Length);
+        for (int i = 0; i < inventory.Length; i++)
+        {
+            //copy[i].count = inventory[i].count;
+            //copy[i].itemInfo = inventory[i].itemInfo;
+            inventory[i].count = 0;
+            inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+            inventory[i].UpdateSlot();
+        }
+        //return copy;
+    }
+
+    public void SetInventory(ItemInfo[] finfo, int[] fcount)
+    {
+        Debug.Log(inventory.Length + " length");
+        //Array.Copy(newInv, inventory, newInv.Length);
+        
+        for (int i = 0; i < finfo.Length; i++)
+        {
+            inventory[i].count = fcount[i];
+            inventory[i].itemInfo = finfo[i];
+            inventory[i].UpdateSlot();
+        }
+        Debug.Log(inventory.Length + " new length");
+    }
 
     /// <summary>
     /// Drop item at index
@@ -448,6 +477,18 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <returns>Whether or not the slot is empty</returns>
     public bool IsEmpty(int index) {
         return inventory[index].count == 0;
+    }
+    public bool IsInventoryEmpty()
+    {
+        bool isEmpty = true;
+        for (int i = 0; i < inventory.Length; i++)
+        {
+            if (!IsEmpty(i))
+            {
+                isEmpty = false;
+            }
+        }
+        return isEmpty;
     }
 
     /// <summary>
