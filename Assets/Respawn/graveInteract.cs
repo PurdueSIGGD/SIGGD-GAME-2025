@@ -4,7 +4,9 @@ using UnityEngine;
 public class graveInteract : MonoBehaviour, IInteractable<IInteractor>
 {
     private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
-    GameObject inventoryObj;
+    ItemInfo[] info;
+    int[] count;
+    Inventory inventoryObj;
     void Start()
     {
         //inventoryObj = GameObject.Find("Inventory");
@@ -23,19 +25,21 @@ public class graveInteract : MonoBehaviour, IInteractable<IInteractor>
     
     public void OnInteract(IInteractor interactor)
     {
-         Debug.Log("inventoryObj = " + inventoryObj);
-    Debug.Log("Inventory component = " + inventoryObj.GetComponent<Inventory>());
-    Debug.Log("inventory = " + inventory);
-        inventoryObj.GetComponent<Inventory>().SetInventory(inventory);
+        inventoryObj.SetInventory(info, count);
         Destroy(this.gameObject); // Remove the item from the scene
-
     }
-    public void FillGrave(GameObject inv)
+    public void FillGrave(Inventory inv)
     {
         Debug.Log("grave filled");
         inventoryObj = inv;
-        inventory = new UISlot[inventoryObj.GetComponent<Inventory>().RemoveInventory().Length];
-        Array.Copy(inventoryObj.GetComponent<Inventory>().RemoveInventory(), inventory, inventoryObj.GetComponent<Inventory>().RemoveInventory().Length);
+        info = new ItemInfo[inventoryObj.GetInventory().Length];
+        count = new int[inventoryObj.GetInventory().Length];
+        for (int i = 0; i < info.Length; i++)
+        {
+            info[i] = inventoryObj.GetInventory()[i].itemInfo;
+            count[i] = inventoryObj.GetInventory()[i].count;
+        }
+        inventoryObj.RemoveInventory();
     }
 
 }
