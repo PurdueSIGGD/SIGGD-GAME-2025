@@ -15,13 +15,16 @@ public class AudioManager : Singleton<AudioManager>
     [SerializeField] bool initRandomAmbience;
 
     private List<StudioEventEmitter> eventEmitters;
-    private EventInstance levelMusic;
+    public EventInstance levelMusic;
     private bool pauseMusic;
 
     [Header("Random Ambiance Settings")]
     [SerializeField, MinMaxSlider(1, 20)] private Vector2 ambianceInterval = new(1, 20);
     [SerializeField, MinMaxSlider(0, 30)] private Vector2 ambianceSpawnDist = new(0, 30);
     private RandomAmbiancePlayer ambiancePlayer;
+
+    public Dictionary<string, EventInstance> musicEventInstances = new();
+    private bool crossfading = false;
 
     protected override void Awake()
     {
@@ -55,6 +58,11 @@ public class AudioManager : Singleton<AudioManager>
             levelMusic.setPaused(pauseMusic);
         }
 #endif
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            levelMusic.start();
+        }
     }
 
     protected override void OnDestroy()
@@ -182,11 +190,18 @@ public class AudioManager : Singleton<AudioManager>
     {
         if (initLevelMusic)
         {
-            FMODEvents.Instance.GetEventInstance("LevelMusic", instance =>
+            if (musicEventInstances.TryGetValue("LevelMusic", out var eventInstance))
             {
-                levelMusic = instance;
+                levelMusic = eventInstance;
                 levelMusic.start();
-            });
+            }
+            else
+            {
+                Debug.Log("making and adding to the dictionary");
+                FMODEvents.Instance.GetEventInstance("LevelMusic", instance => { levelMusic = instance; });
+                musicEventInstances.Add("LevelMusic", levelMusic);
+                levelMusic.start();
+            }
         }
         else if (levelMusic.isValid())
         {
@@ -205,37 +220,43 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
-    private IEnumerator MusicCrossFade(EventInstance to, EventInstance from, float duration)
+    public IEnumerator MusicCrossFade(EventInstance to, EventInstance from, float duration)
     {
-        float curTime = 0f;
-
-        // if to isnt already playing play it
-        to.getPlaybackState(out PLAYBACK_STATE state);
-        if (state != PLAYBACK_STATE.PLAYING)
+        // dictioary holding all event instances
+        if (crossfading == false)
         {
-            to.start();
+            crossfading = true;
+            float curTime = 0f;
+
+            // if to isnt already playing play it
+            to.getPlaybackState(out PLAYBACK_STATE state);
+            if (state != PLAYBACK_STATE.PLAYING)
+            {
+                to.start();
+            }
+
+            // resetting vals to make sure it transfers right
+            from.setVolume(1f);
+            to.setVolume(0f);
+
+            while (curTime < duration)
+            {
+                curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
+                float t = curTime / duration;
+
+                from.setVolume(1f - t); // decrease
+                to.setVolume(t); // increase
+
+                yield return null; // wait for a frame in between loop runs
+            }
+
+            from.setVolume(0f);
+            to.setVolume(1f);
+
+            from.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            from.release();
+            crossfading = true;
         }
-
-        // resetting vals to make sure it transfers right
-        from.setVolume(1f);
-        to.setVolume(0f);
-
-        while (curTime < duration)
-        {
-            curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
-            float t = curTime / duration;
-
-            from.setVolume(1f - t); // decrease
-            to.setVolume(t); // increase
-
-            yield return null; // wait for a frame in between loop runs
-        }
-
-        from.setVolume(0f);
-        to.setVolume(1f);
-
-        from.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        from.release();
     }
     #endregion
 }
