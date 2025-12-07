@@ -23,9 +23,6 @@ public class WorkbenchInteract : MonoBehaviour, IInteractable<IInteractor>
         if (CraftingMenu.Instance)
         {
             CraftingMenu.Instance.ShowCraftingMenu(true);
-            Cursor.lockState = CursorLockMode.Confined;
-            Cursor.visible = true;
-            PlayerInput.Instance.DebugToggleInput(true);
         }
         else
         {
