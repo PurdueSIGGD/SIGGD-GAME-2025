@@ -31,8 +31,7 @@ public class QuestEventReceiver : MonoBehaviour
 
     private void Start()
     {
-        TryTrigger();
-        
+        TryTrigger();        
     }
 
     private void OnEnable()
