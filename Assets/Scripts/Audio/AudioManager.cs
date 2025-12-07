@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Debug = UnityEngine.Debug;
+using System.Threading.Tasks;
 
 public class AudioManager : Singleton<AudioManager>
 {
@@ -187,13 +188,11 @@ public class AudioManager : Singleton<AudioManager>
         {
             if (musicEventInstances.TryGetValue("LevelMusic", out var eventInstance))
             {
-                Debug.Log("can find in dictionary");
                 levelMusic = eventInstance;
                 levelMusic.start();
             }
             else
             {
-                Debug.Log("making and adding to the dictionary");
                 FMODEvents.Instance.GetEventInstance("LevelMusic", instance => { levelMusic = instance;
                     musicEventInstances.Add("LevelMusic", levelMusic);
                     levelMusic.start();
@@ -215,11 +214,9 @@ public class AudioManager : Singleton<AudioManager>
 
     public IEnumerator MusicCrossFade(string toKey, string fromKey, float duration)
     {
-        Debug.Log("in crossfade music void");
         // dictioary holding all event instances
         if (crossfading == false)
         {
-            Debug.Log("in crossfading");
             EventInstance to = InitalizeMusicNotStart(toKey);
             EventInstance from = InitalizeMusicNotStart(fromKey);
 
@@ -230,7 +227,6 @@ public class AudioManager : Singleton<AudioManager>
             to.getPlaybackState(out PLAYBACK_STATE state);
             if (state != PLAYBACK_STATE.PLAYING)
             {
-                Debug.Log("to started");
                 to.start();
             }
 
