@@ -7,7 +7,7 @@ using UnityEngine;
  * and a flag indicating whether the objective has been completed.
  */
 [CreateAssetMenu(fileName = "New Quest Objective", menuName = "Quests/Quest Objective")]
-public class QuestObjective : SerializedScriptableObject
+public class QuestObjective : ScriptableObject
 {
     [AutoGuid, SerializeField, ReadOnly] private string guid;
     public string Guid => guid;

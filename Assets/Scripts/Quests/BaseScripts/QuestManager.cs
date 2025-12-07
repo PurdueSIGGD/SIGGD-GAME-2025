@@ -30,8 +30,6 @@ public class QuestManager : LazySingleton<QuestManager>
     {
         foreach (QuestObjective key in saveData.Keys)
         {
-            if (questInstances.ContainsKey(key)) return; // safety measure: do not modify any existing quests
-
             questInstances[key] = saveData[key];
         }
     }
