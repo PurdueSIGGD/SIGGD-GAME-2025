@@ -4,6 +4,7 @@ using static Effects;
 public class PlayerHealth : MonoBehaviour
 {
     [SerializeField] float damagePulseIntensity;
+    [SerializeField] private float duration = 1f;
 
     void OnEnable()
     {
@@ -19,6 +20,6 @@ public class PlayerHealth : MonoBehaviour
     {
         if (context.victim != PlayerID.Instance.gameObject) return;
         if (context.amount <= 0) return;
-        SpecialEffects.VignetteEffect(damagePulseIntensity);
+        SpecialEffects.VignetteEffect(damagePulseIntensity, duration);
     }
 }

@@ -5,6 +5,7 @@ public class SaveManager : Singleton<SaveManager>
     InventoryDataSaveModule inventoryModule;
     PlayerDataSaveModule playerModule;
     ScreenshotSaveModule screenshotModule;
+    QuestDataSaveModule questModule;
 
     private ISaveModule[] modules;
 
@@ -18,8 +19,9 @@ public class SaveManager : Singleton<SaveManager>
         inventoryModule = new InventoryDataSaveModule();
         screenshotModule = new ScreenshotSaveModule();
         playerModule = new PlayerDataSaveModule();
+        questModule = new QuestDataSaveModule();
 
-        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule};
+        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule, questModule};
 
         Load();
     }

@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting;
+using System;
 
 public class Inventory : Singleton<Inventory>, IInventory
 {
@@ -16,7 +17,10 @@ public class Inventory : Singleton<Inventory>, IInventory
     private List<ItemInfo> lastClickedItems = new();
 
     private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
-    [SerializeField] public ItemInfo[] itemInfos = new ItemInfo[7]; // array of all of the different types of item infos; used for loading from file
+    // [SerializeField] public ItemInfo[] itemInfos = new ItemInfo[7]; // array of all of the different types of item infos; used for loading from file
+
+    private Dictionary<string, ItemInfo> itemInfos;
+
     [SerializeField] public string[] itemNames = new string[7];
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
@@ -50,6 +54,7 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     private void OnScroll(InputAction.CallbackContext context)
     {
+        if (ObjectPlacer.Instance.InPlacementMode) return;
         float scrollValue = context.ReadValue<float>();
         if (scrollValue == 0) return;
         int index = (selected + (int)(scrollValue)) % HotBarLength;
@@ -60,6 +65,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     }
 
     private void OnNumberKeyInput(InputAction.CallbackContext context) {
+        if (ObjectPlacer.Instance.InPlacementMode) return;
         float value = context.ReadValue<float>();
         int index = (int)(value) - 1;
         if (index >= HotBarLength) return; // since hotbar is only length 3 right now
@@ -95,10 +101,17 @@ public class Inventory : Singleton<Inventory>, IInventory
             {
                 slot = inventorySlots[i].AddComponent<UISlot>();
             }
+            // Check if slot has a non-null slot.iteminfo
+            Debug.Log(slot.GetComponent<UISlot>().itemInfo == null ? "inv slot has null iteminfo!" : "inv slot good");
             inventory[i + HotBarLength] = slot;
             //SetInventorySlot(slot.index, slot);
 
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
+        }
+
+        itemInfos = new();
+        foreach (var entry in RecipeInfo.Instance.NamesToItemInfos) {
+            itemInfos[entry.Key.ToString()] = entry.Value;
         }
 
         // Load inventory info from save
@@ -114,6 +127,8 @@ public class Inventory : Singleton<Inventory>, IInventory
                 name = InventoryDataSaveModule.inventoryData.inventory[i].name;
                 if (inventory[i].count != 0)
                 {
+                    inventory[i].itemInfo = itemInfos[name];
+                    /*
                     // make iteminfo based on name
                     for (int j = 0; j < itemInfos.Length; j++)
                     {
@@ -123,11 +138,13 @@ public class Inventory : Singleton<Inventory>, IInventory
                             break;
                         }
                     }
+                    */
                 }
                 else
                 {
+                    inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
                     // make it an empty iteminfo
-                    inventory[i].itemInfo = itemInfos[0];
+                    // inventory[i].itemInfo = itemInfos[0];
                 }
                 inventory[i].UpdateSlot();
             }
@@ -140,11 +157,21 @@ public class Inventory : Singleton<Inventory>, IInventory
             {
                 inventory[i].index = i;
                 inventory[i].count = 0;
-                inventory[i].itemInfo = itemInfos[0];
+                inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
                 inventory[i].UpdateSlot();
             }
         }
         PrintInventory();
+
+        for (int i = 0; i < InventoryLength; i++)
+        {
+            // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
+            if (inventorySlots[i] == null) continue;
+
+            var uiSlot = inventorySlots[i].GetComponent<UISlot>();
+            // Check if slot has a non-null slot.iteminfo
+            Debug.Log(uiSlot.itemInfo == null ? "inv slot has null iteminfo!" : "inv slot good");
+        }
     }
 
     /// <summary>
@@ -153,16 +180,6 @@ public class Inventory : Singleton<Inventory>, IInventory
     public void ShowInventory(bool enabled)
     {
         inventoryCanvas.enabled = enabled;
-        PlayerInput.Instance.DebugToggleInput(enabled);
-        Cursor.visible = enabled;
-        if (enabled)
-        {
-            Cursor.lockState = CursorLockMode.None;
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Confined;
-        }
     }
 
     public bool isEnabled() {
@@ -177,10 +194,14 @@ public class Inventory : Singleton<Inventory>, IInventory
     void DebugOnInvSlotSelected(UISlot uiSlot)
     {
         ItemInfo item = uiSlot.itemInfo;
+        if (item == null)
+        {
+            Debug.Log("why is ui slot iteminfo still null?");
+        }
         lastClickedItems.Add(item);
         if (lastClickedItems.Count >= 2)
         {
-            var recipeInfo = RecipeInfo.Get();
+            var recipeInfo = RecipeInfo.Instance;
             Debug.Log(recipeInfo == null ? "null recipeInfo" : "recipeInfo NOT null");
 
             var a = lastClickedItems[^2].itemName; 
@@ -218,24 +239,68 @@ public class Inventory : Singleton<Inventory>, IInventory
         inventory[selected].count--;
         Debug.Log("Used " + inventory[selected].itemInfo.itemName + ", " + inventory[selected].count + " remaining");
         if (inventory[selected].count == 0) {
-            inventory[selected].itemInfo = itemInfos[0];
+            // inventory[selected].itemInfo = itemInfos[0];
+            inventory[selected].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
         }
         inventory[selected].UpdateSlot();
     }
 
     /// <summary>
-    /// Searches for item in inventory and returns the index
+    /// Determines if the inventory contains a certain number of an item
     /// </summary>
     /// <param name="itemName">Name of the item</param>
-    /// <returns>Index of the item or -1 if not found</returns>
-    public int Find(ItemInfo.ItemName itemName) {
+    /// <parm name="count">The number of items to check that the inventory has</parm>
+    /// <returns>Whether or not the inventory contains enough of the item</returns>
+    public bool Contains(ItemInfo.ItemName itemName, int count) {
+        int found = 0;
         for (int i = 0; i < inventory.Length; i++) {
-            if (inventory[i].count > 0 && inventory[i].itemInfo.itemName == itemName)
+            if (inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == itemName)
             {
-                return i;
+                found += inventory[i].count;
+                if (found >= count) {
+                    return true;
+                }
             }
         }
-        return -1;
+        return false;
+    }
+
+    /// <summary>
+    /// Crafts an item by removing the ingredients from the inventory
+    /// and adding the crafted item.
+    /// </summary>
+    /// <param name="recipe">Recipe to craft</param>
+    public void Craft(Recipe recipe) {
+        // remove the necessary amount of both items from the inventory
+        int amountToRemove = 0;
+        for (int ingredients = 0; ingredients < recipe.counts.Count; ingredients++)
+        {
+            amountToRemove = recipe.counts[ingredients];
+            for (int i = 0; i < inventory.Length; i++)
+            {
+                if (amountToRemove > 0 && inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == recipe.ingredients[ingredients].itemName)
+                {
+                    if (inventory[i].count <= amountToRemove) // remove entire stack
+                    {
+                        amountToRemove -= inventory[i].count;
+                        inventory[i].count = 0;
+                        inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                        inventory[i].UpdateSlot();
+                    }
+                    else
+                    { // remove the rest from this stack
+                        inventory[i].count -= amountToRemove;
+                        amountToRemove = 0;
+                        inventory[i].UpdateSlot();
+                    }
+                    if (amountToRemove == 0) {
+                        break;
+                    }
+                }
+            }
+        }
+        // add crafted item
+        AddItem(recipe.output, 1);
     }
 
     /// <summary>
@@ -294,33 +359,68 @@ public class Inventory : Singleton<Inventory>, IInventory
         // otherwise replace current selected item
 
     }
-    
+
     /**
      * <summary>
-     * Removes item from inventory
+     * Removes an item from the inventory. Returns true if the item was successfully removed, false otherwise.
      * </summary>
-     * <param name="item">Item to remove</param>
-     * <param name="count">Amount of items to remove</param>
-     * <returns>Whether or not the removal was successful</returns>
+     *
+     * <param name="item">The item to remove.</param>
+     * <param name="count">The number of items to remove.</param>
+     *
+     * <returns>True if the item was successfully removed, false otherwise.</returns>
      */
     public bool RemoveItem(ItemInfo item, int count)
     {
-        int index = Find(item.itemName);
-        if (index == -1) return false; // item not found
-
-        if (inventory[index].count >= count)
-        {
-            inventory[index].count -= count;
-            if (inventory[index].count == 0)
-            {
-                inventory[index].itemInfo = null;
+        for (int i = 0; i < inventory.Length; i++) { // take into account removing across multiple stacks
+            if (inventory[i].itemInfo.itemName == item.itemName) {
+                if (inventory[i].count >= count)
+                { // has enough in this stack; remove from this stack and stop looping
+                    inventory[i].count -= count;
+                    if (inventory[i].count == 0)
+                    { // check for empty slot
+                        inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                    }
+                    inventory[i].UpdateSlot();
+                    return true; // done removing
+                }
+                else { // not enough in this stack; remove entire stack and keep looping
+                    count -= inventory[i].count; // reduce the number of items left that need to be removed
+                    inventory[i].count = 0; // make the slot empty
+                    inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                    inventory[i].UpdateSlot();
+                }
             }
-            return true;
         }
-        else
+        return false;
+    }
+    public void RemoveInventory()
+    {
+        //UISlot[] copy = new UISlot[inventory.Length];
+        //Array.Copy(inventory, copy, inventory.Length);
+        for (int i = 0; i < inventory.Length; i++)
         {
-            return false; // not enough items to remove
+            //copy[i].count = inventory[i].count;
+            //copy[i].itemInfo = inventory[i].itemInfo;
+            inventory[i].count = 0;
+            inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+            inventory[i].UpdateSlot();
         }
+        //return copy;
+    }
+
+    public void SetInventory(ItemInfo[] finfo, int[] fcount)
+    {
+        Debug.Log(inventory.Length + " length");
+        //Array.Copy(newInv, inventory, newInv.Length);
+        
+        for (int i = 0; i < finfo.Length; i++)
+        {
+            inventory[i].count = fcount[i];
+            inventory[i].itemInfo = finfo[i];
+            inventory[i].UpdateSlot();
+        }
+        Debug.Log(inventory.Length + " new length");
     }
 
     /// <summary>
@@ -335,7 +435,7 @@ public class Inventory : Singleton<Inventory>, IInventory
         // remove item
         inventory[index].count--;
         if (inventory[index].count <= 0) {
-            inventory[index].itemInfo = null;
+            inventory[index].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
         }
         
         return true;
@@ -379,6 +479,18 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <returns>Whether or not the slot is empty</returns>
     public bool IsEmpty(int index) {
         return inventory[index].count == 0;
+    }
+    public bool IsInventoryEmpty()
+    {
+        bool isEmpty = true;
+        for (int i = 0; i < inventory.Length; i++)
+        {
+            if (!IsEmpty(i))
+            {
+                isEmpty = false;
+            }
+        }
+        return isEmpty;
     }
 
     /// <summary>
