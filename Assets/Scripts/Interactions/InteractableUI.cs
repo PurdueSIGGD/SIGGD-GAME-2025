@@ -45,7 +45,7 @@ public class InteractableUI : MonoBehaviour
         gameObject.SetActive(true);
     }
     
-    public void BeginInteractUI(IInteractable<PlayerInteractor> item, Action onComplete, Func<bool> exit, float duration = 3f)
+    public void BeginInteractUI(IInteractable<PlayerInteractor> item, Action onComplete, Func<bool> exit, float duration = 1f)
     {
         Debug.Log("UI Interaction Started");
         interactionTimer = duration;

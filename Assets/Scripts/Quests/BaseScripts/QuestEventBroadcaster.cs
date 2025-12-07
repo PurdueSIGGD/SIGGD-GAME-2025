@@ -55,10 +55,16 @@ public class QuestEventBroadcaster : MonoBehaviour
         
         var instance = QuestManager.Instance.GetOrCreateInstance(objectiveKey); // Get or create instance for this objective
         if (condition)
-            instance.MarkConditionsMet(); // marking objectives that are completed by this broadcaster as complete
+        {
+            if (instance.MarkConditionsMet()) // marking objectives that are completed by this broadcaster as complete
+            {
+                EventBus<QuestBroadcastEvent>.Raise(new QuestBroadcastEvent(objectiveKey, () => true));
+            }
+        }
         else
+        {
             instance.ResetCompletions(); // reset completions if the condition is not met
-        
-        EventBus<QuestBroadcastEvent>.Raise(new QuestBroadcastEvent(objectiveKey, () => condition));
+            EventBus<QuestBroadcastEvent>.Raise(new QuestBroadcastEvent(objectiveKey, () => false));
+        }
     }
 }

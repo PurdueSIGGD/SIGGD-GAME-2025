@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -8,6 +9,11 @@ public class Effects : MonoBehaviour
 	private Coroutine vignetteTask;
 
 	private static Effects instance;
+	
+	private int _vignettePowerID = Shader.PropertyToID("_VignettePower");
+	
+	Func<float, float> easeOutQuad = t => 1 - (1 - t) * (1 - t);
+	Func<float, float> easeInQuad = t => t * t;
  
 	private void Awake()
 	{
@@ -19,37 +25,55 @@ public class Effects : MonoBehaviour
 		{
 			Destroy(gameObject);
 		}
+		
+		vignetteMat?.SetFloat(_vignettePowerID, 10f);
 	}
 
-	private void VignetteEffect(float intensity) 
+	private float LerpByFunction(float start, float end, float t, Func<float, float> lerpFunction)
+	{
+		return Mathf.Lerp(start, end, lerpFunction(t));
+	}
+
+	private void VignetteEffect(float intensity, float duration = 1f) 
 	{
 		if(vignetteTask != null)
 			StopCoroutine(vignetteTask);
-		vignetteTask = StartCoroutine(vignette(intensity));
+		vignetteTask = StartCoroutine(vignette(intensity, duration));
 	}
-	private IEnumerator vignette(float intensity)
+	private IEnumerator vignette(float intensity, float duration)
     {
-        var targetRadius = 10f;
-        var startRadius = intensity;
-        var curRadius = startRadius;
-
-		for (float t = 0; curRadius != targetRadius; t += Time.deltaTime)
+        var startRadius = 10f;
+        var targetRadius = intensity;
+        
+        vignetteMat.SetFloat(_vignettePowerID, startRadius);
+        
+        float elapsed = 0f;
+		while (elapsed < duration)
 		{
-			curRadius = Mathf.Clamp(Mathf.Lerp(startRadius, targetRadius, t), 1, targetRadius);
-			vignetteMat.SetFloat("_VignettePower", curRadius);
+			elapsed += Time.deltaTime;
+			float t = elapsed / duration;
+			float currentRadius = LerpByFunction(startRadius, targetRadius, t, easeInQuad);
+			vignetteMat.SetFloat(_vignettePowerID, currentRadius);
 			yield return null;
 		}
-		for (float t = 0; curRadius < startRadius; t += Time.deltaTime)
+
+		elapsed = 0f;
+		while (elapsed < duration)
 		{
-			curRadius = Mathf.Lerp(targetRadius, startRadius, t);
-			vignetteMat.SetFloat("_VignettePower", curRadius);
+			elapsed += Time.deltaTime;
+			float t = elapsed / duration;
+			float currentRadius = LerpByFunction(targetRadius, startRadius, t, easeOutQuad);
+			vignetteMat.SetFloat(_vignettePowerID, currentRadius);
 			yield return null;
 		}
 		
-	}
+		vignetteMat.SetFloat(_vignettePowerID, startRadius);
+		vignetteTask = null;
+
+    }
 
 	public static class SpecialEffects
 	{
-		public static void VignetteEffect(float intensity) => instance.VignetteEffect(intensity);
+		public static void VignetteEffect(float intensity, float duration) => instance.VignetteEffect(intensity, duration);
 	}
 }

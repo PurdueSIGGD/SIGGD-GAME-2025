@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7875183222690378620
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 498610064396424665}
+  - component: {fileID: 3261621519307352602}
+  - component: {fileID: 474820382325767586}
+  - component: {fileID: 7010719076726088822}
+  m_Layer: 0
+  m_Name: Apex Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &498610064396424665
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7875183222690378620}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.0115651, y: 0.69499004, z: 26.490606}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3261621519307352602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7875183222690378620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4ed89a54adc71a4d8d534a64b50a42a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnPosition: {x: 0, y: 0, z: 0}
+  spawnRange: {x: 60, y: 60}
+  spawnAttempts: 30
+  apexPrefab: {fileID: 2827905534200682142, guid: 6253eac03dc69b142bce7ea0278fb96f, type: 3}
+--- !u!114 &474820382325767586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7875183222690378620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af569df637aa4208a730abcf22e46b70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectiveKey: {fileID: 11400000, guid: ebfd24e7f56774aac8231c523cf4740c, type: 2}
+  conditionStrategy:
+    rid: 8869038009947521110
+  references:
+    version: 2
+    RefIds:
+    - rid: 8869038009947521110
+      type: {class: TimerConditionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        duration: 5
+        timeScale: 1
+        pauseOnComplete: 0
+        singleUse: 0
+--- !u!114 &7010719076726088822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7875183222690378620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56f95ac11603413f81dd0374fa57c154, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  receiverType: 0
+  questOutcome: {fileID: 11400000, guid: ba6f0d1b114b34e1c896f7a0143e5887, type: 2}
+  executionStrategy:
+    rid: 8869038009947521120
+  references:
+    version: 2
+    RefIds:
+    - rid: 8869038009947521120
+      type: {class: TriggerExternalEventExecutionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        externalEventTriggerer: {fileID: 3261621519307352602}

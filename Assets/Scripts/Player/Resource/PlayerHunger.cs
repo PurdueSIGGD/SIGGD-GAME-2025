@@ -50,6 +50,11 @@ public class PlayerHunger : MonoBehaviour
     {
         currentHunger += ammount;
     }
+
+    public void ResetHunger()
+    {
+        currentHunger = maxHunger;
+    }
 }
 
 
