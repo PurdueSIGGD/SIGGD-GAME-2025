@@ -47,20 +47,20 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     }
 
     public void Die(DamageContext damageContext)
-    {  
-        // disabling player death for now, remove after respawn is implemented
-        if (gameObject == PlayerID.Instance.gameObject)
-        {
-            SceneManager.LoadScene("Main Menu");
-            return;
-        }
-
-
+    {
         // TODO: Add death logic here, for now just destroying game object
         Debug.Log($"{gameObject.name} has died.");
         OnDeath?.Invoke(damageContext);
-        Destroy(gameObject);
-    }
-    
 
+        // player will be respawned, so do not destroy
+        if (gameObject != PlayerID.Instance.gameObject)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public void ResetHealth()
+    {
+        CurrentHealth = MaxHealth;
+    }
 }
