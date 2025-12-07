@@ -4,6 +4,7 @@ public class touchBoxCrossFadeTest : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        AudioManager.Instance.MusicCrossFade(levelMusic);
+        Debug.Log("crossfading music");
+        StartCoroutine(AudioManager.Instance.MusicCrossFade("Vain Redemption", "LevelMusic", 1f));
     }
 }

@@ -43,7 +43,7 @@ public class AudioManager : Singleton<AudioManager>
 
     private void Start()
     {
-        InitMusic();
+        InitMusicOnStart();
         InitAmbience();
     }
 
@@ -58,11 +58,6 @@ public class AudioManager : Singleton<AudioManager>
             levelMusic.setPaused(pauseMusic);
         }
 #endif
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            levelMusic.start();
-        }
     }
 
     protected override void OnDestroy()
@@ -163,7 +158,7 @@ public class AudioManager : Singleton<AudioManager>
         if (this.initLevelMusic != initLevelMusic)
         {
             this.initLevelMusic = initLevelMusic;
-            InitMusic();
+            InitMusicOnStart();
         }
 
         this.initRandomAmbience = initRandomAmbience;
@@ -186,27 +181,25 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
-    private void InitMusic()
+    private void InitMusicOnStart()
     {
         if (initLevelMusic)
         {
             if (musicEventInstances.TryGetValue("LevelMusic", out var eventInstance))
             {
+                Debug.Log("can find in dictionary");
                 levelMusic = eventInstance;
                 levelMusic.start();
             }
             else
             {
                 Debug.Log("making and adding to the dictionary");
-                FMODEvents.Instance.GetEventInstance("LevelMusic", instance => { levelMusic = instance; });
-                musicEventInstances.Add("LevelMusic", levelMusic);
-                levelMusic.start();
+                FMODEvents.Instance.GetEventInstance("LevelMusic", instance => { levelMusic = instance;
+                    musicEventInstances.Add("LevelMusic", levelMusic);
+                    levelMusic.start();
+                });
+                
             }
-        }
-        else if (levelMusic.isValid())
-        {
-            levelMusic.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-            levelMusic.release();
         }
     }
 
@@ -220,11 +213,16 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
-    public IEnumerator MusicCrossFade(EventInstance to, EventInstance from, float duration)
+    public IEnumerator MusicCrossFade(string toKey, string fromKey, float duration)
     {
+        Debug.Log("in crossfade music void");
         // dictioary holding all event instances
         if (crossfading == false)
         {
+            Debug.Log("in crossfading");
+            EventInstance to = InitalizeMusicNotStart(toKey);
+            EventInstance from = InitalizeMusicNotStart(fromKey);
+
             crossfading = true;
             float curTime = 0f;
 
@@ -232,6 +230,7 @@ public class AudioManager : Singleton<AudioManager>
             to.getPlaybackState(out PLAYBACK_STATE state);
             if (state != PLAYBACK_STATE.PLAYING)
             {
+                Debug.Log("to started");
                 to.start();
             }
 
@@ -244,6 +243,8 @@ public class AudioManager : Singleton<AudioManager>
                 curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
                 float t = curTime / duration;
 
+                //Debug.Log("CurTime: " + curTime + " t: " + t);
+
                 from.setVolume(1f - t); // decrease
                 to.setVolume(t); // increase
 
@@ -255,7 +256,25 @@ public class AudioManager : Singleton<AudioManager>
 
             from.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
             from.release();
-            crossfading = true;
+            crossfading = false;
+        }
+    }
+
+    // also checks to see if that music event is already in the dict
+    private EventInstance InitalizeMusicNotStart(string key)
+    {
+        if (musicEventInstances.TryGetValue(key, out var eventInstance))
+        {
+            EventInstance tempInstance = eventInstance;
+            return tempInstance;
+        }
+        else
+        {
+            EventInstance tempInstance = FMODEvents.Instance.GetEventInstanceNoAsync(key);
+
+            musicEventInstances.Add(key, tempInstance);
+
+            return tempInstance;
         }
     }
     #endregion

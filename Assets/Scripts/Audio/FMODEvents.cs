@@ -54,6 +54,17 @@ public class FMODEvents : Singleton<FMODEvents>
     {
         StartCoroutine(GetEventInstanceCoroutine(key, callback));
     }
+    
+    public EventInstance GetEventInstanceNoAsync(string key)
+    {
+        if (soundEvents.TryGetValue(key, out var eventRef))
+        {
+            return RuntimeManager.CreateInstance(eventRef);
+        }
+
+        Debug.LogWarning("FMODEvents: could not find event of name: " + key);
+        return default;
+    }
 
 
     private IEnumerator LoadBanksCoroutine()
