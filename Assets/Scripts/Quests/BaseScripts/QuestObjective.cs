@@ -1,3 +1,5 @@
+using Sirenix.OdinInspector;
+using System;
 using UnityEngine;
 
 /**
@@ -5,10 +7,11 @@ using UnityEngine;
  * and a flag indicating whether the objective has been completed.
  */
 [CreateAssetMenu(fileName = "New Quest Objective", menuName = "Quests/Quest Objective")]
-
-public class QuestObjective : ScriptableObject
+public class QuestObjective : SerializedScriptableObject
 {
-    [Header("Objective Description")]
-    [TextArea] public string description;
+    [AutoGuid, SerializeField, ReadOnly] private string guid;
+    public string Guid => guid;
+
+    [Header("Objective Description"), TextArea] public string description;
     public int maxCompletions = 1;
 }
