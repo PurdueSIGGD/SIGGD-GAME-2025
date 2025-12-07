@@ -37,7 +37,7 @@ public class BoundaryWindow : EditorWindow
         if (GUILayout.Button("Clear points"))
         {
             Undo.RecordObject(boundary, "Clear All Points");
-            boundary.points.Clear();
+            boundary.ClearPoints();
             SceneView.RepaintAll();
         }
         if (GUILayout.Button("Bake boundary"))
@@ -45,6 +45,12 @@ public class BoundaryWindow : EditorWindow
             Undo.RecordObject(boundary, "Bake boundary");
             boundary.BakePoints();
             boundary.PrintBoundary();
+        }
+        if (GUILayout.Button("Revert To Bake"))
+        {
+            Undo.RecordObject(boundary, "Revert to bake");
+            boundary.ConvertFromBaked();
+            SceneView.RepaintAll();
         }
     }
 

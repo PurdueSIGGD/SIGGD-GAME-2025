@@ -16,23 +16,32 @@ public class BoundaryEditor : Editor
 
     private void OnSceneGUI()
     {
-        Handles.color = Color.cyan;
+
+        if (boundary == null) return;
+
+        if (Application.isPlaying)
+        {
+            DrawOnly(Color.white);
+            return;
+        }
+
         Event e = Event.current;
         int bestIndex = -1;
-        Color boundaryColor = boundary.IsBaked ? Color.cyan : Color.red;
+        Color boundaryColor = boundary.isBaked ? Color.cyan : Color.red;
 
-        for (int i = 0; i < boundary.points.Count; i++)
+        for (int i = 0; i < boundary.GetPointsCount(); i++)
         {
-            Vector2 point = boundary.points[i];
-            Vector3 local3D = new Vector3(point.x, 0f, point.y);
-            Vector3 worldPoint = boundary.transform.TransformPoint(local3D);
-            float size = HandleUtility.GetHandleSize(worldPoint) * boundary.handleSize;
+
+
+            Vector2 point2D = boundary.GetPoint(i);
+            Vector3 point3D = new Vector3(point2D.x, 0f, point2D.y);
+            float size = HandleUtility.GetHandleSize(point3D) * boundary.handleSize;
             Handles.color = (i == selectedPointIndex) ? Color.green : boundaryColor;
 
             int id = GUIUtility.GetControlID(FocusType.Passive);
 
             if (e.type == EventType.Layout)
-                HandleUtility.AddControl(id, HandleUtility.DistanceToCircle(worldPoint, size));
+                HandleUtility.AddControl(id, HandleUtility.DistanceToCircle(point3D, size));
 
             if (HandleUtility.nearestControl == id)
                 bestIndex = i;
@@ -42,7 +51,7 @@ public class BoundaryEditor : Editor
                 EditorGUI.BeginChangeCheck();
 
                 Vector3 newWorld = Handles.FreeMoveHandle(
-                    worldPoint,
+                    point3D,
                     size,
                     Vector3.zero,
                     Handles.SphereHandleCap
@@ -50,42 +59,22 @@ public class BoundaryEditor : Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(boundary, "Move Point");
-                    Vector3 newLocal = boundary.transform.InverseTransformPoint(newWorld);
-                    boundary.points[i] = new Vector2(newLocal.x, newLocal.z);
+                    boundary.SetPoint(new Vector2(newWorld.x, newWorld.z), i);
+                    boundary.isBaked = false;
                 }
-            } else
-            {
-                Handles.SphereHandleCap(0, worldPoint, Quaternion.identity, size, EventType.Repaint);
             }
-            Handles.color = boundaryColor;
-            if (i > 0)
+            else
             {
-                Vector2 prev = boundary.points[i - 1];
-                Vector3 prevLocal3 = new Vector3(prev.x, 0f, prev.y);
-                Handles.DrawLine(
-                    boundary.transform.TransformPoint(prevLocal3),
-                    worldPoint
-                );
+                Handles.SphereHandleCap(0, point3D, Quaternion.identity, size, EventType.Repaint);
             }
         }
-
-        if (boundary.points.Count > 2)
-        {
-            Vector2 first = boundary.points[0];
-            Vector2 last = boundary.points[boundary.points.Count - 1];
-
-            Vector3 localFirst3D = new Vector3(first.x, 0f, first.y);
-            Vector3 localLast3D = new Vector3(last.x, 0f, last.y);
-            Vector3 worldFirst3D = boundary.transform.TransformPoint(localFirst3D);
-            Vector3 worldLast3D = boundary.transform.TransformPoint(localLast3D);
-            Handles.DrawLine(worldFirst3D, worldLast3D);
-        }
+        DrawOnly(boundaryColor);
         if (Event.current.type == EventType.MouseDown && Event.current.button == 0 && Event.current.alt && Event.current.shift)
         {
             Vector3 world = GetMouseWorld();
-            Vector2 world2 = new Vector2(world.x, world.z);
+            Vector2 world2D = new Vector2(world.x, world.z);
 
-            bool inside = boundary.IsInBoundary(world2);
+            bool inside = boundary.IsInBoundary(world2D);
             if (inside)
             {
                 Debug.DrawRay(world, Vector3.up * 100, Color.green);
@@ -102,7 +91,22 @@ public class BoundaryEditor : Editor
         HandleDeletePoint();
         HandleSelectPoint(bestIndex);
     }
+    private void DrawOnly(Color drawColor)
+    {
+        Handles.color = drawColor;
+        for (int i = 0; i < boundary.GetPointsCount(); i++)
+        {
+            Vector2 a = boundary.GetPoint(i);
+            Vector2 b = boundary.GetPoint((i + 1) % boundary.GetPointsCount());
 
+            Handles.DrawLine(
+                new Vector3(a.x, 0, a.y),
+                new Vector3(b.x, 0, b.y)
+            );
+            Handles.DrawWireCube(new Vector3(boundary.Centroid.x, 0f, boundary.Centroid.y), new Vector3(5,5,5));
+            Handles.DrawWireDisc(new Vector3(boundary.Centroid.x, 0f, boundary.Centroid.y), Vector3.up, boundary.MaxDist);
+        }
+    }
     private void HandleAddPoint()
     {
         Event e = Event.current;
@@ -114,24 +118,22 @@ public class BoundaryEditor : Editor
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 Undo.RecordObject(boundary, "Add Boundary Point");
-                Vector3 local = boundary.transform.InverseTransformPoint(hit.point);
-                boundary.points.Add(new Vector2(local.x, local.z));
-                selectedPointIndex = boundary.points.Count - 1;
+                boundary.AddPoint(new Vector2(hit.point.x, hit.point.z));
+                boundary.isBaked = false;
+                selectedPointIndex = boundary.GetPointsCount() - 1;
                 e.Use();
             }
         }
     }
+
     private Vector3 GetMouseWorld()
     {
         Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 
-        Plane plane = new Plane(
-            boundary.transform.up, 
-            boundary.transform.position 
-        );
+        Plane plane = new Plane(Vector3.up, Vector3.zero);
 
-        if (plane.Raycast(ray, out float distance))
-            return ray.GetPoint(distance);
+        if (plane.Raycast(ray, out float dist))
+            return ray.GetPoint(dist);
 
         return Vector3.zero;
     }
@@ -144,7 +146,8 @@ public class BoundaryEditor : Editor
             if (selectedPointIndex >= 0)
             {
                 Undo.RecordObject(boundary, "Delete Point");
-                boundary.points.RemoveAt(selectedPointIndex);
+                boundary.RemovePoint(selectedPointIndex);
+                boundary.isBaked = false;
                 selectedPointIndex = -1;
             }
             e.Use();

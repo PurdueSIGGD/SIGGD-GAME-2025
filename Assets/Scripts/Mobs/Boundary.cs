@@ -1,22 +1,37 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Boundary : MonoBehaviour
 {
-    public List<Vector2> points = new List<Vector2>();
+    [SerializeField]
+    private List<Vector2> points = new();
 
     [SerializeField] private List<Vector2> bakedPoints = new();
     [SerializeField] private Vector2 centroid;
-    [SerializeField] private bool isBaked;
+
+    public void SetPoint(Vector2 point, int index) => points[index] = point;
+
+    public Vector2 GetPoint(int index) => points[index];
+
+    public int GetPointsCount() => points.Count;
+
+    public void AddPoint(Vector2 point) => points.Add(point);
+
+    public void RemovePoint(int index) => points.RemoveAt(index);
+
+    public void ClearPoints() => points.Clear();
+
 
     public static float EPSILON = 0.0001f;
 
     public float handleSize = 0.15f;
 
-    public bool IsBaked => isBaked;
-
+    public bool isBaked;
     public Vector2 Centroid => centroid;
+
+    [SerializeField]
+    private float maxDist;
+    public float MaxDist => maxDist;
     public void BakePoints()
     {
         bakedPoints.Clear();
@@ -27,15 +42,32 @@ public class Boundary : MonoBehaviour
             isBaked = false;
             return;
         }
-        for (int i = 0; i < points.Count; i++) {
-           Vector3 local3D = new Vector3(points[i].x, 0f, points[i].y);
-           Vector3 world3D = this.transform.TransformPoint(local3D);
-           bakedPoints.Add(new Vector2(world3D.x, world3D.z));
-        }
-        CreateCentroid();
+        bakedPoints = new List<Vector2>(points);
+        CreateCentroidAndMaxDist();
         isBaked = true;
     }
+    private void OnDrawGizmos()
+    {
+        if (points == null || points.Count < 2)
+            return;
 
+        Gizmos.color = Color.cyan;
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            Vector2 a = points[i];
+            Vector2 b = points[(i + 1) % points.Count];
+
+            Gizmos.DrawLine(new Vector3(a.x, 0, a.y),
+                            new Vector3(b.x, 0, b.y));
+        }
+    }
+    public void ConvertFromBaked()
+    {
+        if (bakedPoints == null || bakedPoints.Count == 0) return;
+        points = new List<Vector2>(bakedPoints);
+        isBaked = true;
+    }
     public void PrintBoundary()
     {
         foreach (var point in bakedPoints)
@@ -79,7 +111,7 @@ public class Boundary : MonoBehaviour
         }
 
     }
-    private void CreateCentroid()
+    private void CreateCentroidAndMaxDist()
     {
         if (bakedPoints.Count == 0)
         {
@@ -94,5 +126,11 @@ public class Boundary : MonoBehaviour
             cy += p.y;
         }
         centroid = new Vector2(cx / bakedPoints.Count, cy / bakedPoints.Count);
+
+        maxDist = 0f;
+        foreach (var point in bakedPoints)
+        {
+            maxDist = Mathf.Max(Vector2.Distance(point, centroid), maxDist);
+        }
     }
 }

@@ -3,6 +3,7 @@ using UnityEngine.AI;
 using Utility;
 using SIGGD.Mobs;
 using Sirenix.OdinInspector;
+using UnityEngine.InputSystem.Android;
 namespace SIGGD.Mobs
 {
     public class Movement : MonoBehaviour
@@ -27,6 +28,7 @@ namespace SIGGD.Mobs
             agent = GetComponent<NavMeshAgent>();
             sprint = GetComponent<StaminaBehaviour>();
             agent.updateRotation = false;
+           // agent.updatePosition = false;
             speed = baseSpeed;
         }
 
