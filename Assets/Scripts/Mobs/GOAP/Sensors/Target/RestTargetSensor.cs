@@ -18,12 +18,12 @@ namespace SIGGD.Goap.Sensors
         {
             smell = references.GetCachedComponent<Smell>();
             float safeDistanceThreshold = 30f;
-            var predatorPositionSum = smell.GetSumPredatorPositions();
-            if (predatorPositionSum == null) return null;
-            float distance = Vector3.Distance(predatorPositionSum, agent.Transform.position);
+            var smellPos = smell.GetSmellPos();
+            if (smellPos == Vector3.zero) return null;
+            float distance = Vector3.Distance(smellPos, agent.Transform.position);
             if (distance > safeDistanceThreshold) return null;
-            smell.positionTest = predatorPositionSum;
-            Vector3 dirFromPredator = (predatorPositionSum - agent.Transform.position).normalized;
+            //smell.positionTest = predatorPositionSum;
+            Vector3 dirFromPredator = (smellPos - agent.Transform.position).normalized;
             dirFromPredator += dirFromPredator * Random.Range(-0.1f, 0.1f);
             Vector3 safePosition = agent.Transform.position - dirFromPredator * Mathf.Max(0, safeDistanceThreshold - distance);
             float sampleSphereRadius = 10f;
@@ -41,12 +41,6 @@ namespace SIGGD.Goap.Sensors
                     {
                         return new PositionTarget(hit.position);
                     }
-                    /*
-                    if (existingTarget is PositionTarget positionTarget)
-                    {
-                        return positionTarget.SetPosition(hit.position);
-                    }
-                    */
                 }
                 safePosition -= dirFromPredator;
             }

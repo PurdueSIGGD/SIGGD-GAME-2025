@@ -47,42 +47,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ea6f9f95d912514eb78230b1698f5dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes:
-    - Name: soundEvents
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FMODUnity.EventReference,
-        FMODUnity]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
-        mscorlib]], mscorlib
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
   bankNames:
   - Ambience
   - Music
   - SFX
-  - RandomAmbience
   - VoiceLines
-  randomSounds: []
 --- !u!114 &7340405253396289754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,6 +64,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33c88bd5b921a8a4886f1f304eab742f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initLevelMusic: 1
+  initRandomAmbience: 1
   ambianceInterval: {x: 8.573113, y: 16.728773}
   ambianceSpawnDist: {x: 14.413408, y: 25.47486}
 --- !u!114 &2504983815903588609
