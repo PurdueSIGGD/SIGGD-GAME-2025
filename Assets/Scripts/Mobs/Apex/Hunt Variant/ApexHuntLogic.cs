@@ -26,6 +26,7 @@ public class ApexHuntLogic : MonoBehaviour
     [Header("Guarding/Tbagging")]
     [SerializeField] float roamRadius = 12f;
     [SerializeField] float roamInterval = 5f;
+    [SerializeField] float roamSpeedMulti = 0.8f;
 
     [Header("Despawn Logic")]
     [SerializeField] float timeToDespawn = 30f;
@@ -171,7 +172,10 @@ public class ApexHuntLogic : MonoBehaviour
             roamTarget = PickRandomNavMeshPoint(guardLoc, roamRadius);
             roamTimer = 0f;
             if (roamTarget != Pathfinding.ERR_VECTOR)
-                agent.SetDestination(roamTarget);
+            {
+                Vector3 dir = NavSteering.GetSteeringDirection(agent, roamTarget, 0.1f);
+                move.MoveTowards(dir, roamSpeedMulti);
+            }
         }
     }
 

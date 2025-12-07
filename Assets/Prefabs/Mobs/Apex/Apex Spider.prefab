@@ -232,7 +232,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -326,7 +326,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  theoreticalMaxVelocity: 15
+  theoreticalMaxVelocity: 8
   legStepTime: {x: 0.05, y: 0.25}
   maxFrontLegsLeanAngle: {x: 15, y: 30}
   maxHindLegsLeanAngle: {x: 30, y: 45}
@@ -422,9 +422,9 @@ MonoBehaviour:
   legRotSmoothSpeed: 10
   timeBeforeRest: 0.5
   legSettings: {fileID: 11400000, guid: 64fd3a5d5904c10499c06044ec0eb228, type: 2}
-  showBodyDebugTools: 0
-  showLegDebugTools: 0
-  showRaycastDebugTools: 0
+  showBodyDebugTools: 1
+  showLegDebugTools: 1
+  showRaycastDebugTools: 1
 --- !u!114 &3325370663003261801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -445,11 +445,12 @@ MonoBehaviour:
     xxtraContext: 
   attackLayerMask:
     serializedVersion: 2
-    m_Bits: 576
+    m_Bits: 512
   lostSightDuration: 7
-  roamRadius: 40
-  roamInterval: 5
-  timeToDespawn: 5
+  roamRadius: 60
+  roamInterval: 15
+  roamSpeedMulti: 0.8
+  timeToDespawn: 120
   mesh: {fileID: 7283128348175970037}
 --- !u!195 &6457278193908991700
 NavMeshAgent:
@@ -498,8 +499,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454339f393dde5f4cb124a3697745d27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseSpeed: 6
-  rotationSpeed: 5
+  baseSpeed: 8
+  rotationSpeed: 6
   pathUpdateRate: 0.2
   sprintAllowed: 0
 --- !u!114 &4141285599124735324
