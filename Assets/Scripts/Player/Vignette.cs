@@ -28,8 +28,6 @@ public class Effects : MonoBehaviour
 		
 		vignetteMat?.SetFloat(_vignettePowerID, 10f);
 	}
-	
-	u
 
 	private float LerpByFunction(float start, float end, float t, Func<float, float> lerpFunction)
 	{
