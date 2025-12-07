@@ -54,6 +54,18 @@ public class FMODEvents : Singleton<FMODEvents>
     {
         StartCoroutine(GetEventInstanceCoroutine(key, callback));
     }
+    
+    public EventInstance GetEventInstanceNoAsync(string key)
+    {
+        if (soundEvents.TryGetValue(key, out var eventRef))
+        {
+            return RuntimeManager.CreateInstance(eventRef);
+        }
+
+        Debug.LogWarning("FMODEvents: could not find event of name: " + key);
+        return default;
+    }
+
 
     private IEnumerator LoadBanksCoroutine()
     {
@@ -78,8 +90,9 @@ public class FMODEvents : Singleton<FMODEvents>
                 description.getPath(out string eventPath);
 
                 EventReference eventRef = RuntimeManager.PathToEventReference(eventPath);
-
+                
                 soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1), eventRef); // the replace just makes the names a little nicer
+                
                 Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
             }
         }
