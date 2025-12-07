@@ -120,7 +120,7 @@ namespace ProceduralAnimation.Runtime {
         [Tooltip("Magnitude of velocity"), FoldoutGroup("Debug"), ShowIf("showBodyDebugTools"), ShowInInspector, ReadOnly] float vMag;
         [Tooltip("The interpolated step time and lead distance"), FoldoutGroup("Debug"), ShowIf("showLegDebugTools"), ShowInInspector, ReadOnly] float stepTime, leadDist;
         [Tooltip("The interpolated front lean angle and hind lean angle"), FoldoutGroup("Debug"), ShowIf("showLegDebugTools"), ShowInInspector, ReadOnly] float frontLeanAngle, hindLeanAngle;
-
+        
         SecondOrderDynamics positionFilter; //  Filter for interpolating the body's position
 
         //  Used in body calculations
@@ -149,10 +149,13 @@ namespace ProceduralAnimation.Runtime {
                 CalculateBodyTilt();
 
                 //  Calculate velocity and its magnitude
-                rawVelocity = Vector3.ProjectOnPlane((body.position - prevBodyPos) / Time.deltaTime, body.up);
+                float clamppedDt = Mathf.Clamp(Time.deltaTime, 0.0001f, 0.1f);
+                rawVelocity = Vector3.ProjectOnPlane((body.position - prevBodyPos) / clamppedDt, body.up);
+
+                if (rawVelocity.magnitude > theoreticalMaxVelocity) rawVelocity = rawVelocity.normalized * theoreticalMaxVelocity;
 
                 //  Smooth the velocity so small movements don't set velocity insanely high for no reason
-                velocity = Vector3.Lerp(velocity, rawVelocity, Time.deltaTime * velocitySmoothSpeed);
+                velocity = Vector3.Lerp(velocity, rawVelocity, clamppedDt * velocitySmoothSpeed);
                 vMag = velocity.magnitude;
 
                 //  Calculate t value to interpolate between min and max values for velocity based variables (t is the y value of a sigmoid function)
@@ -187,11 +190,32 @@ namespace ProceduralAnimation.Runtime {
 
                 //  Shoot raycast at desired location straight down
                 RaycastHit hit;
-                onGround = Physics.Raycast(groundPos + leg.groundTarget.up *
+                bool hitGround = Physics.Raycast(groundPos + leg.groundTarget.up *
                     maxRaycastDist / 2, -leg.groundTarget.up, out hit, maxRaycastDist, groundMask);
 
+                Vector3 hitPoint;
+                Vector3 hitNormal;
+
+                if (hitGround) {
+                    hitPoint = hit.point;
+                    hitNormal = hit.normal;
+                } else {
+                        Terrain t = Terrain.activeTerrain;
+                        if (t != null) {
+                            Debug.Log("Spider leg cannot find ground, using terrain info");
+                            float terrainY = t.SampleHeight(groundPos) + t.transform.position.y;
+                            hitGround = true;
+                            hitPoint = new Vector3(groundPos.x, terrainY, groundPos.z);
+                            hitNormal = Vector3.up;
+                        } else {
+                            Debug.LogError("Leg " + leg.leg.name + " cannot find ground target");
+                            hitPoint = leg.leg.target.position;
+                            hitNormal = leg.leg.target.up;
+                        }
+                }
+
                 //  Calculate distance from raycast hit point and target's position
-                float dist = Vector3.Distance(hit.point, leg.leg.target.position);
+                float dist = Vector3.Distance(hitPoint, leg.leg.target.position);
 
                 if (leg.initialized) {
                     //  Vector to rotate velocityLean around and used to calculate the dot product to make sure distance based rotation isn't being weird
@@ -217,7 +241,7 @@ namespace ProceduralAnimation.Runtime {
                         Debug.DrawRay(leg.groundTarget.position + leg.groundTarget.up * maxRaycastDist / 2, -leg.groundTarget.up * maxRaycastDist, Color.cyan);
 
                         //  Ground Target Vector
-                        Debug.DrawRay(groundPos, hit.normal);
+                        Debug.DrawRay(groundPos, hitNormal);
                     }
 
                     if (showLegDebugTools) {
@@ -232,9 +256,9 @@ namespace ProceduralAnimation.Runtime {
                     continue;
 
                 //  Start leg end effector interpolation
-                if ((onGround && dist > maxDelta) || !leg.initialized
-                || (leg.restTimer < 0f && Vector3.Distance(hit.point, leg.leg.target.position) > minDelta))
-                    UpdateLegPosition(leg, hit.point, hit.normal);
+                if ((hitGround && dist > maxDelta) || !leg.initialized
+                || (leg.restTimer < 0f && Vector3.Distance(hitPoint, leg.leg.target.position) > minDelta))
+                    UpdateLegPosition(leg, hitPoint, hitNormal, hitGround);
 
                 //  Decrease leg's rest timer, clamp so that it doesn't break if player somehow waits past the negative float limit
                 leg.restTimer -= leg.restTimer < 0 ? 0 : Time.deltaTime;
@@ -247,9 +271,12 @@ namespace ProceduralAnimation.Runtime {
         /// <param name="leg">Leg to be moved.</param>
         /// <param name="pos">Position to be moved to.</param>
         /// <param name="normal">Ground normal.</param>
-        void UpdateLegPosition(Leg leg, Vector3 pos, Vector3 normal) {
+        void UpdateLegPosition(Leg leg, Vector3 pos, Vector3 normal, bool hitGround) {
             //  Initialize the leg
             if (!leg.initialized) {
+
+            if (!hitGround) return; // delay updating legs if can't find ground when init
+
                 //  Place legs onto ground
                 leg.leg.target.position = pos;
                 leg.leg.target.up = -normal;

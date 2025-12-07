@@ -1,9 +1,7 @@
-using NUnit.Framework;
 using System;
 using UnityEngine;
 using SIGGD.Mobs;
 using System.Collections.Generic;
-using Sirenix.OdinInspector.Editor.Validation;
 
 public class PerceptionManager : MonoBehaviour
 {

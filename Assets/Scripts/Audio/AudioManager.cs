@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Debug = UnityEngine.Debug;
+using System.Threading.Tasks;
 
 public class AudioManager : Singleton<AudioManager>
 {
@@ -15,13 +16,16 @@ public class AudioManager : Singleton<AudioManager>
     [SerializeField] bool initRandomAmbience;
 
     private List<StudioEventEmitter> eventEmitters;
-    private EventInstance levelMusic;
+    public EventInstance levelMusic;
     private bool pauseMusic;
 
     [Header("Random Ambiance Settings")]
     [SerializeField, MinMaxSlider(1, 20)] private Vector2 ambianceInterval = new(1, 20);
     [SerializeField, MinMaxSlider(0, 30)] private Vector2 ambianceSpawnDist = new(0, 30);
     private RandomAmbiancePlayer ambiancePlayer;
+
+    public Dictionary<string, EventInstance> musicEventInstances = new();
+    private bool crossfading = false;
 
     protected override void Awake()
     {
@@ -40,7 +44,7 @@ public class AudioManager : Singleton<AudioManager>
 
     private void Start()
     {
-        InitMusic();
+        InitMusicOnStart();
         InitAmbience();
     }
 
@@ -155,7 +159,7 @@ public class AudioManager : Singleton<AudioManager>
         if (this.initLevelMusic != initLevelMusic)
         {
             this.initLevelMusic = initLevelMusic;
-            InitMusic();
+            InitMusicOnStart();
         }
 
         this.initRandomAmbience = initRandomAmbience;
@@ -178,20 +182,23 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
-    private void InitMusic()
+    private void InitMusicOnStart()
     {
         if (initLevelMusic)
         {
-            FMODEvents.Instance.GetEventInstance("LevelMusic", instance =>
+            if (musicEventInstances.TryGetValue("LevelMusic", out var eventInstance))
             {
-                levelMusic = instance;
+                levelMusic = eventInstance;
                 levelMusic.start();
-            });
-        }
-        else if (levelMusic.isValid())
-        {
-            levelMusic.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-            levelMusic.release();
+            }
+            else
+            {
+                FMODEvents.Instance.GetEventInstance("LevelMusic", instance => { levelMusic = instance;
+                    musicEventInstances.Add("LevelMusic", levelMusic);
+                    levelMusic.start();
+                });
+                
+            }
         }
     }
 
@@ -202,6 +209,68 @@ public class AudioManager : Singleton<AudioManager>
         if (!eventRef.IsNull)
         {
             RuntimeManager.PlayOneShot(eventRef, pos);
+        }
+    }
+
+    public IEnumerator MusicCrossFade(string toKey, string fromKey, float duration)
+    {
+        // dictioary holding all event instances
+        if (crossfading == false)
+        {
+            EventInstance to = InitalizeMusicNotStart(toKey);
+            EventInstance from = InitalizeMusicNotStart(fromKey);
+
+            crossfading = true;
+            float curTime = 0f;
+
+            // if to isnt already playing play it
+            to.getPlaybackState(out PLAYBACK_STATE state);
+            if (state != PLAYBACK_STATE.PLAYING)
+            {
+                to.start();
+            }
+
+            // resetting vals to make sure it transfers right
+            from.setVolume(1f);
+            to.setVolume(0f);
+
+            while (curTime < duration)
+            {
+                curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
+                float t = curTime / duration;
+
+                //Debug.Log("CurTime: " + curTime + " t: " + t);
+
+                from.setVolume(1f - t); // decrease
+                to.setVolume(t); // increase
+
+                yield return null; // wait for a frame in between loop runs
+            }
+
+            from.setVolume(0f);
+            to.setVolume(1f);
+
+            from.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            from.release();
+            crossfading = false;
+        }
+    }
+
+    // also checks to see if that music event is already in the dict
+    private EventInstance InitalizeMusicNotStart(string key)
+    {
+        if (musicEventInstances.TryGetValue(key, out var eventInstance))
+        {
+            EventInstance tempInstance = eventInstance;
+            return tempInstance;
+        }
+        else
+        {
+            EventInstance tempInstance = FMODEvents.Instance.GetEventInstanceNoAsync(key);
+
+            musicEventInstances.Add(key, tempInstance);
+
+            return tempInstance;
         }
     }
     #endregion
