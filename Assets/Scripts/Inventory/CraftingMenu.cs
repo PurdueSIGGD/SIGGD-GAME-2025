@@ -1,9 +1,6 @@
-using CrashKonijn.Goap.Editor;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering.Universal.Internal;
 using UnityEngine.UI;
 
 public class CraftingMenu : Singleton<CraftingMenu>
@@ -32,8 +29,12 @@ public class CraftingMenu : Singleton<CraftingMenu>
         base.Awake();
         craftButton.onClick.AddListener(() => Craft());
         canvas = GetComponentInChildren<Canvas>();
-        // Test recipe
-        foreach (Recipe recipe in testRecipes) {
+    }
+
+    void Start()
+    {
+        foreach (Recipe recipe in testRecipes) // Test recipe, remove later
+        {
             AddRecipe(recipe);
         }
         Disable();
@@ -50,10 +51,17 @@ public class CraftingMenu : Singleton<CraftingMenu>
         }
     }
 
+    public bool IsCanvasActive()
+    {
+        return canvas.enabled;
+    }
+
     public void Enable()
     {
         canvas.enabled = true;
-        Debug.Log("enabled crafting menu");
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+        PlayerInput.Instance.DebugToggleInput(true);
     }
 
     public void Disable()
@@ -74,7 +82,10 @@ public class CraftingMenu : Singleton<CraftingMenu>
         }
         pluses.Clear();
         canvas.enabled = false;
-        Debug.Log("disabled crafting menu");
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        PlayerInput.Instance.DebugToggleInput(false);
     }
 
     public bool IsCraftable() {
@@ -138,15 +149,6 @@ public class CraftingMenu : Singleton<CraftingMenu>
         if (Input.GetKeyDown(KeyCode.Backslash)) {
             AddRecipe(testRecipes[0]);
             Debug.Log("Added " + testRecipes[0].output.itemName);
-        }
-        if (Input.GetKeyDown(KeyCode.P)) {
-            if (canvas.enabled)
-            {
-                Disable();
-            }
-            else {
-                Enable();
-            }
         }
     }
 }
