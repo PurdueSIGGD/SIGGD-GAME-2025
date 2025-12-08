@@ -201,7 +201,13 @@ public class AudioManager : Singleton<AudioManager>
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
         if (!eventRef.IsNull)
         {
-            RuntimeManager.PlayOneShot(eventRef, pos);
+            if (pos != default) { 
+                RuntimeManager.PlayOneShot(eventRef, pos);
+            }
+            else
+            {
+                RuntimeManager.PlayOneShot(eventRef);
+            }
         }
     }
     #endregion

@@ -71,6 +71,38 @@ public class AudioLogManager : MonoBehaviour
         logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         logSoundEvent.release();
     }
+
+    public void PlayAudioLog(string audioName) // using a full game object because we need access to the rigidbody on the player
+    {
+        GameObject player = PlayerID.Instance.gameObject;
+        // the most recently called audio log will take priority over the ones called before it 
+        if (lastStarted != null)
+        {
+            StopCoroutine(lastStarted);
+            StopCurrentAudio();
+        }
+
+        if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
+        {
+            UnityEngine.Debug.Log("Playing audio log: " + audioName);
+
+            curPlayer = player;
+            isPlaying = true;
+            playerRb = curPlayer.GetComponent<Rigidbody>();
+
+            // now that isPlaying is true and logSoundEvent exists the 3d attributes will be getting updated and we can start the event
+            AudioManager.Instance.PlayOneShot(audioName);
+
+            lastStarted = StartCoroutine(StartSubtitles(foundAudio));
+
+            //StartCoroutine(endAudioWhenDone());
+        }
+        else
+        {
+            UnityEngine.Debug.Log("Audio name not in dictionarty: " + audioName);
+        }
+    }
+
     public void PlayAudioLog (string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
     {
         // the most recently called audio log will take priority over the ones called before it 
@@ -87,7 +119,7 @@ public class AudioLogManager : MonoBehaviour
             playerRb = curPlayer.GetComponent<Rigidbody>();
 
             // now that isPlaying is true and logSoundEvent exists the 3d attributes will be getting updated and we can start the event
-            AudioManager.Instance.PlayOneShot(audioName);
+            AudioManager.Instance.PlayOneShot(audioName, player.transform.position);
 
             lastStarted = StartCoroutine(StartSubtitles(foundAudio));
 
