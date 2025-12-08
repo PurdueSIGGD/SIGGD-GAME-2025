@@ -33,12 +33,13 @@ namespace SIGGD.Mobs
         }
         protected override void Start()
         {
+            //Start by requesting wander goal by default
             this.provider.RequestGoal<WanderGoal>(true);
+            //Distance multiplier based off speed should match the hyenas speed
             this.provider.SetDistanceMultiplierSpeed(6f);
         }
         private void Update()
         {
-          // if (this.provider.CurrentPlan == null) this.provider.RequestGoal<WanderGoal>();
         }
         protected override void OnEnable()
         {
@@ -50,12 +51,15 @@ namespace SIGGD.Mobs
             base.OnDisable();
             PerceptionManager.OnPlayerDetected -= PlayerDetected;
         }
+
         protected override void OnActionEnd(IAction action)
         {
+            // If it is lunging then ignore goap actions
             if (HyenaAttackManager.isLunging) return;
+            // If current plan is null or hyena is hungry then reresolve goal by requesting again
             if (this.provider.CurrentPlan == null)
             {
-                this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal>(true);
+                this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal, FollowAlphaGoal, StickTogetherGoal>(true);
                 return;
             } else if (HungerBehaviour.hunger > 50)
             {
@@ -65,9 +69,9 @@ namespace SIGGD.Mobs
         }
         protected override void OnNoActionFound(IGoalRequest request)
         {
-            Debug.Log($"{this.name}no action found");
+            // If it is lunging then ignore goap actions
             if (HyenaAttackManager.isLunging) return;
-            Debug.Log($"{this.name}didnt make it through");
+            // If hyena is hungry and current not trying to resolve the hunger then request to resolve hunger
             if (this.provider.CurrentPlan == null || HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
             {
                 this.provider.RequestGoal<DontStarveGoal, WanderGoal>(true);
@@ -75,17 +79,10 @@ namespace SIGGD.Mobs
             {
                 this.provider.RequestGoal<WanderGoal>(true);
             }
-            /*
-            else if (this.provider.CurrentPlan.Goal is not KillPlayerGoal)
-            {
-                //AgentMoveBehaviour.DisableSprint();
-                //this.provider.RequestGoal<FollowAlphaGoal, StickTogetherGoal>(false);
-                this.provider.RequestGoal<WanderGoal>(true);
-            }
-            */
         }
         protected override void OnActionStart(IAction action)
         {
+            // When the action is starting if the goal is to attack a player then play sound effect
             if (this.provider.CurrentPlan.Goal is KillPlayerGoal)
             {
                 if (AudioManager.Instance)
@@ -94,10 +91,10 @@ namespace SIGGD.Mobs
                 }
             }
         }
-        // action for smell for when prey detected 
         void PlayerDetected(Transform player)
         {
-            Debug.Log($"{this.name}has detected player and trying to attack");
+            // When the player is detected set goal to killing player goal if not hungry
+            // If hyena is hungry then resolve between hunger and killing player
             if (this.provider.CurrentPlan == null || (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 150))
             {
                 this.provider.RequestGoal<KillPlayerGoal>(true);
@@ -105,7 +102,6 @@ namespace SIGGD.Mobs
             {
                 this.provider.RequestGoal<KillPlayerGoal, DontStarveGoal>(true);
             }
-            this.provider.ResolveAction();
         }
     }
 }
