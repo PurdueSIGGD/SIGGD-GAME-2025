@@ -200,18 +200,19 @@ namespace ProceduralAnimation.Runtime {
                     hitPoint = hit.point;
                     hitNormal = hit.normal;
                 } else {
-                        Terrain t = Terrain.activeTerrain;
-                        if (t != null) {
-                            Debug.Log("Spider leg cannot find ground, using terrain info");
-                            float terrainY = t.SampleHeight(groundPos) + t.transform.position.y;
-                            hitGround = true;
-                            hitPoint = new Vector3(groundPos.x, terrainY, groundPos.z);
-                            hitNormal = Vector3.up;
-                        } else {
-                            Debug.LogError("Leg " + leg.leg.name + " cannot find ground target");
-                            hitPoint = leg.leg.target.position;
-                            hitNormal = leg.leg.target.up;
-                        }
+                    //Terrain t = Terrain.activeTerrain;
+                    Terrain t = FindClosestTerrain(groundPos);
+                    if (t != null) {
+                        Debug.Log("Spider leg cannot find ground, using terrain info");
+                        float terrainY = t.SampleHeight(groundPos) + t.transform.position.y;
+                        hitGround = true;
+                        hitPoint = new Vector3(groundPos.x, terrainY, groundPos.z);
+                        hitNormal = Vector3.up;
+                    } else {
+                        Debug.LogError("Leg " + leg.leg.name + " cannot find ground target");
+                        hitPoint = leg.leg.target.position;
+                        hitNormal = leg.leg.target.up;
+                    }
                 }
 
                 //  Calculate distance from raycast hit point and target's position
@@ -446,6 +447,16 @@ namespace ProceduralAnimation.Runtime {
             foreach (Leg l in leftLegs) if (!l.initialized) return false;
             foreach (Leg r in rightLegs) if (!r.initialized) return false;
             return true;
+        }
+
+
+        Terrain FindClosestTerrain(Vector3 groundPos)
+        {
+            if (Physics.Raycast(groundPos + Vector3.up * 100f, Vector3.down, out RaycastHit hit, 1000f, groundMask))
+            {
+                return hit.collider.GetComponent<Terrain>();
+            }
+            return null;
         }
     }
 }
