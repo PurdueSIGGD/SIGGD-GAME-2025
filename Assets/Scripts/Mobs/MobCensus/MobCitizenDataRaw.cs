@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Census
+namespace MobCensus
 {
     /// <summary>
     /// Raw data structure for storing mob citizen information.
@@ -22,13 +22,7 @@ namespace Census
             this.rotation = Vector3.zero;
             this.health = 0f;
         }
-        public MobCitizenDataRaw(string mobId, Vector3 position, Vector3 rotation, float health)
-        {
-            this.mobId = mobId;
-            this.position = position;
-            this.rotation = rotation;
-            this.health = health;
-        }
+
         public string GetMobId() { return mobId; }
         public Vector3 GetPosition() { return position; }
         public Vector3 GetRotation() { return rotation; }

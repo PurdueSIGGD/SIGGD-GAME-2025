@@ -1,58 +1,63 @@
-using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
 using CrashKonijn.Goap.Runtime;
-using UnityEngine.InputSystem.Android;
 using SIGGD.Mobs;
+
+using MobCensus;
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField]
-    private List<MobSpawner> spawners;
-    private float timer;
+    MobCensusManager mobCensus;
+    MobSpeciesRegistry mobSpeciesRegistry;
+
     public GameObject boundaryObject;
     private Boundary boundary;
     void Awake()
     {
         boundary = boundaryObject.GetComponent<Boundary>();
     }
-    void Update()
-    {
-        timer += Time.deltaTime;
-        for (int i = spawners.Count - 1; i >= 0; --i) {
-            if (!spawners[i].repeatSpawn)
-            {
-                SpawnMob(spawners[i]);
-                spawners.Remove(spawners[i]);
-            } else if (timer > spawners[i].spawnInterval) {
 
-                spawners[i].spawnInterval += timer;
-                SpawnMob(spawners[i]);
-            }
-        }
-    }
-    private void SpawnMob(MobSpawner spawner)
+    public GameObject SpawnMobNew(GameObject mobPrefab, Vector3 spawnPosition)
     {
-        Vector3 spawnPos = (spawner.spawnRadius != 0 ? spawner.spawnPosition : GetRandomPositionCircle(spawner.spawnPosition, spawner.spawnRadius));
-        for (int i = 0; i < spawner.spawnCount; i++)
-        {
-            var agent = Instantiate(spawner.prefab, spawnPos, Quaternion.identity).GetComponent<GoapActionProvider>();
-            agent.gameObject.SetActive(true);
-            var agentData = agent.GetComponent<AgentData>();
-            agentData.boundary = boundary;
-            NavMeshAgent navAgent = agent.GetComponent<NavMeshAgent>();
-            if (!NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 15f, NavMesh.AllAreas))
-            {
-                Debug.Log($"Could not spawn {spawner.name}");
-                continue;
-            }
-            navAgent.Warp(hit.position);
-        }
+        GameObject mobObject = Instantiate(mobPrefab, spawnPosition, Quaternion.identity);
+        string mobId = mobSpeciesRegistry.GetMobIdByPrefab(mobPrefab);
+
+        // register mob in census
+        mobCensus.RegisterCitizen(mobPrefab, mobObject, mobId);
+
+        InitializeMobInternalSystems(mobObject);
+        return mobObject;
     }
-    private Vector3 GetRandomPositionCircle(Vector3 spawnPosition, float spawnRadius)
+
+    public GameObject SpawnMobFromSave(MobCitizenDataRaw rawData)
     {
-        Vector2 randomPos = Random.insideUnitCircle * spawnRadius;
-        return spawnPosition + (new Vector3(randomPos.x, -1, randomPos.y));
+        // pull prefab from registry
+        GameObject mobPrefab = mobSpeciesRegistry.GetMobPrefabById(rawData.GetMobId());
+        GameObject mobObject = Instantiate(mobPrefab, rawData.GetPosition(), Quaternion.identity);
+
+        // populate new mob with saved serialized data
+        MobCitizenPassport passport = mobObject.GetComponent<MobCitizenPassport>();
+        passport.ReadMobCitizenData(rawData);
+
+        // register mob in census
+        mobCensus.RegisterCitizen(mobPrefab, mobObject, rawData.GetMobId());
+
+        InitializeMobInternalSystems(mobObject);
+        return mobObject;
+    }
+
+    void InitializeMobInternalSystems(GameObject mobObject)
+    {
+        // initialize goap system
+        GoapActionProvider goapActionProvider = mobObject.GetComponent<GoapActionProvider>();
+        goapActionProvider.gameObject.SetActive(true);
+
+        // set boundary for territory capabillity
+        AgentData agentData = mobObject.GetComponent<AgentData>();
+        agentData.boundary = boundary;
+
+        // initialize navmesh agent and validate that spawn position is within valid navmesh area
+        NavMeshAgent navAgent = mobObject.GetComponent<NavMeshAgent>();
+        NavMesh.SamplePosition(mobObject.transform.position, out NavMeshHit hit, 15f, NavMesh.AllAreas);
+        navAgent.Warp(hit.position);
     }
 }

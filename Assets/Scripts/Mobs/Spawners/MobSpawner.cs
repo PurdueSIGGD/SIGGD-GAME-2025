@@ -1,6 +1,9 @@
+using System;
 using UnityEngine;
 
+
 [CreateAssetMenu(fileName = "MobSpawner", menuName = "Scriptable Objects/MobSpawner")]
+[Serializable]
 public class MobSpawner : ScriptableObject
 {
     public bool repeatSpawn;

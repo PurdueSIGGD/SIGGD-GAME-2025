@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Census
+namespace MobCensus
 {
     [Serializable]
     public class MobSpeciesRegistry
@@ -10,28 +10,40 @@ namespace Census
         [Serializable]
         public class MobSpeciesEntry
         {
-            [SerializeField] string speciesName;
-            [SerializeField] GameObject speciesPrefab;
+            [SerializeField] string mobId;
+            [SerializeField] GameObject mobPrefab;
 
-            public MobSpeciesEntry(string speciesName, GameObject speciesPrefab)
+            public MobSpeciesEntry(string mobId, GameObject mobPrefab)
             {
-                this.speciesName = speciesName;
-                this.speciesPrefab = speciesPrefab;
+                this.mobId = mobId;
+                this.mobPrefab = mobPrefab;
             }
 
-            public string GetSpeciesName() { return speciesName; }
-            public GameObject GetSpeciesPrefab() { return speciesPrefab; }
+            public string GetMobId() { return mobId; }
+            public GameObject GetMobPrefab() { return mobPrefab; }
         }
 
         [SerializeField] List<MobSpeciesEntry> speciesEntries = new List<MobSpeciesEntry>();
 
-        public GameObject GetSpeciesPrefabByName(string speciesName)
+        public GameObject GetMobPrefabById(string mobId)
         {
             foreach (var entry in speciesEntries)
             {
-                if (entry.GetSpeciesName() == speciesName)
+                if (entry.GetMobId() == mobId)
                 {
-                    return entry.GetSpeciesPrefab();
+                    return entry.GetMobPrefab();
+                }
+            }
+            return null; // Species not found
+        }
+
+        public string GetMobIdByPrefab(GameObject prefab)
+        {
+            foreach (var entry in speciesEntries)
+            {
+                if (entry.GetMobPrefab() == prefab)
+                {
+                    return entry.GetMobId();
                 }
             }
             return null; // Species not found

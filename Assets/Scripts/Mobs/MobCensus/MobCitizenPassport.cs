@@ -1,20 +1,20 @@
 using System;
 using UnityEngine;
 
-namespace Census
+namespace MobCensus
 {
     /// <summary>
     /// Attached to mob instances to interface with the MobCensus system
     /// </summary>
     public class MobCitizenPassport : MonoBehaviour
     {
-        MobCensus census;
+        MobCensusManager census;
         MobCitizenData citizenDataReference = null;
         EntityHealthManager healthManager;
 
         void Start()
         {
-            census = FindFirstObjectByType<MobCensus>();
+            census = FindFirstObjectByType<MobCensusManager>();
             healthManager = GetComponent<EntityHealthManager>();
         }
 
@@ -34,29 +34,30 @@ namespace Census
                 Debug.LogError("MobCitizenPassport: No citizen data reference set.");
                 return;
             }
-            citizenDataReference.GetRawDataReference().SetPosition(transform.position);
-            citizenDataReference.GetRawDataReference().SetRotation(transform.eulerAngles);
+            MobCitizenDataRaw rawData = citizenDataReference.GetRawDataReference();
+            rawData.SetPosition(transform.position);
+            rawData.SetRotation(transform.eulerAngles);
             if (healthManager != null)
             {
-                citizenDataReference.GetRawDataReference().SetHealth(healthManager.CurrentHealth);
+                rawData.SetHealth(healthManager.CurrentHealth);
             }
         }
         /// <summary>
         /// Read the data from the census to the current mob instance
         /// Only works if the mob already has a citizen data reference
         /// </summary>
-        public void ReadMobCitizenData()
+        public void ReadMobCitizenData(MobCitizenDataRaw rawData = null)
         {
-            if (citizenDataReference == null)
+            if (citizenDataReference == null && rawData == null)
             {
                 Debug.LogError("MobCitizenPassport: No citizen data reference set.");
                 return;
             }
-            transform.position = citizenDataReference.GetRawDataReference().GetPosition();
-            transform.eulerAngles = citizenDataReference.GetRawDataReference().GetRotation();
+            transform.position = rawData.GetPosition();
+            transform.eulerAngles = rawData.GetRotation();
             if (healthManager != null)
             {
-                healthManager.CurrentHealth = citizenDataReference.GetRawDataReference().GetHealth();
+                healthManager.CurrentHealth = rawData.GetHealth();
             }
         }
 

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Census
+namespace MobCensus
 {
     [Serializable]
     public class MobCitizenData
@@ -11,14 +11,20 @@ namespace Census
         [SerializeField] MobCitizenPassport passport;
         [SerializeField] MobCitizenDataRaw rawData;
 
-        public MobCitizenData(GameObject prefab, GameObject instance)
+        public MobCitizenData(GameObject prefab, GameObject instance, string mobId)
         {
             this.prefab = prefab;
             this.instance = instance;
-            this.passport = instance.GetComponent<MobCitizenPassport>();
-            this.rawData = new MobCitizenDataRaw();
-        }
 
+            rawData = new MobCitizenDataRaw();
+            rawData.SetMobId(mobId);
+            passport = instance.GetComponent<MobCitizenPassport>();
+            passport.WriteMobCitizenData();
+        }
+        public MobCitizenPassport GetPassport()
+        {
+            return passport;
+        }
         public MobCitizenDataRaw GetRawDataReference()
         {
             return rawData;

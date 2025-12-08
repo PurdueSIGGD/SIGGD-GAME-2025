@@ -6,6 +6,7 @@ public class SaveManager : Singleton<SaveManager>
     PlayerDataSaveModule playerModule;
     ScreenshotSaveModule screenshotModule;
     QuestDataSaveModule questModule;
+    MobSceneDataSaveModule mobSceneDataSaveModule;
 
     private ISaveModule[] modules;
 
@@ -20,8 +21,11 @@ public class SaveManager : Singleton<SaveManager>
         screenshotModule = new ScreenshotSaveModule();
         playerModule = new PlayerDataSaveModule();
         questModule = new QuestDataSaveModule();
+        mobSceneDataSaveModule = new MobSceneDataSaveModule(
+            FindFirstObjectByType<MobCensus.MobCensusManager>()
+        );
 
-        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule, questModule};
+        modules = new ISaveModule[] { inventoryModule, screenshotModule, playerModule, questModule, mobSceneDataSaveModule };
 
         Load();
     }
