@@ -62,15 +62,13 @@ namespace SIGGD.Mobs
                 this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal>(false);
                 return;
             }               
-            //this.provider.ResolveAction();
         }
         protected override void OnNoActionFound(IGoalRequest request)
         {
+            Debug.Log($"{this.name}no action found");
             if (HyenaAttackManager.isLunging) return;
-            if (HuntBehaviour.currentTargetOfHunt != null)
-                return;
-            if (this.provider.CurrentPlan == null) return;
-            if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
+            Debug.Log($"{this.name}didnt make it through");
+            if (this.provider.CurrentPlan == null || HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
             {
                 this.provider.RequestGoal<DontStarveGoal, WanderGoal>(true);
             } else
@@ -88,31 +86,26 @@ namespace SIGGD.Mobs
         }
         protected override void OnActionStart(IAction action)
         {
-            if (this.provider.CurrentPlan.Action is KillPreyAction)
-            {
-                //Movement.EnableSprint();
-            }
             if (this.provider.CurrentPlan.Goal is KillPlayerGoal)
             {
                 if (AudioManager.Instance)
                 {
-                    //AudioManager.Instance.PlayOneShot(FMODEvents.Instance.soundEvents["HyenaOnNoticeSFX"], transform.position);
+                    AudioManager.Instance.PlayOneShot(FMODEvents.Instance.soundEvents["HyenaOnNoticeSFX"].ToSafeString(), transform.position);
                 }
-                //Movement.EnableSprint();
             }
         }
-        // action for smell for when preyy detected 
+        // action for smell for when prey detected 
         void PlayerDetected(Transform player)
         {
-            if (this.provider.CurrentPlan == null || (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 50))
+            Debug.Log($"{this.name}has detected player and trying to attack");
+            if (this.provider.CurrentPlan == null || (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 150))
             {
-                Movement.EnableSprint();
                 this.provider.RequestGoal<KillPlayerGoal>(true);
             } else
             {
                 this.provider.RequestGoal<KillPlayerGoal, DontStarveGoal>(true);
             }
+            this.provider.ResolveAction();
         }
     }
-
 }

@@ -1,9 +1,10 @@
 ﻿
 using JetBrains.Annotations;
 using System.Collections;
+using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine.AI; 
 
 namespace SIGGD.Mobs
 {
@@ -24,6 +25,7 @@ namespace SIGGD.Mobs
         private int maxAggression = 0;
         public Boundary boundary;
         public NavMeshQueryFilter filter { get; private set; }
+
 
         private void Awake()
         {

@@ -6,7 +6,6 @@ using SIGGD.Goap.Interfaces;
 using SIGGD.Mobs;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.AI;
 using Utility;
@@ -25,9 +24,9 @@ namespace SIGGD.Goap.Sensors
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
             //var filter = references.GetCachedComponent<AgentData>().filter;
-            this.boundary = references.GetCachedComponent<AgentData>().boundary;
+            //this.boundary = references.GetCachedComponent<AgentData>().boundary;
             smell = references.GetCachedComponent<Smell>();
-            var random = LocateRandomPositionWithinBoundary(agent, smell);
+            var random = LocateRandomPosition(agent, smell);
             var navPos = Pathfinding.ShiftTargetToNavMesh(random, 10f);
             NavMeshPath path = new NavMeshPath();
             bool validPath = NavMesh.CalculatePath(agent.Transform.position, navPos, NavMesh.AllAreas, path) && path.status == NavMeshPathStatus.PathComplete;

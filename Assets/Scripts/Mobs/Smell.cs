@@ -13,7 +13,6 @@ using CrashKonijn.Agent.Runtime;
 
 public class Smell : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     public float smellRadius;
     public LayerMask targetMask;
     public LayerMask smellReductionMask;
@@ -72,8 +71,6 @@ public class Smell : MonoBehaviour
             if (collider.GetComponentInParent<AgentHuntBehaviour>() == null) { 
                 smellValues.Add((collider.transform.position, 0.7f));
             }
-            //Transform target = collider.transform;
-            //if (collider.GetComponentInParent<MobIds>)
         }
     }
     private void SmellCheckPlayer()
@@ -95,6 +92,8 @@ public class Smell : MonoBehaviour
             float dist = Mathf.Max(toSmell.magnitude, 1f);
 
             float weight = Mathf.Pow(1f - Mathf.Clamp01(dist / smellRadius), 2f);
+
+            //float hierarchialWeight = weight * smellValues[i];
 
             totalForce += toSmell.normalized * weight;
             totalWeight += weight;

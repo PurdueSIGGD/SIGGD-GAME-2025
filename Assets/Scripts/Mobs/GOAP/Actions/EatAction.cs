@@ -37,7 +37,7 @@ namespace SIGGD.Goap
                 return;
             }
             // nutrition check either here or in hunger behaviour
-            data.HungerBehaviour.ReduceHunger(20);
+            data.HungerBehaviour.ReduceHunger(60);
             GameObject.Destroy(transformTarget.Transform.gameObject);
     }
 

@@ -1,13 +1,14 @@
+using SIGGD.Goap;
 using System;
 using System.Collections;
+using System.Security.Cryptography.X509Certificates;
 using System.Timers;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using Utility;
-using SIGGD.Goap;
 using UnityEngine.Rendering.Universal.Internal;
-using System.Security.Cryptography.X509Certificates;
+using Utility;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 namespace SIGGD.Mobs.Hyena
 {
@@ -55,7 +56,8 @@ namespace SIGGD.Mobs.Hyena
             finishedLunging = false;
             lungeArriving = false;
             Vector3 target = GetTarget();
-            if ((target - transform.position).sqrMagnitude < 0.1f)
+            float distance = Vector3.Distance(target, rb.position);
+            if (target == Vector3.zero || (target - transform.position).sqrMagnitude < 0.1f || distance > 20)
             {
                 ExitBehaviour();
                 yield break;
@@ -82,7 +84,7 @@ namespace SIGGD.Mobs.Hyena
             float xVelocity = (xDist * speed) / dist2D;
             float zVelocity = (zDist * speed) / dist2D;
             float yVelocity = (yDist * speed) / dist2D + (4.9f * dist2D) / speed;
-            Vector3 forceVector = Vector3.ClampMagnitude(new Vector3(xVelocity, yVelocity, zVelocity), 100);
+            Vector3 forceVector = Vector3.ClampMagnitude(new Vector3(xVelocity, yVelocity, zVelocity), 30);
             lungeDir = UnityUtil.ToVector2(forceVector).normalized;
             rb.linearVelocity = forceVector;
             float time = (2 * yVelocity) / gravity;
@@ -123,8 +125,13 @@ namespace SIGGD.Mobs.Hyena
             while (elapsed < duration)
             {
                 elapsed += Time.fixedDeltaTime;
-
-                if (Vector3.Distance(GetTarget(), transform.position) > 8f)
+                Vector3 targetPos = GetTarget();
+                if (targetPos == Vector3.zero)
+                {
+                    ExitBehaviour();
+                    yield break;
+                }
+                if (Vector3.Distance(targetPos, transform.position) > 8f)
                     break;
                 Vector3 awayPoint = transform.position + awayDir * 6f;
                 Vector3 dir = NavSteering.GetSteeringDirection(NavMeshAgent, awayPoint, 0.1f);
