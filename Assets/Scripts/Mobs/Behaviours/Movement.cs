@@ -1,9 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using Utility;
-using SIGGD.Mobs;
 using Sirenix.OdinInspector;
-using UnityEngine.InputSystem.Android;
 namespace SIGGD.Mobs
 {
     public class Movement : MonoBehaviour
