@@ -627,7 +627,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 50
+  field of view: 40
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -653,8 +653,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 400001741}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.108056545, y: 0, z: 0, w: 0.9941448}
-  m_LocalPosition: {x: -22.58, y: 2.95, z: -53.6}
+  m_LocalRotation: {x: 0.06162845, y: 0.70441604, z: 0.06162845, w: -0.70441604}
+  m_LocalPosition: {x: 70.17, y: -2.1699998, z: 20.739998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1303,6 +1303,8 @@ GameObject:
   - component: {fileID: 1580437275}
   - component: {fileID: 1580437274}
   - component: {fileID: 1580437273}
+  - component: {fileID: 1580437278}
+  - component: {fileID: 1580437277}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -1399,6 +1401,49 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 123.082, z: 0}
+--- !u!114 &1580437277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580437272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Events:
+    m_Signals:
+    - {fileID: 11400000, guid: 358b2b9348347b44382ef9584a26ac25, type: 2}
+    m_Events:
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1580437278}
+          m_TargetAssemblyTypeName: SwitchScene, Assembly-CSharp
+          m_MethodName: OnSwitch
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &1580437278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580437272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e8d627da8341b94f95ba005ef03e0e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneID: ShipScene
 --- !u!1 &1609136783
 GameObject:
   m_ObjectHideFlags: 0
@@ -1974,7 +2019,7 @@ PrefabInstance:
     - target: {fileID: 4614264531857009603, guid: e19596e2ad6b71fc0a97bf1cea181ef6, type: 3}
       propertyPath: m_SceneBindings.Array.data[14].key
       value: 
-      objectReference: {fileID: -6247552088434739316, guid: bfd3372e4658bb9e2b4d4c6120ae20f5, type: 2}
+      objectReference: {fileID: -1937468212192233751, guid: bfd3372e4658bb9e2b4d4c6120ae20f5, type: 2}
     - target: {fileID: 4614264531857009603, guid: e19596e2ad6b71fc0a97bf1cea181ef6, type: 3}
       propertyPath: m_SceneBindings.Array.data[0].value
       value: 
@@ -2031,6 +2076,22 @@ PrefabInstance:
       propertyPath: m_SceneBindings.Array.data[13].value
       value: 
       objectReference: {fileID: 28703491}
+    - target: {fileID: 4614264531857009603, guid: e19596e2ad6b71fc0a97bf1cea181ef6, type: 3}
+      propertyPath: m_SceneBindings.Array.data[14].value
+      value: 
+      objectReference: {fileID: 1580437277}
+    - target: {fileID: 4614264531857009603, guid: e19596e2ad6b71fc0a97bf1cea181ef6, type: 3}
+      propertyPath: m_ExposedReferences.m_References.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4614264531857009603, guid: e19596e2ad6b71fc0a97bf1cea181ef6, type: 3}
+      propertyPath: m_ExposedReferences.m_References.Array.data[0].first
+      value: 5aa1882ca8dc2fe4bbda6295abb99409
+      objectReference: {fileID: 0}
+    - target: {fileID: 4614264531857009603, guid: e19596e2ad6b71fc0a97bf1cea181ef6, type: 3}
+      propertyPath: m_ExposedReferences.m_References.Array.data[0].second
+      value: 
+      objectReference: {fileID: 1580437272}
     - target: {fileID: 6537761664102284437, guid: e19596e2ad6b71fc0a97bf1cea181ef6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -44.977028
