@@ -1,9 +1,10 @@
 ﻿
 using JetBrains.Annotations;
 using System.Collections;
+using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine.AI; 
 
 namespace SIGGD.Mobs
 {
@@ -22,24 +23,23 @@ namespace SIGGD.Mobs
         private int maxPower = 0;
         private int maxDesperation = 0;
         private int maxAggression = 0;
+        public Boundary boundary;
         public NavMeshQueryFilter filter { get; private set; }
+
 
         private void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
             EntityHealthManager healthManager = GetComponent<EntityHealthManager>();
             StaminaBehaviour staminaBehaviour = GetComponent<StaminaBehaviour>();
-            NavMeshQueryFilter filter = new NavMeshQueryFilter();
-            filter.agentTypeID = agent.agentTypeID;
-            filter.areaMask = NavMesh.AllAreas;
-            /*
-            var filter = new NavMeshQueryFilter
-            {
-                agentTypeID = agent.agentTypeID, 
-                areaMask = NavMesh.AllAreas
-            };
-            */
-           // NavMeshQueryFilter navMeshQueryFilter = new nav
+            
+            // Will implement later
+            //filter = new navmeshqueryfilter
+            //{
+            //   agenttypeid = agent.agenttypeid, 
+            //   areamask = navmesh.allareas
+            //};
+            
         }
         void Start()
         {

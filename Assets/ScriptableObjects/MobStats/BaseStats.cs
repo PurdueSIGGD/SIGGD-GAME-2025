@@ -19,6 +19,6 @@ namespace SIGGD.Goap.Config
         public LayerMask playerLayer;
         [Header("Stamina Settings")]
         public float maxStamina = 100f;
-        public float staminaGainRate = 2f;
+        public float staminaGainRate = 0.15f;
     }
 }

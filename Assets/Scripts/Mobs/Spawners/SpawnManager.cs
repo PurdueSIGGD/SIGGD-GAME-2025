@@ -4,14 +4,18 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
 using CrashKonijn.Goap.Runtime;
+using UnityEngine.InputSystem.Android;
+using SIGGD.Mobs;
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField]
     private List<MobSpawner> spawners;
     private float timer;
-    void Start()
+    public GameObject boundaryObject;
+    private Boundary boundary;
+    void Awake()
     {
-
+        boundary = boundaryObject.GetComponent<Boundary>();
     }
     void Update()
     {
@@ -35,6 +39,8 @@ public class SpawnManager : MonoBehaviour
         {
             var agent = Instantiate(spawner.prefab, spawnPos, Quaternion.identity).GetComponent<GoapActionProvider>();
             agent.gameObject.SetActive(true);
+            var agentData = agent.GetComponent<AgentData>();
+            agentData.boundary = boundary;
             NavMeshAgent navAgent = agent.GetComponent<NavMeshAgent>();
             if (!NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 15f, NavMesh.AllAreas))
             {
