@@ -2,10 +2,11 @@ using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
 {
-    InventoryDataSaveModule inventoryModule;
-    PlayerDataSaveModule playerModule;
-    ScreenshotSaveModule screenshotModule;
-    QuestDataSaveModule questModule;
+    public InventoryDataSaveModule inventoryModule;
+    public PlayerDataSaveModule playerModule;
+    public ScreenshotSaveModule screenshotModule;
+    public QuestDataSaveModule questModule;
+    public GameProgressDataSaveModule gameProgressModule;
 
     private ISaveModule[] modules;
 
@@ -20,8 +21,10 @@ public class SaveManager : Singleton<SaveManager>
         screenshotModule = new ScreenshotSaveModule();
         playerModule = new PlayerDataSaveModule();
         questModule = new QuestDataSaveModule();
+        gameProgressModule = new GameProgressDataSaveModule();
 
-        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule, questModule};
+        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
+                                     questModule, gameProgressModule};
 
         Load();
     }
