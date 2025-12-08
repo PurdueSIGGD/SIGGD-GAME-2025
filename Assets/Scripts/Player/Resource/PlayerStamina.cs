@@ -9,11 +9,14 @@ public class PlayerStamina : MonoBehaviour
     [SerializeField] float staminaRegenRate = 1f;
 
     [SerializeField] Slider staminaSlider;
+    [SerializeField] Image staminaSliderBar;
     
     private float currentStamina;
 
     public float MaxStamina => maxStamina;
     public float CurrentStamina => currentStamina;
+
+    public bool HasStamina => (currentStamina > 0 && anim.GetBool("hasStamina"));
 
     private PlayerStateMachine psm;
 
@@ -34,6 +37,14 @@ public class PlayerStamina : MonoBehaviour
     void Update()
     {
         staminaSlider.value = currentStamina / maxStamina;
+        if (coroutine != null)
+        {
+            staminaSliderBar.color = Color.red;
+        }
+        else
+        {
+            staminaSliderBar.color = Color.green;
+        }
 
         isSprinting = psm.IsSprinting;
         isClimbing = psm.IsClimbing;
