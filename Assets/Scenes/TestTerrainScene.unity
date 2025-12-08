@@ -6548,7 +6548,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3397956530449237605, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 3425718.2
+      value: 3553990.2
       objectReference: {fileID: 0}
     - target: {fileID: 4696392301619895344, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
       propertyPath: m_Name
@@ -19988,6 +19988,55 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 973836219005971061, guid: 100be88d6b60bf24d88734097bfeafb4, type: 3}
   m_PrefabInstance: {fileID: 1368779030}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1368892325
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1368892327}
+  - component: {fileID: 1368892326}
+  m_Layer: 0
+  m_Name: Post-process
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1368892326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1368892325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sharedProfile: {fileID: 11400000, guid: 76fa0b05809b81141b670db7032912df, type: 2}
+  isGlobal: 1
+  blendDistance: 0
+  weight: 1
+  priority: 0
+--- !u!4 &1368892327
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1368892325}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 346.9442, y: 12.173957, z: -72.826065}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1373440835
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31982,3 +32031,4 @@ SceneRoots:
   - {fileID: 1389496261}
   - {fileID: 1289016867}
   - {fileID: 122917261}
+  - {fileID: 1368892327}
