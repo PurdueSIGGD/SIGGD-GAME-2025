@@ -2,19 +2,19 @@ using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
 {
-    public InventoryDataSaveModule inventoryModule;
+    public InventoryDataSaveModule inventoryModule = null;
     public bool saveInventory = true;
     
-    public PlayerDataSaveModule playerModule;
+    public PlayerDataSaveModule playerModule = null;
     public bool savePlayer = true;
 
-    public ScreenshotSaveModule screenshotModule;
+    public ScreenshotSaveModule screenshotModule = null;
     public bool saveScreenshot = true;
 
-    public QuestDataSaveModule questModule;
+    public QuestDataSaveModule questModule = null;
     public bool saveQuests = true;
 
-    public GameProgressDataSaveModule gameProgressModule;
+    public GameProgressDataSaveModule gameProgressModule = null;
     public bool saveGameProgress = true;
 
     private ISaveModule[] modules;
