@@ -20,6 +20,11 @@ public class InventoryDataSaveModule : ISaveModule
 
     public bool serialize()
     {
+        if (!Inventory.Instance)
+        {
+            Debug.LogWarning("Cannot find inventory when attempting to save");
+            return false;
+        }
         inventoryData.inventory = new InventorySaveData.SlotSaveData[Inventory.InventoryLength + Inventory.HotBarLength];
         UISlot[] inventoryReference = Inventory.Instance.GetInventory();
         inventoryData.selected = Inventory.Instance.GetSelected();

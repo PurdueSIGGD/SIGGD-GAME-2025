@@ -1,25 +1,23 @@
-using System;
-using TMPro.Examples;
 using UnityEngine;
-using UnityEngine.Splines;
-using UnityEngine.UIElements;
 
 public class WorkBenchScript : MonoBehaviour
 {
-    GameObject Player;
-    //[SerializedField] GameObject Player;
+    private GameObject player;
+    private ManageRespawn respawnLogic;
+
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            Player.GetComponent<ManageRespawn>().UpdateSpawnPoint(transform);
-            Debug.Log("RespawnPoint set");
+            respawnLogic.UpdateSpawnPoint(transform);
+            Debug.Log("RespawnPoint set at " + transform.position);
         }
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Player = GameObject.Find("Player");
+        player = PlayerID.Instance.gameObject;
+        respawnLogic = player.GetComponent<ManageRespawn>();
     }
 
     // Update is called once per frame

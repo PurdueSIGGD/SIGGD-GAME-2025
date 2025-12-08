@@ -1,9 +1,7 @@
-using NUnit.Framework;
 using System;
 using UnityEngine;
 using SIGGD.Mobs;
 using System.Collections.Generic;
-using Sirenix.OdinInspector.Editor.Validation;
 
 public class PerceptionManager : MonoBehaviour
 {
@@ -50,6 +48,14 @@ public class PerceptionManager : MonoBehaviour
         {
             CanSeePlayer = false;
         }
+        /*
+        inTerritory.checkIsInTerritory();
+        if (inTerritory)
+        {
+            territory.getDistanceToCenter(transform.position);
+            territory should maybe be static
+        }
+        */
     }
     private void UpdateSmell()
     {

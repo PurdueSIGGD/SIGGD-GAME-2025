@@ -26,7 +26,7 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override void Start(IMonoAgent agent, CommonData data)
         {
-            data.mb.EnableSprint();
+            data.mv.EnableSprint();
         }
 
         // This method is called once before the action is performed
@@ -58,7 +58,7 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override void End(IMonoAgent agent, CommonData data)
         {
-            data.mb.DisableSprint();
+            data.mv.DisableSprint();
         }
 
     }

@@ -13,7 +13,6 @@ using CrashKonijn.Agent.Runtime;
 
 public class Smell : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     public float smellRadius;
     public LayerMask targetMask;
     public LayerMask smellReductionMask;
@@ -69,11 +68,9 @@ public class Smell : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, mobLayer | playerLayer);
         foreach (Collider collider in hitColliders)
         {
-            if (collider.GetComponentInParent<AgentHuntBehaviour>() != null) { 
+            if (collider.GetComponentInParent<AgentHuntBehaviour>() == null) { 
                 smellValues.Add((collider.transform.position, 0.7f));
             }
-            //Transform target = collider.transform;
-            //if (collider.GetComponentInParent<MobIds>)
         }
     }
     private void SmellCheckPlayer()
@@ -96,6 +93,8 @@ public class Smell : MonoBehaviour
 
             float weight = Mathf.Pow(1f - Mathf.Clamp01(dist / smellRadius), 2f);
 
+            //float hierarchialWeight = weight * smellValues[i];
+
             totalForce += toSmell.normalized * weight;
             totalWeight += weight;
         }
@@ -109,7 +108,18 @@ public class Smell : MonoBehaviour
         }
         smellPos = pos;
     }
-    public Vector3 GetSmellPos() => isPredator ? (smellPos + playerPos) : smellPos;
+    public Vector3 GetSmellPos()
+    {
+        if (smellPos == Vector3.zero) {
+            return Vector3.zero;
+        }
+        if (isPredator) {
+            return smellPos;
+        } else
+        {
+            return smellPos;
+        }
+    }
     public Vector3 GetPlayerPos() => playerPos;
     void OnDrawGizmosSelected()
     {

@@ -5,7 +5,7 @@
 			<value>Alex1</value>
 		</property>
 		<property name="outputFormat">
-			<value>2</value>
+			<value>0</value>
 		</property>
 		<relationship name="folder">
 			<destination>{94799302-c027-4149-ba2a-d2fd74f3b9f1}</destination>
@@ -99,7 +99,9 @@
 	<object class="MixerBusEffectChain" id="{22b47348-c746-4f2f-afc0-db22f6cf735b}">
 		<relationship name="effects">
 			<destination>{80233039-0dc8-435b-a414-c88c431faaf5}</destination>
-			<destination>{9b2b2c7f-819e-4949-acb8-e654656eec9a}</destination>
+			<destination>{d31edd22-6bfb-4b8f-bcef-ba99e6c514e7}</destination>
+			<destination>{0c71cfe6-2b95-4333-9412-2fa533376d71}</destination>
+			<destination>{e605a880-61e5-4f5b-9e06-15f4659a2736}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{b72a9318-8965-42ae-a076-bc070f1a4ce2}" />
@@ -110,5 +112,25 @@
 	</object>
 	<object class="MixerBusFader" id="{87bd1df1-9253-4614-ab33-8d64b8255ccc}" />
 	<object class="MixerBusFader" id="{80233039-0dc8-435b-a414-c88c431faaf5}" />
-	<object class="SpatialiserEffect" id="{9b2b2c7f-819e-4949-acb8-e654656eec9a}" />
+	<object class="DistortionEffect" id="{d31edd22-6bfb-4b8f-bcef-ba99e6c514e7}">
+		<property name="level">
+			<value>0.964999974</value>
+		</property>
+	</object>
+	<object class="ThreeEQEffect" id="{0c71cfe6-2b95-4333-9412-2fa533376d71}">
+		<property name="lowGain">
+			<value>-53</value>
+		</property>
+		<property name="highGain">
+			<value>-54</value>
+		</property>
+		<property name="crossoverSlope">
+			<value>2</value>
+		</property>
+	</object>
+	<object class="CompressorEffect" id="{e605a880-61e5-4f5b-9e06-15f4659a2736}">
+		<property name="gain">
+			<value>-30</value>
+		</property>
+	</object>
 </objects>

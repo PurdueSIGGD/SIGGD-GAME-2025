@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Debug = UnityEngine.Debug;
-using System.Threading.Tasks;
 
 public class AudioManager : Singleton<AudioManager>
 {
@@ -198,6 +197,13 @@ public class AudioManager : Singleton<AudioManager>
                     levelMusic.start();
                 });
                 
+            }
+        }
+        else
+        {
+            if (levelMusic.isValid())
+            {
+                levelMusic.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
             }
         }
     }

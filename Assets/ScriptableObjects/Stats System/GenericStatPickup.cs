@@ -5,7 +5,7 @@ using UnityEngine;
 public class GenericStatPickup : MonoBehaviour
 {
     [Header("Effect Settings")]
-    [SerializeField] private StatType statToAffect = StatType.Attack;
+    [SerializeField] private StatType statToAffect;
     public float multiplier = 2f;
     public float duration = 5f;
 
@@ -19,9 +19,10 @@ public class GenericStatPickup : MonoBehaviour
         if (stats != null)
         {
             stats.ApplyMultiplier(statToAffect, multiplier, duration);
-            Debug.Log($"Picked up {statToAffect} multiplier of {multiplier} for {duration} seconds.");
             Destroy(gameObject);
         }
+
+         
     }
 
 
