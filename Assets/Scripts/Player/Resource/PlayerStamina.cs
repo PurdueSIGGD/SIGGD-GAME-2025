@@ -1,20 +1,19 @@
 using System.Collections;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
+using UnityEngine.UI;
 
 public class PlayerStamina : MonoBehaviour
 {
     [SerializeField] float maxStamina = 100f;
     [SerializeField] float staminaDecayRate = 2f;
     [SerializeField] float staminaRegenRate = 1f;
+
+    [SerializeField] Slider staminaSlider;
     
     private float currentStamina;
 
     public float MaxStamina => maxStamina;
     public float CurrentStamina => currentStamina;
-
-    public float currentHunger => GetComponent<PlayerHunger>().CurrentHunger;
-    public float maxHunger => GetComponent<PlayerHunger>().MaxHunger;
 
     private PlayerStateMachine psm;
 
@@ -28,30 +27,19 @@ public class PlayerStamina : MonoBehaviour
     void Start()
     {
         currentStamina = maxStamina;
-        //playerStamina = GetComponent<EntityHealthManager>(); //entitystaminamanager?
         psm = PlayerID.Instance.stateMachine;
         anim = PlayerID.Instance.GetComponent<Animator>();
     }
 
     void Update()
     {
+        staminaSlider.value = currentStamina / maxStamina;
+
         isSprinting = psm.IsSprinting;
         isClimbing = psm.IsClimbing;
 
         // stamina decays while exerting effort (climb, sprint; jump triggers once?)
-        Debug.Log("Stamina: " + currentStamina);
-        //if (currentStamina <= 0) // if player runs out of stamina, stop the action they're doing
-        //{
-        //    if (isSprinting)
-        //    {
-        //        Debug.Log("Ran out of stamina, stopped sprinting");
-        //    }
-        //    if (isClimbing)
-        //    {
-        //        Debug.Log("Ran out of stamina, stopped climbing");
-        //    }
-        //    // jumping should trigger once, don't need to keep checking
-        //}
+
         if (isSprinting && currentStamina <= 0)
         {
             Debug.Log("Ran out of stamina, stopped sprinting");
@@ -60,13 +48,17 @@ public class PlayerStamina : MonoBehaviour
                 coroutine = DisableStamina();
                 StartCoroutine(coroutine);
             }
-            
-        } 
+        }
         else if (isClimbing && currentStamina <= 0)
         {
             Debug.Log("Ran out of stamina, stopped climbing");
+            if (coroutine == null)
+            {
+                coroutine = DisableStamina();
+                StartCoroutine(coroutine);
+            }
         }
-        if (isClimbing || isSprinting)
+        else if (isClimbing || isSprinting)
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
         }
@@ -74,9 +66,6 @@ public class PlayerStamina : MonoBehaviour
         {
             currentStamina += staminaRegenRate * Time.deltaTime;
             currentStamina = Mathf.Min(MaxStamina, CurrentStamina);
-            Debug.Log("Stamina rate: " + staminaRegenRate);
-            //currentStamina += staminaRegenRate * (currentHunger / maxHunger) * Time.deltaTime; // regen stamina slower as hunger goes down
-            //Debug.Log("Stamina rate: " + staminaRegenRate * (currentHunger / maxHunger));
         }
     }
 
