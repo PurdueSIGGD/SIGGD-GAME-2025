@@ -51,6 +51,10 @@ public class PlayerStateMachine : MonoBehaviour
     public Vector3 LastGroundedPosition { get; private set; }
     
     public bool IsFalling => playerID.rb.linearVelocity.y < -0.1f && !IsGrounded && !IsClimbing;
+
+    public bool IsSprinting;
+
+    public bool HasStamina => PlayerID.Instance.GetComponent<PlayerStamina>().CurrentStamina>0;
     
     #endregion
     
@@ -128,7 +132,10 @@ public class PlayerStateMachine : MonoBehaviour
         animator.SetBool(Animator.StringToHash("isMoving"), IsMoving);
         animator.SetBool(Animator.StringToHash("isGrounded"), IsGrounded); 
         animator.SetBool(Animator.StringToHash("isFalling"), IsFalling);
-        
+        animator.SetBool(Animator.StringToHash("isSprinting"), PlayerInput.Instance.sprintInput);
+        //animator.SetBool(Animator.StringToHash("hasStamina"), HasStamina);
+
+
         if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0 && IsClimbing == false)
         {
             animator.SetTrigger(Animator.StringToHash("Jumping"));

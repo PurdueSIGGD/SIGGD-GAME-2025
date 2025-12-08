@@ -71,6 +71,7 @@ public class ClimbAction : MonoBehaviour
     private Transform cameraTransform; // retrieved from playerID
     private PlayerStateMachine stateMachine;
     private PlayerInput playerInput; // expected to be parented to the player object
+    private PlayerStamina stamina;
     #endregion
 
     #region Climbable surface tagging
@@ -135,6 +136,7 @@ public class ClimbAction : MonoBehaviour
         cameraTransform = playerID.cam.transform;
         stateMachine = playerID.stateMachine;
         playerInput = playerObject.GetComponent<PlayerInput>();
+        stamina = playerObject.GetComponent<PlayerStamina>();
     }
 
     private void Awake() {
@@ -266,7 +268,7 @@ public class ClimbAction : MonoBehaviour
     public void EnterClimbMode() {
         InputHand(true, Hand.LeftHand, true);
         InputHand(true, Hand.RightHand, true);
-        if (isHandAttached()) {
+        if (isHandAttached() && stamina.HasStamina) {
             isClimbing = true;
             stateMachine.ToggleCrouch(false);
             SetPhantomHand(true);
@@ -293,7 +295,7 @@ public class ClimbAction : MonoBehaviour
             timeSpentGrounded = 0;
         }
 
-        if (timeSpentGrounded >= groundedBufferTime && handsAttached == false) {
+        if ((timeSpentGrounded >= groundedBufferTime && handsAttached == false) || (!stamina.HasStamina)) {
             ExitClimbMode();
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Extensions.Patterns;
 
@@ -23,5 +24,18 @@ public class QuestManager : LazySingleton<QuestManager>
     public bool IsObjectiveComplete(QuestObjective objective, int times = 1)
     {
         return questInstances.TryGetValue(objective, out var state) && state.ConditionsMet(times);
+    }
+
+    public void LoadSavedData(Dictionary<QuestObjective, QuestObjectiveInstance> saveData)
+    {
+        foreach (QuestObjective key in saveData.Keys)
+        {
+            questInstances[key] = saveData[key];
+        }
+    }
+
+    public Dictionary<QuestObjective, QuestObjectiveInstance> GetQuestInstances()
+    {
+        return questInstances;
     }
 }

@@ -13,6 +13,9 @@ public class FMODEvents : Singleton<FMODEvents>
     [HideInInspector] public bool Initialized { get; private set; }
     [SerializeField] List<string> bankNames = new(); // if you put a bank that doesnt exist into this list it will break the whole loop    
 
+    [Tooltip("Toggle to print to console each audio as they are loaded")]
+    [SerializeField] bool logAudioNameOnLoad;
+
     public Dictionary<string, EventReference> soundEvents = new();
     private Coroutine loadroutine;
 
@@ -54,6 +57,18 @@ public class FMODEvents : Singleton<FMODEvents>
     {
         StartCoroutine(GetEventInstanceCoroutine(key, callback));
     }
+    
+    public EventInstance GetEventInstanceNoAsync(string key)
+    {
+        if (soundEvents.TryGetValue(key, out var eventRef))
+        {
+            return RuntimeManager.CreateInstance(eventRef);
+        }
+
+        Debug.LogWarning("FMODEvents: could not find event of name: " + key);
+        return default;
+    }
+
 
     private IEnumerator LoadBanksCoroutine()
     {
@@ -78,15 +93,15 @@ public class FMODEvents : Singleton<FMODEvents>
                 description.getPath(out string eventPath);
 
                 EventReference eventRef = RuntimeManager.PathToEventReference(eventPath);
-
+                
                 soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1), eventRef); // the replace just makes the names a little nicer
-                Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
+                if (logAudioNameOnLoad) Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
             }
         }
 
         Initialized = true;
         loadroutine = null;
-        Debug.Log("All " + soundEvents.Count + " events loaded");
+        if (logAudioNameOnLoad) Debug.Log("All " + soundEvents.Count + " events loaded");
     }
 
     private IEnumerator GetEventInstanceCoroutine(string key, Action<EventInstance> callback)
