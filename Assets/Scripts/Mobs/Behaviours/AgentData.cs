@@ -1,8 +1,10 @@
 ﻿
 using JetBrains.Annotations;
 using System.Collections;
+using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI; 
 
 namespace SIGGD.Mobs
 {
@@ -12,6 +14,7 @@ namespace SIGGD.Mobs
         // Use this for initialization
         private EntityHealthManager healthManager;
         private StaminaBehaviour staminaBehaviour;
+        private NavMeshAgent agent;
         public int desperationLevel;
         public int powerLevel;
         public float energyLevel;
@@ -20,11 +23,23 @@ namespace SIGGD.Mobs
         private int maxPower = 0;
         private int maxDesperation = 0;
         private int maxAggression = 0;
+        public Boundary boundary;
+        public NavMeshQueryFilter filter { get; private set; }
+
 
         private void Awake()
         {
+            agent = GetComponent<NavMeshAgent>();
             EntityHealthManager healthManager = GetComponent<EntityHealthManager>();
             StaminaBehaviour staminaBehaviour = GetComponent<StaminaBehaviour>();
+            
+            // Will implement later
+            //filter = new navmeshqueryfilter
+            //{
+            //   agenttypeid = agent.agenttypeid, 
+            //   areamask = navmesh.allareas
+            //};
+            
         }
         void Start()
         {
@@ -34,7 +49,6 @@ namespace SIGGD.Mobs
             aggressionLevel = 1;
         }
 
-        // Update is called once per frame
         void Update()
         {
 

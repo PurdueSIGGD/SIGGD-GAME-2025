@@ -20,6 +20,7 @@ namespace SIGGD.Mobs
         protected override void Start()
         {
             this.provider.RequestGoal<WanderGoal>(true);
+            this.provider.SetDistanceMultiplierSpeed(4f);
         }
 
         protected override void OnActionEnd(IAction action)

@@ -1,16 +1,21 @@
-using System.Collections.Generic;
-using System.Linq;
-using System;
 using UnityEngine;
-using System.IO;
 
 public class SaveManager : Singleton<SaveManager>
 {
+    public InventoryDataSaveModule inventoryModule = null;
+    public bool saveInventory = true;
+    
+    public PlayerDataSaveModule playerModule = null;
+    public bool savePlayer = true;
 
-    [SerializeField] private Inventory inventory; //TEMP
-    InventoryDataSaveModule inventoryModule;
-    PlayerDataSaveModule playerModule;
-    ScreenshotSaveModule screenshotModule;
+    public ScreenshotSaveModule screenshotModule = null;
+    public bool saveScreenshot = true;
+
+    public QuestDataSaveModule questModule = null;
+    public bool saveQuests = true;
+
+    public GameProgressDataSaveModule gameProgressModule = null;
+    public bool saveGameProgress = true;
 
     private ISaveModule[] modules;
 
@@ -21,13 +26,14 @@ public class SaveManager : Singleton<SaveManager>
 
     void Start()
     {
-        inventoryModule = new InventoryDataSaveModule();
-        screenshotModule = new ScreenshotSaveModule();
-        playerModule = new PlayerDataSaveModule();
+        if (saveInventory) inventoryModule = new InventoryDataSaveModule();
+        if (savePlayer) playerModule = new PlayerDataSaveModule();
+        if (saveScreenshot) screenshotModule = new ScreenshotSaveModule();
+        if (saveQuests) questModule = new QuestDataSaveModule();
+        if (saveGameProgress) gameProgressModule = new GameProgressDataSaveModule();
 
-        InventoryDataSaveModule.inventory = inventory; // TEMP
-
-        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule};
+        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
+                                     questModule, gameProgressModule};
 
         Load();
     }
@@ -40,7 +46,9 @@ public class SaveManager : Singleton<SaveManager>
     public bool Load()
     {
         foreach (var module in modules)
-            module.deserialize();
+        {
+            module?.deserialize();
+        }
 
         return true;
     }
@@ -48,7 +56,9 @@ public class SaveManager : Singleton<SaveManager>
     public bool Save()
     {
         foreach (var module in modules)
-            module.serialize();
+        {
+            module?.serialize();
+        }
         return true;
     }
 }

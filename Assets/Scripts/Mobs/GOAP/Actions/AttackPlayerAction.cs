@@ -21,7 +21,7 @@ namespace SIGGD.Goap
         // This method is optional and can be removed
         public override bool IsValid(IActionReceiver agent, CommonData data)
         {
-            return true;
+            return data.pm.CanSeePlayer;
         }
 
         // This method is called when the action is started
@@ -29,16 +29,19 @@ namespace SIGGD.Goap
         public override void Start(IMonoAgent agent, CommonData data)
         {
             data.Timer = 20f;
-            data.mb.EnableSprint();
+            data.mv.EnableSprint();
         }
         public override void BeforePerform(IMonoAgent agent, CommonData data)
         {
             float distance = Vector3.Distance(data.Target.Position, agent.Transform.position);
-            if (distance <= 25 && distance > 5)
+            if (distance <= 100 && distance > 0)
             {
-                data.am.StartAttackSequence(agent);
-                data.am.SetTarget(data.Target as TransformTarget);
-                data.am.isLunging = true;
+                if (!data.am.isLunging)
+                {
+                    data.am.StartAttackSequence(agent);
+                    data.am.SetTarget(data.Target as TransformTarget);
+                    data.am.isLunging = true;
+                }
             }
         }
 
@@ -55,8 +58,8 @@ namespace SIGGD.Goap
         }
         public override void End(IMonoAgent agent, CommonData data)
         {
-            data.mb.DisableSprint();
-            this.Disable(agent, ActionDisabler.ForTime(0.5f));
+            data.mv.DisableSprint();
+            //this.Disable(agent, ActionDisabler.ForTime(0.5f));
 
         }
     }

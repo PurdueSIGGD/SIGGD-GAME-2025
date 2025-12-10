@@ -12,26 +12,29 @@ namespace SIGGD.Mobs
 {
     public class HyenaBrain : BaseAgentBrain
     {
-        private AgentMoveBehaviour AgentMoveBehaviour;
+        private Movement Movement;
         private HungerBehaviour HungerBehaviour;
         private AgentHuntBehaviour HuntBehaviour;
         private PackBehavior PackBehaviour;
         private HyenaAttackManager HyenaAttackManager;
+        private PerceptionManager PerceptionManager;
         protected override void Awake()
         {
             this.goap = FindFirstObjectByType<GoapBehaviour>();
             this.agent = this.GetComponent<AgentBehaviour>();
             this.provider = this.GetComponent<GoapActionProvider>();
             this.provider.AgentType = this.goap.GetAgentType(MobIds.hyena);
-            AgentMoveBehaviour = this.GetComponent<AgentMoveBehaviour>();
+            Movement = this.GetComponent<Movement>();
             HuntBehaviour = this.GetComponent<AgentHuntBehaviour>();
             HungerBehaviour = this.GetComponent<HungerBehaviour>();
             PackBehaviour = this.GetComponent<PackBehavior>();
             HyenaAttackManager = this.GetComponent<HyenaAttackManager>();
+            PerceptionManager = this.GetComponent<PerceptionManager>();
         }
         protected override void Start()
         {
             this.provider.RequestGoal<WanderGoal>(true);
+            this.provider.SetDistanceMultiplierSpeed(6f);
         }
         private void Update()
         {
@@ -40,37 +43,34 @@ namespace SIGGD.Mobs
         protected override void OnEnable()
         {
             base.OnEnable();
-            FieldOfView.OnPlayerDetected += PlayerDetected;
+            PerceptionManager.OnPlayerDetected += PlayerDetected;
         }
         protected override void OnDisable()
         {
             base.OnDisable();
-            FieldOfView.OnPlayerDetected -= PlayerDetected;
+            PerceptionManager.OnPlayerDetected -= PlayerDetected;
         }
-
         protected override void OnActionEnd(IAction action)
         {
             if (HyenaAttackManager.isLunging) return;
             if (this.provider.CurrentPlan == null)
             {
-                this.provider.RequestGoal<WanderGoal, DontStarveGoal>(true);
+                this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal>(true);
                 return;
             } else if (HungerBehaviour.hunger > 50)
             {
-                this.provider.RequestGoal<WanderGoal, DontStarveGoal>(false);
+                this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal>(false);
                 return;
             }               
-            //this.provider.ResolveAction();
         }
         protected override void OnNoActionFound(IGoalRequest request)
         {
+            Debug.Log($"{this.name}no action found");
             if (HyenaAttackManager.isLunging) return;
-            if (HuntBehaviour.currentTargetOfHunt != null)
-                return;
-            if (this.provider.CurrentPlan == null) return;
-            if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
+            Debug.Log($"{this.name}didnt make it through");
+            if (this.provider.CurrentPlan == null || HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
             {
-                this.provider.RequestGoal<DontStarveGoal>(true);
+                this.provider.RequestGoal<DontStarveGoal, WanderGoal>(true);
             } else
             {
                 this.provider.RequestGoal<WanderGoal>(true);
@@ -86,35 +86,26 @@ namespace SIGGD.Mobs
         }
         protected override void OnActionStart(IAction action)
         {
-            if (this.provider.CurrentPlan.Action is KillPreyAction)
-            {
-                //AgentMoveBehaviour.EnableSprint();
-            }
             if (this.provider.CurrentPlan.Goal is KillPlayerGoal)
             {
                 if (AudioManager.Instance)
                 {
-                    AudioManager.Instance.PlayOneShot(FMODEvents.instance.soundEvents["HyenaOnNoticeSFX"], transform.position);       
+                    AudioManager.Instance.PlayOneShot(FMODEvents.Instance.soundEvents["HyenaOnNoticeSFX"].ToSafeString(), transform.position);
                 }
-                //AgentMoveBehaviour.EnableSprint();
             }
         }
-        private void DecideGoal()
-        {
-            this.provider.RequestGoal<WanderGoal>(true);
-        }
-
+        // action for smell for when prey detected 
         void PlayerDetected(Transform player)
         {
-            if (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 50)
+            Debug.Log($"{this.name}has detected player and trying to attack");
+            if (this.provider.CurrentPlan == null || (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 150))
             {
-               // AgentMoveBehaviour.EnableSprint();
                 this.provider.RequestGoal<KillPlayerGoal>(true);
             } else
             {
                 this.provider.RequestGoal<KillPlayerGoal, DontStarveGoal>(true);
             }
+            this.provider.ResolveAction();
         }
     }
-
 }

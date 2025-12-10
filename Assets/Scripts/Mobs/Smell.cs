@@ -7,48 +7,45 @@ using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using UnityEngine.Windows.Speech;
+using CrashKonijn.Agent.Runtime;
 
 public class Smell : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     public float smellRadius;
     public LayerMask targetMask;
     public LayerMask smellReductionMask;
     public float targetSmellIntensity;
-    public GameObject targetRef;
     private HungerBehaviour HungerBehaviour;
     private PreyBehaviour PreyBehaviour;
     private bool isPrey;
     private bool isPredator;
-    private Vector3 sumPreyPositions;
-    private Vector3 sumPredatorPositions;
-    public Vector3 positionTest;
-
-    private Action SmellCheck;
+    private List<Vector3> preyPositions;
+    private List<Vector3> predatorPositions;
+    private List<(Vector3 position, float decay)> smellValues;
+    private Vector3 playerPos;
+    [SerializeField]
+    private LayerMask playerLayer;
+    [SerializeField]
+    private LayerMask mobLayer;
+    private Vector3 position;
+    private Vector3 smellPos;
     void Awake()
     {
         HungerBehaviour = GetComponent<HungerBehaviour>();
         PreyBehaviour = GetComponent<PreyBehaviour>();
+        smellPos = Vector3.zero;
+        smellValues = new();
     }
     void Start()
     {
-        positionTest = Vector3.zero;
-        if (gameObject.CompareTag("Prey")) isPrey = true;
-        if (isPrey && isPredator)
-        {
-            SmellCheck = SmellCheckPredatorPrey;
-        }
-        else if (isPrey)
-        {
-            SmellCheck = SmellCheckPrey;
-        } else
-        {
-            SmellCheck = SmellCheckPredator;
-        }
+        position = Vector3.zero;
+        isPrey = gameObject.CompareTag("Prey");
+        isPredator = gameObject.CompareTag("Predator");
         StartCoroutine(SmellRoutine());
     }
 
-    // Update is called once per frame
     void Update()
     {
 
@@ -61,101 +58,72 @@ public class Smell : MonoBehaviour
         {
             yield return wait;
             SmellCheck();
+            SmellCheckPlayer();
+            CalculateSmellIntensity();
         }
     }
-    //  if (collider.CompareTag("mobs"))
-    //   {
-    //    tempFoodCount++;
-    // }
-    //Vector3 directionToTarget = (target.position - transform.position).normalized;
-    //float distanceToTarget = Vector3.Distance(transform.position, target.position);
-    //if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, smellReductionMask))
-    // {
-    //    targetSmellIntensity = (1f - Math.Clamp(distanceToTarget / smellRadius, 0, 1));
-    //    targetRef = collider.gameObject;
-    //}
-    // targetRef = collider.gameObject;
-    // break;
-    private void SmellCheckPredatorPrey()
+    private void SmellCheck()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius);
-        targetRef = null;
-        int tempFoodCount = 0;
-        int tempPreyCount = 0;
-        int tempPredatorCount = 0;
-        Vector3 tempSumPredatorPositions = Vector3.zero;
-        Vector3 tempSumPreyPositions = Vector3.zero;
-        if (hitColliders.Length < 1) return;
+        smellValues.Clear();
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, mobLayer | playerLayer);
         foreach (Collider collider in hitColliders)
         {
-            //Transform target = collider.transform;
-            if (collider.CompareTag("Food"))
-            {
-                tempFoodCount++;
+            if (collider.GetComponentInParent<AgentHuntBehaviour>() == null) { 
+                smellValues.Add((collider.transform.position, 0.7f));
             }
-            tempSumPredatorPositions += collider.gameObject.transform.position;
-            tempSumPreyPositions += collider.gameObject.transform.position;
         }
-        HungerBehaviour.foodCount = tempFoodCount;
-        sumPreyPositions = (tempPreyCount != 0) ? tempSumPreyPositions / tempPreyCount : Vector3.zero;
-        sumPredatorPositions = (tempPredatorCount != 0) ? tempSumPredatorPositions / tempPredatorCount : Vector3.zero;
     }
-    private void SmellCheckPrey()
+    private void SmellCheckPlayer()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius);
-        targetRef = null;
-        int tempFoodCount = 0;
-        int tempPredatorCount = 0;
-        Vector3 tempSumPredatorPositions = Vector3.zero;
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, playerLayer);
         if (hitColliders.Length < 1) return;
-        foreach (Collider collider in hitColliders)
-        {
-            //Transform target = collider.transform;
-            if (collider.CompareTag("Food"))
-            {
-                tempFoodCount++;
-            }
-            if (collider.CompareTag("Predator"))
-            {
-                tempSumPredatorPositions += collider.gameObject.transform.position;
-                tempPredatorCount++;
-            }
+        playerPos = hitColliders[0].transform.position;
+    }
+    private void CalculateSmellIntensity()
+    {
+        float safeDistanceThreshold = 30f;
+        Vector3 totalForce = Vector3.zero;
+        float totalWeight = 0f;
+
+        for (int i = 0; i < smellValues.Count; i++) {
+            smellValues[i] = (smellValues[i].position * smellValues[i].decay, smellValues[i].decay);
+            if (smellValues[i].position.sqrMagnitude < 3f) smellValues.RemoveAt(i);
+            Vector3 toSmell = smellValues[i].position - transform.position;
+            float dist = Mathf.Max(toSmell.magnitude, 1f);
+
+            float weight = Mathf.Pow(1f - Mathf.Clamp01(dist / smellRadius), 2f);
+
+            //float hierarchialWeight = weight * smellValues[i];
+
+            totalForce += toSmell.normalized * weight;
+            totalWeight += weight;
         }
-        HungerBehaviour.foodCount = tempFoodCount;
-        sumPredatorPositions = (tempPredatorCount != 0) ? (tempSumPredatorPositions / tempPredatorCount) : Vector3.zero;
-        PreyBehaviour.predatorCount = tempPredatorCount; 
-    }
-    private void SmellCheckPredator()
-    {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius);
-        targetRef = null;
-        int tempFoodCount = 0;
-        int tempPreyCount = 0;
-        Vector3 tempSumPreyPositions = Vector3.zero;
-        if (hitColliders.Length < 1) return;
-        foreach (Collider collider in hitColliders)
+        Vector3 pos = Vector3.zero;
+        if (totalWeight > 0f)
         {
-            //Transform target = collider.transform;
-            if (collider.CompareTag("Food"))
-            {
-                tempFoodCount++;
-            }
-            tempSumPreyPositions += collider.gameObject.transform.position;
+            Vector3 averageDir = totalForce / totalWeight;
+            float intensity = Mathf.Clamp01(totalWeight);
+
+            pos = transform.position + averageDir.normalized * intensity * safeDistanceThreshold;
         }
-        HungerBehaviour.foodCount = tempFoodCount;
-        sumPreyPositions = (tempPreyCount != 0) ? tempSumPreyPositions / tempPreyCount : Vector3.zero;
+        smellPos = pos;
     }
-    public Vector3 GetSumPredatorPositions()
+    public Vector3 GetSmellPos()
     {
-        return sumPredatorPositions;
+        if (smellPos == Vector3.zero) {
+            return Vector3.zero;
+        }
+        if (isPredator) {
+            return smellPos;
+        } else
+        {
+            return smellPos;
+        }
     }
-    public Vector3 GetSumPreyPositions()
-    {
-        return sumPreyPositions;
-    }
+    public Vector3 GetPlayerPos() => playerPos;
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(positionTest, 2f);
+        Gizmos.DrawWireSphere(position, 2f);
     }
 }

@@ -42,7 +42,6 @@ namespace SIGGD.Goap.Sensors
                 return hit.position;
             }
 
-            // Couldn't find a position on the navmesh, so just don't move
             return agent.Transform.position;
         }
         public override void Update()

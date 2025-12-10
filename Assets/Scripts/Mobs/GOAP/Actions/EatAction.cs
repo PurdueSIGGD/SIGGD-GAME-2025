@@ -11,6 +11,7 @@ namespace SIGGD.Goap
     {
         public override void Created()
         {
+
         }
 
         public override bool IsValid(IActionReceiver agent, Data data)
@@ -31,10 +32,12 @@ namespace SIGGD.Goap
         }
         public override void Complete(IMonoAgent agent, Data data)
         {
-            if (data.Target is not TransformTarget transformTarget)
+            if (data.Target is not TransformTarget transformTarget) {
+                Debug.Log("not eatable");
                 return;
+            }
             // nutrition check either here or in hunger behaviour
-            data.HungerBehaviour.ReduceHunger(20);
+            data.HungerBehaviour.ReduceHunger(60);
             GameObject.Destroy(transformTarget.Transform.gameObject);
     }
 
