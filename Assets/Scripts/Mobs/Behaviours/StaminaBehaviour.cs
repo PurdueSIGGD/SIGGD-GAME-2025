@@ -17,13 +17,13 @@ namespace SIGGD.Mobs
         bool sprintAllowed = false;
 
         [SerializeField]
-        private BaseStatConfig statConfig;
+        private BaseStats stats;
         public float energyLevel = 1f;
         private void Awake()
         {
             //AgentData = GetComponent<AgentData>();
 
-            stamina = statConfig.maxStamina;
+            stamina = stats.maxStamina;
         }
         public void Update()
         {
@@ -33,9 +33,9 @@ namespace SIGGD.Mobs
         public void FixedUpdate()
         {
             //if (stamina < statConfig.maxStamina * AgentData.energyLevel)
-            if (stamina < statConfig.maxStamina)
+            if (stamina < stats.maxStamina)
             {
-                AddStamina(statConfig.staminaGainRate);
+                AddStamina(stats.staminaGainRate * Time.fixedDeltaTime);
             }
         }
         public void ReduceStamina(float amount)

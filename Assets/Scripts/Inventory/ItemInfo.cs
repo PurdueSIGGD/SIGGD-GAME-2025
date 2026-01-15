@@ -23,6 +23,8 @@ public class ItemInfo : ScriptableObject
         Rock,
         RockSpear,
         StunTrap,
+        Apple,
+        CaptureOrb,
         Empty
     };
 
@@ -30,9 +32,7 @@ public class ItemInfo : ScriptableObject
 
     [SerializeField] public ItemName itemName; // name of item
 
-    [SerializeField] public Image itemImage; // image icon for item in inventory
-
-    [SerializeField] public bool isCraftable; // whether or not the item can be crafted
+    [SerializeField] public Sprite itemImage; // image icon for item in inventory
 
     [SerializeField] public bool isIngredient; // whether or not the item can be used as an ingredient for crafting
 
@@ -43,11 +43,13 @@ public class ItemInfo : ScriptableObject
     [SerializeReference] public IPlayerActionStrategy playerActionStrategy; // strategy pattern for player actions with the item
 
     // Maybe include reference to gameobject for instantiating?
+    // needed for placing items in the world
+    public GameObject itemPrefab; // prefab for the item in the world
+    public GameObject itemPlacementPrefab; // prefab for the item placement variant when previewing placement
 
     public void log() { 
         Debug.Log("Item Type: " +  itemType);
         Debug.Log("Item Name: " + itemName);
-        Debug.Log("Is Craftable: " + isCraftable);
         Debug.Log("Is Ingredient: " + isIngredient);
         Debug.Log("Max Stack Count: " + maxStackCount);
         Debug.Log("Description: " + description);

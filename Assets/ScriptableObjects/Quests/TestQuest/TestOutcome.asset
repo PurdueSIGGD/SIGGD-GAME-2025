@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e082a36cf9aa4cf4b61e1ec740fad593, type: 3}
+  m_Name: TestOutcome
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  description: Enter the trigger in scene 1, then load scene 2, then enter either
+    trigger in that scene
+  maxCompletions: 4
+  guid: e27cb04d-cdf0-4052-9481-f7a723b52b6b
+  evaluationMode: 1
+  questCondition:
+    rid: 6772710492548366426
+  references:
+    version: 2
+    RefIds:
+    - rid: 6772710492548366426
+      type: {class: 'AndCondition`1[[QuestOutcome, Assembly-CSharp]]', ns: Extensions.CustomMath.LogicComposition, asm: Assembly-CSharp}
+      data:
+        children:
+        - rid: 6772710492548366428
+    - rid: 6772710492548366428
+      type: {class: 'OrCondition`1[[QuestOutcome, Assembly-CSharp]]', ns: Extensions.CustomMath.LogicComposition, asm: Assembly-CSharp}
+      data:
+        children:
+        - rid: 6772710492548366429
+        - rid: 6772710492548366430
+    - rid: 6772710492548366429
+      type: {class: ObjectiveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        objectiveKey: {fileID: 11400000, guid: b881ff56f218c4a178dfc256d3d95e99, type: 2}
+    - rid: 6772710492548366430
+      type: {class: ObjectiveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        objectiveKey: {fileID: 11400000, guid: 583a14656e1a449e385849e78075ee3e, type: 2}

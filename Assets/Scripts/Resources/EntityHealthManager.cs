@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class EntityHealthManager : MonoBehaviour, IHealth
 {
@@ -13,9 +14,9 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     public static Action<DamageContext> OnHealthChanged;
     public static Action<DamageContext> OnDeath;
 
-    private void Awake()
+    void Start()
     {
-        CurrentHealth = maxHealth; // start at full health
+        if (CurrentHealth == 0) CurrentHealth = maxHealth; // start at full health
     }
 
     public void TakeDamage(DamageContext damageContext)
@@ -47,17 +48,19 @@ public class EntityHealthManager : MonoBehaviour, IHealth
 
     public void Die(DamageContext damageContext)
     {
-        // disabling player death for now, remove after respawn is implemented
-        if (gameObject == PlayerID.Instance.gameObject)
-        {
-            return;
-        }
-
-
         // TODO: Add death logic here, for now just destroying game object
         Debug.Log($"{gameObject.name} has died.");
         OnDeath?.Invoke(damageContext);
-        Destroy(gameObject);
+
+        // player will be respawned, so do not destroy
+        if (gameObject != PlayerID.Instance.gameObject)
+        {
+            Destroy(gameObject);
+        }
     }
 
+    public void ResetHealth()
+    {
+        CurrentHealth = MaxHealth;
+    }
 }

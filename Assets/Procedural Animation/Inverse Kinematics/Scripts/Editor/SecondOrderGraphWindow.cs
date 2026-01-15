@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using ProceduralAnimation.Runtime;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
@@ -100,3 +101,4 @@ namespace ProceduralAnimation.Editor {
         }
     }
 }
+#endif

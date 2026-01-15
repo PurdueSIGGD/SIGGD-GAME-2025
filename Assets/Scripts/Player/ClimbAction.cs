@@ -1,11 +1,4 @@
-using JetBrains.Annotations;
-using System.Runtime.CompilerServices;
-using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
-using Utility;
-using static UnityEngine.UI.Image;
 
 // KNOWN JANK HERE:
 /*
@@ -78,6 +71,7 @@ public class ClimbAction : MonoBehaviour
     private Transform cameraTransform; // retrieved from playerID
     private PlayerStateMachine stateMachine;
     private PlayerInput playerInput; // expected to be parented to the player object
+    private PlayerStamina stamina;
     #endregion
 
     #region Climbable surface tagging
@@ -142,6 +136,7 @@ public class ClimbAction : MonoBehaviour
         cameraTransform = playerID.cam.transform;
         stateMachine = playerID.stateMachine;
         playerInput = playerObject.GetComponent<PlayerInput>();
+        stamina = playerObject.GetComponent<PlayerStamina>();
     }
 
     private void Awake() {
@@ -181,6 +176,18 @@ public class ClimbAction : MonoBehaviour
 
             // tries to exit climbing mode if allowed
             TryToExitClimbMode();
+
+            /*if (Input.GetKeyDown(KeyCode.R))
+            {
+                if (isClimbing)
+                {
+                    ExitClimbMode();
+                }
+                else
+                {
+                    EnterClimbMode();
+                }
+            }*/
         }
     }
     #endregion
@@ -261,8 +268,9 @@ public class ClimbAction : MonoBehaviour
     public void EnterClimbMode() {
         InputHand(true, Hand.LeftHand, true);
         InputHand(true, Hand.RightHand, true);
-        if (isHandAttached()) {
+        if (isHandAttached() && stamina.HasStamina) {
             isClimbing = true;
+            stateMachine.ToggleCrouch(false);
             SetPhantomHand(true);
         } else {
             ExitClimb(); // removes held down hands
@@ -287,7 +295,7 @@ public class ClimbAction : MonoBehaviour
             timeSpentGrounded = 0;
         }
 
-        if (timeSpentGrounded >= groundedBufferTime && handsAttached == false) {
+        if ((timeSpentGrounded >= groundedBufferTime && handsAttached == false) || (!stamina.HasStamina)) {
             ExitClimbMode();
         }
     }
@@ -455,7 +463,7 @@ public class ClimbAction : MonoBehaviour
             isReaching = true;
 
             RaycastHit hit;
-            Vector3 rayOrigin = transform.position;
+            Vector3 rayOrigin = cameraTransform.position;
             Vector3 cameraDirection = GetCameraDirection();
 
             bool rayHit = Physics.Raycast(rayOrigin, cameraDirection, out hit, grabRange, climbingLayerMask);
@@ -509,10 +517,7 @@ public class ClimbAction : MonoBehaviour
 
     // returns true if the object is climbable and false otherwise
     private bool IsObjectClimbable(GameObject obj) {
-        // if it has a climbable layer, and is static, it is climbable
-        bool staticTest = obj.isStatic;
-
-        return staticTest == true;
+        return true;
     }
     #endregion
 

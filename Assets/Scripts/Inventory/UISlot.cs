@@ -4,6 +4,7 @@ using UnityEngine;
 public class UISlot : MonoBehaviour
 {
     public ItemInfo itemInfo = null;
+    
     public int count = 0;
     [HideInInspector] public int index;
 
@@ -14,10 +15,15 @@ public class UISlot : MonoBehaviour
         textDisplay = GetComponentInChildren<TextMeshProUGUI>();
     }
 
-    public void UpdateSlot(UISlot uiSlot)
+    void Start()
     {
-        itemInfo = uiSlot.itemInfo;
-        count = uiSlot.count;
+        Debug.Log(RecipeInfo.Instance == null ? "recipeinfo null" : "recipeinfo not null");
+        itemInfo = RecipeInfo.Instance.NamesToItemInfos[ItemInfo.ItemName.Empty];
+        Debug.Log(itemInfo == null ? "iteminfo is null" : "ItemInfo is not null now");
+    }
+
+    public void UpdateSlot()
+    {
         if (itemInfo)
         {
             if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check

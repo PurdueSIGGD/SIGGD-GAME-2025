@@ -8,10 +8,10 @@ namespace SIGGD.Goap
         // Function to move along the navmesh path for a certain distance (before reanalyzing the path as it still moves)
         public static Vector3 ERR_VECTOR = new Vector3(-9999999, -9999999, -999999);
 
-        public static Vector3 ShiftTargetToNavMesh(Vector3 rawDest)
+        public static Vector3 ShiftTargetToNavMesh(Vector3 rawDest, float maxDistance = 2f)
         {
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(rawDest, out hit, 10f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(rawDest, out hit, maxDistance, NavMesh.AllAreas))
             {
 
                 return hit.position;
@@ -29,16 +29,15 @@ namespace SIGGD.Goap
                 return;
             }
             navMeshAgent.SetDestination(meshDest);
-            Debug.Log(meshDest);
         }
         public static Vector3 MovePartialPath2(NavMeshAgent navMeshAgent, Vector3 destination, float distanceToTravel) {
             NavMeshPath path = new NavMeshPath();
             if (!navMeshAgent.CalculatePath(destination, path) || path.corners.Length < 2)
             {
-                return Vector3.zero;
+                return navMeshAgent.transform.position;
             }
-            if (path.status != NavMeshPathStatus.PathComplete)
-                return Vector3.zero;
+            if (path.status == NavMeshPathStatus.PathInvalid)
+                return navMeshAgent.transform.position;
             Vector3 currentPosition = navMeshAgent.transform.position;
             float distanceRemaining = distanceToTravel;
 

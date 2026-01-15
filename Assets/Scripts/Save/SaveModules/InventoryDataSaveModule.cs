@@ -12,7 +12,6 @@ public class InventoryDataSaveModule : ISaveModule
     public bool deserialize()
     {
         if (!FileManager.Instance.FileExists(savePath)) return false;
-
         byte[] bytes = FileManager.Instance.ReadFile(savePath);
         inventoryData = SerializationUtility.DeserializeValue<InventorySaveData>(bytes, DataFormat.Binary);
 
@@ -21,10 +20,14 @@ public class InventoryDataSaveModule : ISaveModule
 
     public bool serialize()
     {
-        if (inventory == null) return false;
-
+        if (!Inventory.Instance)
+        {
+            Debug.LogWarning("Cannot find inventory when attempting to save");
+            return false;
+        }
         inventoryData.inventory = new InventorySaveData.SlotSaveData[Inventory.InventoryLength + Inventory.HotBarLength];
-        UISlot[] inventoryReference = inventory.GetInventory();
+        UISlot[] inventoryReference = Inventory.Instance.GetInventory();
+        inventoryData.selected = Inventory.Instance.GetSelected();
 
         for (int i = 0; i < inventoryData.inventory.Length; i++)
         {
@@ -34,16 +37,18 @@ public class InventoryDataSaveModule : ISaveModule
             {
                 inventoryData.inventory[i] = new InventorySaveData.SlotSaveData
                 {
-                    name = "",
-                    count = 0
+                    name = "Empty",
+                    count = 0,
+                    index = i
                 };
             }
             else
             {
                 inventoryData.inventory[i] = new InventorySaveData.SlotSaveData
                 {
-                    name = slot.itemInfo == null ? "" : slot.itemInfo.itemName.ToString(),
-                    count = slot.count
+                    name = slot.itemInfo == null ? "Empty" : slot.itemInfo.itemName.ToString(),
+                    count = slot.itemInfo == null ? 0 : slot.count,
+                    index = i
                 };
             }
         }

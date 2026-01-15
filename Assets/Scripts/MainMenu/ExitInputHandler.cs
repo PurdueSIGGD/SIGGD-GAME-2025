@@ -1,13 +1,11 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
-using System.IO;
 using System;
 
 public class ExitInputHandler : MonoBehaviour
 {
-    public new Camera camera;
+    //public new Camera camera;
 
-    public static Action onSave;
+    //public static Action onSave;
 
     //InputAction jumpAction = InputSystem.actions.FindAction("Jump");
 

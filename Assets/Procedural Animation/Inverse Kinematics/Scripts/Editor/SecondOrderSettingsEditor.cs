@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using ProceduralAnimation.Runtime;
 using UnityEditor;
 using UnityEngine;
@@ -102,3 +103,4 @@ namespace ProceduralAnimation.Editor {
         }
     }
 }
+#endif

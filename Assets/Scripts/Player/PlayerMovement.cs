@@ -1,14 +1,10 @@
 using UnityEngine;
 using FMOD.Studio;
 using FMOD;
-using FMODUnity;
-using UnityEditor.SearchService;
 using Utility;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private PlayerID playerID;
-
     [Header("Parameter SOs")]
     public MoveData moveData; // ScriptableObject containing movement parameters.
 
@@ -32,45 +28,27 @@ public class PlayerMovement : MonoBehaviour
     private PlayerStateMachine psm;
     private bool isGrounded;
     private bool isSprinting;
+    private bool isCrouching;
     private bool isFalling;
     public bool canMove = true;
 
     #endregion
 
-    private async void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody>(); 
-        playerID = GetComponent<PlayerID>();
         rb = GetComponent<Rigidbody>();
-        psm = playerID.stateMachine;
+        psm = PlayerID.Instance.stateMachine;
 
-        // as long as you format it like this and have it in a async Start() it should all work
-        footsteps = await FMODEvents.instance.getEventInstance("Footsteps");
-
+        FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
 
     }
 
     private void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.E))
-        //{
-        //    FMODEvents.instance.playOneShot("maleDeath", this.transform.position);
-        //}
-
-        //// Testing
-        //if (Input.GetKeyDown(KeyCode.F))
-        //{
-        //    UnityEngine.Debug.Log("it worked");
-        //    AudioLogManager.Instance.playAudioLog("Footsteps", gameObject); // pass in the object that the audio log is gonna play at
-        //}
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            UnityEngine.Debug.Log("Interuppting");
-            AudioLogManager.Instance.StopCurrentAudio();
-        }
-
         CalculateGravity();
-        isSprinting = PlayerInput.Instance.sprintInput;
+        isSprinting = psm.IsSprinting;
+        isCrouching = psm.IsCrouched;
         isGrounded = psm.IsGrounded;
         isFalling = psm.IsFalling;
     }
@@ -84,8 +62,25 @@ public class PlayerMovement : MonoBehaviour
             Vector2 moveInput = PlayerInput.Instance.movementInput;
 
             float speed = (isSprinting && !isFalling) ? moveData.sprintSpeed : moveData.walkSpeed;
+            if (isCrouching == true) {
+                speed = moveData.crouchSpeed;
+            }
+
             Run(moveInput, speed * Time.fixedDeltaTime);
         }
+        else if (isGrounded)
+        {
+            Vector2 moveInput = PlayerInput.Instance.movementInput;
+
+            float speed = 0f;
+            Run(moveInput, speed * Time.fixedDeltaTime);
+        }
+
+        /*if (isGrounded && !IsMoving)
+        {
+            //rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
+            //rb.angularVelocity = new Vector3(0f, rb.angularVelocity.y, 0f);
+        } */
     }
 
     #region State Methods
@@ -102,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!canMove) return;
 
-        Transform cam = playerID.cameraMovement.transform;
+        Transform cam = PlayerID.Instance.cameraMovement.transform;
         Vector3 direction = moveInput.x * cam.right.SetY(0).normalized +
                                moveInput.y * cam.forward.SetY(0).normalized;
 
@@ -139,6 +134,9 @@ public class PlayerMovement : MonoBehaviour
         Vector3 speedDiff = targetSpeed - rb.linearVelocity.SetY(0);
         Vector3 movementForce = speedDiff * accelRate;
         movementForce.y = 0; // prevent any vertical forces from being applied here
+
+        //TEMP FIX
+        if (isGrounded && !IsMoving && rb.linearVelocity.magnitude <= 0.05f) return;
 
         rb.AddForce(movementForce, ForceMode.Acceleration);
     }
@@ -186,6 +184,9 @@ public class PlayerMovement : MonoBehaviour
      */
     private void ApplyGravity()
     {
+        // TEST
+        //if (isGrounded) return;
+
         float usedGravityScale = GravityScale;
         if (IsClimbing == true)
         { // while climbing, gravity is unaffected by gravity scale
@@ -214,7 +215,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            footsteps.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            footsteps.stop(STOP_MODE.ALLOWFADEOUT);
         }
     }
 

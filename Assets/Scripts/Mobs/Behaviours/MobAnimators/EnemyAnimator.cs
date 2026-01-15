@@ -1,6 +1,4 @@
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.GameCenter;
 
 public class EnemyAnimator : MonoBehaviour
 {
@@ -34,6 +32,7 @@ public class EnemyAnimator : MonoBehaviour
     }
 
     public void PlayAttack() => animator.SetTrigger("Attack");
+
     /*
     public void AttackHitboxCheck()
     {
