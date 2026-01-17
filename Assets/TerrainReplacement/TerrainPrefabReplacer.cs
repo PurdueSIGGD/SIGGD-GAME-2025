@@ -18,6 +18,7 @@ public class TerrainPrefabReplacer : MonoBehaviour
     }
     public TerrainReplacementSettings[] terrainSettings;
     public bool clearTreesBeforeReplace = true;
+    public bool clearExistingPrefabs = false;
 
     // Store original trees per terrain
     private Dictionary<Terrain, TreeInstance[]> originalTrees = new Dictionary<Terrain, TreeInstance[]>();
@@ -27,58 +28,71 @@ public void ReplaceTrees()
 {
 #if UNITY_EDITOR
 
-    foreach (var t in terrainSettings)
-    {
-        var terrainData = t.terrain.terrainData;
-        var instances = terrainData.treeInstances;
-
-        // Save original trees
-        if (!originalTrees.ContainsKey(t.terrain))
-            originalTrees[t.terrain] = (TreeInstance[])instances.Clone();
-
-        // Copy to iterate
-        TreeInstance[] instancesToProcess = (TreeInstance[])instances.Clone();
-
-        Undo.RegisterCompleteObjectUndo(terrainData, "Replace Trees");
-
-        if (clearTreesBeforeReplace)
-            terrainData.treeInstances = Array.Empty<TreeInstance>();
-
-        // Create or reuse container in scene
-        string containerName = t.terrain.name + "_Trees";
-        Transform container = transform.Find(containerName);
-        if (container == null)
+        foreach (var t in terrainSettings)
         {
-            GameObject go = new GameObject(containerName);
-            go.transform.SetParent(transform, false);
-            container = go.transform;
+            var terrainData = t.terrain.terrainData;
+            var instances = terrainData.treeInstances;
+
+            // Save original trees
+            if (!originalTrees.ContainsKey(t.terrain))
+                originalTrees[t.terrain] = (TreeInstance[])instances.Clone();
+
+            // Copy to iterate
+            TreeInstance[] instancesToProcess = (TreeInstance[])instances.Clone();
+
+            Undo.RegisterCompleteObjectUndo(terrainData, "Replace Trees");
+
+            {
+                if (clearTreesBeforeReplace)
+                {
+                    // Only remove trees matching the prototypeIndexToReplace
+                    List<TreeInstance> remainingTrees = new List<TreeInstance>();
+                    foreach (var tree in instances)
+                    {
+                        if (tree.prototypeIndex != t.prototypeIndexToReplace)
+                        {
+                            remainingTrees.Add(tree);
+                        }
+                    }
+                    terrainData.treeInstances = remainingTrees.ToArray();
+                }
+
+                // Create or reuse container in scene
+                string containerName = t.terrain.name + "_Trees";
+                Transform container = transform.Find(containerName);
+                if (container == null)
+                {
+                    GameObject go = new GameObject(containerName);
+                    go.transform.SetParent(transform, false);
+                    container = go.transform;
+                }
+                else if (clearExistingPrefabs)
+                {
+                    // Clear previous children
+                    for (int i = container.childCount - 1; i >= 0; i--)
+                        DestroyImmediate(container.GetChild(i).gameObject);
+                }
+
+                // Instantiate prefabs in the scene root under container
+                foreach (var tree in instancesToProcess)
+                {
+                    if (tree.prototypeIndex != t.prototypeIndexToReplace) continue;
+
+                    Vector3 worldPos = Vector3.Scale(tree.position, terrainData.size) + t.terrain.transform.position;
+                    Quaternion rot = Quaternion.Euler(0, tree.rotation * Mathf.Rad2Deg, 0);
+                    Vector3 scale = Vector3.Scale(new Vector3(tree.widthScale, tree.heightScale, tree.widthScale), t.scaleMultiplier);
+
+                    // Use PrefabUtility with scene context
+                    GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(t.replacementPrefab, container.gameObject.scene);
+                    obj.transform.position = worldPos;
+                    obj.transform.rotation = rot;
+                    obj.transform.localScale = scale;
+
+                    // Parent to container in scene hierarchy
+                    obj.transform.SetParent(container, true);
+                }
+            }
         }
-        else
-        {
-            // Clear previous children
-            for (int i = container.childCount - 1; i >= 0; i--)
-                DestroyImmediate(container.GetChild(i).gameObject);
-        }
-
-        // Instantiate prefabs in the scene root under container
-        foreach (var tree in instancesToProcess)
-        {
-            if (tree.prototypeIndex != t.prototypeIndexToReplace) continue;
-
-            Vector3 worldPos = Vector3.Scale(tree.position, terrainData.size) + t.terrain.transform.position;
-            Quaternion rot = Quaternion.Euler(0, tree.rotation * Mathf.Rad2Deg, 0);
-            Vector3 scale = Vector3.Scale(new Vector3(tree.widthScale, tree.heightScale, tree.widthScale), t.scaleMultiplier);
-
-            // Use PrefabUtility with scene context
-            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(t.replacementPrefab, container.gameObject.scene);
-            obj.transform.position = worldPos;
-            obj.transform.rotation = rot;
-            obj.transform.localScale = scale;
-
-            // Parent to container in scene hierarchy
-            obj.transform.SetParent(container, true);
-        }
-    }
 #endif
 }
 

@@ -38,7 +38,6 @@ public class ScreenshotSaveModule : ISaveModule
 
     public bool deserialize()
     {
-
         return true;
     }
 
