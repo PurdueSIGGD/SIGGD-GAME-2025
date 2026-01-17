@@ -26,7 +26,9 @@ public class PerceptionManager : MonoBehaviour
     }
     private void UpdateVision()
     {
-        PlayerTarget = fov.PlayerTarget != null ? fov.PlayerTarget.transform : null;
+        if (fov == null) return;
+        PlayerTarget = fov.PlayerTarget?.transform;
+
         preyTargets.Clear();
         var seen = fov.GetSeenTargets();
         foreach (var target in seen)
@@ -53,5 +55,9 @@ public class PerceptionManager : MonoBehaviour
     }
     private void UpdateSmell()
     {
+    }
+    public Vector3 GetSmellPosition()
+    {
+        return smell != null ? smell.GetSmellPos() : Vector3.zero;
     }
 }

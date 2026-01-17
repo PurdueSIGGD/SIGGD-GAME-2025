@@ -46,25 +46,6 @@ namespace SIGGD.Mobs
         {
             stamina += amount * energyLevel;
         }
-        /*
-        public float GetStamina()
-        {
-            return stamina;
-        }
-        public bool ShouldSprint()
-        {
-            if (stamina < statConfig.staminaThreshold)
-                return false;
-            return true;
-        }
-        public float CalculateSprintMultiplier()
-        {
-            if (!ShouldSprint())
-                return 1f;
-            stamina
-            desperation,tiredness,distance,urgency,stamina
-        }
-        */
     }
 }
 

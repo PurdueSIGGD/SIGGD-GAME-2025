@@ -11,25 +11,22 @@ namespace SIGGD.Goap
     public class AttackPlayerAction : GoapActionBase<CommonData>
     {
         // This method is called when the action is created
-        // This method is optional and can be removed
         public override void Created()
         {
         }
 
         // This method is called every frame before the action is performed
         // If this method returns false, the action will be stopped
-        // This method is optional and can be removed
         public override bool IsValid(IActionReceiver agent, CommonData data)
         {
             return data.pm.CanSeePlayer;
         }
 
         // This method is called when the action is started
-        // This method is optional and can be removed
         public override void Start(IMonoAgent agent, CommonData data)
         {
             data.Timer = 20f;
-            data.mb.EnableSprint();
+            data.mv.EnableSprint();
         }
         public override void BeforePerform(IMonoAgent agent, CommonData data)
         {
@@ -58,7 +55,7 @@ namespace SIGGD.Goap
         }
         public override void End(IMonoAgent agent, CommonData data)
         {
-            data.mb.DisableSprint();
+            data.mv.DisableSprint();
             //this.Disable(agent, ActionDisabler.ForTime(0.5f));
 
         }

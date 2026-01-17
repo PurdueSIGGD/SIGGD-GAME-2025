@@ -19,11 +19,9 @@ public class FieldOfView : MonoBehaviour
     public LayerMask obstacleMask;
     [Range(0, 360)]
     public float angleRange;
-    public bool canSeeTarget = true;
     public GameObject targetRef;
     private float loseSightDelay;
     private float lastSeenTime;
-    private Vector3 lastDir;
     private Dictionary<Transform, DetectedTarget> detected = new();
     private List<GameObject> seenTargets = new List<GameObject>();
 
@@ -44,9 +42,7 @@ public class FieldOfView : MonoBehaviour
         playerMask = LayerMask.GetMask("Player");
         mobMask = LayerMask.GetMask("Mob");
         targetRef = null;
-        canSeeTarget = false;
         loseSightDelay = 7f;
-        lastDir = Vector3.zero;
         StartCoroutine(FOVRoutine());
 
     }
@@ -70,14 +66,15 @@ public class FieldOfView : MonoBehaviour
         for (int i = 0; i < hitColliders.Length; i++)
         {
             {
-                Transform target = hitColliders[i].transform;
+                Transform target = hitColliders[i]?.transform;
+                if (target == null) continue;
                 Vector3 directionToTarget = (target.position - transform.position).normalized;
                 if (Vector3.Angle(transform.forward, directionToTarget) > angleRange / 2f)
                     continue;
 
                 float distanceToTarget = Vector3.Distance(transform.position, target.position);
 
-                if (Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
+                if (Physics.Raycast(transform.position + Vector3.up, directionToTarget, distanceToTarget, obstacleMask))
                     continue;
 
                 detected[target] = new DetectedTarget(hitColliders[i].gameObject, 1, Time.time);

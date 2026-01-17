@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyAnimator : MonoBehaviour
 {
-    //  is called once before the first execution of Update after the MonoBehaviour is created
+    // is called once before the first execution of Update after the MonoBehaviour is created
     [SerializeField]
     private LayerMask playerLayer;
     [SerializeField]

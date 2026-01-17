@@ -10,8 +10,6 @@ namespace SIGGD.Mobs
 {
     public class PreyBrain : BaseAgentBrain
     {
-        private HungerBehaviour hungerBehaviour;
-
         protected override void Awake()
         {
             base.Awake();

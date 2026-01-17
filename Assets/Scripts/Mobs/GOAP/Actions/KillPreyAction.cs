@@ -24,7 +24,7 @@ namespace SIGGD.Goap
         public override void Start(IMonoAgent agent, CommonData data)
         {
             data.Timer = 20f;
-            data.mb.EnableSprint();
+            data.mv.EnableSprint();
         }
         public override void BeforePerform(IMonoAgent agent, CommonData data)
         {
@@ -53,7 +53,7 @@ namespace SIGGD.Goap
         }
         public override void End(IMonoAgent agent, CommonData data)
         {
-            data.mb.DisableSprint();
+            data.mv.DisableSprint();
             this.Disable(agent, ActionDisabler.ForTime(0.0f));
                
         }
