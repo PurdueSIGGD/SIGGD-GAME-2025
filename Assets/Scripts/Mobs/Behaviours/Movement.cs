@@ -3,6 +3,7 @@ using UnityEngine.AI;
 using Utility;
 using SIGGD.Mobs;
 using Sirenix.OdinInspector;
+using UnityEngine.InputSystem.Android;
 namespace SIGGD.Mobs
 {
     public class Movement : MonoBehaviour
@@ -25,17 +26,23 @@ namespace SIGGD.Mobs
         {
             rb = GetComponent<Rigidbody>();
             agent = GetComponent<NavMeshAgent>();
+            sprint = GetComponent<StaminaBehaviour>();
             agent.updateRotation = false;
+           // agent.updatePosition = false;
             speed = baseSpeed;
         }
 
         public void MoveTowards(Vector3 desiredDir, float speedMulti)
         {
+            
             if (sprintAllowed) {
                 if (sprint.stamina > 0) {
                     speed = baseSpeed * 1.5f;
-                    sprint.ReduceStamina(8 * Time.fixedDeltaTime);
+                    sprint.ReduceStamina(50 * Time.fixedDeltaTime);
                 }
+            } else
+            {
+                speed = baseSpeed;
             }
             if (desiredDir.sqrMagnitude < 0.0001f)
                 return;

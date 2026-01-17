@@ -121,6 +121,8 @@ public class Smell : MonoBehaviour
 
             float weight = Mathf.Pow(1f - Mathf.Clamp01(dist / smellRadius), 2f) * intensity;
 
+            //float hierarchialWeight = weight * smellValues[i];
+
             totalForce += toSmell.normalized * weight;
             totalWeight += weight;
         }
@@ -136,7 +138,18 @@ public class Smell : MonoBehaviour
             smellPos = transform.position;
         }
     }
-    public Vector3 GetSmellPos() => isPredator ? (smellPos + playerPos) : smellPos;
+    public Vector3 GetSmellPos()
+    {
+        if (smellPos == Vector3.zero) {
+            return Vector3.zero;
+        }
+        if (isPredator) {
+            return smellPos;
+        } else
+        {
+            return smellPos;
+        }
+    }
     public Vector3 GetPlayerPos() => playerPos;
     void OnDrawGizmosSelected()
     {

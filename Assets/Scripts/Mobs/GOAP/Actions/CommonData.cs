@@ -22,8 +22,9 @@ namespace SIGGD.Goap
 
         [GetComponent]
         public Movement mv { get; set; }
+        public PerceptionManager pm { get; set; }
 
         [GetComponent]
-        public PerceptionManager pm { get; set; }
+        public Movement mv { get; set; }
     }
 }

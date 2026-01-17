@@ -88,7 +88,7 @@ public class FieldOfView : MonoBehaviour
         List<Transform> toRemove = new();
         foreach (KeyValuePair<Transform, DetectedTarget> pair in detected)
         {
-            if (Time.time - pair.Value.lastSeenTime > loseSightDelay)
+            if (Time.time - pair.Value.lastSeenTime > loseSightDelay || pair.Value.gameObject == null)
             {
                 toRemove.Add(pair.Key);
                 continue;

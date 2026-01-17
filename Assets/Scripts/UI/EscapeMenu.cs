@@ -6,6 +6,7 @@ public class EscapeMenu : MonoBehaviour
 {
     [SerializeField] private Button quitButton;
     [SerializeField] private Button inventoryButton;
+    [SerializeField] private Button craftingButton;
     [SerializeField] private Canvas canvas;
     private bool isEnabled;
 
@@ -14,6 +15,10 @@ public class EscapeMenu : MonoBehaviour
         quitButton.onClick.AddListener(LoadMainMenu);
         inventoryButton.onClick.AddListener(() => {
             ShowInventory(true);
+        });
+        craftingButton.onClick.AddListener(() =>
+        {
+            ShowCraftingMenu(true);
         });
         canvas.enabled = false;
     }
@@ -28,9 +33,11 @@ public class EscapeMenu : MonoBehaviour
 
     public void ShowEscapeMenu(bool enable)
     {
+        // Hide other menus for both cases
+        ShowInventory(false);
+        ShowCraftingMenu(false);
         if (enable)
         {
-            ShowInventory(false);
             Cursor.lockState = CursorLockMode.Confined;
             Cursor.visible = true;
             canvas.enabled = true;
@@ -42,7 +49,7 @@ public class EscapeMenu : MonoBehaviour
             Cursor.visible = false;
             canvas.enabled = false;
             isEnabled = false;
-            ShowInventory(false); // close inventory along with escape menu
+            
         }
         PlayerInput.Instance.DebugToggleInput(enable);
         //Cursor.visible = canvas.enabled = isEnabled = enable;
@@ -63,5 +70,17 @@ public class EscapeMenu : MonoBehaviour
                 canvas.enabled = false; // hide escape menu when displaying inventory
             }
         }   
+    }
+
+    public void ShowCraftingMenu(bool enabled)
+    {
+        if (CraftingMenu.Instance)
+        {
+            CraftingMenu.Instance.ShowCraftingMenu(enabled);
+            if (enabled)
+            {
+                canvas.enabled = false;
+            }
+        }
     }
 }

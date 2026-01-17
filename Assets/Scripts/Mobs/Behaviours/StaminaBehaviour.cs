@@ -35,7 +35,7 @@ namespace SIGGD.Mobs
             //if (stamina < statConfig.maxStamina * AgentData.energyLevel)
             if (stamina < stats.maxStamina)
             {
-                AddStamina(stats.staminaGainRate);
+                AddStamina(stats.staminaGainRate * Time.fixedDeltaTime);
             }
         }
         public void ReduceStamina(float amount)

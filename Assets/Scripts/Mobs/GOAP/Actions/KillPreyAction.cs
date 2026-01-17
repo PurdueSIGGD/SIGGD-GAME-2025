@@ -16,7 +16,6 @@ namespace SIGGD.Goap
 
         public override bool IsValid(IActionReceiver agent, CommonData data)
         {
-
             return true;
         }
 

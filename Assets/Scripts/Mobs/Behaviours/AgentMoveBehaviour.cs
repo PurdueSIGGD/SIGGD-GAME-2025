@@ -18,7 +18,6 @@ namespace SIGGD.Mobs
         private Movement move;
         public NavMeshAgent navMeshAgent;
 
-
         [SerializeField] public Transform groundCheckPoint;
         [SerializeField] public Vector3 groundCheckSize = new Vector3(0.49f, 0.3f, 0.49f);
         public LayerMask groundLayer;
@@ -85,7 +84,7 @@ namespace SIGGD.Mobs
                 return;
             Vector3 desiredDirection = NavSteering.GetSteeringDirection(navMeshAgent, currentTarget.Position, 0.1f);
 
-            move.MoveTowards(desiredDirection, 1.5f);
+            move.MoveTowards(desiredDirection, 1.0f);
 
         }
 

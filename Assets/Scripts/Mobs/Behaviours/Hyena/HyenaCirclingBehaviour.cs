@@ -54,6 +54,7 @@ namespace SIGGD.Mobs.Hyena
         public IEnumerator CircleLoop(Func<Vector3> GetTarget)
         {
             finished = false;
+            finishedCircling = false;
             if (Vector3.Distance(GetTarget(), transform.position) < 9f && UnityEngine.Random.Range(0f, 1f) > 0.3f)
             {
                 yield return StartCoroutine(WalkTowardsTarget(GetTarget));
@@ -261,6 +262,11 @@ namespace SIGGD.Mobs.Hyena
                 elapsed += Time.fixedDeltaTime;
 
                 Vector3 targetPos = GetTarget();
+                if (targetPos == Vector3.zero)
+                {
+                    ExitBehaviour();
+                    yield break;
+                }
                 if (Vector3.Distance(targetPos, transform.position) < stopDist)
                     break;
 

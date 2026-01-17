@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /**
  * <summary>
@@ -9,7 +8,6 @@ using UnityEngine.Serialization;
  * so that multiple players or sessions can have different states for the same quest objective.
  * </summary>
  */
-[Serializable]
 public class QuestObjectiveInstance
 {
     public QuestObjective objective;

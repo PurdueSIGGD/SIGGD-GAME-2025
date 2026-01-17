@@ -22,7 +22,6 @@ namespace SIGGD.Mobs
             this.agent = this.GetComponent<AgentBehaviour>();
             this.provider = this.GetComponent<GoapActionProvider>();
             this.provider.AgentType = this.goap.GetAgentType(MobIds.hyena);
-
             HuntBehaviour = this.GetComponent<AgentHuntBehaviour>();
             HungerBehaviour = this.GetComponent<HungerBehaviour>();
             HyenaAttackManager = this.GetComponent<HyenaAttackManager>();
@@ -93,7 +92,7 @@ namespace SIGGD.Mobs
             {
                 if (AudioManager.Instance)
                 {
-                    AudioManager.Instance.PlayOneShotNoAsync("HyenaOnNoticeSFX", transform.position);       
+                    AudioManager.Instance.PlayOneShot(FMODEvents.Instance.soundEvents["HyenaOnNoticeSFX"].ToSafeString(), transform.position);
                 }
             }
         }
@@ -104,7 +103,7 @@ namespace SIGGD.Mobs
             {
                 this.provider.RequestGoal<KillPlayerGoal, DontStarveGoal>(true);
             }
+            this.provider.ResolveAction();
         }
     }
-
 }
