@@ -313,6 +313,9 @@ public class Inventory : Singleton<Inventory>, IInventory
     public int AddItem(ItemInfo itemInfo, int count) { // maybe change input type
         // first add to existing stacks
         for (int i = 0; i < inventory.Length; i++) {
+            if (itemInfo.isIngredient && i < HotBarLength) { // ingredients are not allowed in the hotbar
+                continue;
+            }
             if (inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName) // matches item
             {
                 if (itemInfo.maxStackCount > inventory[i].count) { // has space for at least one item
@@ -336,6 +339,10 @@ public class Inventory : Singleton<Inventory>, IInventory
         // otherwise create new stack if possible
         if (count > 0) {
             for (int i = 0; i < inventory.Length; i++) {
+                if (itemInfo.isIngredient && i < HotBarLength)
+                { // ingredients are not allowed in the hotbar
+                    continue;
+                }
                 if (inventory[i]?.count == 0) { // is empty slot
                     if (count > itemInfo.maxStackCount) // will need to split the items between slots
                     {
