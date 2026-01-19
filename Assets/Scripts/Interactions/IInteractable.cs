@@ -6,5 +6,5 @@ public interface IInteractable<in T> where T : IInteractor
     
     void OnHoverExit(InteractableUI ui); // visual or audio feedback when player looks at interactable
     
-    void OnInteract(T interactor, InteractableUI ui); // interactables determine what they do when interacted with (pickup, dialogue, open door, etc.)
+    void OnInteract(T interactor); // interactables determine what they do when interacted with (pickup, dialogue, open door, etc.)
 }

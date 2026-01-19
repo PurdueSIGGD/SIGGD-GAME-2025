@@ -22,7 +22,7 @@ public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
         //Debug.Log($"Stopped hovering over item: {itemInfo.itemName}");
     }
 
-    public void OnInteract(IInteractor interactor,  InteractableUI ui)
+    public void OnInteract(IInteractor interactor)
     {
         inventoryObj.SetInventory(info, count);
         Destroy(this.gameObject); // Remove the item from the scene

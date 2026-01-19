@@ -7,20 +7,24 @@ public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
 
     public ItemInfo itemInfo;
 
+    InteractableUI ui;
+
 
     public void OnHoverEnter(InteractableUI ui)
     {
         ui.ActivateUI(this);
+        this.ui = ui;
         Debug.Log($"Hovering over item: {itemInfo.itemName}");
     }
 
     public void OnHoverExit(InteractableUI ui)
     {
         ui.DeactivateUI();
+        this.ui = ui;
         Debug.Log($"Stopped hovering over item: {itemInfo.itemName}");
     }
 
-    public void OnInteract(IInteractor interactor, InteractableUI ui)
+    public void OnInteract(IInteractor interactor)
     {
         int leftover = interactor.Inventory.AddItem(itemInfo, 1);
         if (leftover > 0)

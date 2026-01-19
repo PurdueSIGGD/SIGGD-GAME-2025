@@ -17,9 +17,9 @@ public class WorkbenchInteract : MonoBehaviour, IInteractable<IInteractor>
         ui.DeactivateUI();
         this.ui = ui;
     }
-    public void OnInteract(IInteractor interactor, InteractableUI ui)
+    public void OnInteract(IInteractor interactor)
     {
-        this.ui.DeactivateUI();
+        ui.DeactivateUI();
         if (CraftingMenu.Instance)
         {
             CraftingMenu.Instance.ShowCraftingMenu(true);
