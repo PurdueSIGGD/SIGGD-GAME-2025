@@ -60,7 +60,7 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
     {
         interactableUI.BeginInteractUI(Interactable, () =>
         {
-            interactable.OnInteract(this);
+            interactable.OnInteract(this, interactableUI);
         }, () => !PlayerInput.Instance.interactionHeld);
     }
     

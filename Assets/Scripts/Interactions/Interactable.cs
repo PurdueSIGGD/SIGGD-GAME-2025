@@ -26,7 +26,7 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
         //Debug.Log($"Stopped hovering over item: {itemInfo.itemName}");
     }
 
-    public void OnInteract(IInteractor interactor)
+    public void OnInteract(IInteractor interactor, InteractableUI ui)
     {
         if (interactable)
         {
