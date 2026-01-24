@@ -30,16 +30,11 @@ namespace SIGGD.Mobs
             agent = GetComponent<NavMeshAgent>();
             EntityHealthManager healthManager = GetComponent<EntityHealthManager>();
             StaminaBehaviour staminaBehaviour = GetComponent<StaminaBehaviour>();
-            NavMeshQueryFilter filter = new NavMeshQueryFilter();
-            filter.agentTypeID = agent.agentTypeID;
-            filter.areaMask = NavMesh.AllAreas;
-            /*
-            var filter = new NavMeshQueryFilter
+            filter = new NavMeshQueryFilter
             {
-                agentTypeID = agent.agentTypeID, 
+                agentTypeID = agent.agentTypeID,
                 areaMask = NavMesh.AllAreas
             };
-            */
         }
         void Start()
         {

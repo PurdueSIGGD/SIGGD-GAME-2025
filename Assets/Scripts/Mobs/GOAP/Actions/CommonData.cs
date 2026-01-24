@@ -21,7 +21,6 @@ namespace SIGGD.Goap
         public HyenaAttackManager am { get; set; }
 
         [GetComponent]
-        public Movement mv { get; set; }
         public PerceptionManager pm { get; set; }
 
         [GetComponent]

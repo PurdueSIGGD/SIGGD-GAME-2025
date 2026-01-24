@@ -56,6 +56,7 @@ public class Smell : MonoBehaviour
     {
 
     }
+    
     private IEnumerator SmellRoutine()
     {
         WaitForSeconds wait = new WaitForSeconds(0.5f);
@@ -63,6 +64,7 @@ public class Smell : MonoBehaviour
         while (true)
         {
             yield return wait;
+            // For each smell, check if its intensity is low enough to be removed, otherwise it assigns a reduced intensity to the smell
             for (int i = smellValues.Count - 1; i >= 0; i--)
             {
                 var (pos, intensity) = smellValues[i];
@@ -83,6 +85,9 @@ public class Smell : MonoBehaviour
             CalculateSmellIntensity();
         }
     }
+    /// <summary>
+    /// Checks for mobs or players in a nearby range and adds a smell if the mob is not a predator
+    /// </summary>
     private void SmellCheck()
     {
         smellValues.Clear();
@@ -97,17 +102,24 @@ public class Smell : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// Checks for the presence of a player within the defined smell radius and updates the player's position if
+    /// detected.
+    /// </summary>
     private void SmellCheckPlayer()
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, playerLayer);
         if (hitColliders.Length < 1) return;
         playerPos = hitColliders[0].transform.position;
     }
+
     private void CalculateSmellIntensity()
     {
         float safeDistanceThreshold = 30f;
         Vector3 totalForce = Vector3.zero;
         float totalWeight = 0f;
+
+        // Finds the total weight and force of all the smells
         for (int i = smellValues.Count - 1; i >= 0; i--) {
             var (pos, intensity) = smellValues[i];
             Vector3 toSmell = smellValues[i].position - transform.position;
@@ -118,7 +130,7 @@ public class Smell : MonoBehaviour
                 smellValues.RemoveAt(i);
                 continue;
             }
-
+            // The weight varies based off the inverse square of the distance
             float weight = Mathf.Pow(1f - Mathf.Clamp01(dist / smellRadius), 2f) * intensity;
 
             //float hierarchialWeight = weight * smellValues[i];
@@ -127,11 +139,13 @@ public class Smell : MonoBehaviour
             totalWeight += weight;
         }
 
+
         if (totalWeight > 0f)
         {
             Vector3 averageDir = totalForce / totalWeight;
             float intensityFactor = Mathf.Clamp01(totalWeight);
 
+            // Calculates an overall position for the smell
             smellPos = transform.position + averageDir.normalized * intensityFactor * safeDistanceThreshold;
         } else
         {

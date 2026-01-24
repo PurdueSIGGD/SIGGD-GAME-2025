@@ -20,34 +20,50 @@ public class PerceptionManager : MonoBehaviour
     {
         UpdateVision();
         UpdateSmell();
-        UpdatePerception();
+        //UpdatePerception();
     }
     private void UpdateVision()
     {
         if (fov == null) return;
-        PlayerTarget = fov.PlayerTarget?.transform;
+        var seen = fov.GetSeenTargets();
+
+        bool tempSeePlayer = false;
 
         preyTargets.Clear();
-        var seen = fov.GetSeenTargets();
+
         foreach (var target in seen)
         {
-            if (target != null && target.TryGetComponent<PreyBehaviour>(out _))
-            {
-                preyTargets.Add(target);
+            if (target != null) {
+                if (target.CompareTag("Player")) {
+                    tempSeePlayer = true;
+                    PlayerTarget = fov.PlayerTarget?.transform;
+                    if (!CanSeePlayer)
+                    {
+                        OnPlayerDetected?.Invoke(PlayerTarget.transform);
+                    }
+                } else if (target.TryGetComponent<PreyBehaviour>(out _)) {
+                    preyTargets.Add(target);
+                }
             }
         }
+        CanSeePlayer = tempSeePlayer;
+        if (!tempSeePlayer) PlayerTarget = null;
     }
     private void UpdatePerception()
     {
+        /*
         if (PlayerTarget != null)
         {
+            Debug.Log("player target not null");
             if (!CanSeePlayer)
             {
+                Debug.Log("can see player now");
                 OnPlayerDetected?.Invoke(PlayerTarget.transform);
                 CanSeePlayer = true;
             }
         } else
         {
+            Debug.Log("cannot see player now");
             CanSeePlayer = false;
         }
         /*

@@ -31,7 +31,6 @@ namespace SIGGD.Mobs
         }
         private void DecideGoal()
         {
-            //this.provider.RequestGoal<HealGoal, GrowPackGoal, FollowAlphaGoal, DontStarveGoal, AvoidDangerGoal>(true);
             this.provider.RequestGoal<WanderGoal, GrowPackGoal, FollowAlphaGoal, DontStarveGoal, AvoidDangerGoal>(true);
         }
     }

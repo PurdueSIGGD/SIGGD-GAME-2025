@@ -18,23 +18,24 @@ namespace SIGGD.Goap.Sensors
         private Boundary boundary;
         public override void Created()
         {
-
+            
         }
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
-            //var filter = references.GetCachedComponent<AgentData>().filter;
+            var navFilter = references.GetCachedComponent<AgentData>().filter;
+            boundary = references.GetCachedComponent<AgentData>().boundary;
             var perceptionManager = references.GetCachedComponent<PerceptionManager>();
             if (perceptionManager == null) return null;
 
             var smellPos = perceptionManager.GetSmellPosition();
             if (smellPos == Vector3.zero) return null;
 
-            var random = this.LocateRandomPosition(agent, smellPos);
-            var navPos = Pathfinding.ShiftTargetToNavMesh(random, 10f);
+            var random = this.LocateRandomPositionWithinBoundary(agent, smellPos);
+            var navPos = Pathfinding.ShiftTargetToNavMesh(random, navFilter, 10f);
 
             NavMeshPath path = new NavMeshPath();
-            bool validPath = NavMesh.CalculatePath(agent.Transform.position, navPos, NavMesh.AllAreas, path) && path.status == NavMeshPathStatus.PathComplete;
+            bool validPath = NavMesh.CalculatePath(agent.Transform.position, navPos, navFilter, path) && path.status == NavMeshPathStatus.PathComplete;
             if (!validPath) return null;
 
             if (existingTarget is PositionTarget positionTarget)
@@ -55,7 +56,7 @@ namespace SIGGD.Goap.Sensors
         /// <returns></returns>
         ///
 
-        private Vector3 LocateRandomPositionWithinBoundary(IActionReceiver agent, Smell smell)
+        private Vector3 LocateRandomPositionWithinBoundary(IActionReceiver agent, Vector3 smellPos)
         {
             Vector3 resultPos = agent.Transform.position;
             for (int i = 0; i < 10; i++)

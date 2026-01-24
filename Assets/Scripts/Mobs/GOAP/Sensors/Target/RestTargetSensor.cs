@@ -17,7 +17,7 @@ namespace SIGGD.Goap.Sensors
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
-            //var filter = references.GetCachedComponent<AgentData>().filter;
+            var navFilter = references.GetCachedComponent<AgentData>().filter;
 
             var perceptionManager = references.GetCachedComponent<PerceptionManager>();
             if (perceptionManager == null) return null;
@@ -40,9 +40,9 @@ namespace SIGGD.Goap.Sensors
             for (int i = 0; i < attempts; i++)
             {
                 randomPos = safePosition + Random.insideUnitSphere * sampleSphereRadius;
-                if (NavMesh.SamplePosition(randomPos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(randomPos, out NavMeshHit hit, 5f, navFilter))
                 {
-                    if (NavMesh.CalculatePath(agent.Transform.position, hit.position, NavMesh.AllAreas, path) &&
+                    if (NavMesh.CalculatePath(agent.Transform.position, hit.position, navFilter, path) &&
                     path.status == NavMeshPathStatus.PathComplete)
                     {
                         return new PositionTarget(hit.position);

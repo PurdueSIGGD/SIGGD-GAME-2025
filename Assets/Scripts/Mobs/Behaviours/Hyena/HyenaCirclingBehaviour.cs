@@ -1,42 +1,78 @@
-using SIGGD.Goap;
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using SIGGD.Mobs;
 using SIGGD.Mobs.PackScripts;
-using Utility;
-using JetBrains.Annotations;
-using Unity.Cinemachine;
-using SIGGD.Goap.Config;
+using SIGGD.Goap;
+using UnityEngine.ProBuilder.MeshOperations;
+
 namespace SIGGD.Mobs.Hyena
 {
     public class HyenaCirclingBehaviour : MonoBehaviour
     {
         private Rigidbody rb;
-        private NavMeshAgent NavMeshAgent;
-        private AgentMoveBehaviour AgentMoveBehaviour;
-        private AgentHuntBehaviour AgentHuntBehaviour;
-        private HyenaStats circleConfig;
-        private PackBehavior PackBehavior;
+        private NavMeshAgent agent;
+        private AgentMoveBehaviour agentMove;
+        private PackBehavior packBehavior;
         private Movement move;
+        private AgentData agentData;
+
+        private NavMeshQueryFilter navFilter;
+
         public bool finishedWalking;
         public bool finishedCircling;
-        private Vector3 lastTangent = Vector3.zero;
-        float offset = 0f;
-        public bool exit = false;
-        public bool failedWalking = false;
-        public bool finished = false;
+        public bool exit;
+        public bool failedWalking;
+        public bool finished;
+
+        private float offset;
+        private bool hasOffset;
+
+        private const float BaseRadius = 10f;
+        private const float GoalSampleDist = 3.0f;
+
+        private const float AngularSpeedMin = 0.75f;
+        private const float AngularSpeedMax = 1.15f;
+
+        private const float EdgeBiasRange = 3.0f;
+        private const float EdgeBiasStrength = 1.0f;
+
+        private const float MinMoveSqr = 0.03f * 0.03f;
+        private const float StuckTimeToEscape = 0.55f;
+        private const float EscapeRadius = 6.0f;
+        private const float EscapeDuration = 0.60f;
+
+        private float angleRad;
+        private float angSpeed;
+        private float radius;
+
+        private bool escaping;
+        private Vector3 escapeGoal;
+        private float escapeTimer;
+
         private void Awake()
         {
-            move = GetComponent<Movement>();
             rb = GetComponent<Rigidbody>();
-            NavMeshAgent = GetComponent<NavMeshAgent>();
-            AgentMoveBehaviour = GetComponent<AgentMoveBehaviour>();
-            AgentHuntBehaviour = GetComponent<AgentHuntBehaviour>();
-            PackBehavior = GetComponent<PackBehavior>();
-            finishedCircling = false;
-            finishedWalking = false;
-            finished = false;
+            agent = GetComponent<NavMeshAgent>();
+            agentMove = GetComponent<AgentMoveBehaviour>();
+            packBehavior = GetComponent<PackBehavior>();
+            move = GetComponent<Movement>();
+            agentData = GetComponent<AgentData>();
+
+            if (agent != null)
+            {
+                agent.updatePosition = false;
+                agent.updateRotation = false;
+            }
+
+            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+        }
+
+        private void Start()
+        {
+            navFilter = agentData.filter;
         }
         /// <summary>
         /// Executes a behavior where the object either moves toward a target or circles around it, depending on the
@@ -54,243 +90,302 @@ namespace SIGGD.Mobs.Hyena
         public IEnumerator CircleLoop(Func<Vector3> GetTarget)
         {
             finished = false;
-            finishedCircling = false;
-            if (Vector3.Distance(GetTarget(), transform.position) < 9f && UnityEngine.Random.Range(0f, 1f) > 0.3f)
+            exit = false;
+
+            if (Vector3.Distance(GetTarget(), transform.position) < 9f && UnityEngine.Random.value > 0.3f)
             {
                 yield return StartCoroutine(WalkTowardsTarget(GetTarget));
                 yield return new WaitUntil(() => finishedWalking || exit);
                 if (exit) yield break;
             }
-            else
+
+            int loopCount = 0;
+            do
             {
-                int loopCount = 0;
-                do
-                {
-                    yield return StartCoroutine(Circle(GetTarget));
-                    yield return new WaitUntil(() => finishedCircling || exit);
-                    if (exit) yield break;
-                    yield return StartCoroutine(WalkTowardsTarget(GetTarget));
-                    yield return new WaitUntil(() => finishedWalking || exit);
-                    if (loopCount > 3) ExitBehaviour();
-                    if (exit) yield break;
-                    loopCount++;
-                } while (failedWalking);
-            }
+                yield return StartCoroutine(Circle(GetTarget));
+                yield return new WaitUntil(() => finishedCircling || exit);
+                if (exit) yield break;
+
+                yield return StartCoroutine(WalkTowardsTarget(GetTarget));
+                yield return new WaitUntil(() => finishedWalking || exit);
+
+                if (loopCount > 3) ExitBehaviour();
+                if (exit) yield break;
+
+                loopCount++;
+            } while (failedWalking);
+
             finished = true;
         }
-        public IEnumerator Circle(Func<Vector3> GetTarget)
+
+        private IEnumerator Circle(Func<Vector3> GetTarget)
         {
-            AgentMoveBehaviour.enabled = false;
-            NavMeshAgent.enabled = false;
             finishedCircling = false;
+            escaping = false;
+
+            if (agentMove != null) agentMove.enabled = false;
+
+            hasOffset = false;
+            offset = 0f;
 
             // Apply pack offsets so that hyenas do not overlap each other when circling
-            offset = PackBehavior.addRandomPackOffset(0.1f);
-            if (offset == 0f)
+            if (packBehavior != null)
             {
-                offset = UnityEngine.Random.Range(0f, 10f);
+                hasOffset = true;
+                offset = packBehavior.addRandomPackOffset(0.1f);
+            } else
+            {
+                hasOffset = false;
+                offset = 0f;
             }
+            if (Mathf.Approximately(offset, 0f)) offset = UnityEngine.Random.Range(0f, 10f);
 
+
+            // Pick a random angle, speed, direction, and duration
+            radius = BaseRadius + offset;
+
+            
+            angleRad = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
+            float sign = UnityEngine.Random.value > 0.5f ? 1f : -1f;
+            angSpeed = sign * UnityEngine.Random.Range(AngularSpeedMin, AngularSpeedMax);
 
             float duration = UnityEngine.Random.Range(7f, 15f);
             float elapsed = 0f;
-            float maxRadius = 10f + offset;
-            float circleSpeed = 10f;
-            float idealRadius = maxRadius;
-            float radius = maxRadius;
 
             float stuckTimer = 0f;
-            Vector3 lastPosition = rb.position;
+            Vector3 lastPos = rb.position;
 
-            float direction = UnityEngine.Random.value > 0.5f ? 1f : -1f;
-            float inwardsFactor = 0f;
-            float radiusMargin = 3f;
-
-            Vector3 lastDir = transform.forward;
-            float edgeCheckTimer = 0f;
-            float edgeCheckInterval = 0.25f;
-
-            // Loop that runs while the hyena circles for a random time 'duration'
-            while (elapsed < duration)
+            try
             {
-                // if exit then immediately exit
-                if (exit) yield break;
-
-                elapsed += Time.fixedDeltaTime;
-
-                Vector3 targetPos = GetTarget();
-                float distance = Vector3.Distance(targetPos, rb.position);
-
-                // Exit if distance is too far
-                if (distance > 50f)
+                while (elapsed < duration && !exit)
                 {
-                    ExitBehaviour();
-                    yield break;
-                }
+                    elapsed += Time.fixedDeltaTime;
 
-                
-                Vector3 toTarget = (targetPos - rb.position).normalized;
-
-                Vector3 tangent = Vector3.Cross(Vector3.up, toTarget).normalized;
-
-                // Smooth the last tangent direction to the current calculated tangent direction
-                tangent = UnityUtil.DampVector3Spherical(lastTangent, tangent, 6f, Time.fixedDeltaTime).normalized;
-                lastTangent = tangent;
-
-                // Calculates an inward target factor based off of the ratio of the distance to the ideal radius
-                float distanceToGo = distance - idealRadius;
-                float targetInward = Mathf.Clamp(distanceToGo / radiusMargin, -1f, 1f);
-
-                // If the distance margin is a negligable amount then ignore the inwards movement
-                if (Mathf.Abs(distanceToGo) < radiusMargin * 0.3f)
-                    targetInward = 0f;
-
-                // Damp inwards factor (magnitude) towards the magnitude of the inward target
-                inwardsFactor = UnityUtil.Damp(inwardsFactor, Mathf.Abs(targetInward), 5f, Time.fixedDeltaTime);
-
-                
-                Vector3 inward = toTarget * inwardsFactor;
-                Vector3 desired = (tangent + inward * 0.7f).normalized;
-
-                // Condition that runs every edgeCheckInterval to avoid and adjust movement when facing edges or obstacles
-                edgeCheckTimer += Time.fixedDeltaTime;
-
-                if (edgeCheckTimer >= edgeCheckInterval)
-                {
-                    edgeCheckTimer = 0;
-
-                    // Check navmesh in tangent direction and then adjust ideal radius and tangent direction accordingly
-                    if (NavMesh.Raycast(rb.position, rb.position + tangent * 3f, out NavMeshHit hit1, NavMesh.AllAreas))
+                    Vector3 targetRaw = GetTarget();
+                    if (targetRaw == Vector3.zero)
                     {
-                        idealRadius = Mathf.Lerp(idealRadius, Mathf.Max(idealRadius - 1.5f, 0f), 0.8f);
-                        tangent = Quaternion.AngleAxis(15, Vector3.up) * tangent;
+                        ExitBehaviour();
+                        yield break;
                     }
 
-                    // Finds the closest edge within 0.3m and lerps away from it
-                    if (NavMesh.FindClosestEdge(rb.position, out NavMeshHit edge, NavMesh.AllAreas) && edge.distance < 0.3f)
-                    {
-                        Vector3 away = (rb.position - edge.position).normalized;
-                        desired = Vector3.Lerp(desired, away, 0.3f).normalized;
+                    Vector3 targetPos = SampleToNavMesh(targetRaw, 6f);
 
-                        // if the edge is really close then exit the lunge
-                        if (edge.distance < 0.05f)
+                    // Escape loop runs if hyena is stuck
+                    if (escaping)
+                    {
+                        escapeTimer -= Time.fixedDeltaTime;
+
+                        Vector3 e = escapeGoal - rb.position;
+                        e.y = 0f;
+
+                        if (escapeTimer <= 0f || e.sqrMagnitude < 1.0f)
                         {
-                            ExitBehaviour();
-                            yield break;
+                            escaping = false;
+                        }
+                        else
+                        {
+                            Vector3 exitDir = e.sqrMagnitude > 0.0001f ? e.normalized : transform.forward;
+                            exitDir = ApplyEdgeAvoidance(rb.position, exitDir);
+                            move.MoveTowards(exitDir, 1.2f, 6f);
+                        }
+
+                        lastPos = rb.position;
+                        yield return new WaitForFixedUpdate();
+                        continue;
+                    }
+
+                    // Computes a new point on the circle and samples it to the navmesh
+
+                    angleRad += angSpeed * Time.fixedDeltaTime;
+
+                    Vector3 ringGoalRaw = targetPos + new Vector3(Mathf.Cos(angleRad), 0f, Mathf.Sin(angleRad)) * radius;
+
+                    Vector3 ringGoal = SampleToNavMesh(ringGoalRaw, GoalSampleDist);
+
+                    // Calculates the necessary direction and applies edge avoidance
+                    Vector3 d = ringGoal - rb.position;
+                    d.y = 0f;
+
+                    Vector3 dir = d.sqrMagnitude > 0.0001f ? d.normalized : transform.forward;
+                    dir = ApplyEdgeAvoidance(rb.position, dir);
+
+
+                    move.MoveTowards(dir, 1.0f, 3f);
+
+                    // If movement is negligible for a period of time then it starts an escape sequence
+
+                    bool notMoving = (rb.position - lastPos).sqrMagnitude < MinMoveSqr;
+                    if (notMoving)
+                    {
+                        stuckTimer += Time.fixedDeltaTime;
+                        if (stuckTimer > StuckTimeToEscape)
+                        {
+                            StartRandomEscape();
+                            stuckTimer = 0f;
                         }
                     }
+                    else
+                    {
+                        stuckTimer = 0f;
+                    }
+
+                    lastPos = rb.position;
+                    yield return new WaitForFixedUpdate();
                 }
-
-                Vector3 awayForce = Vector3.zero;
-                int count = 0;
-
-                // Checks for each mob in an overlap sphere and calculates an away force by accounting for their positions and weights
-                foreach (Collider col in Physics.OverlapSphere(rb.position, 3f, LayerMask.GetMask("Mob")))
-                {
-                    if (col.attachedRigidbody == rb) continue;
-                    Vector3 toSelf = rb.position - col.transform.position;
-                    float d = toSelf.magnitude;
-                    if (d < 0.001f) continue;
-
-                    float weight = 1f - Mathf.Clamp01(d / 3f);
-                    awayForce += toSelf.normalized * weight;
-                    count++;
-                }
-
-              
-                if (count > 0)
-                {
-                    awayForce /= count;
-                    desired = UnityUtil.DampVector3Spherical(lastDir, (desired + awayForce).normalized, 2f, Time.fixedDeltaTime);
-                }
-
-                // Create the position to be checked on the navmesh
-                Vector3 nextPos = rb.position + desired * circleSpeed * Time.fixedDeltaTime;
-
-                // Checks it on the navmesh
-                if (NavMesh.SamplePosition(nextPos, out var hit, 3f, NavMesh.AllAreas)) {
-                    nextPos = hit.position;
-                }
-
-                // Adjusts the direction and moves and rotates the rigidbody accordingly
-                Vector3 dir = (nextPos - rb.position).normalized;
-                rb.MovePosition(rb.position + dir * circleSpeed * Time.fixedDeltaTime);
-
-                Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
-                rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 10f, Time.fixedDeltaTime));
-
-                // Checks if the distance between the last position has not changed much and adjusts the ideal radius
-                if (Vector3.Distance(rb.position, lastPosition) < circleSpeed * Time.fixedDeltaTime * 0.25f)
-                {
-                    stuckTimer += Time.fixedDeltaTime;
-
-                    if (stuckTimer > 1f)
-                        idealRadius = Mathf.Clamp(idealRadius - 2f, 0, maxRadius);
-                }
-                else
-                {
-                    stuckTimer = 0f;
-                }
-                lastDir = desired;
-                lastPosition = rb.position;
-
-                yield return new WaitForFixedUpdate();
             }
-            // Warps rigidbody to navmesh after finishing circling
-            if (NavMesh.SamplePosition(rb.position, out NavMeshHit hit3, 1f, NavMesh.AllAreas))
-                NavMeshAgent.Warp(hit3.position);
+            finally
+            {
+                // Makes sure that the offset is removed and movement is enabled
+                if (hasOffset && packBehavior != null)
+                {
+                    packBehavior.removePackOffset(offset);
+                    hasOffset = false;
+                }
 
-            NavMeshAgent.enabled = true;
-            PackBehavior.removePackOffset(offset); // Removes offset from hashset
-            finishedCircling = true;
+                if (agentMove != null) agentMove.enabled = true;
+                finishedCircling = true;
+            }
         }
-        public IEnumerator WalkTowardsTarget(Func<Vector3> GetTarget)
+
+        private IEnumerator WalkTowardsTarget(Func<Vector3> GetTarget)
         {
-            AgentMoveBehaviour.enabled = false;
             finishedWalking = false;
             failedWalking = false;
 
             float maxDuration = UnityEngine.Random.Range(5f, 6f);
             float elapsed = 0f;
-            float stopDist = UnityEngine.Random.Range(3f, 10f);
 
-            Vector3 currentdir = transform.forward;
+            float stuckTimer = 0f;
+            Vector3 lastPos = rb.position;
 
-            // Loop that
             while (elapsed < maxDuration && !exit)
             {
                 elapsed += Time.fixedDeltaTime;
 
-                Vector3 targetPos = GetTarget();
-                if (targetPos == Vector3.zero)
+                Vector3 targetRaw = GetTarget();
+                if (targetRaw == Vector3.zero)
                 {
                     ExitBehaviour();
                     yield break;
                 }
-                if (Vector3.Distance(targetPos, transform.position) < stopDist)
+
+                Vector3 targetPos = SampleToNavMesh(targetRaw, 6f);
+
+                Vector3 toTarget = targetPos - rb.position;
+                toTarget.y = 0f;
+
+                float dist = toTarget.magnitude;
+
+                // If hyena is within range then it has finished walking towards target
+
+                if (dist >= 6 && dist <= 10)
                     break;
 
-                Vector3 dir = NavSteering.GetSteeringDirection(NavMeshAgent, targetPos, 0.1f);
-                move.MoveTowards(dir, 1.2f);
+                // If its close then back away, if its far then move closer
+                Vector3 dir;
+                if (dist > 10)
+                {
+                    dir = toTarget.normalized;
+                } else {
+                    dir = (-toTarget).normalized;
+                }
+                dir = ApplyEdgeAvoidance(rb.position, dir);
+                move.MoveTowards(dir, 0.8f, 1.0f);
+
+                // Not moving check similar to Circle()
+                bool notMoving = (rb.position - lastPos).sqrMagnitude < MinMoveSqr;
+                if (notMoving)
+                {
+                    stuckTimer += Time.fixedDeltaTime;
+                    if (stuckTimer > 0.45f)
+                    {
+                        StartRandomEscape();
+                        stuckTimer = 0f;
+                    }
+                }
+                else
+                {
+                    stuckTimer = 0f;
+                }
+
+                lastPos = rb.position;
                 yield return new WaitForFixedUpdate();
             }
-            yield return new WaitUntil(() => NavMeshAgent.pathPending != true);
-            if (elapsed >= maxDuration)
-            {
-                failedWalking = true;
-            }
+
+            if (elapsed >= maxDuration) failedWalking = true;
             finishedWalking = true;
         }
+
         public void ExitBehaviour()
         {
             finishedCircling = false;
             finishedWalking = false;
+            failedWalking = false;
             finished = false;
-            NavMeshAgent.enabled = true;
-            AgentMoveBehaviour.enabled = true;
-            PackBehavior.removePackOffset(offset);
+
+            if (hasOffset && packBehavior != null)
+            {
+                packBehavior.removePackOffset(offset);
+                hasOffset = false;
+            }
+
+            if (agentMove != null) agentMove.enabled = true;
             exit = true;
         }
-    }
 
+        /// <summary>
+        /// Applies edge avoidance by biasing the direction towards the normal of the nearest navmesh edge
+        /// </summary>
+        /// <remarks>It finds the closest edge of the agents navmesh.
+        /// It then finds the normal of the edge hit while ignoring the y component. 
+        /// The dir is then blended with the inward factor which has more influence based off of the distance of the hit and EdgeBiasStrength</remarks>
+        /// <param name="pos">The position to check for the nearest edges</param>
+        /// <param name="dir">The direction to apply avoidance to</param>
+        /// <returns>The new direction</returns>
+        private Vector3 ApplyEdgeAvoidance(Vector3 pos, Vector3 dir)
+        {
+            if (NavMesh.FindClosestEdge(pos, out NavMeshHit edgeHit, navFilter))
+            {
+                float t = Mathf.Clamp01((EdgeBiasRange - edgeHit.distance) / EdgeBiasRange);
+                if (t > 0f)
+                {
+                    Vector3 inward = edgeHit.normal;
+                    inward.y = 0f;
+                    if (inward.sqrMagnitude > 0.0001f)
+                    {
+                        dir = (dir + inward.normalized * (EdgeBiasStrength * t)).normalized;
+                    }
+                }
+            }
+            return dir;
+        }
+
+        /// <summary>
+        /// Starts a random escape sequence by finding a random point on the navmesh in a circle around the hyena
+        /// </summary>
+        private void StartRandomEscape()
+        {
+            Vector2 r = UnityEngine.Random.insideUnitCircle;
+            if (r.sqrMagnitude < 0.0001f) r = Vector2.right;
+            r.Normalize();
+
+            Vector3 candidate = rb.position + new Vector3(r.x, 0f, r.y) * EscapeRadius;
+
+            // Samples the candidate to the navmesh
+            // Starts the escape timer and sets the escape goal to the position of the hit
+            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, 4f, navFilter))
+            {
+                escaping = true;
+                escapeGoal = hit.position;
+                escapeTimer = EscapeDuration;
+            }
+        }
+
+        private Vector3 SampleToNavMesh(Vector3 p, float maxDist)
+        {
+            if (NavMesh.SamplePosition(p, out NavMeshHit hit, maxDist, navFilter))
+                return hit.position;
+            return p;
+        }
+    }
 }

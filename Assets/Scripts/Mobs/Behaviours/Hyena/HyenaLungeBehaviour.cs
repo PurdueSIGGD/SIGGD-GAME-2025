@@ -1,5 +1,8 @@
+using Autodesk.Fbx;
+using SIGGD.Goap;
 using System;
 using System.Collections;
+using TMPro.Examples;
 using UnityEngine;
 using UnityEngine.AI;
 using Utility;
@@ -9,143 +12,317 @@ namespace SIGGD.Mobs.Hyena
     public class HyenaLungeBehaviour : MonoBehaviour
     {
         private Rigidbody rb;
-        private NavMeshAgent NavMeshAgent;
-        private AgentMoveBehaviour AgentMoveBehaviour;
-        public bool finishedLunging { get; private set; } = false;
-        public bool finishedExiting { get; private set; } = false;
-        public bool lungeArriving { get; private set; } = false;
-        public bool exit { get; set; } = false;
-
-        private float gravity = Mathf.Abs(Physics.gravity.y);
-        public float attackInterval;
-        public float telegraph;
+        private NavMeshAgent agent;
+        private AgentMoveBehaviour agentMove;
         private Movement move;
+        private AgentData agentData;
+
+        private NavMeshQueryFilter navFilter;
+
+        public bool finishedLunging { get; private set; }
+        public bool finishedExiting { get; private set; }
+        public bool lungeArriving { get; private set; }
+        public bool exit { get; set; }
+
         public float beginningAttackCooldown;
-        public float attackOffset;
         public float arcHeight = 2f;
-        private float speed;
+        public float maxLungeDistance = 20f;
+        public float maxLaunchSpeed = 22f;
+        public float minFlightTime = 0.30f;
 
-        private Vector3 lungeDir;
-
-        Animator animator;
+        private Vector3 lungeExitDir = Vector3.forward;
         private void Awake()
         {
             move = GetComponent<Movement>();
             rb = GetComponent<Rigidbody>();
-            NavMeshAgent = GetComponent<NavMeshAgent>();
-            AgentMoveBehaviour = GetComponent<AgentMoveBehaviour>();
+            agent = GetComponent<NavMeshAgent>();
+            agentMove = GetComponent<AgentMoveBehaviour>();
+            agentData = GetComponent<AgentData>();
             rb.interpolation = RigidbodyInterpolation.Interpolate;
-            lungeDir = Vector3.zero;
-            speed = 10f;
         }
-        void Start()
+
+        private void Start()
         {
+            navFilter = agentData.filter;
             beginningAttackCooldown = 0f;
         }
 
         public IEnumerator Lunge(Func<Vector3> GetTarget)
         {
-            beginningAttackCooldown = UnityEngine.Random.Range(0.03f, 0.05f);
-            finishedExiting = false;
+            exit = false;
             finishedLunging = false;
+            finishedExiting = false;
             lungeArriving = false;
+
+            if (agentMove != null) agentMove.enabled = false;
+
+
+            beginningAttackCooldown = UnityEngine.Random.Range(0.03f, 0.05f);
+
             Vector3 target = GetTarget();
-            float distance = Vector3.Distance(target, rb.position);
-            if (target == Vector3.zero || (target - transform.position).sqrMagnitude < 0.1f || distance > 20)
+            if (target == Vector3.zero)
             {
                 ExitBehaviour();
                 yield break;
             }
-            NavMeshAgent.enabled = false;
-            Quaternion targetRot = Quaternion.LookRotation(GetTarget() - transform.position);
-            float timeout = 0.5f;
-            while (Mathf.Abs(Quaternion.Angle(transform.rotation, targetRot)) > 20f && timeout > 0)
-            {
-                timeout -= Time.fixedDeltaTime;
 
-                transform.rotation = UnityUtil.DampQuaternion(transform.rotation,
-                    targetRot, 3f, Time.fixedDeltaTime);
+            // Calculates the distance from the target and determines if it should continue
+
+            Vector3 from = rb.position;
+            Vector3 delta = target - from;
+            float dist = new Vector3(delta.x, 0f, delta.z).magnitude;
+            if (dist < 5f || dist > maxLungeDistance)
+            {
+                ExitBehaviour();
+                yield break;
+            }
+            // Attempts to shift the target to the navmesh
+            var shiftPos = Pathfinding.ShiftTargetToNavMesh(rb.position, navFilter, 2.5f);
+            if (shiftPos != Pathfinding.ERR_VECTOR)
+            {
+                rb.position = shiftPos;
+                transform.position = shiftPos;
+            }
+            
+            // Stops the navmesh agent
+            if (agent != null)
+            {
+                agent.isStopped = true;
+                agent.ResetPath();
+            }
+            Vector3 toTarget = target - rb.position;
+            toTarget.y = 0f;
+            Vector3 dirToTarget = toTarget.sqrMagnitude > 0.001f ? toTarget.normalized : transform.forward;
+
+
+            // Aim slightly before the target
+            Vector3 aimPoint = target - dirToTarget;
+
+            if (NavMesh.SamplePosition(aimPoint, out NavMeshHit aimHit, 3f, navFilter))
+                aimPoint = aimHit.position;
+            Vector3 lastGoodPos = rb.position;
+
+            // Start rotating towards the target
+
+            float t = 0f;
+
+            while (t < 0.85f && !exit)
+            {
+                t += Time.fixedDeltaTime;
+
+                Vector3 to = aimPoint - transform.position;
+                to.y = 0f;
+                if (to.sqrMagnitude < 0.0001f)
+                    break;
+
+                // If within 15 degrees then stop
+                Quaternion targetRot = Quaternion.LookRotation(to.normalized, Vector3.up);
+                float angle = Quaternion.Angle(rb.rotation, targetRot);
+                if (angle <= 15f)
+                    break;
+
+                Quaternion newRot = UnityUtil.DampQuaternion(rb.rotation, targetRot, 3f, Time.fixedDeltaTime);
+                rb.MoveRotation(newRot);
+
                 yield return new WaitForFixedUpdate();
             }
+
             yield return new WaitForSeconds(beginningAttackCooldown);
-            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+
             rb.isKinematic = false;
-            Vector3 vectDist3D = target - transform.position;
-            float xDist = vectDist3D.x;
-            float yDist = vectDist3D.y;
-            float zDist = vectDist3D.z;
-            float dist2D = Mathf.Sqrt(xDist * xDist + zDist * zDist);
-            float xVelocity = (xDist * speed) / dist2D;
-            float zVelocity = (zDist * speed) / dist2D;
-            float yVelocity = (yDist * speed) / dist2D + (4.9f * dist2D) / speed;
-            Vector3 forceVector = Vector3.ClampMagnitude(new Vector3(xVelocity, yVelocity, zVelocity), 30);
-            lungeDir = UnityUtil.ToVector2(forceVector).normalized;
-            rb.linearVelocity = forceVector;
-            float time = (2 * yVelocity) / gravity;
-            if (time < 0.25f) time = 0.25f;
-            yield return new WaitForSeconds(time - 0.125f);
-            lungeArriving = true;
-            float elapsed = 0f;
-            timeout = 0.25f;
-            while (elapsed < timeout && AgentMoveBehaviour.IsGrounded)
+            rb.useGravity = true;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rb.angularVelocity = Vector3.zero;
+
+            // Lerps arc height based off distance of lunge
+
+            float lungeDistance = Mathf.InverseLerp(0f, maxLungeDistance, dist);
+            float arc = Mathf.Lerp(0.6f, 1.4f, lungeDistance); 
+
+
+            // Computes the velocity of the lunge
+            if (!TryComputeVelocity(rb.position, aimPoint, arc, out Vector3 launchVel))
             {
-                elapsed += Time.fixedDeltaTime;
+                rb.isKinematic = true;
+                rb.useGravity = false;
+                rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
+                if (agent != null) agent.isStopped = false;
+                ExitBehaviour();
+                yield break;
+            }
+
+            // Caps out the speed of the lunge
+            if (launchVel.magnitude > maxLaunchSpeed)
+                launchVel = launchVel.normalized * maxLaunchSpeed;
+
+            // Saves exit dir for exiting later
+            Vector3 exitDir = new Vector3(launchVel.x, 0f, launchVel.z);
+            if (exitDir.sqrMagnitude > 0.001f)
+                lungeExitDir = exitDir.normalized;
+
+            rb.linearVelocity = launchVel;
+
+            // Calculates flight time and arrive time
+            float flightTime = Mathf.Max(minFlightTime, Mathf.Abs(launchVel.y / Physics.gravity.y) * 2f);
+            if (flightTime < minFlightTime) flightTime = minFlightTime;
+
+            float arriveTime = Mathf.Max(0f, flightTime - 0.15f);
+            yield return new WaitForSeconds(arriveTime);
+            lungeArriving = true;
+
+            float landTimeout = Mathf.Clamp(flightTime + 0.2f, 0.35f, 0.75f);
+            float landElapsed = 0f;
+            int groundedFrames = 0;
+
+            while (landElapsed < landTimeout && !exit)
+            {
+                landElapsed += Time.fixedDeltaTime;
+
+                bool grounded = (agentMove != null) && agentMove.IsGrounded;
+                bool notFalling = rb.linearVelocity.y <= 0.5f;
+
+                if (grounded && notFalling)
+                    groundedFrames++;
+                else
+                    groundedFrames = 0;
+
+                if (groundedFrames >= 3)
+                    break;
+
                 yield return new WaitForFixedUpdate();
             }
-            rb.angularVelocity = Vector3.zero;
+
             rb.linearVelocity = Vector3.zero;
-            yield return new WaitForFixedUpdate();
-            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 8f, NavMesh.AllAreas))
+            rb.angularVelocity = Vector3.zero;
+
+            shiftPos = Pathfinding.ShiftTargetToNavMesh(rb.position, navFilter, 8f);
+            if (shiftPos != Pathfinding.ERR_VECTOR)
             {
-                NavMeshAgent.Warp(hit.position);
+                rb.position = shiftPos;
+                transform.position = shiftPos;
+            }
+            NavMeshPath path = new NavMeshPath();
+
+            // Warp back to starting position if new position is not connected to it
+            bool hasPath = NavMesh.CalculatePath(rb.position, lastGoodPos, navFilter, path);
+
+            if (!hasPath || path.status != NavMeshPathStatus.PathComplete)
+            {
+                rb.position = lastGoodPos;
+                transform.position = lastGoodPos;
             }
             rb.isKinematic = true;
-            NavMeshAgent.enabled = true;
+            rb.useGravity = false;
+            rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
+
+            if (agent != null)
+            {
+                agent.Warp(rb.position);
+                agent.nextPosition = rb.position;
+                agent.isStopped = false;
+            }
+            if (agentMove != null) agentMove.enabled = true;
+
             finishedLunging = true;
         }
+
         public IEnumerator ExitLunge(Func<Vector3> GetTarget)
         {
             finishedExiting = false;
-            AgentMoveBehaviour.enabled = false;
+            if (agentMove != null) agentMove.enabled = false;
 
             float duration = UnityEngine.Random.Range(1f, 2f);
             float elapsed = 0f;
 
-            Vector3 awayDirPerpendicular = Vector3.Cross(lungeDir, Vector3.up).normalized;
+            Vector3 perpendicular = Vector3.Cross(Vector3.up, lungeExitDir).normalized;
+            Vector3 awayDir = (-lungeExitDir * 0.85f + perpendicular * 0.15f).normalized;
 
-            Vector3 awayDir = (lungeDir * 0.8f + awayDirPerpendicular * 0.2f).normalized;
-  
-
-            while (elapsed < duration)
+            while (elapsed < duration && !exit)
             {
                 elapsed += Time.fixedDeltaTime;
+
                 Vector3 targetPos = GetTarget();
                 if (targetPos == Vector3.zero)
                 {
                     ExitBehaviour();
                     yield break;
                 }
+
                 if (Vector3.Distance(targetPos, transform.position) > 8f)
                     break;
-                Vector3 awayPoint = transform.position + awayDir * 6f;
-                Vector3 dir = NavSteering.GetSteeringDirection(NavMeshAgent, awayPoint, 0.1f);
 
+                Vector3 awayPoint = transform.position + awayDir * 6f;
+                if (NavMesh.SamplePosition(awayPoint, out NavMeshHit hit, 3f, navFilter))
+                    awayPoint = hit.position;
+
+                Vector3 dir = NavSteering.GetSteeringDirection(agent, awayPoint, rb.position, 0.1f);
                 move.MoveTowards(dir, 1.2f);
+
                 yield return new WaitForFixedUpdate();
             }
 
-            AgentMoveBehaviour.enabled = true;
+            if (agentMove != null) agentMove.enabled = true;
             finishedExiting = true;
         }
+
         public void ExitBehaviour()
         {
             lungeArriving = false;
-            rb.isKinematic = true;
-            NavMeshAgent.enabled = true;
-            AgentMoveBehaviour.enabled = true;
+
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+
+                rb.isKinematic = true;
+                rb.useGravity = false;
+                rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
+            }
+
+            if (agent != null)
+            {
+                agent.enabled = true;
+                agent.isStopped = false;
+                agent.nextPosition = rb != null ? rb.position : transform.position;
+            }
+
+            if (agentMove != null) agentMove.enabled = true;
+
             finishedLunging = false;
             finishedExiting = false;
             exit = true;
+        }
+        private static bool TryComputeVelocity(Vector3 from, Vector3 to, float arcHeight, out Vector3 velocity)
+        {
+            
+            velocity = Vector3.zero;
+
+            // Finds the XZ velocity and distance
+            Vector3 delta = to - from;
+            Vector3 deltaXZ = new Vector3(delta.x, 0f, delta.z);
+            float distXZ = deltaXZ.magnitude;
+
+            if (distXZ < 0.001f)
+                return false;
+
+            // Finds the max arc height by combining extra arc height with the minimum
+            float gravity = Mathf.Abs(Physics.gravity.y);
+            float arc = Mathf.Max(from.y, to.y) + Mathf.Max(0.1f, arcHeight);
+
+            float up = arc - from.y;
+            float down = arc - to.y;
+
+            float vY = Mathf.Sqrt(2f * gravity * up);
+            float tUp = vY / gravity;
+            float tDown = Mathf.Sqrt(2f * down / gravity);
+            float tTotal = tUp + tDown;
+
+            if (tTotal <= 0.01f)
+                return false;
+
+            Vector3 vXZ = deltaXZ / tTotal;
+            velocity = vXZ + Vector3.up * vY;
+            return true;
         }
     }
 }

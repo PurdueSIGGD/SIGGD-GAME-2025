@@ -7,6 +7,7 @@ using CrashKonijn.Goap.Core;
 using SIGGD.Mobs.PackScripts;
 using SIGGD.Goap;
 using SIGGD.Mobs.Hyena;
+using Autodesk.Fbx;
 
 namespace SIGGD.Mobs
 {
@@ -56,7 +57,7 @@ namespace SIGGD.Mobs
                 return;
             }
 
-            if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
+            if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal && this.provider.CurrentPlan.Goal is not KillPlayerGoal)
             {
                 this.provider.RequestGoal<DontStarveGoal, WanderGoal>(true);
                 return;
@@ -65,24 +66,28 @@ namespace SIGGD.Mobs
         protected override void OnNoActionFound(IGoalRequest request)
         {
             // If hunting or lunging then ignore selecting a new goal
+
             if (HyenaAttackManager.isLunging) return;
-            if (HuntBehaviour.currentTargetOfHunt != null) return;
+            //if (HuntBehaviour.currentTargetOfHunt != null) return;
             
             if (this.provider.CurrentPlan == null)
             {
-                this.provider.RequestGoal<DontStarveGoal, WanderGoal, GrowPackGoal>(true);
+                this.provider.RequestGoal<DontStarveGoal, FollowAlphaGoal, WanderGoal, GrowPackGoal>(true);
+                return;
+            }
+            if (this.provider.CurrentPlan.Goal is KillPlayerGoal)
+            {
+                this.provider.RequestGoal<DontStarveGoal, FollowAlphaGoal, WanderGoal, GrowPackGoal>(true);
                 return;
             }
 
             if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
             {
-                //this.provider.RequestGoal<DontStarveGoal, FollowAlphaGoal, StickTogetherGoal, WanderGoal>(true);
                 this.provider.RequestGoal<DontStarveGoal, WanderGoal>(true);
             }
             else
             {
-                //this.provider.RequestGoal<FollowAlphaGoal, StickTogetherGoal, WanderGoal>(true);
-                this.provider.RequestGoal<WanderGoal>(true);
+                this.provider.RequestGoal<FollowAlphaGoal, GrowPackGoal, WanderGoal>(true);
             }
         }
         protected override void OnActionStart(IAction action)
@@ -101,9 +106,8 @@ namespace SIGGD.Mobs
         {
             if (this.provider.CurrentPlan == null || (this.provider.CurrentPlan.Goal is not KillPlayerGoal))
             {
-                this.provider.RequestGoal<KillPlayerGoal, DontStarveGoal>(true);
+                this.provider.RequestGoal<KillPlayerGoal>(true);
             }
-            this.provider.ResolveAction();
         }
     }
 }

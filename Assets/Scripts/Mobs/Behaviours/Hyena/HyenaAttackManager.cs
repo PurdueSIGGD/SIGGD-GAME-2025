@@ -14,6 +14,8 @@ namespace SIGGD.Mobs.Hyena
         private HyenaCirclingBehaviour HyenaCirclingBehaviour;
         public bool isLunging;
         private TransformTarget currentTarget;
+        private Coroutine attackRoutine;
+
 
         private void Awake()
         {
@@ -30,14 +32,7 @@ namespace SIGGD.Mobs.Hyena
         public void StartAttackSequence(IMonoAgent agent)
         {
             if (isLunging) return;
-            try
-            {
-                StartCoroutine(AttackSequenceWrapper());
-            }
-            catch (Exception e)
-            {
-                isLunging = false;
-            }
+            attackRoutine = StartCoroutine(AttackSequenceWrapper());
 
         }
          
@@ -50,6 +45,7 @@ namespace SIGGD.Mobs.Hyena
             yield return StartCoroutine(AttackSequence());
 
             isLunging = false;
+            attackRoutine = null;
         }
 
         /**
@@ -88,6 +84,24 @@ namespace SIGGD.Mobs.Hyena
         /// 
         /// </summary>
         /// <returns> Returns Vector3.zero if currentTarget is null otherwise return the current target's position </returns>
+        /// 
+
         public Vector3 GetTarget() => this.currentTarget != null ? this.currentTarget.Position : Vector3.zero;
+        public void CancelAttack()
+        {
+            if (attackRoutine != null)
+            {
+                StopCoroutine(attackRoutine);
+                attackRoutine = null;
+            }
+
+            if (HyenaCirclingBehaviour != null)
+                HyenaCirclingBehaviour.ExitBehaviour();
+
+            if (HyenaLungeBehaviour != null)
+                HyenaLungeBehaviour.ExitBehaviour(); // and/or add an ExitBehaviour there too
+            isLunging = false;
+            currentTarget = null;
+        }
     }
 }

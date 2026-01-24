@@ -17,20 +17,29 @@ namespace SIGGD.Mobs
         private bool shouldMove;
         private Movement move;
         public NavMeshAgent navMeshAgent;
+        private Rigidbody rb;
 
         [SerializeField] public Transform groundCheckPoint;
         [SerializeField] public Vector3 groundCheckSize = new Vector3(0.49f, 0.3f, 0.49f);
         public LayerMask groundLayer;
 
-        public bool IsGrounded =>
-            Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
+        public bool IsGrounded => 
+            Physics.CheckBox(groundCheckPoint.position, groundCheckSize, groundCheckPoint.rotation, groundLayer);
 
         private void Awake()
         {
             move = GetComponent<Movement>();
             this.agent = this.GetComponent<AgentBehaviour>();
             this.navMeshAgent = this.GetComponent<NavMeshAgent>();
+            rb = this.GetComponent<Rigidbody>();
+            if (navMeshAgent != null)
+            {
+                navMeshAgent.updatePosition = false;
+                navMeshAgent.updateRotation = false;
+            }
+
         }
+
 
         private void OnEnable()
         {
@@ -82,9 +91,9 @@ namespace SIGGD.Mobs
 
             if (this.currentTarget == null)
                 return;
-            Vector3 desiredDirection = NavSteering.GetSteeringDirection(navMeshAgent, currentTarget.Position, 0.1f);
 
-            move.MoveTowards(desiredDirection, 1.0f);
+            Vector3 desiredDirection = NavSteering.GetSteeringDirection(navMeshAgent, rb.position, currentTarget.Position, 0.1f);
+            move.MoveTowards(desiredDirection, 1.0f, 3f);
 
         }
 
@@ -92,13 +101,7 @@ namespace SIGGD.Mobs
         {
             if (this.currentTarget == null)
                 return;
-
-            NavMeshHit hit;
-            if (NavMesh.SamplePosition(this.currentTarget.Position, out hit, 10f, NavMesh.AllAreas))
-            {
-                Gizmos.DrawLine(this.transform.position, hit.position);
-            }
-            
+            Gizmos.DrawLine(rb.position, this.currentTarget.Position);
         }
     }
 }

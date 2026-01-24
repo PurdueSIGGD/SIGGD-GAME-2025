@@ -35,9 +35,8 @@ namespace SIGGD.Goap
             {
                 if (!data.am.isLunging)
                 {
-                    data.am.StartAttackSequence(agent);
                     data.am.SetTarget(data.Target as TransformTarget);
-                    data.am.isLunging = true;
+                    data.am.StartAttackSequence(agent);
                 }
             }
         }
@@ -52,11 +51,12 @@ namespace SIGGD.Goap
         }
         public override void Stop(IMonoAgent agent, CommonData data)
         {
+            data.am.CancelAttack();
         }
         public override void End(IMonoAgent agent, CommonData data)
         {
+            data.am.CancelAttack();
             data.mv.DisableSprint();
-            //this.Disable(agent, ActionDisabler.ForTime(0.5f));
 
         }
     }

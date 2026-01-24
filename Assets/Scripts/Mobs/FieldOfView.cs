@@ -12,7 +12,6 @@ using Unity.Hierarchy;
 
 public class FieldOfView : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     public float viewRadius;
     public LayerMask playerMask;
     public LayerMask mobMask;
@@ -59,10 +58,12 @@ public class FieldOfView : MonoBehaviour
             CleanExpiredTargets();
         }
     }
+    /// <summary>
+    /// Checks for mobs or players nearb in a sphere and adds it to detected targets if it is in the agent's field of view. 
+    /// </summary>
     private void FOVCheck()
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, viewRadius, playerMask | mobMask);
-        if (hitColliders.Length == 0) return;
         for (int i = 0; i < hitColliders.Length; i++)
         {
             {
@@ -81,10 +82,14 @@ public class FieldOfView : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// Cleans the expired targets based off of how long the target was not in the agent's sight
+    /// </summary>
     private void CleanExpiredTargets()
     {
+        //List<GameObject> tempSeenTargets = new List<GameObject>();
         seenTargets.Clear();
-        PlayerTarget = null;
+        GameObject tempPlayerTarget = null;
         List<Transform> toRemove = new();
         foreach (KeyValuePair<Transform, DetectedTarget> pair in detected)
         {
@@ -94,10 +99,11 @@ public class FieldOfView : MonoBehaviour
                 continue;
             }
             seenTargets.Add(pair.Value.gameObject);
-            if (pair.Value.gameObject.CompareTag("Player")) PlayerTarget = pair.Value.gameObject;
+            if (pair.Value.gameObject.CompareTag("Player")) tempPlayerTarget = pair.Value.gameObject;
         }
         foreach (var v in toRemove)
             detected.Remove(v);
+        PlayerTarget = tempPlayerTarget;
     }
     public GameObject PlayerTarget { get; private set; }
     public List<GameObject> GetSeenTargets() => seenTargets;
