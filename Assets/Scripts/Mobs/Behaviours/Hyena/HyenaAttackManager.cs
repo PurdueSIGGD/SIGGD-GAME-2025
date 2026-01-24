@@ -89,6 +89,7 @@ namespace SIGGD.Mobs.Hyena
         public Vector3 GetTarget() => this.currentTarget != null ? this.currentTarget.Position : Vector3.zero;
         public void CancelAttack()
         {
+            if (Vector3.Distance(GetTarget(), transform.position) < 20f) return;
             if (attackRoutine != null)
             {
                 StopCoroutine(attackRoutine);

@@ -98,6 +98,7 @@ public class EnemyAnimator : MonoBehaviour
         EntityHealthManager hm = other.GetComponent<EntityHealthManager>();
         if (hm != null)
         {
+            if (other.CompareTag("Predator")) return;
             damageContext.victim = hm.gameObject;
             hm.TakeDamage(damageContext);
         }
