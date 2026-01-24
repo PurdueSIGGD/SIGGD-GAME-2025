@@ -92,13 +92,16 @@ public class ObjectPlacer : MonoBehaviour
         if (_inPlacementMode)
         {
 
-            // change distance from player with mouse scroll
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (scroll != 0f)
-            {
-                objectDistanceFromPlayer += scroll * distanceChangeSpeed;
-                objectDistanceFromPlayer = Mathf.Clamp(objectDistanceFromPlayer, minDistance, maxDistance);
-            }
+            //// change distance from player with mouse scroll
+            //
+            //   keep disabled
+            //
+            //float scroll = Input.GetAxis("Mouse ScrollWheel");
+            //if (scroll != 0f)
+            //{
+            //    objectDistanceFromPlayer += scroll * distanceChangeSpeed;
+            //    objectDistanceFromPlayer = Mathf.Clamp(objectDistanceFromPlayer, minDistance, maxDistance);
+            //}
 
             // update preview object position
             UpdateCurrentPlacementPosition();

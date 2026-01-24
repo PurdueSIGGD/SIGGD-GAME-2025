@@ -13,6 +13,7 @@ public class PreviewObjectValidChecker : MonoBehaviour
         // Check if the collided object's layer is in the invalid layers
         if (((1 << other.gameObject.layer) & invalidLayers) != 0)
         {
+            Debug.Log("Placement colliding with invalid layer: " + LayerMask.LayerToName(other.gameObject.layer));
             _collidingObjects.Add(other);
             IsValid = false;
         }
