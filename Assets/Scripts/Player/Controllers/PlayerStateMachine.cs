@@ -37,20 +37,91 @@ public class PlayerStateMachine : MonoBehaviour
                                                           // relevant when the player is in situations like falling
                                                           // or hanging on a jump at the apex
     
-    [Header("Checks")] 
-    [SerializeField] public Transform groundCheckPoint;
-    [SerializeField] public Vector3 groundCheckSize = new Vector3(0.49f, 0.3f, 0.49f);
-    public LayerMask groundLayer;
+    [Header("Ground Checks")] 
+    [SerializeField] public LayerMask groundLayer;
 
-    public bool IsGrounded =>
-        Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
-        //Physics.Raycast(groundCheckPoint.position, Vector3.down, 0.2f, groundLayer);
+    [Tooltip("The position of the player's feet for ground checking. Think of a half hemisphere downward from this position")]
+    [SerializeField] private Transform groundCheckCenter;
+    [Tooltip("Horizontal radius of ground check sphere")]
+    [SerializeField] private float groundCheckRadius = 0.49f;
+
+    [Tooltip("Vertical radius of ground check sphere")]
+    [SerializeField] private float groundCheckHeight = 0.3f;
+
+    [Tooltip("This will enable gizmos debug rays that show ground checking logic. Use this for debugging rays.")]
+    [SerializeField] private bool DEBUG_groundCheck = false;
+
+
+    // basically, the raycast creates a hemisphere.
+    [Tooltip("More rays = better ground check accuracy. These are how many rays are horizontal?")]
+    [SerializeField] private int groundCheckHorizontalRays = 12; // how many rays for each angle
+
+    [Tooltip("More rays = better ground check accuracy. These are how many rays are angled up.")]
+    [SerializeField] private int groundCheckVerticalRays = 6; // how many rays are angled vertically
+
+    [Tooltip("Slopes with a angle greater than this are not considered \"ground\"")]
+    [Range(0f, 90f)] [SerializeField] private float groundCheckSlopeAngle = 50f;
+
+    public bool IsGrounded => CheckGrounded();
+
+
+    /// <summary>
+    /// Returns true if there is ground below the player that is not a steep slope. Returns false if not.
+    /// For other scripts checking ground status, use the variable "IsGrounded" above
+    /// </summary>
+    /// <returns></returns>
+    private bool CheckGrounded() {
+        // do a raycast from player's feet in the shape of a hemisphere.
+        float y_angle_interval = 90f / groundCheckVerticalRays;
+        float x_angle_interval = 360f / groundCheckHorizontalRays;
+
+
+        for (int i = 0; i < groundCheckVerticalRays; i++) {
+            float y_angle = i * y_angle_interval;
+
+            // this gets the magnitude of the raycast based on angle, radius, and height of sphere
+            float raycastMagnitude = (float) (groundCheckRadius * groundCheckHeight /
+                Math.Sqrt(Math.Pow(groundCheckHeight, 2f) * Math.Pow(Mathf.Cos(Mathf.Deg2Rad * y_angle), 2f) 
+                + Math.Pow(groundCheckRadius, 2) * Math.Pow(Math.Sin(Mathf.Deg2Rad * y_angle), 2)));
+
+            for (int j = 0; j < groundCheckHorizontalRays; j++) { 
+                float x_angle = j * x_angle_interval;
+
+
+                Vector3 rayDirection = Quaternion.Euler(y_angle, x_angle, 0f) * Vector3.forward;
+
+                RaycastHit hit;
+
+                if (Physics.Raycast(groundCheckCenter.position, rayDirection, out hit, raycastMagnitude, groundLayer)) {
+                    float slopeDegrees = Vector3.Angle(hit.normal.normalized, Vector3.up);
+
+                    if (slopeDegrees <= groundCheckSlopeAngle) {
+                        if (DEBUG_groundCheck) {
+                            print("Slope of surface PLR is standing on: " + Math.Floor(slopeDegrees * 100f) / 100f);
+                            Debug.DrawRay(groundCheckCenter.position, rayDirection * raycastMagnitude, Color.green);
+                        }
+
+                        return true;
+                    } else if (DEBUG_groundCheck) {
+                        Debug.DrawRay(groundCheckCenter.position, rayDirection * raycastMagnitude, Color.red);
+                    }
+                } else if (DEBUG_groundCheck) {
+                    Debug.DrawRay(groundCheckCenter.position, rayDirection * raycastMagnitude, Color.yellow);
+                }
+            }
+        }
+
+        return false;
+    }
     
     private float lastTimeGrounded, lastTimeJumpPressed;
     
+
     public Vector3 LastGroundedPosition { get; private set; }
-    
+
     public bool IsFalling => playerID.rb.linearVelocity.y < -0.1f && !IsGrounded && !IsClimbing;
+
+    [Header("Other Checks")]
 
     public bool IsSprinting;
 
