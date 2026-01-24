@@ -25,6 +25,11 @@ public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
         Debug.Log(interactor.Inventory.AddItem(itemInfo, 1));
         Debug.Log($"Item {itemInfo.itemName} picked up by interactor.");
         OnItemPickUp?.Invoke(itemInfo, interactor);
-        Destroy(this.gameObject); // Remove the item from the scene
+
+        // check if the object has an empty parent holder, right now just applies to placeable items
+        if (gameObject.GetComponentInParent<PlaceableRoot>())
+            Destroy(gameObject.GetComponentInParent<PlaceableRoot>().gameObject);
+        else
+            Destroy(this.gameObject); // Remove the item from the scene
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // attach this script to an empty GameObject in the scene
 
@@ -113,7 +114,7 @@ public class ObjectPlacer : MonoBehaviour
                 SetInvalidPreviewState();
 
             // press f to place object
-            if (Input.GetKeyDown(KeyCode.F))
+            if (Input.GetMouseButtonDown(0))
             {
                 Debug.Log("Attempting to place object, Position: " + _currentPlacementPosition);
                 PlaceObject();
