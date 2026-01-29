@@ -8,9 +8,8 @@ namespace SIGGD.Mobs
     public class Movement : MonoBehaviour
     {
         [ShowInInspector] private float speed;
-
-        public float baseSpeed = 12f;
-        public float rotationSpeed = 25f;
+        [SerializeField] private float baseSpeed = 12f;
+        [SerializeField] private float rotationSpeed = 25f;
 
         private StaminaBehaviour sprint;
         public bool sprintAllowed;

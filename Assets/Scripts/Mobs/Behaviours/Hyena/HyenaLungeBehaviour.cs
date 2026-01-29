@@ -2,6 +2,7 @@ using Autodesk.Fbx;
 using SIGGD.Goap;
 using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using TMPro.Examples;
 using UnityEngine;
 using UnityEngine.AI;
@@ -25,10 +26,10 @@ namespace SIGGD.Mobs.Hyena
         public bool exit { get; set; }
 
         public float beginningAttackCooldown;
-        public float arcHeight = 2f;
-        public float maxLungeDistance = 20f;
-        public float maxLaunchSpeed = 22f;
-        public float minFlightTime = 0.30f;
+        [SerializeField] private float arcHeight = 2f;
+        [SerializeField] private float maxLungeDistance = 20f;
+        [SerializeField] private float maxLaunchSpeed = 22f;
+        [SerializeField] private float minFlightTime = 0.30f;
 
         private Vector3 lungeExitDir = Vector3.forward;
         private void Awake()

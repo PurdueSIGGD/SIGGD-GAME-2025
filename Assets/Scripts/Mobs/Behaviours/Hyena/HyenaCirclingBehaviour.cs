@@ -29,11 +29,11 @@ namespace SIGGD.Mobs.Hyena
         private float offset;
         private bool hasOffset;
 
-        private const float BaseRadius = 10f;
+        [SerializeField] private const float BaseRadius = 10f;
         private const float GoalSampleDist = 3.0f;
 
-        private const float AngularSpeedMin = 0.75f;
-        private const float AngularSpeedMax = 1.15f;
+        [SerializeField] private float AngularSpeedMin = 0.75f;
+        [SerializeField] private const float AngularSpeedMax = 1.15f;
 
         private const float EdgeBiasRange = 3.0f;
         private const float EdgeBiasStrength = 1.0f;
@@ -149,7 +149,7 @@ namespace SIGGD.Mobs.Hyena
             float sign = UnityEngine.Random.value > 0.5f ? 1f : -1f;
             angSpeed = sign * UnityEngine.Random.Range(AngularSpeedMin, AngularSpeedMax);
 
-            float duration = UnityEngine.Random.Range(7f, 15f);
+            float duration = UnityEngine.Random.Range(6f, 10f);
             float elapsed = 0f;
 
             float stuckTimer = 0f;

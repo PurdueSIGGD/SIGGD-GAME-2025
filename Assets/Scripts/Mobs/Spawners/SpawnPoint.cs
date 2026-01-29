@@ -8,7 +8,7 @@ public class SpawnPoint : MonoBehaviour
     bool spawned = false;
     private GameObject thingSpawned = null;
     [SerializeField] float spawnChance = 0.5f;
-    public Boundary boundary;
+    //public Boundary boundary;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -17,7 +17,7 @@ public class SpawnPoint : MonoBehaviour
             thingSpawned = Instantiate(mobPrefab, transform.position, Quaternion.identity);
             var agentData = thingSpawned.GetComponent<AgentData>();
             NavMeshQueryFilter navFilter = agentData.filter;
-            agentData.boundary = boundary;
+            agentData.boundary = gameObject.GetComponentInParent<Boundary>(false);
             NavMeshAgent navAgent = thingSpawned.GetComponent<NavMeshAgent>();
             if (!NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 15f, navFilter))
             {
