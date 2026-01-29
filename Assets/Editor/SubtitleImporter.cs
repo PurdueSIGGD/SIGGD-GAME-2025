@@ -203,7 +203,7 @@ public class SubtitleImporter : EditorWindow
         // now we loop through the dictionary and turn each entry into a real AudioLogObject
         foreach (var entry in audioLines)
         {
-            AudioLogObject asset = ScriptableObject.CreateInstance<AudioLogObject>();
+            AudioLogObject asset = CreateInstance<AudioLogObject>();
 
             asset.audioName = entry.Key;
             asset.subtitles = entry.Value.ToArray();
