@@ -1,4 +1,6 @@
+using UnityEditor.ShaderGraph;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class OnRenderConditionStrategy : IQuestConditionStrategy
 {
@@ -14,8 +16,17 @@ public class OnRenderConditionStrategy : IQuestConditionStrategy
     protected override void OnUpdate()
     {
         base.OnUpdate();
+        
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(playerCam);
-        found = GeometryUtility.TestPlanesAABB(planes, mesh.bounds);
+        int mask = ~LayerMask.GetMask("Player");
+        if (GeometryUtility.TestPlanesAABB(planes, mesh.bounds)) {
+            Debug.Log("<Color=red>Scanning" + playerCam.transform.position);
+            Debug.DrawLine(playerCam.transform.position, (mesh.transform.position - playerCam.transform.position).normalized, Color.red, 100f);
+            if (!Physics.Linecast(playerCam.transform.position, mesh.transform.position, mask))
+            {
+                found = true;
+            }
+        }
         Broadcast(Broadcaster);
     }
     public override bool Evaluate()
@@ -25,6 +36,6 @@ public class OnRenderConditionStrategy : IQuestConditionStrategy
 
     public override bool StopIfTriggered()
     {
-        return true;
+        return false;
     }
 }
