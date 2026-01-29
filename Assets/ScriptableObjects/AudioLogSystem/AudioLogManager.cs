@@ -29,7 +29,7 @@ public class AudioLogManager : MonoBehaviour
     {
         if (Instance != null)
         {
-            UnityEngine.Debug.Log("Error, too many AudioLogManagers in scene");
+            UnityEngine.Debug.LogWarning("Error, too many AudioLogManagers in scene");
             return;
         }
         Instance = this;
@@ -72,6 +72,8 @@ public class AudioLogManager : MonoBehaviour
         logSoundEvent.release();
     }
 
+    /*
+    // deprecated use the other PlayAudioLog
     public void PlayAudioLog(string audioName) // using a full game object because we need access to the rigidbody on the player
     {
         GameObject player = PlayerID.Instance.gameObject;
@@ -102,6 +104,7 @@ public class AudioLogManager : MonoBehaviour
             UnityEngine.Debug.Log("Audio name not in dictionarty: " + audioName);
         }
     }
+    */
 
     public void PlayAudioLog (string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
     {
@@ -118,36 +121,40 @@ public class AudioLogManager : MonoBehaviour
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
 
-            // now that isPlaying is true and logSoundEvent exists the 3d attributes will be getting updated and we can start the event
-            AudioManager.Instance.PlayOneShot(audioName, player.transform.position);
+            // get the sound event from our dictionary and store it
+            if (FMODEvents.Instance.soundEvents.TryGetValue(audioName, out EventReference eventRef))
+            {
+                logSoundEvent = RuntimeManager.CreateInstance(eventRef);
+            }
+
+            logSoundEvent.start();
 
             lastStarted = StartCoroutine(StartSubtitles(foundAudio));
-
-            //StartCoroutine(endAudioWhenDone());
         }
         else
         {
-            UnityEngine.Debug.Log("Audio name not in dictionarty: " + audioName);
+            UnityEngine.Debug.LogWarning("Audio name not in dictionarty: " + audioName);
         }
     }
 
-    //// this will end the audio naturally once the clip is done playing if its not interrupted
-    //private IEnumerator endAudioWhenDone()
-    //{
-    //    PLAYBACK_STATE state;
+    /*
+    // this will end the audio naturally once the clip is done playing if its not interrupted
+    private IEnumerator endAudioWhenDone()
+    {
+        PLAYBACK_STATE state;
 
-    //    // for out current testing this wont work because footsteps doesnt end it just loops but this should work for more real events that we'll implement
-    //    logSoundEvent.getPlaybackState(out state);
-    //    while (state != PLAYBACK_STATE.STOPPED)
-    //    {
-    //        yield return null;
-    //    }
+        // for out current testing this wont work because footsteps doesnt end it just loops but this should work for more real events that we'll implement
+        logSoundEvent.getPlaybackState(out state);
+        while (state != PLAYBACK_STATE.STOPPED)
+        {
+            yield return null;
+        }
 
-    //    isPlaying = false;
-    //    curPlayer = null;
-    //    logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-    //    logSoundEvent.release();
-    //}
+        isPlaying = false;
+        curPlayer = null;
+        logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+       logSoundEvent.release();
+    }*/
 
     // this can be used for interrupt
     public void StopCurrentAudio()
@@ -157,6 +164,7 @@ public class AudioLogManager : MonoBehaviour
         {
             return;
         }
+
 
         // run all the normal stop stuff including stopping audio
         logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
