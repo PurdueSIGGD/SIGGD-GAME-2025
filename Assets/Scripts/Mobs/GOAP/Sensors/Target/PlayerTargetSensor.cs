@@ -10,15 +10,16 @@ namespace SIGGD.Goap.Sensors
     {
         private Collider[] colliders = new Collider[1];
         private BaseStats stats;
-        private PerceptionManager perceptionManager;
         public override void Created()
         {
         }
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
-            perceptionManager = references.GetCachedComponent<PerceptionManager>();
-            if (perceptionManager.CanSeePlayer)
+            var perceptionManager = references.GetCachedComponent<PerceptionManager>();
+            if (perceptionManager == null) return null;
+
+            if (perceptionManager.CanSeePlayer && perceptionManager.PlayerTarget != null)
             {
                 return new TransformTarget(perceptionManager.PlayerTarget);
             }
