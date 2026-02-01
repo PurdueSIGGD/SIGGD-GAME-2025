@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GameStateManager : MonoBehaviour
+public class GameStateManager : Singleton<GameStateManager>
 {
     public enum GameState
     {
@@ -15,6 +15,12 @@ public class GameStateManager : MonoBehaviour
     public GameState getGameState()
     {
         return currentState;
+    }
+
+    public bool canSaveGame()
+    {
+        // If in danger, don't save
+        return currentState.Equals(GameState.PEACEFUL);
     }
 
     public bool setGameState(GameState state)

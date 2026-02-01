@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
 {
+    private const float AUTOSAVE_INTERVAL_SECONDS = 300.0f;
+
     public InventoryDataSaveModule inventoryModule = null;
     public bool saveInventory = true;
     
@@ -36,11 +38,23 @@ public class SaveManager : Singleton<SaveManager>
                                      questModule, gameProgressModule};
 
         Load();
+
+        // Start Autosaving - every five minutes
+        InvokeRepeating(nameof(Save), AUTOSAVE_INTERVAL_SECONDS, AUTOSAVE_INTERVAL_SECONDS);
+
+
     }
 
     private void OnApplicationQuit()
     {
-        Save();
+        if (GameStateManager.Instance.canSaveGame())
+        {
+            Save();
+        } else
+        {
+            Debug.Log("Application closed, but game was not saved as GameStateManager currentState  = " +
+                      GameStateManager.Instance.getGameState());
+        }
     }
 
     public bool Load()
@@ -55,10 +69,18 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Save()
     {
+        if (!GameStateManager.Instance.canSaveGame())
+        {
+            return false;
+        }
+
+        Debug.Log("SaveManager : Game was saved.");
+
         foreach (var module in modules)
         {
             module?.serialize();
         }
         return true;
     }
+
 }
