@@ -64,17 +64,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectiveKey: {fileID: 11400000, guid: ebfd24e7f56774aac8231c523cf4740c, type: 2}
   conditionStrategy:
-    rid: 8869038009947521110
+    rid: 3021712641844838483
   references:
     version: 2
     RefIds:
-    - rid: 8869038009947521110
-      type: {class: TimerConditionStrategy, ns: , asm: Assembly-CSharp}
+    - rid: 3021712641844838483
+      type: {class: SpawnLimitConditionStrategy, ns: , asm: Assembly-CSharp}
       data:
-        duration: 300
+        duration: 5
         timeScale: 1
         pauseOnComplete: 0
         singleUse: 0
+        tag: Apex
+        spawnLimit: 1
 --- !u!114 &7010719076726088822
 MonoBehaviour:
   m_ObjectHideFlags: 0
