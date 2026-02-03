@@ -18,12 +18,12 @@ public class OnRenderConditionStrategy : IQuestConditionStrategy
         base.OnUpdate();
         
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(playerCam);
-        int mask = ~LayerMask.GetMask("Player");
+        //int mask1 = LayerMask.GetMask("Player");
+        LayerMask mask = LayerMask.GetMask("Player");
         if (GeometryUtility.TestPlanesAABB(planes, mesh.bounds)) {
-            Debug.Log("<Color=red>Scanning" + playerCam.transform.position);
-            Debug.DrawLine(playerCam.transform.position, (mesh.transform.position - playerCam.transform.position).normalized, Color.red, 100f);
-            if (!Physics.Linecast(playerCam.transform.position, mesh.transform.position, mask))
+            if (!Physics.Linecast(playerCam.transform.position + playerCam.transform.forward, mesh.transform.position))
             {
+                
                 found = true;
             }
         }
@@ -36,6 +36,6 @@ public class OnRenderConditionStrategy : IQuestConditionStrategy
 
     public override bool StopIfTriggered()
     {
-        return false;
+        return true;
     }
 }
