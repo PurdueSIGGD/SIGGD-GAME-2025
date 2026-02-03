@@ -24,7 +24,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     [SerializeField] public string[] itemNames = new string[7];
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
-    private UISlot _tempUISlot; // temporary slot for holding item that is being moved
+    private int swapSelection = -1; // index of select item for swapping
     private InventoryInputActions inputActions;
 
     protected override void Awake()
@@ -180,6 +180,17 @@ public class Inventory : Singleton<Inventory>, IInventory
     public void ShowInventory(bool enabled)
     {
         inventoryCanvas.enabled = enabled;
+        if (swapSelection != -1) {
+            // Reset the color of buttons if necessary
+            inventory[swapSelection].SetColor(Color.white);
+            if (inventory[swapSelection].itemInfo && inventory[swapSelection].itemInfo.isIngredient) {
+                for (int i = 0; i < HotBarLength; i++)
+                {
+                    inventory[i].SetColor(Color.white);
+                }
+            }
+            swapSelection = -1;
+        }
     }
 
     public bool isEnabled() {
@@ -401,6 +412,74 @@ public class Inventory : Singleton<Inventory>, IInventory
         }
         return false;
     }
+
+    public void SwapSelect(int index) {
+        if (swapSelection == -1)
+        { // no item selected for swapping
+            swapSelection = index;
+            inventory[swapSelection].SetColor(Color.green);
+            if (inventory[swapSelection].itemInfo && inventory[swapSelection].itemInfo.isIngredient) {
+                // Make hotbar slots red to indicate that player cannot swap ingredient to hotbar
+                for (int i = 0; i < HotBarLength; i++) {
+                    inventory[i].SetColor(Color.red);
+                }
+            }
+            Debug.Log("Swap selected " + index);
+        }
+        else 
+        {
+            if (swapSelection == index)
+            { // deselect
+                inventory[swapSelection].SetColor(Color.white);
+                swapSelection = -1;
+                Debug.Log("Deselected " + index);
+            }
+            else 
+            {
+                if (inventory[swapSelection].itemInfo.isIngredient && index < HotBarLength) {
+                    Debug.Log("Cannot swap ingredient to hotbar");
+                    return; // cannot swap ingredient into hotbar
+                }
+                if (inventory[index].itemInfo && inventory[swapSelection].itemInfo &&
+                    inventory[index].itemInfo.itemName == inventory[swapSelection].itemInfo.itemName)
+                {   // try to stack on index if they are the same item
+                    if (inventory[index].count + inventory[swapSelection].count <= inventory[index].itemInfo.maxStackCount)
+                    {   // move all from swapSelection into index
+                        inventory[index].count += inventory[swapSelection].count;
+                        inventory[swapSelection].count = 0;
+                    }
+                    else 
+                    {   // stack as much as possible
+                        int moveAmount = inventory[index].itemInfo.maxStackCount - inventory[index].count;
+                        inventory[index].count += moveAmount;
+                        inventory[swapSelection].count -= moveAmount;
+                    }
+                    Debug.Log("Stacked " + swapSelection + " onto " + index);
+                }
+                else
+                {   // normal swapping
+                    int tempCount = inventory[index].count;
+                    ItemInfo tempItemInfo = inventory[index].itemInfo;
+                    inventory[index].count = inventory[swapSelection].count;
+                    inventory[index].itemInfo = inventory[swapSelection].itemInfo;
+                    inventory[swapSelection].count = tempCount;
+                    inventory[swapSelection].itemInfo = tempItemInfo;
+                    Debug.Log("Swapped " + index + " and " + swapSelection);
+                }
+
+                inventory[index].SetColor(Color.white);
+                inventory[swapSelection].SetColor(Color.white);
+                inventory[index].UpdateSlot();
+                inventory[swapSelection].UpdateSlot();
+
+                for (int i = 0; i < HotBarLength; i++)
+                {
+                    inventory[i].SetColor(Color.white);
+                }
+                swapSelection = -1;
+            }
+        }
+    }
     public void RemoveInventory()
     {
         //UISlot[] copy = new UISlot[inventory.Length];
@@ -456,16 +535,6 @@ public class Inventory : Singleton<Inventory>, IInventory
     }
 
     /// <summary>
-    /// Swaps item in tempSlot with chosen item
-    /// </summary>
-    /// <param name="index">Index of item to be moved</param>
-    public void Move(int index) {
-        UISlot temp = inventory[index];
-        inventory[index] = _tempUISlot;
-        _tempUISlot = temp;
-    }
-
-    /// <summary>
     /// Print out a string representation of player's inventory in console
     /// </summary>
     public void PrintInventory() {
@@ -498,14 +567,6 @@ public class Inventory : Singleton<Inventory>, IInventory
             }
         }
         return isEmpty;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns>Whether or not an item is being moved (stored in tempSlot)</returns>
-    public bool IsMovingItem() {
-        return _tempUISlot.count > 0;
     }
 
     /// <summary>
