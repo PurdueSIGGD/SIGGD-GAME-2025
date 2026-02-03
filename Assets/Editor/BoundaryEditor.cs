@@ -16,9 +16,12 @@ public class BoundaryEditor : Editor
 
     private void OnSceneGUI()
     {
-
+        foreach (var spawnPoint in boundary.GetComponentsInChildren<SpawnPoint>())
+        {
+            Handles.color = Color.green;
+            Handles.DrawSolidDisc(spawnPoint.transform.position, Vector3.up, HandleUtility.GetHandleSize(spawnPoint.transform.position) / 10);
+        }
         if (boundary == null) return;
-
         if (Application.isPlaying)
         {
             DrawOnly(Color.white);
