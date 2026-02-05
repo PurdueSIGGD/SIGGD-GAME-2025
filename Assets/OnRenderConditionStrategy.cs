@@ -4,28 +4,39 @@ using UnityEngine.UI;
 
 public class OnRenderConditionStrategy : IQuestConditionStrategy
 {
-    [SerializeField] MeshRenderer mesh;
     private Camera playerCam;
+    [Tooltip("Should be the transform of the parent GameObject")]
+    [SerializeField] Transform targetTransform;
+    [Tooltip("These layers will be ignored while checking for render")]
+    [SerializeField] LayerMask ignoreMask;
     private bool found = false;
+    Bounds boxBounds;
     protected override void OnInitialize()
     {
         base.OnInitialize();
+        boxBounds = new Bounds(targetTransform.position, Vector3.one);
         playerCam = PlayerID.Instance.cam.GetComponentInChildren<Camera>();
-        Debug.Log("set cam");
     }
     protected override void OnUpdate()
     {
         base.OnUpdate();
-        
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(playerCam);
-        //int mask1 = LayerMask.GetMask("Player");
-        LayerMask mask = LayerMask.GetMask("Player");
-        if (GeometryUtility.TestPlanesAABB(planes, mesh.bounds)) {
-            if (!Physics.Linecast(playerCam.transform.position + playerCam.transform.forward, mesh.transform.position))
+        if (GeometryUtility.TestPlanesAABB(planes, boxBounds)) {
+            if (ignoreMask == default)
             {
-                
-                found = true;
+                if (!Physics.Linecast(playerCam.transform.position, targetTransform.position))
+                {
+                    found = true;
+                }
             }
+            else
+            {
+                if (!Physics.Linecast(playerCam.transform.position, targetTransform.position, ~ignoreMask))
+                {
+                    found = true;
+                }
+            }
+            
         }
         Broadcast(Broadcaster);
     }
