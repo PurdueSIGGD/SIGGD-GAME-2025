@@ -1,5 +1,6 @@
 using System.Numerics;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 // place this script on an empty gameobject with the main camera as a child
 
@@ -152,7 +153,7 @@ public class CameraBobbing : MonoBehaviour
     }
 
     //Handles the screen shake physics
-    private ScreenShakePhysics(){
+    private void ScreenShakePhysics(){
         if (currentShakeIntensity > 0)
         {
             //Shake offset for X, Y, and Z variables
@@ -164,7 +165,7 @@ public class CameraBobbing : MonoBehaviour
             currentShakeIntensity = currentShakeIntensity - Time.deltaTime * shakeDecayRate;
         } else
         {
-            shakeOffset = Vector3.Zero;
+            shakeOffset = Vector3.zero;
             currentShakeIntensity = 0f;
         }
     }
