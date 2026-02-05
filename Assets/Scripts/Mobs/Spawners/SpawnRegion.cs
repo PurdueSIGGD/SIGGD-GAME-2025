@@ -12,7 +12,7 @@ public class SpawnRegion : MonoBehaviour
     }
     SpawnManager spawnManager;
     [SerializeField] List<SpawnRateData> spawnList;
-    [SerializeField] List<GameObject> spawnPoints;
+    [SerializeField] List<SpawnPoint> spawnPoints;
 
     [SerializeField] float spawnCooldown;
     [SerializeField] float proportionSpawnedMin;
@@ -48,9 +48,10 @@ public class SpawnRegion : MonoBehaviour
         spawnPoints.Clear();
         foreach (Transform child in transform)
         {
-            if (child.GetComponent<SpawnPoint>() != null)
+            SpawnPoint pt = child.GetComponent<SpawnPoint>();
+            if (pt != null)
             {
-                spawnPoints.Add(child.gameObject);
+                spawnPoints.Add(pt);
             }
         }
     }
@@ -83,7 +84,7 @@ public class SpawnRegion : MonoBehaviour
 
     void SpawnMobsInRegion()
     {
-        List<GameObject> spawnPointsCopy = new(spawnPoints);
+        List<SpawnPoint> spawnPointsCopy = new(spawnPoints);
         int numSpawn = UnityEngine.Random.Range(
             Mathf.FloorToInt(spawnPoints.Count * proportionSpawnedMin),
             Mathf.CeilToInt(spawnPoints.Count * proportionSpawnedMax)
@@ -93,10 +94,15 @@ public class SpawnRegion : MonoBehaviour
             if (spawnPointsCopy.Count == 0) break; // no more spawn points available
 
             int spawnPointIndex = UnityEngine.Random.Range(0, spawnPointsCopy.Count);
-            GameObject spawnPoint = spawnPointsCopy[spawnPointIndex];
+            SpawnPoint spawnPoint = spawnPointsCopy[spawnPointIndex];
             spawnPointsCopy.RemoveAt(spawnPointIndex);
 
-            GameObject mobPrefab = GetRandomMobPrefab();
+            GameObject mobPrefab;
+            if (spawnPoint.HasMobOverride())
+                mobPrefab = spawnPoint.GetMobOverride();
+            else
+                mobPrefab = GetRandomMobPrefab();
+
             spawnManager.SpawnMobNew(mobPrefab, spawnPoint.transform.position);
         }
     }
