@@ -8,12 +8,22 @@ namespace SIGGD.Goap
         // Function to move along the navmesh path for a certain distance (before reanalyzing the path as it still moves)
         public static Vector3 ERR_VECTOR = new Vector3(-9999999, -9999999, -999999);
 
+
         public static Vector3 ShiftTargetToNavMesh(Vector3 rawDest, float maxDistance = 2f)
         {
             NavMeshHit hit;
             if (NavMesh.SamplePosition(rawDest, out hit, maxDistance, NavMesh.AllAreas))
             {
-
+                return hit.position;
+            }
+            Debug.LogError("Could not set a valid move target position on the navmesh!");
+            return ERR_VECTOR;
+        }
+        public static Vector3 ShiftTargetToNavMesh(Vector3 rawDest, NavMeshQueryFilter navFilter, float maxDistance = 2f)
+        {
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(rawDest, out hit, maxDistance, navFilter))
+            {
                 return hit.position;
             }
             Debug.LogError("Could not set a valid move target position on the navmesh!");
@@ -21,16 +31,7 @@ namespace SIGGD.Goap
         }
 
         // Function to move along the navmesh path for a certain distance (before reanalyzing the path as it still moves)
-        public static void MovePartialPath(NavMeshAgent navMeshAgent, Vector3 _destination, float distanceToTravel)
-        {
-            Vector3 meshDest = ShiftTargetToNavMesh(_destination);
-            if (meshDest == ERR_VECTOR)
-            {
-                return;
-            }
-            navMeshAgent.SetDestination(meshDest);
-        }
-        public static Vector3 MovePartialPath2(NavMeshAgent navMeshAgent, Vector3 destination, float distanceToTravel) {
+        public static Vector3 MovePartialPath(NavMeshAgent navMeshAgent, Vector3 destination, float distanceToTravel) {
             NavMeshPath path = new NavMeshPath();
             if (!navMeshAgent.CalculatePath(destination, path) || path.corners.Length < 2)
             {

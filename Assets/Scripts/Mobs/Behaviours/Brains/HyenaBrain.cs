@@ -7,15 +7,14 @@ using CrashKonijn.Goap.Core;
 using SIGGD.Mobs.PackScripts;
 using SIGGD.Goap;
 using SIGGD.Mobs.Hyena;
+using Autodesk.Fbx;
 
 namespace SIGGD.Mobs
 {
     public class HyenaBrain : BaseAgentBrain
     {
-        private Movement Movement;
         private HungerBehaviour HungerBehaviour;
         private AgentHuntBehaviour HuntBehaviour;
-        private PackBehavior PackBehaviour;
         private HyenaAttackManager HyenaAttackManager;
         private PerceptionManager PerceptionManager;
         protected override void Awake()
@@ -24,10 +23,8 @@ namespace SIGGD.Mobs
             this.agent = this.GetComponent<AgentBehaviour>();
             this.provider = this.GetComponent<GoapActionProvider>();
             this.provider.AgentType = this.goap.GetAgentType(MobIds.hyena);
-            Movement = this.GetComponent<Movement>();
             HuntBehaviour = this.GetComponent<AgentHuntBehaviour>();
             HungerBehaviour = this.GetComponent<HungerBehaviour>();
-            PackBehaviour = this.GetComponent<PackBehavior>();
             HyenaAttackManager = this.GetComponent<HyenaAttackManager>();
             PerceptionManager = this.GetComponent<PerceptionManager>();
         }
@@ -38,7 +35,6 @@ namespace SIGGD.Mobs
         }
         private void Update()
         {
-          // if (this.provider.CurrentPlan == null) this.provider.RequestGoal<WanderGoal>();
         }
         protected override void OnEnable()
         {
@@ -52,41 +48,52 @@ namespace SIGGD.Mobs
         }
         protected override void OnActionEnd(IAction action)
         {
+            // If lunging then ignore selecting a new goal
             if (HyenaAttackManager.isLunging) return;
+
             if (this.provider.CurrentPlan == null)
             {
                 this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal>(true);
                 return;
-            } else if (HungerBehaviour.hunger > 50)
+            }
+
+            if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal && this.provider.CurrentPlan.Goal is not KillPlayerGoal)
             {
-                this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal>(false);
+                this.provider.RequestGoal<DontStarveGoal, WanderGoal>(true);
                 return;
-            }               
+            } 
         }
         protected override void OnNoActionFound(IGoalRequest request)
         {
-            Debug.Log($"{this.name}no action found");
+            // If hunting or lunging then ignore selecting a new goal
+
             if (HyenaAttackManager.isLunging) return;
-            Debug.Log($"{this.name}didnt make it through");
-            if (this.provider.CurrentPlan == null || HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
+            //if (HuntBehaviour.currentTargetOfHunt != null) return;
+            
+            if (this.provider.CurrentPlan == null)
+            {
+                this.provider.RequestGoal<DontStarveGoal, FollowAlphaGoal, WanderGoal, GrowPackGoal>(true);
+                return;
+            }
+            if (this.provider.CurrentPlan.Goal is KillPlayerGoal)
+            {
+                this.provider.RequestGoal<DontStarveGoal, FollowAlphaGoal, WanderGoal, GrowPackGoal>(true);
+                return;
+            }
+
+            if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
             {
                 this.provider.RequestGoal<DontStarveGoal, WanderGoal>(true);
-            } else
-            {
-                this.provider.RequestGoal<WanderGoal>(true);
             }
-            /*
-            else if (this.provider.CurrentPlan.Goal is not KillPlayerGoal)
+            else
             {
-                //AgentMoveBehaviour.DisableSprint();
-                //this.provider.RequestGoal<FollowAlphaGoal, StickTogetherGoal>(false);
-                this.provider.RequestGoal<WanderGoal>(true);
+                this.provider.RequestGoal<FollowAlphaGoal, GrowPackGoal, WanderGoal>(true);
             }
-            */
         }
         protected override void OnActionStart(IAction action)
         {
-            if (this.provider.CurrentPlan.Goal is KillPlayerGoal)
+            // Plays SFX when detecting prey
+            if (this.provider.CurrentPlan.Goal is KillPlayerGoal || this.provider.CurrentPlan.Action is KillPreyAction)
             {
                 if (AudioManager.Instance)
                 {
@@ -94,18 +101,13 @@ namespace SIGGD.Mobs
                 }
             }
         }
-        // action for smell for when prey detected 
+        // Action for smell for when prey detected 
         void PlayerDetected(Transform player)
         {
-            Debug.Log($"{this.name}has detected player and trying to attack");
-            if (this.provider.CurrentPlan == null || (this.provider.CurrentPlan.Goal is not KillPlayerGoal && HungerBehaviour.hunger < 150))
+            if (this.provider.CurrentPlan == null || (this.provider.CurrentPlan.Goal is not KillPlayerGoal))
             {
                 this.provider.RequestGoal<KillPlayerGoal>(true);
-            } else
-            {
-                this.provider.RequestGoal<KillPlayerGoal, DontStarveGoal>(true);
             }
-            this.provider.ResolveAction();
         }
     }
 }

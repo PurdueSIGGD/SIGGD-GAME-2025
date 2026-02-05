@@ -12,29 +12,21 @@ public class QuestDataSaveModule : ISaveModule
         if (!FileManager.Instance.FileExists(savePath)) 
             return false;
 
-        try
-        {
-            byte[] bytes = FileManager.Instance.ReadFile(savePath);
-            DeserializationContext context = new DeserializationContext();
-            context.IndexReferenceResolver = new UnityReferenceResolver();
-            QuestSaveData saveData = SerializationUtility.DeserializeValue<QuestSaveData>(bytes, DataFormat.Binary, context);
+        byte[] bytes = FileManager.Instance.ReadFile(savePath);
+        DeserializationContext context = new DeserializationContext();
+        context.IndexReferenceResolver = new UnityReferenceResolver();
+        QuestSaveData saveData = SerializationUtility.DeserializeValue<QuestSaveData>(bytes, DataFormat.Binary, context);
             
-            if (saveData == null)
-            {
-                Debug.LogError("Failed to deserialize quest save data");
-                return false;
-            }
-
-            // Convert from GUID-based format to runtime dictionary
-            var questInstances = saveData.ToQuestInstances(RegistryHub.Instance);
-            QuestManager.Instance.LoadSavedData(questInstances);
-            return true;
-        }
-        catch (Exception e)
+        if (saveData == null)
         {
-            Debug.LogError($"Error deserializing quest data: {e.Message}");
+            Debug.LogError("Failed to deserialize quest save data");
             return false;
         }
+
+        // Convert from GUID-based format to runtime dictionary
+        var questInstances = saveData.ToQuestInstances(RegistryHub.Instance);
+        QuestManager.Instance.LoadSavedData(questInstances);
+        return true;
     }
 
     public bool serialize()

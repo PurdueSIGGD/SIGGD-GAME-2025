@@ -10,8 +10,6 @@ namespace SIGGD.Mobs
 {
     public class AgentData : MonoBehaviour
     {
-
-        // Use this for initialization
         private EntityHealthManager healthManager;
         private StaminaBehaviour staminaBehaviour;
         private NavMeshAgent agent;
@@ -32,14 +30,11 @@ namespace SIGGD.Mobs
             agent = GetComponent<NavMeshAgent>();
             EntityHealthManager healthManager = GetComponent<EntityHealthManager>();
             StaminaBehaviour staminaBehaviour = GetComponent<StaminaBehaviour>();
-            
-            // Will implement later
-            //filter = new navmeshqueryfilter
-            //{
-            //   agenttypeid = agent.agenttypeid, 
-            //   areamask = navmesh.allareas
-            //};
-            
+            filter = new NavMeshQueryFilter
+            {
+                agentTypeID = agent.agentTypeID,
+                areaMask = NavMesh.AllAreas
+            };
         }
         void Start()
         {

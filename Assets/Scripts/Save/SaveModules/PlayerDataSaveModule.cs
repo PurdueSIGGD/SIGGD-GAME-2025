@@ -13,6 +13,11 @@ public class PlayerDataSaveModule : ISaveModule
 
     public bool deserialize()
     {
+        if (!PlayerID.Instance)
+        {
+            Debug.LogWarning("Cannot find Player when attempting to load player data");
+            return false;
+        }
         if (!player) player = PlayerID.Instance.gameObject;
         if (!playerCam) playerCam = PlayerID.Instance.cam;
         if (!health) health = PlayerID.Instance.playerHealth;
@@ -33,6 +38,11 @@ public class PlayerDataSaveModule : ISaveModule
 
     public bool serialize()
     {
+        if (!PlayerID.Instance)
+        {
+            Debug.LogWarning("Cannot find player when attempting to save player data");
+            return false;
+        }
         playerCam = PlayerID.Instance.cam;
         player = PlayerID.Instance.gameObject;
         hunger = PlayerID.Instance.playerHunger;

@@ -2,11 +2,23 @@ using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
 {
-    InventoryDataSaveModule inventoryModule;
-    PlayerDataSaveModule playerModule;
-    ScreenshotSaveModule screenshotModule;
-    QuestDataSaveModule questModule;
-    MobSceneDataSaveModule mobSceneDataSaveModule;
+    public InventoryDataSaveModule inventoryModule = null;
+    public bool saveInventory = true;
+
+    public PlayerDataSaveModule playerModule = null;
+    public bool savePlayer = true;
+
+    public ScreenshotSaveModule screenshotModule = null;
+    public bool saveScreenshot = true;
+
+    public QuestDataSaveModule questModule = null;
+    public bool saveQuests = true;
+
+    public GameProgressDataSaveModule gameProgressModule = null;
+    public bool saveGameProgress = true;
+
+    public MobSceneDataSaveModule mobSceneDataSaveModule = null;
+    public bool saveMobScene = true;
 
     private ISaveModule[] modules;
 
@@ -17,15 +29,16 @@ public class SaveManager : Singleton<SaveManager>
 
     void Start()
     {
-        inventoryModule = new InventoryDataSaveModule();
-        screenshotModule = new ScreenshotSaveModule();
-        playerModule = new PlayerDataSaveModule();
-        questModule = new QuestDataSaveModule();
-        mobSceneDataSaveModule = new MobSceneDataSaveModule(
+        if (saveInventory) inventoryModule = new InventoryDataSaveModule();
+        if (savePlayer) playerModule = new PlayerDataSaveModule();
+        if (saveScreenshot) screenshotModule = new ScreenshotSaveModule();
+        if (saveQuests) questModule = new QuestDataSaveModule();
+        if (saveGameProgress) gameProgressModule = new GameProgressDataSaveModule();
+        if (saveMobScene) mobSceneDataSaveModule = new MobSceneDataSaveModule(
             FindFirstObjectByType<MobCensus.MobCensusManager>()
         );
-
-        modules = new ISaveModule[] { inventoryModule, screenshotModule, playerModule, questModule, mobSceneDataSaveModule };
+        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
+                                     questModule, gameProgressModule, mobSceneDataSaveModule};
 
         Load();
     }
@@ -38,7 +51,9 @@ public class SaveManager : Singleton<SaveManager>
     public bool Load()
     {
         foreach (var module in modules)
-            module.deserialize();
+        {
+            module?.deserialize();
+        }
 
         return true;
     }
@@ -46,7 +61,9 @@ public class SaveManager : Singleton<SaveManager>
     public bool Save()
     {
         foreach (var module in modules)
-            module.serialize();
+        {
+            module?.serialize();
+        }
         return true;
     }
 }
