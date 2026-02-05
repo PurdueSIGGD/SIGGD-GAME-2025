@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyAnimator : MonoBehaviour
 {
-    //  is called once before the first execution of Update after the MonoBehaviour is created
+    // is called once before the first execution of Update after the MonoBehaviour is created
     [SerializeField]
     private LayerMask playerLayer;
     [SerializeField]
@@ -98,6 +98,7 @@ public class EnemyAnimator : MonoBehaviour
         EntityHealthManager hm = other.GetComponent<EntityHealthManager>();
         if (hm != null)
         {
+            if (other.CompareTag("Predator")) return;
             damageContext.victim = hm.gameObject;
             hm.TakeDamage(damageContext);
         }

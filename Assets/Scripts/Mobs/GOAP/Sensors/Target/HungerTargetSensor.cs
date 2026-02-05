@@ -25,7 +25,6 @@ namespace SIGGD.Goap.Sensors
         {
             var random = Random.insideUnitCircle * 10f;
             var position = agent.Transform.position + new Vector3(random.x, 0, random.y);
-
             return position;
 
         }

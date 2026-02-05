@@ -9,12 +9,13 @@ namespace SIGGD.Mobs.Hyena
 {
     public class HyenaAttackManager : MonoBehaviour
     {
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
         private EnemyAnimator animatorController;
         private HyenaLungeBehaviour HyenaLungeBehaviour;
         private HyenaCirclingBehaviour HyenaCirclingBehaviour;
         public bool isLunging;
         private TransformTarget currentTarget;
+        private Coroutine attackRoutine;
+
 
         private void Awake()
         {
@@ -24,7 +25,6 @@ namespace SIGGD.Mobs.Hyena
             HyenaCirclingBehaviour = GetComponent<HyenaCirclingBehaviour>();
         }
 
-        // Update is called once per frame
         void Update()
         {
 
@@ -32,17 +32,10 @@ namespace SIGGD.Mobs.Hyena
         public void StartAttackSequence(IMonoAgent agent)
         {
             if (isLunging) return;
-            try
-            {
-                StartCoroutine(AttackSequenceWrapper());
-            }
-            catch (Exception e)
-            {
-                isLunging = false;
-            }
+            attackRoutine = StartCoroutine(AttackSequenceWrapper());
 
         }
-
+         
         private IEnumerator AttackSequenceWrapper()
         {
             isLunging = true;
@@ -52,28 +45,64 @@ namespace SIGGD.Mobs.Hyena
             yield return StartCoroutine(AttackSequence());
 
             isLunging = false;
+            attackRoutine = null;
         }
+
+        /**
+         * Begins the attack sequence
+         * 1. Attempt circling
+         * 2. Lunging
+         * 3. Changing hyena model
+         * 4. Exiting the attack
+         */
         private IEnumerator AttackSequence()
         {
             StartCoroutine(HyenaCirclingBehaviour.CircleLoop(GetTarget));
             yield return new WaitUntil(() => HyenaCirclingBehaviour.finished || HyenaCirclingBehaviour.exit);
-            if (HyenaCirclingBehaviour.exit) yield break;
+            if (HyenaCirclingBehaviour.exit) yield break; // stop sequence
             StartCoroutine(HyenaLungeBehaviour.Lunge(GetTarget));
-            animatorController.SetLungeModel();
+            animatorController.SetLungeModel(); // set hyena model
             yield return new WaitUntil(() => HyenaLungeBehaviour.lungeArriving || HyenaLungeBehaviour.exit);
-            if (HyenaLungeBehaviour.exit) yield break;
+            if (HyenaLungeBehaviour.exit) yield break; // stop sequence
             Debug.Log($"{gameObject.name} has begun attack animation");
             animatorController.PlayAttack();
             yield return new WaitUntil(() => HyenaLungeBehaviour.finishedLunging || HyenaLungeBehaviour.exit);
-            if (HyenaLungeBehaviour.exit) yield break;
+            if (HyenaLungeBehaviour.exit) yield break; // stop sequence
             StartCoroutine(HyenaLungeBehaviour.ExitLunge(GetTarget));
-            yield return new WaitUntil(() => HyenaLungeBehaviour.finishedExiting || HyenaLungeBehaviour.exit);
-            if (HyenaLungeBehaviour.exit) yield break;
+            yield return new WaitUntil(() => HyenaLungeBehaviour.finishedExiting || HyenaLungeBehaviour.exit); 
+            if (HyenaLungeBehaviour.exit) yield break; // stop sequence
         }
+        /// <summary>
+        /// Sets the current target
+        /// </summary>
+        /// <param name="target"> The TransformTarget which is a reference </param>
         public void SetTarget(TransformTarget target)
         {
             this.currentTarget = target;
         }
-        public Vector3 GetTarget() => this.currentTarget != null ? this.currentTarget.Position : new Vector3(0,0,0);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns> Returns Vector3.zero if currentTarget is null otherwise return the current target's position </returns>
+        /// 
+
+        public Vector3 GetTarget() => this.currentTarget != null ? this.currentTarget.Position : Vector3.zero;
+        public void CancelAttack()
+        {
+            if (Vector3.Distance(GetTarget(), transform.position) < 20f) return;
+            if (attackRoutine != null)
+            {
+                StopCoroutine(attackRoutine);
+                attackRoutine = null;
+            }
+
+            if (HyenaCirclingBehaviour != null)
+                HyenaCirclingBehaviour.ExitBehaviour();
+
+            if (HyenaLungeBehaviour != null)
+                HyenaLungeBehaviour.ExitBehaviour(); // and/or add an ExitBehaviour there too
+            isLunging = false;
+            currentTarget = null;
+        }
     }
 }
