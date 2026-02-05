@@ -1,3 +1,4 @@
+using System.Numerics;
 using UnityEngine;
 
 // place this script on an empty gameobject with the main camera as a child
@@ -45,6 +46,11 @@ public class CameraBobbing : MonoBehaviour
     [Header("//// Airborne Attributes ////")]
     [Tooltip("If the rigid body's vertical speed is greater than this, then bobbing will no longer apply")]
     [SerializeField] private float airborneSpeedCutoff = 0.2f;
+
+    [Header("Screen Shake Settings")]
+    [SerializeField] private float shakeDecayRate = 1.0f;
+    private float currentShakeIntensity = 0f;
+    private Vector3 shakeOffset;
     #endregion
 
     // important variables
@@ -66,6 +72,7 @@ public class CameraBobbing : MonoBehaviour
         } else {
             targetBobPositionX = targetBobPositionY = 0;
         }
+        ScreenShakePhysics();
         UpdateBobPosition();
     }
     #endregion
@@ -73,7 +80,7 @@ public class CameraBobbing : MonoBehaviour
     #region Bobbing Methods
     // UpdateBobPosition() interpolates transform's local position to match
     private void UpdateBobPosition() {
-        Vector3 targetBobPosition = new Vector3(targetBobPositionX, targetBobPositionY, 0f);
+        Vector3 targetBobPosition = new Vector3(targetBobPositionX, targetBobPositionY, 0f) + shakeOffset;
         transform.localPosition = Vector3.Lerp(transform.localPosition, targetBobPosition, Time.deltaTime * bobUpdateSpeed);
     }
 
@@ -117,6 +124,51 @@ public class CameraBobbing : MonoBehaviour
             bobTimer = 0f;
         }
     }
+    #endregion
+
+    #region Camera Shake Methods
+    //Change the current shake intensity
+    public void ApplyShake(float intensity)
+    {
+        currentShakeIntensity = intensity;
+    }
+
+    //Triggers a small screen shake
+    public void TriggerSmallShake()
+    {
+        ApplyShake(0.05f);
+    }
+    
+    //Triggers a medium screen shake
+    public void TriggerMediumShake()
+    {
+        ApplyShake(0.15f);
+    }
+    
+    //Triggers a large screen shake
+    public void TriggerLargeShake()
+    {
+        ApplyShake(0.4f);
+    }
+
+    //Handles the screen shake physics
+    private ScreenShakePhysics(){
+        if (currentShakeIntensity > 0)
+        {
+            //Shake offset for X, Y, and Z variables
+            shakeOffset = new Vector3 (
+                Random.Range(-1f, 1f) * currentShakeIntensity,
+                Random.Range(-1f, 1f) * currentShakeIntensity,
+                0f
+            );
+            currentShakeIntensity = currentShakeIntensity - Time.deltaTime * shakeDecayRate;
+        } else
+        {
+            shakeOffset = Vector3.Zero;
+            currentShakeIntensity = 0f;
+        }
+    }
+
     #endregion
 
     #region Helper Functions
