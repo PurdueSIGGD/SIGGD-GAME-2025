@@ -16,7 +16,7 @@ namespace SIGGD.Goap
 
         public override bool IsValid(IActionReceiver agent, CommonData data)
         {
-            return true;
+            return !data.pm.CanSeePlayer;
         }
         public override void Start(IMonoAgent agent, CommonData data)
         {
