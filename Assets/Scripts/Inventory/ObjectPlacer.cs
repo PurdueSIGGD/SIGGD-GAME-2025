@@ -32,6 +32,7 @@ public class ObjectPlacer : MonoBehaviour
     private Vector3 _currentPlacementPosition = Vector3.zero;
     private bool _inPlacementMode = false;
     private bool _validPreviewState = false;
+    private bool _raycastHit = false;
     [HideInInspector] public bool startPlaceMode = false;
 
     private ItemInfo itemInfo;
@@ -104,11 +105,10 @@ public class ObjectPlacer : MonoBehaviour
             UpdateCurrentPlacementPosition();
 
             // update preview object material based on validity
-            if (CanPlaceObject())
+            if (CanPlaceObject() && _raycastHit)
                 SetValidPreviewState();
             else
                 SetInvalidPreviewState();
-
             // press f to place object
             if (Input.GetKeyDown(KeyCode.F))
             {
@@ -133,10 +133,17 @@ public class ObjectPlacer : MonoBehaviour
         // Start position is in front of the player at a set distance, with a vertical offset
         Vector3 startPos = playerCamera.transform.position + (cameraForward * objectDistanceFromPlayer);
         startPos.y += raycastStartVerticalOffset;
-
-        if (Physics.Raycast(startPos, Vector3.down, out RaycastHit hitInfo, raycastDistance, placementSurfaceLayerMask))
+        Debug.DrawRay(startPos, Vector3.down, Color.green);
+        _raycastHit = Physics.Raycast(startPos, Vector3.down, out RaycastHit hitInfo, raycastDistance, placementSurfaceLayerMask);
+        if (_raycastHit)
         {
             _currentPlacementPosition = hitInfo.point;
+            Debug.Log("Yes Raycast; " + _currentPlacementPosition);
+            // TODO: Trap disappears from scene as well after replaying
+        }
+        else
+        {
+            Debug.Log("No Raycast");
         }
 
         // Update preview object position and rotation
