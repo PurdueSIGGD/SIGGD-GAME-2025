@@ -30,6 +30,7 @@ public class ManageRespawn : MonoBehaviour
         }
 
         player.transform.position = respawnPoint;
+        ObjectPlacer.Instance.ExitPlacementMode();
         health.ResetHealth();
         hunger.ResetHunger();
     }
