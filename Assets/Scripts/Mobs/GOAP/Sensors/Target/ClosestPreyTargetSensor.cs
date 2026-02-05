@@ -18,6 +18,8 @@ namespace SIGGD.Goap.Sensors
         {
             var perceptionManager = references.GetCachedComponent<PerceptionManager>();
             var AgentHuntBehaviour = references.GetCachedComponent<AgentHuntBehaviour>();
+            if (perceptionManager == null || AgentHuntBehaviour == null) return null;
+
             if (AgentHuntBehaviour.currentTargetOfHunt != null && AgentHuntBehaviour.currentTargetOfHunt.activeInHierarchy)
                 return new TransformTarget(AgentHuntBehaviour.currentTargetOfHunt.transform);
             var closestPrey = Closest(perceptionManager.preyTargets, agent.Transform.position);
@@ -36,6 +38,7 @@ namespace SIGGD.Goap.Sensors
 
             foreach (var item in list)
             {
+                if (item == null) continue;
                 var distance = Vector3.Distance(item.transform.position, position);
 
                 if (!(distance < closestDistance))
