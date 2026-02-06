@@ -180,10 +180,23 @@ public class Inventory : Singleton<Inventory>, IInventory
     public void ShowInventory(bool enabled)
     {
         inventoryCanvas.enabled = enabled;
-        if (swapSelection != -1) {
+        PlayerInput.Instance.DebugToggleInput(enabled);
+        if (inventoryCanvas.enabled)
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = false;
+        }
+        if (swapSelection != -1)
+        {
             // Reset the color of buttons if necessary
             inventory[swapSelection].SetColor(Color.white);
-            if (inventory[swapSelection].itemInfo && inventory[swapSelection].itemInfo.isIngredient) {
+            if (inventory[swapSelection].itemInfo && inventory[swapSelection].itemInfo.isIngredient)
+            {
                 for (int i = 0; i < HotBarLength; i++)
                 {
                     inventory[i].SetColor(Color.white);
