@@ -6,12 +6,10 @@ namespace SIGGD.Mobs
     public class LeaveCarcassBehaviour : MonoBehaviour
     {
 
-        //private EntityHealthManager healthManager;
         [SerializeField]
         private GameObject carcassPrefab;
         private void Awake()
         {
-            //healthManager = GetComponent<EntityHealthManager>();
         }
         private void OnEnable()
         {
