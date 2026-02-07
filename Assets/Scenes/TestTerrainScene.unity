@@ -246,7 +246,6 @@ GameObject:
   m_Component:
   - component: {fileID: 16042060}
   - component: {fileID: 16042062}
-  - component: {fileID: 16042061}
   m_Layer: 0
   m_Name: HyenaSpawnP (9)
   m_TagString: Untagged
@@ -269,27 +268,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &16042061
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 16042059}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &16042062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,8 +280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 0.5
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &17395272
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -598,7 +575,6 @@ GameObject:
   m_Component:
   - component: {fileID: 39762646}
   - component: {fileID: 39762648}
-  - component: {fileID: 39762647}
   m_Layer: 0
   m_Name: PreySpawnP (6)
   m_TagString: Untagged
@@ -621,27 +597,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &39762647
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 39762645}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &39762648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -654,8 +609,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &44839266
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1302,7 +1256,6 @@ GameObject:
   m_Component:
   - component: {fileID: 111816797}
   - component: {fileID: 111816799}
-  - component: {fileID: 111816798}
   m_Layer: 0
   m_Name: PreySpawnP (8)
   m_TagString: Untagged
@@ -1325,27 +1278,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &111816798
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 111816796}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &111816799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1358,8 +1290,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &119596358
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1928,6 +1859,10 @@ PrefabInstance:
     - target: {fileID: 5256504068989686436, guid: 022b2ed2adba535418687296653b6df1, type: 3}
       propertyPath: m_Name
       value: AppleBush
+      objectReference: {fileID: 0}
+    - target: {fileID: 5256504068989686436, guid: 022b2ed2adba535418687296653b6df1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6631996026966806562, guid: 022b2ed2adba535418687296653b6df1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2652,7 +2587,6 @@ GameObject:
   m_Component:
   - component: {fileID: 162067460}
   - component: {fileID: 162067462}
-  - component: {fileID: 162067461}
   m_Layer: 0
   m_Name: PreySpawnP (7)
   m_TagString: Untagged
@@ -2675,27 +2609,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &162067461
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 162067459}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &162067462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2708,8 +2621,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1 &162715437
 GameObject:
   m_ObjectHideFlags: 0
@@ -2720,7 +2632,6 @@ GameObject:
   m_Component:
   - component: {fileID: 162715438}
   - component: {fileID: 162715440}
-  - component: {fileID: 162715439}
   m_Layer: 0
   m_Name: HyenaSpawnP (4)
   m_TagString: Untagged
@@ -2743,27 +2654,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &162715439
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 162715437}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &162715440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2776,8 +2666,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 0.5
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &168527069
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5256,7 +5145,6 @@ GameObject:
   m_Component:
   - component: {fileID: 328545292}
   - component: {fileID: 328545294}
-  - component: {fileID: 328545293}
   m_Layer: 0
   m_Name: PreySpawnP (17)
   m_TagString: Untagged
@@ -5279,27 +5167,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &328545293
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 328545291}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &328545294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5312,8 +5179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &331337089
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6649,7 +6515,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3397956530449237605, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 4934195
+      value: 7009890.5
       objectReference: {fileID: 0}
     - target: {fileID: 4696392301619895344, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
       propertyPath: m_Name
@@ -7190,6 +7056,51 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 973836219005971061, guid: 100be88d6b60bf24d88734097bfeafb4, type: 3}
   m_PrefabInstance: {fileID: 441117974}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &452221909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 452221911}
+  - component: {fileID: 452221910}
+  m_Layer: 0
+  m_Name: SpawnManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &452221910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452221909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57014b30f3161e941b105ab4060f85a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boundaryObject: {fileID: 1882437515}
+--- !u!4 &452221911
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452221909}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 313.98523, y: -8.90667, z: -159.83249}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &453540935
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7694,7 +7605,6 @@ GameObject:
   m_Component:
   - component: {fileID: 513435676}
   - component: {fileID: 513435678}
-  - component: {fileID: 513435677}
   m_Layer: 0
   m_Name: PreySpawnP (13)
   m_TagString: Untagged
@@ -7717,27 +7627,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &513435677
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 513435675}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &513435678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7750,8 +7639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &517926451
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8510,7 +8398,6 @@ GameObject:
   m_Component:
   - component: {fileID: 543871355}
   - component: {fileID: 543871357}
-  - component: {fileID: 543871356}
   m_Layer: 0
   m_Name: HyenaSpawnP (2)
   m_TagString: Untagged
@@ -8533,27 +8420,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &543871356
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 543871354}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &543871357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8566,8 +8432,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 0.5
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &558087218
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8652,6 +8517,7 @@ GameObject:
   m_Component:
   - component: {fileID: 558525912}
   - component: {fileID: 558525913}
+  - component: {fileID: 558525914}
   m_Layer: 0
   m_Name: Group2
   m_TagString: Untagged
@@ -8717,6 +8583,22 @@ MonoBehaviour:
   handleSize: 0.15
   isBaked: 1
   maxDist: 163.17235
+--- !u!114 &558525914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 558525911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 125b0c85a477a1c499fc48a819a792c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnPoints: []
+  spawnCooldown: 0
+  proportionSpawnedMin: 0
+  proportionSpawnedMax: 0
 --- !u!1001 &565594521
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10070,7 +9952,6 @@ GameObject:
   m_Component:
   - component: {fileID: 634421979}
   - component: {fileID: 634421981}
-  - component: {fileID: 634421980}
   m_Layer: 0
   m_Name: PreySpawnP
   m_TagString: Untagged
@@ -10093,27 +9974,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1701920222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &634421980
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 634421978}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &634421981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10126,8 +9986,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1 &637171310
 GameObject:
   m_ObjectHideFlags: 0
@@ -10138,7 +9997,6 @@ GameObject:
   m_Component:
   - component: {fileID: 637171311}
   - component: {fileID: 637171313}
-  - component: {fileID: 637171312}
   m_Layer: 0
   m_Name: HyenaSpawnP (8)
   m_TagString: Untagged
@@ -10161,27 +10019,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &637171312
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 637171310}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &637171313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10194,8 +10031,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 0.5
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &640527197
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10972,7 +10808,6 @@ GameObject:
   m_Component:
   - component: {fileID: 709745426}
   - component: {fileID: 709745428}
-  - component: {fileID: 709745427}
   m_Layer: 0
   m_Name: PreySpawnP (11)
   m_TagString: Untagged
@@ -10995,27 +10830,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &709745427
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 709745425}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &709745428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11028,8 +10842,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &713586156
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12468,7 +12281,6 @@ GameObject:
   m_Component:
   - component: {fileID: 799207617}
   - component: {fileID: 799207619}
-  - component: {fileID: 799207618}
   m_Layer: 0
   m_Name: HyenaSpawnP (3)
   m_TagString: Untagged
@@ -12491,27 +12303,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &799207618
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 799207616}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &799207619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12524,8 +12315,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 0.5
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &801927182
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12820,7 +12610,6 @@ GameObject:
   m_Component:
   - component: {fileID: 818204096}
   - component: {fileID: 818204098}
-  - component: {fileID: 818204097}
   m_Layer: 0
   m_Name: PreySpawnP (14)
   m_TagString: Untagged
@@ -12843,27 +12632,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &818204097
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 818204095}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &818204098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12876,8 +12644,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &819305401
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13924,7 +13691,6 @@ GameObject:
   m_Component:
   - component: {fileID: 892392373}
   - component: {fileID: 892392375}
-  - component: {fileID: 892392374}
   m_Layer: 0
   m_Name: PreySpawnP (10)
   m_TagString: Untagged
@@ -13947,27 +13713,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &892392374
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 892392372}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &892392375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13980,8 +13725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &904972190
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15028,7 +14772,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1014121171}
   - component: {fileID: 1014121173}
-  - component: {fileID: 1014121172}
   m_Layer: 0
   m_Name: HyenaSpawnP (13)
   m_TagString: Untagged
@@ -15051,27 +14794,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1014121172
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1014121170}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1014121173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15084,8 +14806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1018794503
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15960,7 +15681,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1090320824}
   - component: {fileID: 1090320826}
-  - component: {fileID: 1090320825}
   m_Layer: 0
   m_Name: PreySpawnP (4)
   m_TagString: Untagged
@@ -15983,27 +15703,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1701920222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1090320825
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1090320823}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1090320826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16016,8 +15715,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1093094855
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16423,7 +16121,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1139514396}
   - component: {fileID: 1139514398}
-  - component: {fileID: 1139514397}
   m_Layer: 0
   m_Name: HyenaSpawnP (7)
   m_TagString: Untagged
@@ -16446,27 +16143,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1139514397
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1139514395}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1139514398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16479,8 +16155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 0.5
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1148393700
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16679,7 +16354,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1153442843}
   - component: {fileID: 1153442845}
-  - component: {fileID: 1153442844}
   m_Layer: 0
   m_Name: HyenaSpawnP (11)
   m_TagString: Untagged
@@ -16702,27 +16376,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1153442844
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1153442842}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1153442845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16735,8 +16388,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1153850009
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17044,6 +16696,10 @@ PrefabInstance:
     - target: {fileID: 5256504068989686436, guid: 022b2ed2adba535418687296653b6df1, type: 3}
       propertyPath: m_Name
       value: AppleBush (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5256504068989686436, guid: 022b2ed2adba535418687296653b6df1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6631996026966806562, guid: 022b2ed2adba535418687296653b6df1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -17753,7 +17409,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1219627707}
   - component: {fileID: 1219627709}
-  - component: {fileID: 1219627708}
   m_Layer: 0
   m_Name: HyenaSpawnP (1)
   m_TagString: Untagged
@@ -17776,27 +17431,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1219627708
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219627706}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1219627709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17809,8 +17443,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 0.5
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1228180826
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18253,7 +17886,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1252161017}
   - component: {fileID: 1252161019}
-  - component: {fileID: 1252161018}
   m_Layer: 0
   m_Name: PreySpawnP (16)
   m_TagString: Untagged
@@ -18276,27 +17908,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1252161018
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252161016}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1252161019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18309,8 +17920,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1258613287
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19923,7 +19533,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1340195018}
   - component: {fileID: 1340195019}
-  - component: {fileID: 1340195020}
   m_Layer: 0
   m_Name: HyenaSpawnP
   m_TagString: Untagged
@@ -19958,29 +19567,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 0.5
---- !u!135 &1340195020
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1340195017}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1342897358
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21675,6 +21262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1437918070}
   - component: {fileID: 1437918071}
+  - component: {fileID: 1437918072}
   m_Layer: 0
   m_Name: Group1
   m_TagString: Untagged
@@ -21737,6 +21325,22 @@ MonoBehaviour:
   handleSize: 0.15
   isBaked: 1
   maxDist: 111.4382
+--- !u!114 &1437918072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1437918069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 125b0c85a477a1c499fc48a819a792c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnPoints: []
+  spawnCooldown: 0
+  proportionSpawnedMin: 0
+  proportionSpawnedMax: 0
 --- !u!1001 &1438677215
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21866,7 +21470,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1459581054}
   - component: {fileID: 1459581056}
-  - component: {fileID: 1459581055}
   m_Layer: 0
   m_Name: PreySpawnP (2)
   m_TagString: Untagged
@@ -21889,27 +21492,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1459581055
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1459581053}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1459581056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21922,8 +21504,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1462113586
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22287,7 +21868,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1482071144}
   - component: {fileID: 1482071146}
-  - component: {fileID: 1482071145}
   m_Layer: 0
   m_Name: PreySpawnP (15)
   m_TagString: Untagged
@@ -22310,27 +21890,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1482071145
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1482071143}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1482071146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22343,8 +21902,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1486180013
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22800,6 +22358,10 @@ PrefabInstance:
     - target: {fileID: 5256504068989686436, guid: 022b2ed2adba535418687296653b6df1, type: 3}
       propertyPath: m_Name
       value: AppleBush (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5256504068989686436, guid: 022b2ed2adba535418687296653b6df1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6631996026966806562, guid: 022b2ed2adba535418687296653b6df1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -23448,7 +23010,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1603785816}
   - component: {fileID: 1603785818}
-  - component: {fileID: 1603785817}
   m_Layer: 0
   m_Name: PreySpawnP (5)
   m_TagString: Untagged
@@ -23471,27 +23032,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1701920222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1603785817
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1603785815}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1603785818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23504,8 +23044,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1608947738
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23726,7 +23265,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1614460229}
   - component: {fileID: 1614460231}
-  - component: {fileID: 1614460230}
   m_Layer: 0
   m_Name: PreySpawnP (12)
   m_TagString: Untagged
@@ -23749,27 +23287,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1614460230
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1614460228}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1614460231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23782,8 +23299,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1 &1619297044
 GameObject:
   m_ObjectHideFlags: 0
@@ -23812,8 +23328,7 @@ Transform:
   m_LocalPosition: {x: 312.3, y: -14.138923, z: -219.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1744789938}
+  m_Children: []
   m_Father: {fileID: 9945323}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1619608751
@@ -25139,6 +24654,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1701920222}
   - component: {fileID: 1701920223}
+  - component: {fileID: 1701920224}
   m_Layer: 0
   m_Name: Group3
   m_TagString: Untagged
@@ -25188,6 +24704,22 @@ MonoBehaviour:
   handleSize: 0.15
   isBaked: 1
   maxDist: 111.92494
+--- !u!114 &1701920224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1701920221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 125b0c85a477a1c499fc48a819a792c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnPoints: []
+  spawnCooldown: 0
+  proportionSpawnedMin: 0
+  proportionSpawnedMax: 0
 --- !u!1001 &1704403360
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25647,7 +25179,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1728111037}
   - component: {fileID: 1728111039}
-  - component: {fileID: 1728111038}
   m_Layer: 0
   m_Name: HyenaSpawnP (10)
   m_TagString: Untagged
@@ -25670,27 +25201,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1728111038
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1728111036}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1728111039
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25703,8 +25213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 0.5
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1729293169
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26087,15 +25596,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1744789937}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 312.3, y: -14.138923, z: -219.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1437918070}
   - {fileID: 558525912}
   - {fileID: 1701920222}
-  m_Father: {fileID: 1619297045}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1747337996
 PrefabInstance:
@@ -26477,7 +25986,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1767884476}
   - component: {fileID: 1767884478}
-  - component: {fileID: 1767884477}
   m_Layer: 0
   m_Name: HyenaSpawnP (5)
   m_TagString: Untagged
@@ -26500,27 +26008,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1767884477
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1767884475}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1767884478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26533,8 +26020,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 0.5
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1773230298
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28831,7 +28317,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1910849528}
   - component: {fileID: 1910849530}
-  - component: {fileID: 1910849529}
   m_Layer: 0
   m_Name: HyenaSpawnP (12)
   m_TagString: Untagged
@@ -28854,27 +28339,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1910849529
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1910849527}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1910849530
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28887,8 +28351,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1919704318
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29035,7 +28498,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1928353943}
   - component: {fileID: 1928353945}
-  - component: {fileID: 1928353944}
   m_Layer: 0
   m_Name: PreySpawnP (3)
   m_TagString: Untagged
@@ -29058,27 +28520,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1928353944
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1928353942}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1928353945
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29091,8 +28532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1934256354
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30753,7 +30193,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1993049918}
   - component: {fileID: 1993049920}
-  - component: {fileID: 1993049919}
   m_Layer: 0
   m_Name: HyenaSpawnP (6)
   m_TagString: Untagged
@@ -30776,27 +30215,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1437918070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1993049919
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993049917}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 75
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1993049920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30809,8 +30227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
-  spawnChance: 0.5
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &1994103547
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31561,7 +30978,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2031347452}
   - component: {fileID: 2031347454}
-  - component: {fileID: 2031347453}
   m_Layer: 0
   m_Name: PreySpawnP (9)
   m_TagString: Untagged
@@ -31584,27 +31000,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &2031347453
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2031347451}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2031347454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31617,8 +31012,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &2033270817
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31699,8 +31093,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57014b30f3161e941b105ab4060f85a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawners:
-  - {fileID: 11400000, guid: 80b5507a0751de54498a3869712a0fad, type: 2}
   boundaryObject: {fileID: 0}
 --- !u!4 &2033270820 stripped
 Transform:
@@ -31939,7 +31331,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2043810131}
   - component: {fileID: 2043810133}
-  - component: {fileID: 2043810132}
   m_Layer: 0
   m_Name: PreySpawnP (1)
   m_TagString: Untagged
@@ -31962,27 +31353,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 558525912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &2043810132
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2043810130}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 150
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2043810133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31995,8 +31365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa503d1b2ebb6241a4d21749b22d444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobPrefab: {fileID: 5495394095841355305, guid: 6a1c87ada712ba84ba8d555e41d680bb, type: 3}
-  spawnChance: 1
+  optionalMobOverride: {fileID: 0}
 --- !u!1001 &2064403283
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -33276,3 +32645,5 @@ SceneRoots:
   - {fileID: 1368892327}
   - {fileID: 1454357086}
   - {fileID: 1882437517}
+  - {fileID: 1744789938}
+  - {fileID: 452221911}
