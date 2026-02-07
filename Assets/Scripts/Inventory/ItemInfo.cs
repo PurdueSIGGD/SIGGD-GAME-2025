@@ -25,6 +25,7 @@ public class ItemInfo : ScriptableObject
         StunTrap,
         Apple,
         CaptureOrb,
+        KeyCard,
         Empty
     };
 
