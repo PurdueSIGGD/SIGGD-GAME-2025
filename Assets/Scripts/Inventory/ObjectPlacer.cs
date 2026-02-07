@@ -138,12 +138,7 @@ public class ObjectPlacer : MonoBehaviour
         if (_raycastHit)
         {
             _currentPlacementPosition = hitInfo.point;
-            Debug.Log("Yes Raycast; " + _currentPlacementPosition);
             // TODO: Trap disappears from scene as well after replaying
-        }
-        else
-        {
-            Debug.Log("No Raycast");
         }
 
         // Update preview object position and rotation
