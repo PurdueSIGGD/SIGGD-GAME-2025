@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
@@ -15,8 +16,15 @@ public class SpawnRegion : MonoBehaviour
     [SerializeField] List<SpawnPoint> spawnPoints;
 
     [SerializeField] float spawnCooldown;
-    [SerializeField] float proportionSpawnedMin;
-    [SerializeField] float proportionSpawnedMax;
+    [SerializeField] float proportionSpawnedMin; // minimum proportion of spawnpoints to spawn at (see spawn mobs function implementation)
+    [SerializeField] float proportionSpawnedMax; // max prop of spawnpoints to spawn at
+
+    [Header("SpawnRegionSphereSettings")]
+    [SerializeField] float spawnRegionCheckIntervalSec;
+    float spawnRegionCheckTimer;
+    [SerializeField] Transform centerPosition;
+    [SerializeField] float radius;
+    [SerializeField] LayerMask relevantLayers; // MUST AT LEAST INCLUDE PLAYER!!!!
 
     float spawnCooldownTimer;
 
@@ -32,6 +40,12 @@ public class SpawnRegion : MonoBehaviour
 
     void Update()
     {
+        if (spawnRegionCheckTimer <= 0)
+        {
+            CheckSpawnRegion();
+            spawnRegionCheckTimer = spawnRegionCheckIntervalSec;
+        }
+
         if (spawnTriggered == true && playerInRegion == false)
         {
             spawnCooldownTimer -= Time.deltaTime;
@@ -42,7 +56,6 @@ public class SpawnRegion : MonoBehaviour
             }
         }
     }
-
     void ScanChildrenForSpawnPoints()
     {
         spawnPoints.Clear();
@@ -55,33 +68,39 @@ public class SpawnRegion : MonoBehaviour
             }
         }
     }
-
-    private void OnTriggerEnter(Collider other)
+    public void CheckSpawnRegion()
     {
-        if (other.CompareTag("Player"))
-        {
-            playerInRegion = true;
-        }
-        else
-        {
-            return; // only care about player entering region
-        }
+        Collider[] results = null;
+        LayerMask myLayers = relevantLayers | (1 << LayerMask.NameToLayer("Player")); // extra security to guarantee player is added
+        Physics.OverlapSphereNonAlloc(centerPosition.position, radius, results, myLayers);
 
-        if (!spawnTriggered)
+        bool playerFound = false;
+        foreach (Collider result in results)
         {
-            spawnTriggered = true;
-            SpawnMobsInRegion();
+            if (result.gameObject == PlayerID.Instance.gameObject)
+            {
+                playerFound = true;
+                playerInRegion = true; // RAHHHHH player has entered the spawn region
+                if (!spawnTriggered)
+                {
+                    spawnTriggered = true;
+                    SpawnMobsInRegion();
+                }
+            }
         }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player") && spawnTriggered == true)
+        if (!playerFound)
         {
             playerInRegion = false;
         }
     }
-
+    public void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(centerPosition.position, radius);
+    }
+    /// <summary>
+    /// Selects a random proportion of spawnpoints in the pool to spawn a random mob at (unless there's an override)
+    /// </summary>
     void SpawnMobsInRegion()
     {
         List<SpawnPoint> spawnPointsCopy = new(spawnPoints);
@@ -106,7 +125,6 @@ public class SpawnRegion : MonoBehaviour
             spawnManager.SpawnMobNew(mobPrefab, spawnPoint.transform.position);
         }
     }
-
     GameObject GetRandomMobPrefab()
     {
         float totalChance = 0f;
@@ -129,5 +147,4 @@ public class SpawnRegion : MonoBehaviour
 
         return spawnList[0].mobPrefab; // default to 1st mob just in case, should never reach here
     }
-
 }
