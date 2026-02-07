@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
 {
-    private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
     ItemInfo[] info;
     int[] count;
     Inventory inventoryObj;

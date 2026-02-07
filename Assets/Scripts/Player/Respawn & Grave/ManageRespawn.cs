@@ -70,4 +70,8 @@ public class ManageRespawn : MonoBehaviour
         }
 #endif
     }
+
+    public GameObject GetCurGrave() {
+        return curGrave;
+    }
 }
