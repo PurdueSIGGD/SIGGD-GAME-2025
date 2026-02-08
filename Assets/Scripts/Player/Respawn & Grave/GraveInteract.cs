@@ -24,13 +24,6 @@ public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
     public void OnInteract(IInteractor interactor)
     {
         Debug.Log("Grave interacted");
-        string infos = "[";
-        for (int i = 0; i < info.Length; i++)
-        {
-            infos += info[i].itemName + " ";
-        }
-        infos += "]";
-        Debug.Log(infos);
         inventoryObj.SetInventory(info, count);
         Destroy(this.gameObject); // Remove the item from the scene
     }
@@ -48,15 +41,15 @@ public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
         inventoryObj.RemoveInventory();
     }
 
-    public void FillGrave(Inventory inv, ItemInfo[] finfo, int[] fcount)
+    public void FillGrave(Inventory inv, string[] fnames, int[] fcount)
     {
-        Debug.Log("grave filled from save");
+        Debug.Log("grave filled from save " + fnames.Length + " " + inv);
         inventoryObj = inv;
-        info = new ItemInfo[finfo.Length];
-        count = new int[finfo.Length];
+        info = new ItemInfo[fnames.Length];
+        count = new int[fnames.Length];
         for (int i = 0; i < info.Length; i++)
         {
-            info[i] = finfo[i];
+            info[i] = inv.InfoLookup(fnames[i]);
             count[i] = fcount[i];
         }
     }

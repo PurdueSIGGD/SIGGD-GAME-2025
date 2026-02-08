@@ -14,21 +14,10 @@ public class GraveDataSaveModule : ISaveModule
         byte[] bytes = FileManager.Instance.ReadFile(savePath);
         graveSaveData = SerializationUtility.DeserializeValue<GraveSaveData>(bytes, DataFormat.Binary);
 
-        if (graveSaveData.info != null && graveSaveData.count != null)
+        if (graveSaveData.names != null && graveSaveData.count != null)
         {
-            string infos = "[";
-            for (int i = 0; i < graveSaveData.info.Length; i++)
-            {
-                infos += graveSaveData.info[i].itemName + " ";
-            }
-            infos += "]";
-            Debug.Log(infos);
             PlayerID.Instance.GetComponent<ManageRespawn>().CreateGrave(graveSaveData.position, graveSaveData.rotation,
-                graveSaveData.info, graveSaveData.count);
-        }
-        else
-        {
-            Debug.Log("No inventory in grave object");
+                graveSaveData.names, graveSaveData.count);
         }
 
         return true;
@@ -41,14 +30,12 @@ public class GraveDataSaveModule : ISaveModule
         {
             graveSaveData.position = graveObj.transform.position;
             graveSaveData.rotation = graveObj.transform.rotation;
-            graveSaveData.info = graveObj.GetComponent<GraveInteract>().info;
-            graveSaveData.count = graveObj.GetComponent<GraveInteract>().count;
-            string infos = "[";
-            for (int i = 0; i < graveSaveData.info.Length; i++) {
-                infos += graveSaveData.info[i].itemName + " ";
+            ItemInfo[] infos = graveObj.GetComponent<GraveInteract>().info;
+            graveSaveData.names = new string[infos.Length];
+            for (int i = 0; i < infos.Length; i++) {
+                graveSaveData.names[i] = infos[i].itemName.ToString();
             }
-            infos += "]";
-            Debug.Log(infos);
+            graveSaveData.count = graveObj.GetComponent<GraveInteract>().count;
             byte[] bytes = SerializationUtility.SerializeValue(graveSaveData, DataFormat.Binary);
             FileManager.Instance.WriteFile(savePath, bytes);
             Debug.Log("Serialized grave object");
@@ -58,7 +45,7 @@ public class GraveDataSaveModule : ISaveModule
             // Write empty
             graveSaveData.position = new Vector3(0, 0, 0);
             graveSaveData.rotation = Quaternion.identity;
-            graveSaveData.info = null;
+            graveSaveData.names = null;
             graveSaveData.count = null;
             byte[] bytes = SerializationUtility.SerializeValue(graveSaveData, DataFormat.Binary);
             FileManager.Instance.WriteFile(savePath, bytes);

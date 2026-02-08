@@ -37,6 +37,13 @@ public class Inventory : Singleton<Inventory>, IInventory
         inventoryCanvas.enabled = false;
 
         inputActions = new InventoryInputActions();
+
+        Debug.Log("Creating item infos");
+        itemInfos = new();
+        foreach (var entry in RecipeInfo.Instance.NamesToItemInfos)
+        {
+            itemInfos[entry.Key.ToString()] = entry.Value;
+        }
     }
 
     void OnEnable()
@@ -75,7 +82,6 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     void Start()
     {
-
         // Update inventory to match manually placed items in scene/saved items
         // get UI slots from scene
         for (int i = 0; i < HotBarLength; i++)
@@ -108,11 +114,6 @@ public class Inventory : Singleton<Inventory>, IInventory
             //SetInventorySlot(slot.index, slot);
 
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
-        }
-
-        itemInfos = new();
-        foreach (var entry in RecipeInfo.Instance.NamesToItemInfos) {
-            itemInfos[entry.Key.ToString()] = entry.Value;
         }
 
         // Load inventory info from save
@@ -412,22 +413,16 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     public void SetInventory(ItemInfo[] finfo, int[] fcount)
     {
-        Debug.Log(inventory.Length + " length");
         //Array.Copy(newInv, inventory, newInv.Length);
-        string infos = "[";
-        for (int i = 0; i < finfo.Length; i++)
-        {
-            infos += finfo[i].itemName + " ";
-        }
-        infos += "]";
-        Debug.Log(infos);
+
+        Debug.Log("Setting inventory");
+        
         for (int i = 0; i < finfo.Length; i++)
         {
             inventory[i].count = fcount[i];
             inventory[i].itemInfo = finfo[i];
             inventory[i].UpdateSlot();
         }
-        Debug.Log(inventory.Length + " new length");
     }
 
     /// <summary>
@@ -472,7 +467,8 @@ public class Inventory : Singleton<Inventory>, IInventory
         string s = "{";
         for (int i = 0; i < inventory.Length; i++) {
             if (i % 9 == 0) s += "\n";
-            if (inventory[i].count > 0) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
+            if (inventory[i] == null) s += "null  ";
+            else if (inventory[i].count > 0 && inventory[i].itemInfo) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
             else s += "[empty]  ";
         }
         s += "\n}";
@@ -541,6 +537,10 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <returns>The </returns>
     public ItemInfo GetItem(int index) { // maybe change return type;
         return inventory[index].itemInfo;
+    }
+
+    public ItemInfo InfoLookup(string itemName) {
+        return itemInfos[itemName];
     }
 
     public UISlot[] GetInventory()
