@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Unity.VisualScripting;
 using System;
 
+[System.Serializable]
 public class Inventory : Singleton<Inventory>, IInventory
 {
     public const int HotBarLength = 3;
@@ -413,7 +414,13 @@ public class Inventory : Singleton<Inventory>, IInventory
     {
         Debug.Log(inventory.Length + " length");
         //Array.Copy(newInv, inventory, newInv.Length);
-        
+        string infos = "[";
+        for (int i = 0; i < finfo.Length; i++)
+        {
+            infos += finfo[i].itemName + " ";
+        }
+        infos += "]";
+        Debug.Log(infos);
         for (int i = 0; i < finfo.Length; i++)
         {
             inventory[i].count = fcount[i];

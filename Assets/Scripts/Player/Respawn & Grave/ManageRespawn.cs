@@ -74,4 +74,10 @@ public class ManageRespawn : MonoBehaviour
     public GameObject GetCurGrave() {
         return curGrave;
     }
+
+    public void CreateGrave(Vector3 position, Quaternion rotation, ItemInfo[] info, int[] count) {
+        inv = PlayerID.Instance.Inventory;
+        curGrave = Instantiate(graveObj, position, rotation);
+        curGrave.GetComponent<GraveInteract>().FillGrave(inv, info, count);
+    }
 }
