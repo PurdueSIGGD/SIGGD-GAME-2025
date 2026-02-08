@@ -43,7 +43,7 @@ public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
 
     public void FillGrave(Inventory inv, string[] fnames, int[] fcount)
     {
-        Debug.Log("grave filled from save " + fnames.Length + " " + inv);
+        Debug.Log("grave filled from save");
         inventoryObj = inv;
         info = new ItemInfo[fnames.Length];
         count = new int[fnames.Length];
