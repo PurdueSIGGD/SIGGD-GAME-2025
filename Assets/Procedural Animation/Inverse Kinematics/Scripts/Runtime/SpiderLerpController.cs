@@ -234,7 +234,7 @@ namespace ProceduralAnimation.Runtime {
                     continue;
 
                 //  Start leg end effector interpolation
-                if ((onGround && dist > maxDelta) || !leg.initialized
+                if ((onGround && dist > maxDelta) || !leg.initialized 
                 || (leg.restTimer < 0f && Vector3.Distance(hit.point, leg.leg.target.position) > minDelta))
                     UpdateLegPosition(leg, hit.point, hit.normal);
 

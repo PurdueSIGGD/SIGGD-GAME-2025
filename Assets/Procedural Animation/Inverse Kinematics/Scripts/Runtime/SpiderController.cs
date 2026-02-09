@@ -51,7 +51,7 @@ namespace ProceduralAnimation.Runtime {
         }
 
         [Title("Cosmetic Settings")]
-        [Tooltip("This controls how much higher than the centre of leg heights it is "), FoldoutGroup("Float Parameters"), SerializeField] float distToLegCentre = 0.5f;
+        [Tooltip("This controls how much higher than the centre of leg heights it is "), FoldoutGroup("Float Parameters"), SerializeField] float distAboveGround = 0.5f;
 
         [Title("Raycast Settings")]
         [Tooltip("Should be set to anything the spider can walk on"), FoldoutGroup("Float Parameters"), SerializeField] LayerMask groundMask;
@@ -362,51 +362,33 @@ namespace ProceduralAnimation.Runtime {
             leg.isStepping = false;
         }
 
+        Vector3 localizeVector(Vector3 right, Vector3 up, Vector3 forward, Vector3 v) {
+            return new Vector3(
+                Vector3.Dot(right, v),
+                Vector3.Dot(up, v),
+                Vector3.Dot(forward, v)
+            );
+        }
+
+
+        Vector3 localizeVector(Transform t, Vector3 v) {
+           return localizeVector(t.right, t.up, t.forward, v);  
+        }
+
+        public float yP, yQ, avgY;
+
         /// <summary>
         /// Calculates the body's height using the positions of its legs and then moves it using a second order system.
         /// </summary>
-        void CalculateBodyPosition() {
-            //  Define projected points
-            Vector3 p1 = Vector3.ProjectOnPlane(lf.position, body.up);
-            Vector3 p2 = Vector3.ProjectOnPlane(rr.position, body.up);
+        void CalculateBodyPosition() {           
+            Vector3 L_lf = localizeVector(body, lf.position - transform.position);
+            Vector3 L_lr = localizeVector(body, lr.position - transform.position);
+            Vector3 L_rf = localizeVector(body, rf.position - transform.position);
+            Vector3 L_rr = localizeVector(body, rr.position - transform.position);
 
-            Vector3 q1 = Vector3.ProjectOnPlane(rf.position, body.up);
-            Vector3 q2 = Vector3.ProjectOnPlane(lr.position, body.up);
+            float avgY = (L_lf.y + L_lr.y + L_rf.y + L_rr.y) / 4f;
 
-            //  Calculate t value to solve for points on other lines
-            float t = ((q1.x - p1.x) * (q2.z - q1.z) - (q1.z - p1.z) * (q2.x - q1.x)) / ((p2.x - p1.x) * (q2.z - q1.z) - (p2.z - p1.z) * (q2.x - q1.x));
-
-            float x = p1.x + t * (p2.x - p1.x);
-            float z = p1.z + t * (p2.z - p1.z);
-
-            //  Calculate t values per vector for the non-projected points
-            float pT = (x - lf.position.x) / (rr.position - lf.position).x;
-            float qT = (x - rf.position.x) / (lr.position - rf.position).x;
-
-            float pY = (rr.position - lf.position).y * pT + lf.position.y;
-            float qY = (lr.position - rf.position).y * qT + rf.position.y;
-
-            float desiredY = (pY + qY) / 2 + distToLegCentre;
-            Vector3 targetPos = Vector3.up * desiredY;
-
-            //  Create Second Order Dynamics Instance
-            if (positionFilter == null)
-                positionFilter = new SecondOrderDynamics(bodyPosSettings, targetPos);
-
-            //  Turn off when raycast doesn't hit ground
-            Vector3 desiredPos = positionFilter.Update(Time.deltaTime, targetPos);
-
-            if (onGround)
-                body.localPosition = desiredPos;
-
-            if (showBodyDebugTools) {
-                Debug.DrawRay(new Vector3(x, 0, z), Vector3.up, Color.red);
-                Debug.DrawRay(q1, q2 - q1);
-                Debug.DrawRay(p1, p2 - p1);
-
-                Debug.DrawRay(rf.position, lr.position - rf.position, Color.green);
-                Debug.DrawRay(lf.position, rr.position - lf.position, Color.green);
-            }
+            body.localPosition = Vector3.up * avgY;
         }
 
         /// <summary>
