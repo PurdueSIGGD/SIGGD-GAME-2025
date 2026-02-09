@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerFallingState : StateMachineBehaviour
@@ -8,12 +9,10 @@ public class PlayerFallingState : StateMachineBehaviour
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
         playerMovement = PlayerID.Instance.playerMovement;
-        //playerMovement.canMove = true;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateExit(animator, stateInfo, layerIndex);
-        //playerMovement.IsMoving = false;
     }
 }

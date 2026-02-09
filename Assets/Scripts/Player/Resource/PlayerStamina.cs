@@ -22,6 +22,7 @@ public class PlayerStamina : MonoBehaviour
 
     private bool isSprinting;
     private bool isClimbing;
+    private bool isFalling;
 
     private Animator anim;
 
@@ -48,6 +49,7 @@ public class PlayerStamina : MonoBehaviour
 
         isSprinting = psm.IsSprinting;
         isClimbing = psm.IsClimbing;
+        isFalling = psm.IsFalling;
 
         // stamina decays while exerting effort (climb, sprint; jump triggers once?)
 
@@ -73,6 +75,12 @@ public class PlayerStamina : MonoBehaviour
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
         }
+
+        else if (isFalling) // stamina doesn't regenrate while the player is falling whether it be from a jump or falling off a cliff only noted problem while falling off huge cliffs the staamina bar flashes rapidly between red and green
+        {
+            coroutine = DisableStaminaForJump();
+            StartCoroutine(coroutine);
+        }
         else if (currentStamina < maxStamina) // stamina regens while not exerting effort, but can't go over max
         {
             currentStamina += staminaRegenRate * Time.deltaTime;
@@ -89,6 +97,13 @@ public class PlayerStamina : MonoBehaviour
     {
         anim.SetBool("hasStamina", false);
         yield return new WaitForSeconds(5);
+        anim.SetBool("hasStamina", true);
+        coroutine = null;
+    }
+    private IEnumerator DisableStaminaForJump()
+    {
+        anim.SetBool("hasStamina", false);
+        yield return new WaitForSeconds(1);
         anim.SetBool("hasStamina", true);
         coroutine = null;
     }
