@@ -40,6 +40,7 @@ public class SaveManager : Singleton<SaveManager>
         Load();
 
         // Start Autosaving - every five minutes
+
         InvokeRepeating(nameof(Save), AUTOSAVE_INTERVAL_SECONDS, AUTOSAVE_INTERVAL_SECONDS);
 
 
@@ -52,6 +53,8 @@ public class SaveManager : Singleton<SaveManager>
             Save();
         } else
         {
+            // TODO: Figure out what to do here -> maybe create a popup modal to say that game cannot be saved before quitting
+            
             Debug.Log("Application closed, but game was not saved as GameStateManager currentState  = " +
                       GameStateManager.Instance.getGameState());
         }
@@ -69,6 +72,8 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Save()
     {
+        // Save if the game state is peaceful
+
         if (!GameStateManager.Instance.canSaveGame())
         {
             return false;

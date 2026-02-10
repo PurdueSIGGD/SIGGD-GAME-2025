@@ -56,6 +56,11 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         if (gameObject != PlayerID.Instance.gameObject)
         {
             Destroy(gameObject);
+        } else
+        {
+            // Change state of player to peaceful
+
+            GameStateManager.Instance.setGameState(GameStateManager.GameState.PEACEFUL)
         }
     }
 

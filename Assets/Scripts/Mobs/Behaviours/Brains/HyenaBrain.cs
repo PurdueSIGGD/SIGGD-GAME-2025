@@ -94,7 +94,11 @@ namespace SIGGD.Mobs
         {
             // Plays SFX when detecting prey
             if (this.provider.CurrentPlan.Goal is KillPlayerGoal || this.provider.CurrentPlan.Action is KillPreyAction)
-            {
+            { 
+                if (this.provider.CurrentPlan.Goal is KillPlayerGoal) {
+                    GameStateManager.Instance.setGameState(GameStateManager.GameState.PURSUED, this.gameObject);
+                }
+
                 if (AudioManager.Instance)
                 {
                     AudioManager.Instance.PlayOneShot(FMODEvents.Instance.soundEvents["HyenaOnNoticeSFX"].ToSafeString(), transform.position);
