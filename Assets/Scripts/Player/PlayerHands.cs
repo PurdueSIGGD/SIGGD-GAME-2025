@@ -34,6 +34,8 @@ public class PlayerHands : MonoBehaviour
     [Header("Debug")]
     [Tooltip("If true, at runtime, loop and play the current action animation")]
     [SerializeField] private bool DEBUG_TestActionAnimation = false;
+    [Tooltip("If true, while running, config_show(right/left)hand will override hand showing.")]
+    [SerializeField] private bool DEBUG_ManualShowHands = false;
 
     [Header("Config")]
     [Tooltip("If true, at runtime, show the left hand")]
@@ -93,7 +95,7 @@ public class PlayerHands : MonoBehaviour
 
         if (DEBUG_TestActionAnimation) {
             // this tests the play action
-            Invoke("PlayAction", 1f);
+            Invoke("PlayAction", 3f);
         }
     }
     #endregion
@@ -115,6 +117,11 @@ public class PlayerHands : MonoBehaviour
 
         // toggles arm visibility based on if it should be visible at all or not.
         ToggleArms(showHands);
+
+        if (DEBUG_ManualShowHands) {
+            ToggleRightArm(CONFIG_ShowRightHand);
+            ToggleLeftArm(CONFIG_ShowLeftHand);
+        }
     }
 
 
@@ -122,14 +129,13 @@ public class PlayerHands : MonoBehaviour
     /// this plays the "action" animation.
     /// </summary>
     public void PlayAction() {
-        if (CONFIG_ShowRightHand) {
+        if (!showHands) {
             return;
         }
-
         handAnimator.SetTrigger("Action");
 
         // if debugging, this will loop the animation
-        if (DEBUG_TestActionAnimation) {
+        if (DEBUG_TestActionAnimation == true) {
             Invoke("PlayAction", 2.5f);
         }
     }
