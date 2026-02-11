@@ -7,6 +7,7 @@ public class EscapeMenu : MonoBehaviour
     [SerializeField] private Button quitButton;
     [SerializeField] private Button inventoryButton;
     [SerializeField] private Button craftingButton;
+    [SerializeField] private Button viewAudioLogsButton;
     [SerializeField] private Canvas canvas;
     private bool isEnabled;
 
@@ -19,6 +20,10 @@ public class EscapeMenu : MonoBehaviour
         craftingButton.onClick.AddListener(() =>
         {
             ShowCraftingMenu(true);
+        });
+        viewAudioLogsButton.onClick.AddListener(() =>
+        {
+            ShowAudioLogMenu(true);
         });
         canvas.enabled = false;
     }
@@ -66,7 +71,8 @@ public class EscapeMenu : MonoBehaviour
         if (Inventory.Instance)
         {
             Inventory.Instance.ShowInventory(enabled);
-            if (enabled) {
+            if (enabled) 
+            {
                 canvas.enabled = false; // hide escape menu when displaying inventory
             }
         }   
@@ -77,6 +83,18 @@ public class EscapeMenu : MonoBehaviour
         if (CraftingMenu.Instance)
         {
             CraftingMenu.Instance.ShowCraftingMenu(enabled);
+            if (enabled)
+            {
+                canvas.enabled = false;
+            }
+        }
+    }
+
+    public void ShowAudioLogMenu(bool enabled)
+    {
+        if (AudioLogMenu.Instance)
+        {
+            AudioLogMenu.Instance.ShowAudioLogMenu(enabled);
             if (enabled)
             {
                 canvas.enabled = false;

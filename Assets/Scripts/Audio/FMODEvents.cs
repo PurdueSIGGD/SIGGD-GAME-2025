@@ -77,7 +77,7 @@ public class FMODEvents : Singleton<FMODEvents>
 
         foreach (var bank in bankNames)
         {
-            RuntimeManager.LoadBank(bank, true); // force load all sample 
+            RuntimeManager.LoadBank(bank, true); // force load all samples
         }
 
         yield return new WaitUntil(() => (!RuntimeManager.AnySampleDataLoading() && RuntimeManager.IsInitialized));
