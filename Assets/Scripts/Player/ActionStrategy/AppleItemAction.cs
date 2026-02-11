@@ -5,6 +5,7 @@ public class AppleItem : IPlayerActionStrategy
     protected override void OnEnter()
     {
         base.OnEnter();
+        PlayHandAction(); // plays animation for apple, but this is instant rn so it does nothing
         Inventory.Instance.Decrement();
         DamageContext healContext = new DamageContext();
         healContext.attacker = healContext.victim = PlayerID.Instance.gameObject;
