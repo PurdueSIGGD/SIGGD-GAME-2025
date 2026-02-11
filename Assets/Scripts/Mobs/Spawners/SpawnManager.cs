@@ -29,17 +29,21 @@ public class SpawnManager : MonoBehaviour
             }
         }
     }
+
     private void SpawnMob(MobSpawner spawner)
     {
-        Vector3 spawnPos = (spawner.spawnRadius != 0 ? spawner.spawnPosition : GetRandomPositionCircle(spawner.spawnPosition, spawner.spawnRadius));
+        Vector3 spawnPos = (spawner.spawnRadius != 0
+            ? GetRandomPositionCircle(spawner.spawnPosition, spawner.spawnRadius)
+            : spawner.spawnPosition);
         for (int i = 0; i < spawner.spawnCount; i++)
         {
             var agent = Instantiate(spawner.prefab, spawnPos, Quaternion.identity).GetComponent<GoapActionProvider>();
             agent.gameObject.SetActive(true);
             var agentData = agent.GetComponent<AgentData>();
+            NavMeshQueryFilter navFilter = agentData.filter;
             agentData.boundary = boundary;
             NavMeshAgent navAgent = agent.GetComponent<NavMeshAgent>();
-            if (!NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 15f, NavMesh.AllAreas))
+            if (!NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 15f, navFilter))
             {
                 Debug.Log($"Could not spawn {spawner.name}");
                 continue;
@@ -50,6 +54,13 @@ public class SpawnManager : MonoBehaviour
     private Vector3 GetRandomPositionCircle(Vector3 spawnPosition, float spawnRadius)
     {
         Vector2 randomPos = Random.insideUnitCircle * spawnRadius;
-        return spawnPosition + (new Vector3(randomPos.x, -1, randomPos.y));
+        Vector3 candidatePos = spawnPosition + new Vector3(randomPos.x, 0f, randomPos.y);
+
+        if (NavMesh.SamplePosition(candidatePos, out NavMeshHit hit, spawnRadius, NavMesh.AllAreas))
+            return hit.position;
+
+        // fallback to spawnPosition if sampling fails
+        return spawnPosition;
     }
+
 }

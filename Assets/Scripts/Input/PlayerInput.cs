@@ -56,7 +56,7 @@ public class PlayerInput : Singleton<PlayerInput>
         inputActions.Player.Sprint.performed += InputSprint;
         inputActions.Player.Sprint.canceled += InputSprint;
 
-        inputActions.Player.Climb.performed += InputClimb;
+        //inputActions.Player.Climb.performed += InputClimb;
         inputActions.Player.ClimbLeft.performed += InputClimbLeft;
         inputActions.Player.ClimbLeft.canceled += InputClimbLeft;
         inputActions.Player.ClimbRight.performed += InputClimbRight;
@@ -84,6 +84,11 @@ public class PlayerInput : Singleton<PlayerInput>
         inputActions.Player.Jump.performed -= InputJump;
         inputActions.Player.Sprint.performed -= InputSprint;
         inputActions.Player.Sprint.canceled -= InputSprint;
+
+        inputActions.Player.ClimbLeft.performed -= InputClimbLeft;
+        inputActions.Player.ClimbLeft.canceled -= InputClimbLeft;
+        inputActions.Player.ClimbRight.performed -= InputClimbRight;
+        inputActions.Player.ClimbRight.canceled -= InputClimbRight;
     }
 
     // Added
@@ -171,16 +176,18 @@ public class PlayerInput : Singleton<PlayerInput>
     }
 
     private void InputAttack(InputAction.CallbackContext callbackValue) {
-        // call something to attack (here)
-
-        OnAction?.Invoke(callbackValue);
+        // if not climbing, or about to climb, invoke attack
+        if (!climbingScript.IsFacingClimbingWall() && !stateMachine.IsClimbing) {
+            OnAction?.Invoke(callbackValue);
+        }
     }
 
     // climbing
     private void InputClimb(InputAction.CallbackContext callbackValue)
     {
-        // call something to attack (here)
-        climbingScript.EnterClimbMode();
+        // this is deprecated and replaced by InputClimbLeft and InputClimbRight
+
+        // climbingScript.EnterClimbMode(); --> this will no longer work.
     }
 
     private void InputClimbLeft(InputAction.CallbackContext callbackValue)

@@ -18,8 +18,6 @@ namespace SIGGD.Goap
         {
             return true;
         }
-
-
         public override void Start(IMonoAgent agent, CommonData data)
         {
             data.Timer = 20f;

@@ -215,14 +215,25 @@ public class ClimbAction : MonoBehaviour
             WallJump();
         }
     }
-    
-    // inputs to hold a hand down. If pressed down is true, the hand is held down. If false, the hand is lifted.
-    // this method is called by player input
-    public void InputHand(bool pressedDown, Hand handInputted) {
-        if (isClimbing == true) { 
-            int handIndex = (int)handInputted;
-            bool pressInput = pressedDown;
 
+    /// <summary>
+    /// inputs to hold a hand down. If pressed down is true, the hand is held down. If false, the hand is lifted.
+    /// this method is called by player input
+    /// </summary>
+    /// <param name="pressedDown"></param>
+    /// <param name="handInputted"></param>
+    public void InputHand(bool pressedDown, Hand handInputted) {
+        // if the hand will not hit anything, do not enter climbing mode
+        if (!isClimbing && !IsFacingClimbingWall()) {
+            return;
+        }
+
+        int handIndex = (int)handInputted;
+        bool pressInput = pressedDown;
+
+        
+        // only do this special stuff when actually climbing
+        if (isClimbing) { 
             // If I had just clinged to a wall (phantom hand), then detach that hand to make way
             // for my new hand input! which is more important! it is king!.
             if (phantomHands[handIndex] == true) {
@@ -239,8 +250,13 @@ public class ClimbAction : MonoBehaviour
                     pressInput = heldDownHands[handIndex];
                 }
             }
+        }
 
-            InputHand(pressInput, handInputted, true);
+        InputHand(pressInput, handInputted, true);
+
+        // if not in climbing mode, enter it. This can only be ran after inputhand()
+        if (!isClimbing) {
+            EnterClimbMode();
         }
     }
 
@@ -257,33 +273,41 @@ public class ClimbAction : MonoBehaviour
         }
     }
 
-    // gets direction of player's camera
+    /// <summary>
+    /// gets direction of player's camera
+    /// </summary>
+    /// <returns></returns>
     private Vector3 GetCameraDirection() { 
         return cameraTransform.forward;
     }
     #endregion
 
     #region Enter/Exit Climbing Methods
-    // enters climbing mode if there is a valid climbable wall in front of camera
-    public void EnterClimbMode() {
-        InputHand(true, Hand.LeftHand, true);
-        InputHand(true, Hand.RightHand, true);
+    /// <summary>
+    /// enters climbing mode if there is stamina and an attached hand.
+    /// Originally, this could be called by the player input script, but it doesnt now.
+    /// </summary>
+    private void EnterClimbMode() {
         if (isHandAttached() && stamina.HasStamina) {
             isClimbing = true;
             stateMachine.ToggleCrouch(false);
-            SetPhantomHand(true);
         } else {
             ExitClimb(); // removes held down hands
         }
     }
 
-    // exits the climbing mode. Use 
+    /// <summary>
+    /// exits the climbing mode. Basically just calls ExitClimb() and sets
+    /// isclimbing to false
+    /// </summary>
     public void ExitClimbMode() {
         isClimbing = false;
         ExitClimb();
     }
 
-    // tries to exitclimbmode 
+    /// <summary>
+    /// tries to exit climbmode if conditions are met like being grounded or having no stamina
+    /// </summary>
     private float timeSpentGrounded = 0;
     private void TryToExitClimbMode() {
         bool handsAttached = isHandAttached();
@@ -300,7 +324,9 @@ public class ClimbAction : MonoBehaviour
         }
     }
 
-    // detaches all hands. Toggles off the player's held down hand inputs
+    /// <summary>
+    /// detaches all hands. Toggles off the player's held down hand inputs
+    /// </summary>
     public void ExitClimb() {
         DetachHand();
         InputHand(false, Hand.LeftHand, true);
@@ -416,7 +442,10 @@ public class ClimbAction : MonoBehaviour
         DetachHand(Hand.RightHand);
     }
 
-    // returns if the player has any hands attached to a wall
+    /// <summary>
+    /// returns if the player has any hands attached to a wall
+    /// </summary>
+    /// <returns></returns>
     private bool isHandAttached() {
         for (int i = 0; i < attachedHands.Length; i++) {
             if (attachedHands[i] == true) {
@@ -426,7 +455,10 @@ public class ClimbAction : MonoBehaviour
         return false;
     }
 
-    // returns number of hands attached
+    /// <summary>
+    /// returns number of hands attached
+    /// </summary>
+    /// <returns></returns>
     private int GetNumberOfHandsAttached() {
         int count = 0;
         for (int i = 0; i < attachedHands.Length; i++) {
@@ -437,22 +469,38 @@ public class ClimbAction : MonoBehaviour
         return count;
     }
 
-    // gets attached hands, a boolean array of size 2 where index 0 = left hand, index 1 = right hand
+
+    /// <summary>
+    /// gets attached hands, a boolean array of size 2 where index 0 = left hand, index 1 = right hand
+    /// </summary>
+    /// <returns></returns>
     public bool[] GetAttachedHands() {
         return attachedHands;
     }
 
-    // gets held down hands, a boolean array of size 2 where index 0 = left hand, index 1 = right hand
+
+    /// <summary>
+    /// gets held down hands, a boolean array of size 2 where index 0 = left hand, index 1 = right hand
+    /// </summary>
+    /// <returns></returns>
     public bool[] GetHeldDownHands() {
         return heldDownHands;
     }
 
-    // returns if the player is currently reaching out their hand
+
+    /// <summary>
+    /// returns if the player is currently reaching out their hand
+    /// </summary>
+    /// <returns></returns>
     public bool isHandReaching() {
         return isReaching;
     }
 
-    // fire this function if a hand is held down, for each held down hand.
+
+    /// <summary>
+    /// fire this function if a hand is held down, for each held down hand.
+    /// </summary>
+    /// <param name="handToFire"></param>
     private void FireHand(Hand handToFire) {
         int handIndex = (int)handToFire;
         int otherHandIndex = 1 - handIndex;
@@ -462,43 +510,12 @@ public class ClimbAction : MonoBehaviour
             // the hand is reaching for an available spot
             isReaching = true;
 
-            RaycastHit hit;
-            Vector3 rayOrigin = cameraTransform.position;
-            Vector3 cameraDirection = GetCameraDirection();
+            RaycastHit hit = GetFireHandHit(); // the hit climbable surface
 
-            bool rayHit = Physics.Raycast(rayOrigin, cameraDirection, out hit, grabRange, climbingLayerMask);
-            //Debug.DrawRay(rayOrigin, (rayOrigin + cameraDirection), Color.white); // debug ray
+            // if hit.collider == null, the raycast is empty
+            if (hit.collider != null) {
 
-            Vector3 perpendicular_camera = Vector3.Cross(cameraDirection, Vector3.up);
-
-            // Handle case where direction is Vector3.up or Vector3.down
-            if (perpendicular_camera == Vector3.zero) {
-                perpendicular_camera = Vector3.Cross(cameraDirection, Vector3.right);
-            }
-
-            Vector3 tangent_camera = Vector3.Cross(cameraDirection, perpendicular_camera).normalized;
-            perpendicular_camera.Normalize();
-
-            int raysFired = useRaycastRadius == true ? 0 : 8; // if useRaycastRadius is false, do not do more raycasts.
-            while (rayHit != true && raysFired < 8) {
-                float angle = raysFired * (360f / 8f) * Mathf.Deg2Rad;
-                float xOffset = Mathf.Cos(angle) * raycastRadius;
-                float yOffset = Mathf.Sin(angle) * raycastRadius;
-
-                Vector3 newRayOrigin = rayOrigin + (perpendicular_camera * xOffset) + (tangent_camera * yOffset);
-
-                // new raycast
-                rayHit = Physics.Raycast(newRayOrigin, cameraDirection, out hit, grabRange, climbingLayerMask);
-                //Debug.DrawRay(newRayOrigin, (newRayOrigin + cameraDirection), Color.red); // debug ray
-                raysFired += 1;
-            }
-            
-            // Does the ray intersect any objects excluding the player layer?
-            if (rayHit == false || hit.distance > grabRange) {
-                // didn't hit. anything. Player is reaching for straws they are going NOWHERE.
-
-            } else {
-                // player hit an object, check if its climbable
+                // player hit an object, now check if its climbable
 
                 GameObject hitObject = hit.transform.gameObject;
                 bool objectIsClimbable = IsObjectClimbable(hitObject);
@@ -515,7 +532,66 @@ public class ClimbAction : MonoBehaviour
         }
     }
 
-    // returns true if the object is climbable and false otherwise
+
+    /// <summary>
+    /// returns what a "fired" hand will hit. Returns a raycasthit.
+    /// If the raycasthit.collider == null, nothing was hit.
+    /// </summary>
+    private RaycastHit GetFireHandHit() {
+        RaycastHit hit;
+        Vector3 rayOrigin = cameraTransform.position;
+        Vector3 cameraDirection = GetCameraDirection();
+
+        bool rayHit = Physics.Raycast(rayOrigin, cameraDirection, out hit, grabRange, climbingLayerMask);
+        //Debug.DrawRay(rayOrigin, (rayOrigin + cameraDirection), Color.white); // debug ray
+
+        Vector3 perpendicular_camera = Vector3.Cross(cameraDirection, Vector3.up);
+
+        // Handle case where direction is Vector3.up or Vector3.down
+        if (perpendicular_camera == Vector3.zero) {
+            perpendicular_camera = Vector3.Cross(cameraDirection, Vector3.right);
+        }
+
+        Vector3 tangent_camera = Vector3.Cross(cameraDirection, perpendicular_camera).normalized;
+        perpendicular_camera.Normalize();
+
+        int raysFired = useRaycastRadius == true ? 0 : 8; // if useRaycastRadius is false, do not do more raycasts.
+        while (rayHit != true && raysFired < 8)
+        {
+            float angle = raysFired * (360f / 8f) * Mathf.Deg2Rad;
+            float xOffset = Mathf.Cos(angle) * raycastRadius;
+            float yOffset = Mathf.Sin(angle) * raycastRadius;
+
+            Vector3 newRayOrigin = rayOrigin + (perpendicular_camera * xOffset) + (tangent_camera * yOffset);
+
+            // new raycast
+            rayHit = Physics.Raycast(newRayOrigin, cameraDirection, out hit, grabRange, climbingLayerMask);
+            //Debug.DrawRay(newRayOrigin, (newRayOrigin + cameraDirection), Color.red); // debug ray
+            raysFired += 1;
+        }
+
+        // Does the ray intersect any objects excluding the player layer?
+        if (rayHit == false || hit.distance > grabRange) {
+            // nothing was hit
+            return new RaycastHit(); // this is an empty raycast with NO collider
+        } else {
+            return hit;
+        }
+    }
+
+
+    public bool IsFacingClimbingWall() {
+        return GetFireHandHit().collider != null;
+    }
+
+
+    /// <summary>
+    ///  returns true if the given object is climbable and false otherwise.
+    ///  This originally checked if the object was static, but now it 
+    ///  just always returns true
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     private bool IsObjectClimbable(GameObject obj) {
         return true;
     }
