@@ -22,9 +22,9 @@ public class PlayerStateMachine : MonoBehaviour
     [HideInInspector] public Collider[] allCols;
 
     #endregion
-    
+
     #region Parameter SOs
-    
+
     [Header("Parameter SOs")]
     public MoveData moveData; // ScriptableObject containing movement parameters.
     public ItemInfo defaultItem; // The default item the player starts with.
@@ -36,28 +36,94 @@ public class PlayerStateMachine : MonoBehaviour
     public float gravityScale { get; private set; } = 1f; // A scale on gravity when applied to the player,
                                                           // relevant when the player is in situations like falling
                                                           // or hanging on a jump at the apex
-    
-    [Header("Checks")] 
-    [SerializeField] public Transform groundCheckPoint;
-    [SerializeField] public Vector3 groundCheckSize = new Vector3(0.49f, 0.3f, 0.49f);
-    public LayerMask groundLayer;
 
-    public bool IsGrounded =>
-        Physics.CheckBox(groundCheckPoint.position, groundCheckSize, Quaternion.identity, groundLayer);
-        //Physics.Raycast(groundCheckPoint.position, Vector3.down, 0.2f, groundLayer);
-    
+    [Header("Ground Checks")]
+    [SerializeField] public LayerMask groundLayer;
+
+    [Tooltip("The position of the player's feet for ground checking. Think of a half hemisphere downward from this position")]
+    [SerializeField] private Transform groundCheckCenter;
+    [Tooltip("Horizontal radius of ground check sphere")]
+    [SerializeField] private float groundCheckRadius = 0.49f;
+
+    [Tooltip("Vertical radius of ground check sphere")]
+    [SerializeField] private float groundCheckHeight = 0.3f;
+
+    [Tooltip("This will enable gizmos debug rays that show ground checking logic. Use this for debugging rays.")]
+    [SerializeField] private bool DEBUG_groundCheck = false;
+
+
+    // basically, the raycast creates a hemisphere.
+    [Tooltip("More rays = better ground check accuracy. These are how many rays are horizontal?")]
+    [SerializeField] private int groundCheckHorizontalRays = 12; // how many rays for each angle
+
+    [Tooltip("More rays = better ground check accuracy. These are how many rays are angled up.")]
+    [SerializeField] private int groundCheckVerticalRays = 6; // how many rays are angled vertically
+
+    [Tooltip("Slopes with a angle greater than this are not considered \"ground\"")]
+    [Range(0f, 90f)][SerializeField] private float groundCheckSlopeAngle = 50f;
+
+    public bool IsGrounded => CheckGrounded();
+
+
+    /// <summary>
+    /// Returns true if there is ground below the player that is not a steep slope. Returns false if not.
+    /// For other scripts checking ground status, use the variable "IsGrounded" above
+    /// </summary>
+    /// <returns></returns>
+    private bool CheckGrounded() {
+        // do a raycast from player's feet in the shape of a hemisphere.
+        float y_angle_interval = 90f / groundCheckVerticalRays;
+        float x_angle_interval = 360f / groundCheckHorizontalRays;
+
+
+        for (int i = 0; i < groundCheckVerticalRays; i++) {
+            float y_angle = i * y_angle_interval;
+
+            // this gets the magnitude of the raycast based on angle, radius, and height of sphere
+            float raycastMagnitude = (float)(groundCheckRadius * groundCheckHeight /
+                Math.Sqrt(Math.Pow(groundCheckHeight, 2f) * Math.Pow(Mathf.Cos(Mathf.Deg2Rad * y_angle), 2f)
+                + Math.Pow(groundCheckRadius, 2) * Math.Pow(Math.Sin(Mathf.Deg2Rad * y_angle), 2)));
+
+            for (int j = 0; j < groundCheckHorizontalRays; j++) {
+                float x_angle = j * x_angle_interval;
+
+
+                Vector3 rayDirection = Quaternion.Euler(y_angle, x_angle, 0f) * Vector3.forward;
+
+                RaycastHit hit;
+
+                if (Physics.Raycast(groundCheckCenter.position, rayDirection, out hit, raycastMagnitude, groundLayer)) {
+                    float slopeDegrees = Vector3.Angle(hit.normal.normalized, Vector3.up);
+
+                    if (slopeDegrees <= groundCheckSlopeAngle) {
+                        if (DEBUG_groundCheck) {
+                            print("Slope of surface PLR is standing on: " + Math.Floor(slopeDegrees * 100f) / 100f);
+                        }
+
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     private float lastTimeGrounded, lastTimeJumpPressed;
-    
+
+
     public Vector3 LastGroundedPosition { get; private set; }
-    
+
     public bool IsFalling => playerID.rb.linearVelocity.y < -0.1f && !IsGrounded && !IsClimbing;
+
+    [Header("Other Checks")]
 
     public bool IsSprinting;
 
-    public bool HasStamina => PlayerID.Instance.GetComponent<PlayerStamina>().CurrentStamina>0;
-    
+    public bool HasStamina => PlayerID.Instance.GetComponent<PlayerStamina>().CurrentStamina > 0;
+
     #endregion
-    
+
     #region Movement Attributes
     public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f && !IsClimbing; // Whether the player is currently moving.
     public bool IsClimbing => PlayerID.Instance.gameObject.GetComponent<ClimbAction>().IsClimbing();
@@ -70,7 +136,7 @@ public class PlayerStateMachine : MonoBehaviour
     private void Start()
     {
         playerID = PlayerID.Instance; // Running this in Start to ensure PlayerID is initialized first
-        
+
         mainCol = GetComponent<Collider>();
         allCols = GetComponentsInChildren<Collider>();
 
@@ -83,7 +149,7 @@ public class PlayerStateMachine : MonoBehaviour
         UpdateCrouchState();
         UpdateAnimatorParams();
     }
-    
+
     private void OnDisable()
     {
         PlayerInput.Instance.OnJump -= OnJumpAction;
@@ -107,10 +173,10 @@ public class PlayerStateMachine : MonoBehaviour
     }
 
     #endregion
-    
+
     // Because the animator is our state machine, we update parameters there to control state transitions.
     #region Animator Methods
-    
+
     /** <summary>
      * Updates the animator parameters based on the player's current state.
      * </summary>
@@ -126,11 +192,11 @@ public class PlayerStateMachine : MonoBehaviour
         }
         else
             lastTimeGrounded -= Time.deltaTime;
-        
+
         lastTimeJumpPressed -= Time.deltaTime;
-        
+
         animator.SetBool(Animator.StringToHash("isMoving"), IsMoving);
-        animator.SetBool(Animator.StringToHash("isGrounded"), IsGrounded); 
+        animator.SetBool(Animator.StringToHash("isGrounded"), IsGrounded);
         animator.SetBool(Animator.StringToHash("isFalling"), IsFalling);
         animator.SetBool(Animator.StringToHash("isSprinting"), PlayerInput.Instance.sprintInput);
         //animator.SetBool(Animator.StringToHash("hasStamina"), HasStamina);
@@ -177,7 +243,7 @@ public class PlayerStateMachine : MonoBehaviour
     }
 
     #endregion
-    
+
     #region Collision Methods
 
     /**
@@ -190,7 +256,7 @@ public class PlayerStateMachine : MonoBehaviour
         foreach (var col in allCols)
             col.enabled = false;
     }
-    
+
     /**
      * <summary>
      * Enables all colliders on the player.
@@ -284,7 +350,7 @@ public class PlayerStateMachine : MonoBehaviour
         foreach (var col in allCols)
             Physics.IgnoreLayerCollision(gameObject.layer, layer, ignore);
     }
-    
+
     /**
      * <summary>
      * Ignores collisions between the player and a specified GameObject.
@@ -298,6 +364,62 @@ public class PlayerStateMachine : MonoBehaviour
             foreach (var objCol in obj.GetComponents<Collider>())
                 Physics.IgnoreCollision(col, objCol, ignore);
     }
-    
+
     #endregion
+
+#if UNITY_EDITOR
+    #region Gizmos
+    void OnDrawGizmosSelected()
+    {
+        // this is the same raycast logic as in CheckGrounded(), but for gizmos debugging
+        if (DEBUG_groundCheck)
+        {
+            float y_angle_interval = 90f / groundCheckVerticalRays;
+            float x_angle_interval = 360f / groundCheckHorizontalRays;
+
+
+            for (int i = 0; i < groundCheckVerticalRays; i++)
+            {
+                float y_angle = i * y_angle_interval;
+
+                float raycastMagnitude = (float)(groundCheckRadius * groundCheckHeight /
+                    Math.Sqrt(Math.Pow(groundCheckHeight, 2f) * Math.Pow(Mathf.Cos(Mathf.Deg2Rad * y_angle), 2f)
+                    + Math.Pow(groundCheckRadius, 2) * Math.Pow(Math.Sin(Mathf.Deg2Rad * y_angle), 2)));
+
+                for (int j = 0; j < groundCheckHorizontalRays; j++)
+                {
+                    float x_angle = j * x_angle_interval;
+
+
+                    Vector3 rayDirection = Quaternion.Euler(y_angle, x_angle, 0f) * Vector3.forward;
+
+                    RaycastHit hit;
+
+                    if (Physics.Raycast(groundCheckCenter.position, rayDirection, out hit, raycastMagnitude, groundLayer))
+                    {
+                        float slopeDegrees = Vector3.Angle(hit.normal.normalized, Vector3.up);
+
+                        if (slopeDegrees <= groundCheckSlopeAngle)
+                        {
+                            Gizmos.color = Color.green;
+                            Gizmos.DrawLine(groundCheckCenter.position, groundCheckCenter.position + rayDirection * raycastMagnitude);
+                            return;
+                        }
+                        else
+                        {
+                            Gizmos.color = Color.red;
+                            Gizmos.DrawLine(groundCheckCenter.position, groundCheckCenter.position + rayDirection * raycastMagnitude);
+                        }
+                    }
+                    else
+                    {
+                        Gizmos.color = Color.yellow;
+                        Gizmos.DrawLine(groundCheckCenter.position, groundCheckCenter.position + rayDirection * raycastMagnitude);
+                    }
+                }
+            }
+        }
+    }
+    #endregion
+#endif
 }

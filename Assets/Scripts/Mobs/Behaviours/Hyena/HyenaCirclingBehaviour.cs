@@ -6,6 +6,7 @@ using SIGGD.Mobs;
 using SIGGD.Mobs.PackScripts;
 using SIGGD.Goap;
 using UnityEngine.ProBuilder.MeshOperations;
+using Utility;
 
 namespace SIGGD.Mobs.Hyena
 {
@@ -46,6 +47,7 @@ namespace SIGGD.Mobs.Hyena
         private float angleRad;
         private float angSpeed;
         private float radius;
+        private float initialRadius;
 
         private bool escaping;
         private Vector3 escapeGoal;
@@ -143,6 +145,7 @@ namespace SIGGD.Mobs.Hyena
 
             // Pick a random angle, speed, direction, and duration
             radius = BaseRadius + offset;
+            initialRadius = radius;
 
             
             angleRad = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
@@ -150,9 +153,14 @@ namespace SIGGD.Mobs.Hyena
             angSpeed = sign * UnityEngine.Random.Range(AngularSpeedMin, AngularSpeedMax);
 
             float duration = UnityEngine.Random.Range(6f, 10f);
+            float timeAtBeginning = Time.time;
             float elapsed = 0f;
 
             float stuckTimer = 0f;
+            float updateSpeedTimer = 0f;
+            float distToTargetMulti = 1f;
+            float speedUpdateRate = 0.5f;
+            bool nearEndOfLunge = false;
             Vector3 lastPos = rb.position;
 
             try
@@ -207,10 +215,25 @@ namespace SIGGD.Mobs.Hyena
                     d.y = 0f;
 
                     Vector3 dir = d.sqrMagnitude > 0.0001f ? d.normalized : transform.forward;
+                    if (nearEndOfLunge)
+                    {
+                        Vector3 to = targetPos - transform.position;
+                        dir = UnityUtil.DampVector3Spherical(dir, to.normalized, 12f, Time.fixedDeltaTime * 3f);
+                        radius = UnityUtil.Damp(radius, initialRadius / 4f, 12f, Time.fixedDeltaTime * 3f);
+                    }
                     dir = ApplyEdgeAvoidance(rb.position, dir);
 
+                    // Speed multi ranges from 1 to 3 based off of distance
+                    updateSpeedTimer += Time.fixedDeltaTime;
+                    if (updateSpeedTimer > speedUpdateRate)
+                    {
+                        distToTargetMulti = 1f + (2f * UnityUtil.ExponentialCurve(Vector3.Distance(targetPos, rb.position) / BaseRadius * 2f));
+                        if (nearEndOfLunge) distToTargetMulti *= 0.5f;
+                        updateSpeedTimer = 0f;
+                    }
 
-                    move.MoveTowards(dir, 1.0f, 3f);
+
+                    move.MoveTowards(dir, 1.0f, distToTargetMulti);         
 
                     // If movement is negligible for a period of time then it starts an escape sequence
 
@@ -228,7 +251,10 @@ namespace SIGGD.Mobs.Hyena
                     {
                         stuckTimer = 0f;
                     }
-
+                    if ((Time.time - timeAtBeginning) > duration - 0.5f)
+                    {
+                        nearEndOfLunge = true;
+                    }
                     lastPos = rb.position;
                     yield return new WaitForFixedUpdate();
                 }
@@ -290,7 +316,7 @@ namespace SIGGD.Mobs.Hyena
                     dir = (-toTarget).normalized;
                 }
                 dir = ApplyEdgeAvoidance(rb.position, dir);
-                move.MoveTowards(dir, 0.8f, 1.0f);
+                move.MoveTowardsNoRotation(dir, 0.3f, 1.0f, false);
 
                 // Not moving check similar to Circle()
                 bool notMoving = (rb.position - lastPos).sqrMagnitude < MinMoveSqr;
