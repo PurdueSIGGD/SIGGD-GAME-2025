@@ -8,9 +8,9 @@ public class GameStateManager : Singleton<GameStateManager>
 
     public enum GameState
     {
-        PEACEFUL, // Player is not being pursued
-        PURSUED,  // Player is being actively pursed by an enemy
-        PURSUED_BY_APEX, // Player is being actively chased by an Apex
+        PEACEFUL,           // Player is not being pursued
+        PURSUED,            // Player is being actively pursed by an enemy
+        PURSUED_BY_APEX,    // Player is being actively chased by an Apex
     }
 
     private GameState currentState = GameState.PEACEFUL;
@@ -28,24 +28,46 @@ public class GameStateManager : Singleton<GameStateManager>
 
 
     /// <summary>
-    /// Change the game state and handle the pursuers list
+    /// Change the game state and handle the pursuers list. If pursuer tries to set state to PEACEFUL, it is
+    /// removed from the pursuers list, but the state is only changed to PEACEFUL if there are no pursuers.
     /// </summary>
     /// <param name="state">GameState to change to</param>
     /// <param name="initiator">Which GameObject called to set the state</param>
     /// <returns></returns>
-    public bool setGameState(GameState state, GameObject initiator)
+    public bool attemptSetState(GameState state, GameObject initiator)
     {
-        currentState = state;
 
         // A way to keep track of all the pursuers
 
-        if (state == GameState.PURSUED || !pursuersList.Contains(initiator))
+        switch (state)
         {
-            pursuersList.Add(initiator);
-        }
-        else if (state == GameState.PEACEFUL && pursuersList.Contains(initiator)
-        {
-            pursuersList.Remove(initiator);
+            // Peaceful
+            case GameState.PEACEFUL:
+                if (pursuersList.Contains(initiator))
+                {
+                    Debug.Log("removed pursuer " + pursuersList.Count);
+                    pursuersList.Remove(initiator);
+                    if (pursuersList.Count == 0) {
+                        currentState = GameState.PEACEFUL;
+                    }
+                }
+                else 
+                {
+                    currentState = state; // Occurs when player died
+                }
+                break;
+
+            // Pursued and Pursued by Apex
+
+            case GameState.PURSUED:
+            case GameState.PURSUED_BY_APEX:
+                currentState = state;
+                if (!pursuersList.Contains(initiator))
+                {
+                    Debug.Log("added pursuer " + pursuersList.Count);
+                    pursuersList.Add(initiator);
+                }
+                break;
         }
 
         return true;
