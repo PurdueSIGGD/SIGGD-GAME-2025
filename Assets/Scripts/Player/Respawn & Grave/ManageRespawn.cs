@@ -7,6 +7,8 @@ public class ManageRespawn : MonoBehaviour
     private EntityHealthManager health;
     private PlayerHunger hunger;
 
+    [SerializeField] private GameObject deathMenu;
+
     public Vector3 respawnPoint;
     public GameObject graveObj;
     GameObject curGrave = null;
@@ -16,7 +18,7 @@ public class ManageRespawn : MonoBehaviour
         respawnPoint = spawnPoint.position;
     }
 
-    public void RespawnPlayer()
+    public void CreateGrave()
     {
         if (curGrave)
         {
@@ -28,7 +30,11 @@ public class ManageRespawn : MonoBehaviour
             curGrave = Instantiate(graveObj, transform.position, transform.rotation);
             curGrave.GetComponent<GraveInteract>().FillGrave(inv);
         }
+    }
 
+    public void RespawnPlayer()
+    {
+        Time.timeScale = 1f;
         player.transform.position = respawnPoint;
         health.ResetHealth();
         hunger.ResetHunger();
@@ -38,7 +44,9 @@ public class ManageRespawn : MonoBehaviour
     {
         if (context.victim == PlayerID.Instance.gameObject)
         {
-            RespawnPlayer();
+            Time.timeScale = 0f;
+            CreateGrave();
+            deathMenu.GetComponent<DeathMenu>().ShowDeathMenu(true);
         }
     }
 

@@ -40,7 +40,8 @@ public class SaveManager : Singleton<SaveManager>
 
     private void OnApplicationQuit()
     {
-        Save();
+        // Disabled for testing
+        //Save(); 
     }
 
     public bool Load()
