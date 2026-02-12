@@ -8,7 +8,7 @@ public class SpawnPoint : MonoBehaviour
     [SerializeField] GameObject optionalMobOverride = null;
     public bool HasMobOverride()
     {
-        return optionalMobOverride == null;
+        return optionalMobOverride != null;
     }
     public GameObject GetMobOverride()
     {

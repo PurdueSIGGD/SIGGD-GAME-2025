@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 [Serializable]
 public class SpawnRegion : MonoBehaviour
 {
+    [Serializable]
     public class SpawnRateData
     {
         public GameObject mobPrefab;
@@ -16,8 +16,8 @@ public class SpawnRegion : MonoBehaviour
     [SerializeField] List<SpawnPoint> spawnPoints;
 
     [SerializeField] float spawnCooldown;
-    [SerializeField] float proportionSpawnedMin; // minimum proportion of spawnpoints to spawn at (see spawn mobs function implementation)
-    [SerializeField] float proportionSpawnedMax; // max prop of spawnpoints to spawn at
+    [SerializeField] float minPropSpawned; // minimum proportion of spawnpoints to spawn at (see spawn mobs function implementation)
+    [SerializeField] float maxPropSpawned; // max prop of spawnpoints to spawn at
 
     [Header("SpawnRegionSphereSettings")]
     [SerializeField] float spawnRegionCheckIntervalSec;
@@ -45,6 +45,7 @@ public class SpawnRegion : MonoBehaviour
             CheckSpawnRegion();
             spawnRegionCheckTimer = spawnRegionCheckIntervalSec;
         }
+        spawnRegionCheckTimer -= Time.deltaTime;
 
         if (spawnTriggered == true && playerInRegion == false)
         {
@@ -70,9 +71,8 @@ public class SpawnRegion : MonoBehaviour
     }
     public void CheckSpawnRegion()
     {
-        Collider[] results = null;
         LayerMask myLayers = relevantLayers | (1 << LayerMask.NameToLayer("Player")); // extra security to guarantee player is added
-        Physics.OverlapSphereNonAlloc(centerPosition.position, radius, results, myLayers);
+        Collider[] results = Physics.OverlapSphere(centerPosition.position, radius, myLayers);
 
         bool playerFound = false;
         foreach (Collider result in results)
@@ -105,9 +105,10 @@ public class SpawnRegion : MonoBehaviour
     {
         List<SpawnPoint> spawnPointsCopy = new(spawnPoints);
         int numSpawn = UnityEngine.Random.Range(
-            Mathf.FloorToInt(spawnPoints.Count * proportionSpawnedMin),
-            Mathf.CeilToInt(spawnPoints.Count * proportionSpawnedMax)
+            Mathf.FloorToInt(spawnPoints.Count * minPropSpawned),
+            Mathf.CeilToInt(spawnPoints.Count * maxPropSpawned)
         );
+        print("MYSPAWN: " + numSpawn);
         for (int i = 0; i < numSpawn; i++)
         {
             if (spawnPointsCopy.Count == 0) break; // no more spawn points available
@@ -121,7 +122,7 @@ public class SpawnRegion : MonoBehaviour
                 mobPrefab = spawnPoint.GetMobOverride();
             else
                 mobPrefab = GetRandomMobPrefab();
-
+            print("MYSPAWN AHHHHH");
             spawnManager.SpawnMobNew(mobPrefab, spawnPoint.transform.position);
         }
     }

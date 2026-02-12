@@ -1,25 +1,40 @@
 using System;
 using System.Collections.Generic;
+using CrashKonijn.Agent.Runtime;
+using SIGGD.Mobs;
 using UnityEngine;
 
 namespace MobCensus
 {
     [Serializable]
-    public class MobSpeciesRegistry
+    public class MobSpeciesRegistry : MonoBehaviour
     {
         [Serializable]
         public class MobSpeciesEntry
         {
-            [SerializeField] string mobId;
+            string mobId = null;
             [SerializeField] GameObject mobPrefab;
 
-            public MobSpeciesEntry(string mobId, GameObject mobPrefab)
+            public MobSpeciesEntry(GameObject mobPrefab)
             {
-                this.mobId = mobId;
                 this.mobPrefab = mobPrefab;
             }
 
-            public string GetMobId() { return mobId; }
+            public string GetMobId()
+            {
+                if (mobId == null)
+                {
+                    if (mobPrefab.GetComponent<HyenaBrain>() != null)
+                    {
+                        mobId = MobIds.hyena;
+                    }
+                    else if (mobPrefab.GetComponent<PreyBrain>() != null)
+                    {
+                        mobId = MobIds.prey;
+                    }
+                }
+                return mobId;
+            }
             public GameObject GetMobPrefab() { return mobPrefab; }
         }
 

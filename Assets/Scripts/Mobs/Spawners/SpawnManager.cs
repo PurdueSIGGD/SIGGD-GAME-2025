@@ -15,6 +15,8 @@ public class SpawnManager : MonoBehaviour
     void Awake()
     {
         boundary = boundaryObject.GetComponent<Boundary>();
+        mobCensus = FindFirstObjectByType<MobCensusManager>();
+        mobSpeciesRegistry = FindFirstObjectByType<MobSpeciesRegistry>();
     }
 
 
