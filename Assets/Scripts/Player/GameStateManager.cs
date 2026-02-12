@@ -1,6 +1,7 @@
-#define DEBUG
+//#define DODEBUG
 using NUnit.Framework;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameStateManager : Singleton<GameStateManager>
@@ -15,6 +16,11 @@ public class GameStateManager : Singleton<GameStateManager>
     }
 
     private GameState currentState = GameState.PEACEFUL;
+    protected override void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+        base.Awake();
+    }
 
     public GameState getGameState()
     {
@@ -37,9 +43,6 @@ public class GameStateManager : Singleton<GameStateManager>
     /// <returns></returns>
     public bool attemptSetState(GameState state, GameObject initiator)
     {
-#if DEBUG
-        Debug.Log(currentState + " " + initiator);
-#endif
         // A way to keep track of all the pursuers
 
         switch (state)
@@ -49,16 +52,22 @@ public class GameStateManager : Singleton<GameStateManager>
                 if (pursuersList.Contains(initiator))
                 {
                     pursuersList.Remove(initiator);
-#if DEBUG
-                    Debug.Log("removed pursuer " + pursuersList.Count);
+#if DODEBUG
+                    Debug.Log("removed pursuer " + pursuersList.Count + " " + initiator);
 #endif
 
                     if (pursuersList.Count == 0) {
+#if DODEBUG
+                        Debug.Log("set to peaceful by " + initiator);
+#endif
                         currentState = GameState.PEACEFUL;
                     }
                 }
                 else if (initiator == PlayerID.Instance.gameObject)
                 {
+#if DODEBUG
+                    Debug.Log("set to peaceful by" + initiator);
+#endif
                     currentState = state; // Occurs when player died
                 }
                 break;
@@ -67,14 +76,14 @@ public class GameStateManager : Singleton<GameStateManager>
 
             case GameState.PURSUED:
             case GameState.PURSUED_BY_APEX:
-                currentState = state;
+                // If we already aren't being pursued by this predator
                 if (!pursuersList.Contains(initiator))
                 {
+                    currentState = state;
                     pursuersList.Add(initiator);
-#if DEBUG
+#if DODEBUG
                     Debug.Log("added pursuer " + pursuersList.Count);
 #endif
-
                 }
                 break;
         }
