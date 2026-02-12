@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
 {
-    private const float AUTOSAVE_INTERVAL_SECONDS = 300.0f;
 
     public InventoryDataSaveModule inventoryModule = null;
     public bool saveInventory = true;
@@ -38,11 +37,6 @@ public class SaveManager : Singleton<SaveManager>
                                      questModule, gameProgressModule};
 
         Load();
-
-        // Start Autosaving - every five minutes
-
-        InvokeRepeating(nameof(Save), AUTOSAVE_INTERVAL_SECONDS, AUTOSAVE_INTERVAL_SECONDS);
-
 
     }
 
