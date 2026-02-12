@@ -1,3 +1,4 @@
+#define DEBUG
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,7 +37,9 @@ public class GameStateManager : Singleton<GameStateManager>
     /// <returns></returns>
     public bool attemptSetState(GameState state, GameObject initiator)
     {
-
+#if DEBUG
+        Debug.Log(currentState + " " + initiator);
+#endif
         // A way to keep track of all the pursuers
 
         switch (state)
@@ -45,13 +48,16 @@ public class GameStateManager : Singleton<GameStateManager>
             case GameState.PEACEFUL:
                 if (pursuersList.Contains(initiator))
                 {
-                    Debug.Log("removed pursuer " + pursuersList.Count);
                     pursuersList.Remove(initiator);
+#if DEBUG
+                    Debug.Log("removed pursuer " + pursuersList.Count);
+#endif
+
                     if (pursuersList.Count == 0) {
                         currentState = GameState.PEACEFUL;
                     }
                 }
-                else 
+                else if (initiator == PlayerID.Instance.gameObject)
                 {
                     currentState = state; // Occurs when player died
                 }
@@ -64,8 +70,11 @@ public class GameStateManager : Singleton<GameStateManager>
                 currentState = state;
                 if (!pursuersList.Contains(initiator))
                 {
-                    Debug.Log("added pursuer " + pursuersList.Count);
                     pursuersList.Add(initiator);
+#if DEBUG
+                    Debug.Log("added pursuer " + pursuersList.Count);
+#endif
+
                 }
                 break;
         }

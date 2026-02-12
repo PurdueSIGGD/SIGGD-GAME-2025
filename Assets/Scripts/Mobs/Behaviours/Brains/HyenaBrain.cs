@@ -105,7 +105,8 @@ namespace SIGGD.Mobs
                     AudioManager.Instance.PlayOneShot(FMODEvents.Instance.soundEvents["HyenaOnNoticeSFX"].ToSafeString(), transform.position);
                 }
             } 
-            else if (this.provider.CurrentPlan.Goal is not KillPlayerGoal) 
+            
+            if (this.provider.CurrentPlan.Goal is not KillPlayerGoal) 
             {
                 GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, this.gameObject);
             }
