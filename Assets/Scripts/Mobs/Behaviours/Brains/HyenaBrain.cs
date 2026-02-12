@@ -102,7 +102,7 @@ namespace SIGGD.Mobs
 
                 if (AudioManager.Instance)
                 {
-                    AudioManager.Instance.PlayOneShot(FMODEvents.Instance.soundEvents["HyenaOnNoticeSFX"].ToSafeString(), transform.position);
+                    //AudioManager.Instance.PlayOneShot(FMODEvents.Instance.soundEvents["HyenaOnNoticeSFX"].ToSafeString(), transform.position);
                 }
             } 
             

@@ -52,10 +52,10 @@ namespace SIGGD.Mobs
         /// <param name="desiredDir"></param>
         /// <param name="speedMulti"></param>
         /// <param name="turnResponsiveness"></param>
-        public void MoveTowards(Vector3 desiredDir, float speedMulti, float turnResponsiveness = 1f)
+        public void MoveTowards(Vector3 desiredDir, float speedMulti, float turnResponsiveness = 1f, bool moveWithSprint = true)
         {
             // Applies sprinting
-            if (sprintAllowed && sprint != null && sprint.stamina > 0f)
+            if (moveWithSprint && sprintAllowed && sprint != null && sprint.stamina > 0f)
             {
                 speed = baseSpeed * 1.5f;
                 sprint.ReduceStamina(50f * Time.fixedDeltaTime);
@@ -115,6 +115,60 @@ namespace SIGGD.Mobs
                     rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, rotationSpeed, Time.fixedDeltaTime));
                 }
             }
+
+            if (agent != null)
+                agent.nextPosition = intended;
+        }
+        public void MoveTowardsNoRotation(Vector3 desiredDir, float speedMulti, float turnResponsiveness = 1f, bool moveWithSprint = true)
+        {
+            // Applies sprinting
+            if (moveWithSprint && sprintAllowed && sprint != null && sprint.stamina > 0f)
+            {
+                speed = baseSpeed * 1.5f;
+                sprint.ReduceStamina(50f * Time.fixedDeltaTime);
+            }
+            else
+            {
+                speed = baseSpeed;
+            }
+            // Fall back to smoothDir
+            desiredDir.y = 0f;
+            if (desiredDir.sqrMagnitude < MinDirSqr)
+            {
+                desiredDir = smoothDir;
+                if (desiredDir.sqrMagnitude < MinDirSqr)
+                    return;
+            }
+
+            desiredDir.Normalize();
+
+            // Damps direction and velocity based off of turn responsiveness
+            float t = Mathf.Clamp01((turnResponsiveness - 1f) / 4f);
+            float dirDamp = Mathf.Lerp(14f, 45f, t);
+            float velDamp = Mathf.Lerp(10f, 28f, t);
+
+            smoothDir = UnityUtil.DampVector3Spherical(smoothDir, desiredDir, dirDamp, Time.fixedDeltaTime);
+
+            Vector3 targetVel = smoothDir * (speed * speedMulti);
+            velocity = UnityUtil.DampVector3(velocity, targetVel, velDamp, Time.fixedDeltaTime);
+
+            velocity.y = 0f;
+
+            Vector3 intended = rb.position + velocity * Time.fixedDeltaTime;
+
+            if (NavMesh.SamplePosition(intended, out NavMeshHit hit, 0.6f, navFilter))
+            {
+                intended = hit.position;
+            }
+            else
+            {
+                intended = rb.position + smoothDir * 0.05f;
+                velocity *= 0.5f;
+            }
+
+            Vector3 delta = intended - rb.position;
+
+            rb.MovePosition(intended);
 
             if (agent != null)
                 agent.nextPosition = intended;
