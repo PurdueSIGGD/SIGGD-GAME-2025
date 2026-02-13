@@ -49,7 +49,7 @@ public class CameraBobbing : MonoBehaviour
     [SerializeField] private float airborneSpeedCutoff = 0.2f;
 
     [Header("Screen Shake Settings")]
-    [SerializeField] private float shakeDecayRate = 1.0f;
+    [SerializeField] private float shakeDecayRate = 0.2f;
     private float currentShakeIntensity = 0f;
     private Vector3 shakeOffset;
     #endregion
