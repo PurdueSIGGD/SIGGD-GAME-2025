@@ -44,18 +44,20 @@ public class Effects : MonoBehaviour
     {
         var startRadius = 10f;
         var targetRadius = intensity;
-        
-        vignetteMat.SetFloat(_vignettePowerID, startRadius);
-        
+
+        // Start vignette at targetRadius instead of fading in so that it doesn't feel delayed
+        // vignetteMat.SetFloat(_vignettePowerID, startRadius);
+        vignetteMat.SetFloat(_vignettePowerID, targetRadius);
+
         float elapsed = 0f;
-		while (elapsed < duration)
-		{
-			elapsed += Time.deltaTime;
-			float t = elapsed / duration;
-			float currentRadius = LerpByFunction(startRadius, targetRadius, t, easeInQuad);
-			vignetteMat.SetFloat(_vignettePowerID, currentRadius);
-			yield return null;
-		}
+		//while (elapsed < duration)
+		//{
+		//	elapsed += Time.deltaTime;
+		//	float t = elapsed / duration;
+		//	float currentRadius = LerpByFunction(startRadius, targetRadius, t, easeInQuad);
+		//	vignetteMat.SetFloat(_vignettePowerID, currentRadius);
+		//	yield return null;
+		//}
 
 		elapsed = 0f;
 		while (elapsed < duration)
