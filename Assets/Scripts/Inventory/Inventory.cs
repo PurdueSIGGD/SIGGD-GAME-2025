@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using Unity.VisualScripting;
 using System;
 
-[System.Serializable]
 public class Inventory : Singleton<Inventory>, IInventory
 {
     public const int HotBarLength = 3;
