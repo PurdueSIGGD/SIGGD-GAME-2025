@@ -10,7 +10,6 @@ public class PlayerDataSaveModule : ISaveModule
     private FirstPersonCamera playerCam;
     private PlayerHunger hunger;
     private EntityHealthManager health;
-    private PlayerStamina stamina;
 
     public bool deserialize()
     {
@@ -23,7 +22,6 @@ public class PlayerDataSaveModule : ISaveModule
         if (!playerCam) playerCam = PlayerID.Instance.cam;
         if (!health) health = PlayerID.Instance.playerHealth;
         if (!hunger) hunger = PlayerID.Instance.playerHunger;
-        if (!stamina) stamina = PlayerID.Instance.playerStamina;
         playerData ??= new PlayerSaveData();
 
         if (!FileManager.Instance.FileExists(savePath)) return false;
@@ -34,9 +32,6 @@ public class PlayerDataSaveModule : ISaveModule
         playerCam.SetRotation(playerData.Rotation);
         health.CurrentHealth = playerData.curHealth;
         hunger.CurrentHunger = playerData.curHunger;
-        stamina.CurrentStamina = playerData.curStamina;
-        stamina.StaminaDisabled = playerData.staminaDisabled;
-        Debug.Log("Set stamina " + stamina.CurrentStamina);
 
         return true;
     }
@@ -52,7 +47,6 @@ public class PlayerDataSaveModule : ISaveModule
         player = PlayerID.Instance.gameObject;
         hunger = PlayerID.Instance.playerHunger;
         health = PlayerID.Instance.playerHealth;
-        stamina = PlayerID.Instance.playerStamina;
 
         if (player == null || playerCam == null || hunger == null || health == null)
         {
@@ -64,8 +58,6 @@ public class PlayerDataSaveModule : ISaveModule
         playerData.Rotation = playerCam.GetRotation();
         playerData.curHealth = health.CurrentHealth;
         playerData.curHunger = hunger.CurrentHunger;
-        playerData.curStamina = stamina.CurrentStamina;
-        playerData.staminaDisabled = stamina.StaminaDisabled;
         
         byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);
         FileManager.Instance.WriteFile(savePath, bytes);

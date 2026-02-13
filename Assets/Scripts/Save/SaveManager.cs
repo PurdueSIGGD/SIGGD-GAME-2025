@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
@@ -18,9 +17,6 @@ public class SaveManager : Singleton<SaveManager>
     public GameProgressDataSaveModule gameProgressModule = null;
     public bool saveGameProgress = true;
 
-    public GraveDataSaveModule graveModule = null;
-    public bool saveGrave = true;
-
     private ISaveModule[] modules;
 
     protected override void Awake()
@@ -35,10 +31,9 @@ public class SaveManager : Singleton<SaveManager>
         if (saveScreenshot) screenshotModule = new ScreenshotSaveModule();
         if (saveQuests) questModule = new QuestDataSaveModule();
         if (saveGameProgress) gameProgressModule = new GameProgressDataSaveModule();
-        if (saveGrave) graveModule = new GraveDataSaveModule();
 
         modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
-                                     questModule, gameProgressModule, graveModule};
+                                     questModule, gameProgressModule};
 
         Load();
     }

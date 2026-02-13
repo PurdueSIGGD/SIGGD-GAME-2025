@@ -1,4 +1,3 @@
-using SIGGD.Goap;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,21 +11,10 @@ public class PlayerStamina : MonoBehaviour
     [SerializeField] Slider staminaSlider;
     [SerializeField] Image staminaSliderBar;
     
-    private float currentStamina = -1f;
-    private bool staminaDisabled = false;
+    private float currentStamina;
 
     public float MaxStamina => maxStamina;
-    public float CurrentStamina
-    {
-        get => currentStamina;
-        set => currentStamina = Mathf.Clamp(value, 0, maxStamina);
-    }
-
-    public bool StaminaDisabled
-    {
-        get => staminaDisabled;
-        set => staminaDisabled = value;
-    }
+    public float CurrentStamina => currentStamina;
 
     public bool HasStamina => (currentStamina > 0 && anim.GetBool("hasStamina"));
 
@@ -41,19 +29,9 @@ public class PlayerStamina : MonoBehaviour
 
     void Start()
     {
-        if (currentStamina == -1f) currentStamina = maxStamina;
-        
+        currentStamina = maxStamina;
         psm = PlayerID.Instance.stateMachine;
         anim = PlayerID.Instance.GetComponent<Animator>();
-
-        if (staminaDisabled)
-        {
-            if (coroutine == null)
-            {
-                coroutine = DisableStamina();
-                StartCoroutine(coroutine);
-            }
-        }
     }
 
     void Update()
@@ -109,19 +87,10 @@ public class PlayerStamina : MonoBehaviour
 
     private IEnumerator DisableStamina()
     {
-        staminaDisabled = true;
         anim.SetBool("hasStamina", false);
-        // Stamina is disabled until 50%
-        // Calculate wait time based on how much current stamina is at (for when stamina is recharging when game was stopped)
-        yield return new WaitForSeconds(5 * (MaxStamina / 2 - currentStamina) / (MaxStamina / 2)); 
+        yield return new WaitForSeconds(5);
         anim.SetBool("hasStamina", true);
-        staminaDisabled = false;
         coroutine = null;
-    }
-
-    public void ResetStamina()
-    {
-        currentStamina = MaxStamina;
     }
 }
 

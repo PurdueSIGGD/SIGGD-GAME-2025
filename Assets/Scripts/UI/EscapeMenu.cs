@@ -42,7 +42,6 @@ public class EscapeMenu : MonoBehaviour
             Cursor.visible = true;
             canvas.enabled = true;
             isEnabled = true;
-            ObjectPlacer.Instance.ExitPlacementMode();
         }
         else
         {
@@ -75,8 +74,10 @@ public class EscapeMenu : MonoBehaviour
 
     public void ShowCraftingMenu(bool enabled)
     {
+        Debug.Log("Showing crafting menu");
         if (CraftingMenu.Instance)
         {
+            Debug.Log("Instance exists");
             CraftingMenu.Instance.ShowCraftingMenu(enabled);
             if (enabled)
             {
