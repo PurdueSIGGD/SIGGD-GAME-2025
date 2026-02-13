@@ -31,7 +31,8 @@ public class MobSceneDataSaveModule : ISaveModule
         List<MobCitizenDataRaw> rawDataList = new List<MobCitizenDataRaw>();
         foreach (MobCitizenData citizen in citizens)
         {
-            rawDataList.Add(citizen.GetRawDataReference());
+            citizen.UpdateRawData();
+            rawDataList.Add(citizen.GetRawData());
         }
 
         byte[] bytes = SerializationUtility.SerializeValue(rawDataList, DataFormat.Binary);

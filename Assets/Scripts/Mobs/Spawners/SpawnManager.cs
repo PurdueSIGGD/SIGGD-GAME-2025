@@ -84,9 +84,9 @@ public class SpawnManager : MonoBehaviour
         GoapActionProvider goapActionProvider = mobObject.GetComponent<GoapActionProvider>();
         goapActionProvider.gameObject.SetActive(true);
 
-        // set boundary for territory capabillity
+        // set boundary for territory capabillity (optional depending on if mob has this capability)
         AgentData agentData = mobObject.GetComponent<AgentData>();
-        agentData.boundary = boundary;
+        if (agentData != null) agentData.boundary = boundary;
 
         // initialize navmesh agent and validate that spawn position is within valid navmesh area
         NavMeshAgent navAgent = mobObject.GetComponent<NavMeshAgent>();

@@ -9,7 +9,7 @@ namespace MobCensus
         [SerializeField] List<MobCitizenData> citizens = new List<MobCitizenData>();
         public List<MobCitizenData> GetCitizens() { return citizens; }
 
-        public void Start()
+        public void Awake()
         {
             spawnManager = FindFirstObjectByType<SpawnManager>();
         }
@@ -17,6 +17,8 @@ namespace MobCensus
         public void RegisterCitizen(GameObject prefab, GameObject instance, string mobId)
         {
             MobCitizenData newCitizen = new MobCitizenData(prefab, instance, mobId);
+            MobCitizenPassport pass = instance.GetComponent<MobCitizenPassport>();
+            pass.SetCitizenDataReference(newCitizen);
             citizens.Add(newCitizen);
         }
         public void RemoveCitizen(MobCitizenData targetCitizen)

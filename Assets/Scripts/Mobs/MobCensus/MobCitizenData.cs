@@ -25,7 +25,11 @@ namespace MobCensus
         {
             return passport;
         }
-        public MobCitizenDataRaw GetRawDataReference()
+        public void UpdateRawData()
+        {
+            passport.WriteMobCitizenData();
+        }
+        public MobCitizenDataRaw GetRawData()
         {
             return rawData;
         }

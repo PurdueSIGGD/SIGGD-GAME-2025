@@ -22,7 +22,6 @@ namespace MobCensus
         {
             citizenDataReference = reference;
         }
-
         /// <summary>
         /// Write the data currently on the mob to the census
         /// Only works if the mob already has a citizen data reference
@@ -34,7 +33,7 @@ namespace MobCensus
                 Debug.LogError("MobCitizenPassport: No citizen data reference set.");
                 return;
             }
-            MobCitizenDataRaw rawData = citizenDataReference.GetRawDataReference();
+            MobCitizenDataRaw rawData = citizenDataReference.GetRawData();
             rawData.SetPosition(transform.position);
             rawData.SetRotation(transform.eulerAngles);
             if (healthManager != null)

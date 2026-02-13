@@ -285,6 +285,7 @@ GameObject:
   - component: {fileID: 5686439252671958473}
   - component: {fileID: 7746694234990848621}
   - component: {fileID: -5431786924684461456}
+  - component: {fileID: 248646765769121363}
   m_Layer: 9
   m_Name: Prey
   m_TagString: Prey
@@ -377,7 +378,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   navMeshAgent: {fileID: 466983475878616671}
-  speed: 0
   groundCheckPoint: {fileID: 0}
   groundCheckSize: {x: 0.49, y: 0.3, z: 0.49}
   groundLayer:
@@ -408,7 +408,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <hunger>k__BackingField: 20
-  foodCount: 0
   HungerConfig: {fileID: 11400000, guid: 1c2a12c7ad63f074d86a890f7c6116e6, type: 2}
   hungerDamageContext:
     attacker: {fileID: 5495394095841355305}
@@ -483,6 +482,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smellRadius: 20
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  mobLayer:
+    serializedVersion: 2
+    m_Bits: 0
   targetMask:
     serializedVersion: 2
     m_Bits: 0
@@ -490,12 +495,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   targetSmellIntensity: 0
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  mobLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!195 &466983475878616671
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -717,11 +716,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454339f393dde5f4cb124a3697745d27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 12
   baseSpeed: 12
   rotationSpeed: 25
-  pathUpdateRate: 0.2
   sprintAllowed: 0
+--- !u!114 &248646765769121363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5495394095841355305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e97ee299f0f7604aa38f1564ba29e67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5833914746963486852
 GameObject:
   m_ObjectHideFlags: 0
