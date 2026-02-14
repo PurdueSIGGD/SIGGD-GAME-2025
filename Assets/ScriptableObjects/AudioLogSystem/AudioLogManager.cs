@@ -60,6 +60,17 @@ public class AudioLogManager : MonoBehaviour
 
         foreach (var line in curAudio.subtitles)
         {
+            // if the line has a % then it is from a radio so set effects to radio effects
+            if (line.line.Contains("%"))
+            {
+                UnityEngine.Debug.Log("AAAHHHHHHHHHHHHH");
+                logSoundEvent.setParameterByName("RadioVoice", 1);
+                //UnityEngine.Debug.Log(logSoundEvent.getParameterByName("RadioVoice", out float value));
+            }
+            else
+            {
+                logSoundEvent.setParameterByName("RadioVoice", 0);
+            }
             subtitles.text = line.line;
             yield return new WaitForSeconds(line.seconds);
         }
@@ -156,7 +167,7 @@ public class AudioLogManager : MonoBehaviour
        logSoundEvent.release();
     }*/
 
-    // this can be used for interrupt
+    // this can be used for interruptting the current voice line (monster attack, etc.)
     public void StopCurrentAudio()
     {
         // itll break if we try to stop stuff while nothing is playing
@@ -164,7 +175,6 @@ public class AudioLogManager : MonoBehaviour
         {
             return;
         }
-
 
         // run all the normal stop stuff including stopping audio
         logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
