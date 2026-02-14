@@ -75,12 +75,17 @@ public class GameStateManager : Singleton<GameStateManager>
 
             // Pursued and Pursued by Apex
 
-            case GameState.PURSUED:
             case GameState.PURSUED_BY_APEX:
+            case GameState.PURSUED:
                 // If we already aren't being pursued by this predator
                 if (!pursuersList.Contains(initiator))
                 {
-                    currentState = state;
+                    if (state == GameState.PURSUED_BY_APEX) {
+                        currentState = state;
+                    } else if (currentState != GameState.PURSUED_BY_APEX)
+                    {
+                        currentState = state; // Don't allow pursued by apex to be overriden by pursued
+                    }
                     pursuersList.Add(initiator);
 #if DODEBUG
                     Debug.Log("added pursuer " + pursuersList.Count);
