@@ -68,4 +68,6 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
             interactable.OnInteract(this);
         }, () => !PlayerInput.Instance.interactionHeld);
     }
+
+    #endregion
 }
