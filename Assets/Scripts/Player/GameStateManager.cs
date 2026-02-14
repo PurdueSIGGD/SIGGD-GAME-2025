@@ -68,6 +68,7 @@ public class GameStateManager : Singleton<GameStateManager>
 #if DODEBUG
                     Debug.Log("set to peaceful by" + initiator);
 #endif
+                    pursuersList.Clear();
                     currentState = state; // Occurs when player died
                 }
                 break;
