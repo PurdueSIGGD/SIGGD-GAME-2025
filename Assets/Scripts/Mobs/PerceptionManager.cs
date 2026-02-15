@@ -80,6 +80,6 @@ public class PerceptionManager : MonoBehaviour
     }
     public Vector3 GetSmellPosition()
     {
-        return smell != null ? smell.GetSmellPos() : Vector3.zero;
+        return smell != null ? smell.GetToSmellPos() : Vector3.zero;
     }
 }
