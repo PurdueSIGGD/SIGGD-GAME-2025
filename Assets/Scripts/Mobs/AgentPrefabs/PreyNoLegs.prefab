@@ -28,6 +28,7 @@ GameObject:
   - component: {fileID: 7828783127917040105}
   - component: {fileID: 7852721096110810017}
   - component: {fileID: 6924885661829806506}
+  - component: {fileID: 1754428727084810806}
   m_Layer: 9
   m_Name: PreyNoLegs
   m_TagString: Prey
@@ -455,6 +456,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e97ee299f0f7604aa38f1564ba29e67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1754428727084810806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5495394095841355305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c80caa5219e89cf49ab24ab329a03a95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7135641614424817716
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -515,13 +528,51 @@ PrefabInstance:
       propertyPath: m_Name
       value: googah
       objectReference: {fileID: 0}
+    - target: {fileID: 2042023225869285003, guid: b749995ee625275499384adc3cc205bc, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.2246
+      objectReference: {fileID: 0}
+    - target: {fileID: 2042023225869285003, guid: b749995ee625275499384adc3cc205bc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.423
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b749995ee625275499384adc3cc205bc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7560980701231912457}
   m_SourcePrefab: {fileID: 100100000, guid: b749995ee625275499384adc3cc205bc, type: 3}
 --- !u!4 &7245268432255723487 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b749995ee625275499384adc3cc205bc, type: 3}
   m_PrefabInstance: {fileID: 7135641614424817716}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8054562503801470309 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: b749995ee625275499384adc3cc205bc, type: 3}
+  m_PrefabInstance: {fileID: 7135641614424817716}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &7560980701231912457
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8054562503801470309}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: dd2dc192473be7145964784a0efdc432, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
