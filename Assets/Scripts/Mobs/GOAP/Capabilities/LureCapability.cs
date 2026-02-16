@@ -13,7 +13,7 @@ namespace SIGGD.Goap.Capabilities
             var builder = new CapabilityBuilder("LureCapability");
             builder.AddAction<TrackSmellAction>()
                 .AddEffect<PlayerHealth>(EffectType.Decrease)
-                .SetTarget<SmellLure>()
+               // .SetTarget<SmellLure>()
                 .SetStoppingDistance(12);
             builder.AddTargetSensor<PlayerTargetSensor>()
                 .SetTarget<PlayerLocation>();

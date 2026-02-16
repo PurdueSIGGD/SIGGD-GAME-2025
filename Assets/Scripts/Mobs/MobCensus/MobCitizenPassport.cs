@@ -1,3 +1,4 @@
+using SIGGD.Mobs;
 using System;
 using UnityEngine;
 
@@ -11,11 +12,13 @@ namespace MobCensus
         MobCensusManager census;
         MobCitizenData citizenDataReference = null;
         EntityHealthManager healthManager;
+        AgentData agentData;
 
         void Start()
         {
             census = FindFirstObjectByType<MobCensusManager>();
             healthManager = GetComponent<EntityHealthManager>();
+            agentData = GetComponent<AgentData>();
         }
 
         public void SetCitizenDataReference(MobCitizenData reference)
@@ -36,6 +39,10 @@ namespace MobCensus
             MobCitizenDataRaw rawData = citizenDataReference.GetRawData();
             rawData.SetPosition(transform.position);
             rawData.SetRotation(transform.eulerAngles);
+            if (agentData != null && agentData.boundary != null)
+            {
+                rawData.SetBoundary(agentData.boundary);
+            }
             if (healthManager != null)
             {
                 rawData.SetHealth(healthManager.CurrentHealth);
@@ -54,10 +61,11 @@ namespace MobCensus
             }
             transform.position = rawData.GetPosition();
             transform.eulerAngles = rawData.GetRotation();
+            agentData.boundary = rawData.GetBoundary();
             if (healthManager != null)
             {
                 healthManager.CurrentHealth = rawData.GetHealth();
-            }
+            }        
         }
 
         /// <summary>

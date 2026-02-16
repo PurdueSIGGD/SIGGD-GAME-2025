@@ -99,11 +99,11 @@ public class Smell : SerializedMonoBehaviour
         {
             if (collider.gameObject == gameObject) continue;
 
-            var mobSmell = collider.GetComponentInParent<MobCitizenData>();
+            //var mobSmell = collider.GetComponentInParent<MobCitizenData>();
 
-            if (mobSmells.TryGetValue(mobSmell.GetRawData().GetMobId(), out float smellIntensity)) { 
-                smellValues.Add((collider.transform.position, smellIntensity));
-            }
+            //if (mobSmells.TryGetValue(mobSmell.GetRawData().GetMobId(), out float smellIntensity)) { 
+            //    smellValues.Add((collider.transform.position, smellIntensity));
+            //}
         }
     }
     /// <summary>

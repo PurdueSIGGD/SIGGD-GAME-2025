@@ -12,6 +12,8 @@ public class SpawnRegion : MonoBehaviour
         public float spawnWeight;
     }
     SpawnManager spawnManager;
+    Boundary boundary;
+
     [SerializeField] List<SpawnRateData> spawnList;
     [SerializeField] List<SpawnPoint> spawnPoints;
 
@@ -34,6 +36,7 @@ public class SpawnRegion : MonoBehaviour
     void Start()
     {
         spawnManager = FindFirstObjectByType<SpawnManager>();
+        boundary = GetComponent<Boundary>();
         ScanChildrenForSpawnPoints();
         spawnCooldownTimer = spawnCooldown;
     }
@@ -123,7 +126,7 @@ public class SpawnRegion : MonoBehaviour
             else
                 mobPrefab = GetRandomMobPrefab();
             print("MYSPAWN AHHHHH");
-            spawnManager.SpawnMobNew(mobPrefab, spawnPoint.transform.position);
+            spawnManager.SpawnMobNew(mobPrefab, spawnPoint.transform.position, boundary);
         }
     }
     GameObject GetRandomMobPrefab()

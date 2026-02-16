@@ -7,6 +7,7 @@ using SIGGD.Mobs.PackScripts;
 using SIGGD.Goap;
 using UnityEngine.ProBuilder.MeshOperations;
 using Utility;
+using CrashKonijn.Goap.Runtime;
 
 namespace SIGGD.Mobs.Hyena
 {
@@ -18,6 +19,7 @@ namespace SIGGD.Mobs.Hyena
         private PackBehavior packBehavior;
         private Movement move;
         private AgentData agentData;
+        private LookFollow lookFollow;
 
         private NavMeshQueryFilter navFilter;
 
@@ -61,6 +63,7 @@ namespace SIGGD.Mobs.Hyena
             packBehavior = GetComponent<PackBehavior>();
             move = GetComponent<Movement>();
             agentData = GetComponent<AgentData>();
+            lookFollow = GetComponentInChildren<LookFollow>();
 
             if (agent != null)
             {
@@ -93,7 +96,7 @@ namespace SIGGD.Mobs.Hyena
         {
             finished = false;
             exit = false;
-
+            lookFollow.player = GetTarget;
             if (Vector3.Distance(GetTarget(), transform.position) < 9f && UnityEngine.Random.value > 0.3f)
             {
                 yield return StartCoroutine(WalkTowardsTarget(GetTarget));

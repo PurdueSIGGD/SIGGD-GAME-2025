@@ -14,9 +14,9 @@ namespace MobCensus
             spawnManager = FindFirstObjectByType<SpawnManager>();
         }
 
-        public void RegisterCitizen(GameObject prefab, GameObject instance, string mobId)
+        public void RegisterCitizen(GameObject prefab, GameObject instance, string mobId, Boundary boundary)
         {
-            MobCitizenData newCitizen = new MobCitizenData(prefab, instance, mobId);
+            MobCitizenData newCitizen = new MobCitizenData(prefab, instance, mobId, boundary);
             MobCitizenPassport pass = instance.GetComponent<MobCitizenPassport>();
             pass.SetCitizenDataReference(newCitizen);
             citizens.Add(newCitizen);
