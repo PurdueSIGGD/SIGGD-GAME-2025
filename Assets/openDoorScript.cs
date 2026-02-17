@@ -1,7 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class openDoorScript : MonoBehaviour, IInteractable<IInteractor>
+public class OpenDoorScript : MonoBehaviour, IInteractable<IInteractor>
 {    
     [Tooltip("Set this to the Retrieve Key Card Objective")]
     public QuestObjective keyCardobjective;
