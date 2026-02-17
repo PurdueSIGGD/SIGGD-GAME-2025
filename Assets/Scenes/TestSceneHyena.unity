@@ -437,7 +437,7 @@ Transform:
   m_GameObject: {fileID: 284957931}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.82, y: 1.096, z: 1.844}
+  m_LocalPosition: {x: -1.091, y: 1.096, z: 1.844}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -473,7 +473,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b342d8ce5c2fd48b8fa3147d48d1d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 0.6
+  m_Weight: 1
   m_Effectors:
   - m_Transform: {fileID: 284957932}
     m_Style:
@@ -725,12 +725,12 @@ MonoBehaviour:
         transform: {fileID: 0}
         weight: 0
     m_Offset: {x: 50, y: 0, z: 0}
-    m_MinLimit: -40
-    m_MaxLimit: 40
+    m_MinLimit: -100
+    m_MaxLimit: 100
     m_AimAxis: 4
     m_UpAxis: 2
-    m_WorldUpType: 1
-    m_WorldUpObject: {fileID: 0}
+    m_WorldUpType: 2
+    m_WorldUpObject: {fileID: 1201950092}
     m_WorldUpAxis: 2
     m_MaintainOffset: 0
     m_ConstrainedAxes:
@@ -1593,7 +1593,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1065277300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2228,8 +2228,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_RigLayers:
   - m_Rig: {fileID: 406205038}
-    m_Active: 1
-  - m_Rig: {fileID: 1065277300}
     m_Active: 1
   m_Effectors: []
 --- !u!95 &1201950091
