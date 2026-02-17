@@ -7,6 +7,9 @@ using System;
 
 public class Inventory : Singleton<Inventory>, IInventory
 {
+    // reference to the script that control's the player's tool hands.
+    private PlayerHands handsScript;
+
     public const int HotBarLength = 3;
     public const int InventoryLength = 9;
 
@@ -72,8 +75,45 @@ public class Inventory : Singleton<Inventory>, IInventory
         Select(index);
     }
 
+    #region Player Hands Helper Functions
+    /// <summary>
+    /// loads animator controller into player hands
+    /// </summary>
+    private void LoadHandAnimation(AnimatorOverrideController handAnimatorController) {
+        if (handAnimatorController != null) {
+            handsScript.SetOverrideController(handAnimatorController);
+        }
+    }
+
+    /// <summary>
+    /// deloads animator controller from player hands, reverting to default controller for hands.
+    /// </summary>
+    private void DeloadHandAnimator() {
+        handsScript.SetOverrideController();
+    }
+
+    /// <summary>
+    /// returns the animator override controller of the given ui slot. Returns null if there is none
+    /// </summary>
+    private AnimatorOverrideController GetUISlotAnimation(UISlot slot) {
+        ItemInfo itemInfo = slot.itemInfo;
+
+        if (itemInfo != null) {
+            IPlayerActionStrategy actionStrategy = itemInfo.playerActionStrategy;
+            if (actionStrategy != null) {
+                return actionStrategy.handAnimatorController;
+            }
+        }
+
+        return null;
+    }
+    #endregion
+
     void Start()
     {
+        // fetches the reference to the player hand's script.
+        handsScript = PlayerHands.instance;
+
 
         // Update inventory to match manually placed items in scene/saved items
         // get UI slots from scene
@@ -248,16 +288,53 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// </summary>
     /// <param name="index">Index to switch to</param>
     public void Select(int index) {
+        // is true if new index is an empty hotbar index. Is false if not
+        bool newIndexIsEmpty = (!inventory[index]) || (inventory[index].count == 0) || (!inventory[index].itemInfo);
+
+        // is true if given index points to a new slot of the hotbar
+        bool indexIsNew = selected != index;
+
         selected = index;
-        if (!inventory[index] || inventory[index].count == 0 || !inventory[index].itemInfo)
+
+        if (indexIsNew) {
+            AnimatorOverrideController itemAnimator = GetUISlotAnimation(inventory[index]);
+            if (itemAnimator != null) {
+                LoadHandAnimation(itemAnimator);
+            } else {
+                Debug.LogWarning("no tool animation found for current tool!");
+                DeloadHandAnimator();
+            }
+        } else {
+            DeloadHandAnimator();
+        }
+
+        // debugging
+        /*if (newIndexIsEmpty)
         {
             Debug.Log("Selected index " + index + ", which is empty");
         }
-        else {
+        else
+        {
             Debug.Log("Selected index " + index + ", containing " + inventory[index].count + " " + inventory[index].itemInfo.itemName + "s");
-        } 
+        }*/
     }
 
+    /// <summary>
+    /// reselects currently selected index. Do this if the tool's animation may change
+    /// </summary>
+    public void Reselect() { 
+        AnimatorOverrideController itemAnimator = GetUISlotAnimation(inventory[selected]);
+        if (itemAnimator != null) {
+            LoadHandAnimation(itemAnimator);
+        } else {
+            DeloadHandAnimator();
+        }
+    }
+
+
+    /// <summary>
+    /// de increments currently selected tool. Use this when you like eat an apple or something.
+    /// </summary>
     public void Decrement()
     {
         inventory[selected].count--;
@@ -267,6 +344,8 @@ public class Inventory : Singleton<Inventory>, IInventory
             inventory[selected].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
         }
         inventory[selected].UpdateSlot();
+
+        Reselect();
     }
 
     /// <summary>
@@ -354,6 +433,9 @@ public class Inventory : Singleton<Inventory>, IInventory
                         inventory[i].UpdateSlot(); // update UI
                         count = 0;
                     }
+
+                    Reselect();
+
                     Debug.Log("Added " + itemInfo.itemName + " to existing stack at index " + i + ". Current count is " + inventory[i].count);
                     if (count <= 0) return 0;
                 }
@@ -382,10 +464,16 @@ public class Inventory : Singleton<Inventory>, IInventory
                         count = 0;
                     }
                     Debug.Log("Added " + itemInfo.itemName + " to new stack at index " + i + ". Current count is " + inventory[i].count);
+
+                    Reselect();
+
                     if (count <= 0) return 0;
                 }
             }
         }
+
+        Reselect();
+
         return count; // leftover items that could not be added
         // otherwise replace current selected item
 
@@ -413,6 +501,8 @@ public class Inventory : Singleton<Inventory>, IInventory
                         inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
                     }
                     inventory[i].UpdateSlot();
+
+                    Reselect();
                     return true; // done removing
                 }
                 else { // not enough in this stack; remove entire stack and keep looping
@@ -423,6 +513,8 @@ public class Inventory : Singleton<Inventory>, IInventory
                 }
             }
         }
+
+        Reselect();
         return false;
     }
 
@@ -492,6 +584,8 @@ public class Inventory : Singleton<Inventory>, IInventory
                 swapSelection = -1;
             }
         }
+
+        Reselect();
     }
     public void RemoveInventory()
     {
@@ -506,6 +600,8 @@ public class Inventory : Singleton<Inventory>, IInventory
             inventory[i].UpdateSlot();
         }
         //return copy;
+
+        Reselect();
     }
 
     public void SetInventory(ItemInfo[] finfo, int[] fcount)
@@ -520,6 +616,8 @@ public class Inventory : Singleton<Inventory>, IInventory
             inventory[i].UpdateSlot();
         }
         Debug.Log(inventory.Length + " new length");
+
+        Reselect();
     }
 
     /// <summary>
