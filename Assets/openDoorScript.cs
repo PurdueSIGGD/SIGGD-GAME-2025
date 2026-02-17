@@ -1,30 +1,27 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class openDoorScript : MonoBehaviour, IInteractable<IInteractor>
 {    
+    [Tooltip("Set this to the Retrieve Key Card Objective")]
     public QuestObjective keyCardobjective;
-    
     
     public void OnHoverEnter(InteractableUI ui)
     {
         ui.ActivateUI(this);
-        //Debug.Log($"Hovering over item: {itemInfo.itemName}");
     }
 
     public void OnHoverExit(InteractableUI ui)
     {
         ui.DeactivateUI();
-        //Debug.Log($"Stopped hovering over item: {itemInfo.itemName}");
     }
 
     public void OnInteract(IInteractor interactor)
     {
-        Debug.Log(QuestManager.Instance.IsObjectiveComplete(keyCardobjective) + "objective status");
-        
+        // Checks if the retrieve key card objective is completed, and will "open" the door if the keycard is retrieved
         if (QuestManager.Instance.IsObjectiveComplete(keyCardobjective))
         {
-            Destroy(this.gameObject); // Remove the item from the scene
+            Destroy(this.gameObject);
         }
-        else Debug.Log("Quest not complete");
     }
 }
