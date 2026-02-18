@@ -7,11 +7,8 @@ public class GenericStatPickup : MonoBehaviour
     public float multiplier = 2f;
     public float duration = 5f;
 
-    private GameObject o;
-
     private void OnTriggerEnter(Collider other)
     {
-         
     }
 
 

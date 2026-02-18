@@ -9,23 +9,26 @@ using System.Collections.Generic;
 [Serializable]
 public class Stat
 {
-    public float Value => value * modifier;
+    public float Value => value * (modifier / 100);
     public float UnmodValue => value;
 
     public float value;
-    public float modifier;
-    public float baselineValue; // value first assigned when stat is initialized, used for resetting stat
+    [NonSerialized] public float modifier;
+    [NonSerialized] public float baselineValue; // value first assigned when stat is initialized, used for resetting stat
 
     public List<Coroutine> activeValChanges;
     public List<Coroutine> activeModChanges;
 
+    [NonSerialized] public MonoBehaviour parent;
+
     public Stat(float value)
     {
-        baselineValue = value;
-        modifier = 1f;
+        this.value = baselineValue = value;
+        modifier = 100f;
 
         activeValChanges = new();
         activeModChanges = new();
+        //this.parent = parent;
     }
 
     /// <summary>
@@ -44,14 +47,15 @@ public class Stat
     /// <param name="duration">duration of change</param>
     public void SetModifier(float newMod, float duration = default)
     {
-        if (!StatManager.Instance)
-        {
-            Debug.LogError("No StatManager instance found. Cannot set modifier.");
-        }
-        else
-        {
-            StatManager.Instance.UpdateModifier(this, newMod, duration);
-        }
+        //if (!StatManager.Instance)
+        //{
+        //    Debug.LogError("No StatManager instance found. Cannot set modifier.");
+        //}
+        //else
+        //{
+        //    StatManager.Instance.UpdateModifier(this, newMod, duration);
+        //}
+        StatManager.UpdateModifier(this, newMod, duration);
     }
 
     /// <summary>
@@ -59,17 +63,17 @@ public class Stat
     /// </summary>
     public void ResetModifier()
     {
-        if (StatManager.Instance)
-        {
+        //if (StatManager.Instance)
+        //{
             foreach (Coroutine modChange in activeModChanges)
             {
-                StatManager.Instance.StopCoroutine(modChange);
+                if (modChange != null) parent.StopCoroutine(modChange);
             }
-        }
-        else
-        {
-            Debug.LogError("No StatManager instance found. Cannot reset modifier.");
-        }
+        //}
+        //else
+        //{
+        //    Debug.LogError("No StatManager instance found. Cannot reset modifier.");
+        //}
         modifier = 1f;
         activeModChanges.Clear();
     }
@@ -81,14 +85,15 @@ public class Stat
     /// <param name="duration">duration of change</param>
     public void SetStatValue(float newVal, float duration = default)
     {
-        if (!StatManager.Instance)
-        {
-            Debug.LogError("No StatManager instance found. Cannot set value.");
-        }
-        else
-        {
-            StatManager.Instance.UpdateValue(this, newVal, duration);
-        }
+        //if (!StatManager.Instance)
+        //{
+        //    Debug.LogError("No StatManager instance found. Cannot set value.");
+        //}
+        //else
+        //{
+        //    StatManager.Instance.UpdateValue(this, newVal, duration);
+        //}
+        StatManager.UpdateValue(this, newVal, duration);
     }
 
     /// <summary>
@@ -96,17 +101,17 @@ public class Stat
     /// </summary>
     public void ResetValue()
     {
-        if (StatManager.Instance)
-        {
+        //if (StatManager.Instance)
+        //{
             foreach (Coroutine valChange in activeValChanges)
             {
-                StatManager.Instance.StopCoroutine(valChange);
+                if (valChange != null) parent.StopCoroutine(valChange);
             }
-        }
-        else
-        {
-            Debug.LogError("No StatManager instance found. Cannot rest value");
-        }
+        //}
+        //else
+        //{
+        //    Debug.LogError("No StatManager instance found. Cannot rest value");
+        //}
         value = baselineValue;
         activeValChanges.Clear();
     }
