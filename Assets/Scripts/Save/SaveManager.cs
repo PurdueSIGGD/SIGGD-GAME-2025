@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
@@ -19,6 +20,8 @@ public class SaveManager : Singleton<SaveManager>
 
     public MobSceneDataSaveModule mobSceneDataSaveModule = null;
     public bool saveMobScene = true;
+    public GraveDataSaveModule graveModule = null;
+    public bool saveGrave = true;
 
     private ISaveModule[] modules;
 
@@ -39,6 +42,10 @@ public class SaveManager : Singleton<SaveManager>
         );
         modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
                                      questModule, gameProgressModule, mobSceneDataSaveModule};
+        if (saveGrave) graveModule = new GraveDataSaveModule();
+
+        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
+                                     questModule, gameProgressModule, graveModule};
 
         Load();
     }
