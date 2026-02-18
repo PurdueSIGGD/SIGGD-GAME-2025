@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 using System;
-
-[System.Serializable]
 public class Inventory : Singleton<Inventory>, IInventory
 {
     public const int HotBarLength = 3;
@@ -157,6 +155,17 @@ public class Inventory : Singleton<Inventory>, IInventory
             Debug.Log("Initializing empty inventory");
             for (int i = 0; i < inventory.Length; i++)
             {
+                // TODO: TEMPORARY FOR MUSHROOM TESTING
+                if (i == 0)
+                {
+                    inventory[i].index = i;
+                    inventory[i].count = 10;
+                    inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Mushroom.ToString()];
+                    inventory[i].UpdateSlot();
+                    Debug.Log($"{inventory[i].count} {inventory[i].itemInfo}");
+                    continue;
+                }
+
                 inventory[i].index = i;
                 inventory[i].count = 0;
                 inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];

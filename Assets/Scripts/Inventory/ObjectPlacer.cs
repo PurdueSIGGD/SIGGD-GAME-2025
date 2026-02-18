@@ -133,12 +133,10 @@ public class ObjectPlacer : MonoBehaviour
         // Start position is in front of the player at a set distance, with a vertical offset
         Vector3 startPos = playerCamera.transform.position + (cameraForward * objectDistanceFromPlayer);
         startPos.y += raycastStartVerticalOffset;
-        Debug.DrawRay(startPos, Vector3.down, Color.green);
         _raycastHit = Physics.Raycast(startPos, Vector3.down, out RaycastHit hitInfo, raycastDistance, placementSurfaceLayerMask);
         if (_raycastHit)
         {
             _currentPlacementPosition = hitInfo.point;
-            // TODO: Trap disappears from scene as well after replaying
         }
 
         // Update preview object position and rotation
