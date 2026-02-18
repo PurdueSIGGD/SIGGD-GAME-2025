@@ -19,6 +19,7 @@ namespace MobCensus
             rawData = new MobCitizenDataRaw();
             rawData.SetMobId(mobId);
             passport = instance.GetComponent<MobCitizenPassport>();
+            passport.SetCitizenDataReference(this);
             passport.WriteMobCitizenData();
         }
         public MobCitizenPassport GetPassport()

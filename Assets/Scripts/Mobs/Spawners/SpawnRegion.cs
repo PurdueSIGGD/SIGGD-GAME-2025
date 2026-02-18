@@ -25,34 +25,62 @@ public class SpawnRegion : MonoBehaviour
     [SerializeField] Transform centerPosition;
     [SerializeField] float radius;
     [SerializeField] LayerMask relevantLayers; // MUST AT LEAST INCLUDE PLAYER!!!!
+    bool playerInRegion = false; // toggled true when player enters region, toggled false when player exits region
+    bool spawnReady = false; // toggled true when player enters region, toggled false when cooldown ends
 
     float spawnCooldownTimer;
 
-    bool playerInRegion = false; // toggled true when player enters region, toggled false when player exits region
-    bool spawnTriggered = false; // toggled true when player enters region, toggled false when cooldown ends
+    bool initialized = false;
+    public float GetSpawnCooldownTimer()
+    {
+        return spawnCooldownTimer;
+    }
+    const float NULL_CONST = -676869;
 
-    void Start()
+    public void Awake()
+    {
+        Initialize();
+    }
+    public void Initialize(float initialCooldownTimer = NULL_CONST)
     {
         spawnManager = FindFirstObjectByType<SpawnManager>();
         ScanChildrenForSpawnPoints();
-        spawnCooldownTimer = spawnCooldown;
+        if (initialCooldownTimer == NULL_CONST)
+            spawnCooldownTimer = 0;
+        else
+            spawnCooldownTimer = initialCooldownTimer;
+        initialized = true;
     }
 
     void Update()
     {
+        // block update loop pre-init
+        if (!initialized)
+        {
+            return;
+        }
+
+        // periodic spawn region checks - init spawn if conditions are met
         if (spawnRegionCheckTimer <= 0)
         {
             CheckSpawnRegion();
+            if (playerInRegion && spawnReady)
+            {
+                // RAHHHHH player has entered the spawn region
+                spawnReady = false;
+                SpawnMobsInRegion();
+            }
             spawnRegionCheckTimer = spawnRegionCheckIntervalSec;
         }
         spawnRegionCheckTimer -= Time.deltaTime;
 
-        if (spawnTriggered == true && playerInRegion == false)
+        // post spawning, run spawn cooldown logic and reset spawn trigger
+        if (spawnReady == false && playerInRegion == false)
         {
             spawnCooldownTimer -= Time.deltaTime;
             if (spawnCooldownTimer <= 0f)
             {
-                spawnTriggered = false;
+                spawnReady = true;
                 spawnCooldownTimer = spawnCooldown;
             }
         }
@@ -69,6 +97,9 @@ public class SpawnRegion : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// Updates playerInRegion boolean to reflect if player is truly in it or not
+    /// </summary>
     public void CheckSpawnRegion()
     {
         LayerMask myLayers = relevantLayers | (1 << LayerMask.NameToLayer("Player")); // extra security to guarantee player is added
@@ -81,11 +112,6 @@ public class SpawnRegion : MonoBehaviour
             {
                 playerFound = true;
                 playerInRegion = true; // RAHHHHH player has entered the spawn region
-                if (!spawnTriggered)
-                {
-                    spawnTriggered = true;
-                    SpawnMobsInRegion();
-                }
             }
         }
         if (!playerFound)

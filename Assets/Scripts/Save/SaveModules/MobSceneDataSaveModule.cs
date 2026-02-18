@@ -4,7 +4,9 @@ using System.Collections.Generic;
 
 public class MobSceneDataSaveModule : ISaveModule
 {
-    private readonly string savePath = $"{FileManager.savesDirectory}/mobSceneData";
+    private readonly string mobSavePath = $"{FileManager.savesDirectory}/mobSceneData";
+    private readonly string regionSavePath = $"{FileManager.savesDirectory}/spawnRegionSceneData";
+
     private MobCensusManager mobCensusManager;
     public MobSceneDataSaveModule(MobCensusManager mobCensusManager)
     {
@@ -15,11 +17,17 @@ public class MobSceneDataSaveModule : ISaveModule
     {
         if (mobCensusManager == null) return false;
 
-        if (!FileManager.Instance.FileExists(savePath)) return false;
-        byte[] bytes = FileManager.Instance.ReadFile(savePath);
+        if (!FileManager.Instance.FileExists(mobSavePath)) return false;
+        byte[] bytes = FileManager.Instance.ReadFile(mobSavePath);
+        if (!FileManager.Instance.FileExists(regionSavePath)) return false;
+        byte[] regionBytes = FileManager.Instance.ReadFile(regionSavePath);
 
         List<MobCitizenDataRaw> rawDataList = SerializationUtility.DeserializeValue<List<MobCitizenDataRaw>>(bytes, DataFormat.Binary);
+        List<MobRegionDataRaw> rawRegionList = SerializationUtility.DeserializeValue<List<MobRegionDataRaw>>(regionBytes, DataFormat.Binary);
+
         mobCensusManager.LoadRawDataFromSave(rawDataList);
+        mobCensusManager.LoadSpawnRegionsFromSave(rawRegionList);
+
         return true;
     }
 
@@ -34,9 +42,18 @@ public class MobSceneDataSaveModule : ISaveModule
             citizen.UpdateRawData();
             rawDataList.Add(citizen.GetRawData());
         }
+        List<MobRegionData> regions = mobCensusManager.GetRegions();
+        List<MobRegionDataRaw> regionsRaw = new List<MobRegionDataRaw>();
+        foreach (MobRegionData region in regions)
+        {
+            region.UpdateRawData();
+            regionsRaw.Add(region.GetRawData());
+        }
 
         byte[] bytes = SerializationUtility.SerializeValue(rawDataList, DataFormat.Binary);
-        FileManager.Instance.WriteFile(savePath, bytes);
+        FileManager.Instance.WriteFile(mobSavePath, bytes);
+        byte[] regionBytes = SerializationUtility.SerializeValue(regionsRaw, DataFormat.Binary);
+        FileManager.Instance.WriteFile(regionSavePath, regionBytes);
 
         return true;
     }
