@@ -169,7 +169,6 @@ namespace SIGGD.Mobs
             Vector3 delta = intended - rb.position;
 
             rb.MovePosition(intended);
-
             if (agent != null)
                 agent.nextPosition = intended;
         }

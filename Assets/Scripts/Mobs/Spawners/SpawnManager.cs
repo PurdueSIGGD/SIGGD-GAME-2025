@@ -12,6 +12,8 @@ public class SpawnManager : MonoBehaviour
     MobSpeciesRegistry mobSpeciesRegistry;
 
     public GameObject boundaryObject;
+    [SerializeField]
+    private float spawnPointRadius = 3f;
     void Awake()
     {
         mobCensus = FindFirstObjectByType<MobCensusManager>();
@@ -91,23 +93,27 @@ public class SpawnManager : MonoBehaviour
         }
         // initialize navmesh agent and validate that spawn position is within valid navmesh area
         NavMeshAgent navAgent = mobObject.GetComponent<NavMeshAgent>();
+        if (navAgent == null)
+        {
+            Debug.LogError($"{mobObject.name} missing NavMeshAgent");
+            return;
+        }
+
+        navAgent.updatePosition = false;
+        navAgent.updateRotation = false;
         NavMeshQueryFilter filter = new NavMeshQueryFilter
         {
             agentTypeID = navAgent.agentTypeID,
             areaMask = NavMesh.AllAreas
         };
-        NavMesh.SamplePosition(mobObject.transform.position, out NavMeshHit hit, 15f, filter);
+        NavMeshQueryFilter navFilter = agentData.filter;
+        bool success = NavMesh.SamplePosition(mobObject.transform.position, out NavMeshHit hit, 15f, navFilter);
         navAgent.Warp(hit.position);
-        // =======
-        //         Vector2 randomPos = Random.insideUnitCircle * spawnRadius;
-        //         Vector3 candidatePos = spawnPosition + new Vector3(randomPos.x, 0f, randomPos.y);
-
-        //         if (NavMesh.SamplePosition(candidatePos, out NavMeshHit hit, spawnRadius, NavMesh.AllAreas))
-        //             return hit.position;
-
-        //         // fallback to spawnPosition if sampling fails
-        //         return spawnPosition;
-        // >>>>>>> dev
+        if (success) {
+            Debug.Log("success");
+        } else
+        {
+            Debug.Log("failure");
+        }
     }
-
 }

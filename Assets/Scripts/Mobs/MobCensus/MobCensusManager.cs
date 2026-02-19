@@ -19,6 +19,7 @@ namespace MobCensus
             MobCitizenData newCitizen = new MobCitizenData(prefab, instance, mobId, boundary);
             MobCitizenPassport pass = instance.GetComponent<MobCitizenPassport>();
             pass.SetCitizenDataReference(newCitizen);
+            pass.WriteMobCitizenData();
             citizens.Add(newCitizen);
         }
         public void RemoveCitizen(MobCitizenData targetCitizen)

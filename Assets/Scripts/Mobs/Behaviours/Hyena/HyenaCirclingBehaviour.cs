@@ -19,7 +19,9 @@ namespace SIGGD.Mobs.Hyena
         private PackBehavior packBehavior;
         private Movement move;
         private AgentData agentData;
-        private LookFollow lookFollow;
+
+        [SerializeField]
+        private Transform lookTargetTransform;
 
         private NavMeshQueryFilter navFilter;
 
@@ -63,7 +65,6 @@ namespace SIGGD.Mobs.Hyena
             packBehavior = GetComponent<PackBehavior>();
             move = GetComponent<Movement>();
             agentData = GetComponent<AgentData>();
-            lookFollow = GetComponentInChildren<LookFollow>();
 
             if (agent != null)
             {
@@ -96,7 +97,6 @@ namespace SIGGD.Mobs.Hyena
         {
             finished = false;
             exit = false;
-            lookFollow.player = GetTarget;
             if (Vector3.Distance(GetTarget(), transform.position) < 9f && UnityEngine.Random.value > 0.3f)
             {
                 yield return StartCoroutine(WalkTowardsTarget(GetTarget));
@@ -173,6 +173,7 @@ namespace SIGGD.Mobs.Hyena
                     elapsed += Time.fixedDeltaTime;
 
                     Vector3 targetRaw = GetTarget();
+                    lookTargetTransform.position = targetRaw;
                     if (targetRaw == Vector3.zero)
                     {
                         ExitBehaviour();
@@ -320,6 +321,10 @@ namespace SIGGD.Mobs.Hyena
                 }
                 dir = ApplyEdgeAvoidance(rb.position, dir);
                 move.MoveTowardsNoRotation(dir, 0.3f, 1.0f, false);
+                Quaternion targetRot = Quaternion.LookRotation(targetRaw, Vector3.up);
+                rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 1f, Time.fixedDeltaTime));
+
+
 
                 // Not moving check similar to Circle()
                 bool notMoving = (rb.position - lastPos).sqrMagnitude < MinMoveSqr;

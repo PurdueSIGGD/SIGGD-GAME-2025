@@ -67,6 +67,7 @@ namespace SIGGD.Mobs.Hyena
             Debug.Log($"{gameObject.name} has begun attack animation");
             animatorController.PlayAttack();
             yield return new WaitUntil(() => HyenaLungeBehaviour.finishedLunging || HyenaLungeBehaviour.exit);
+            animatorController.EndAttack();
             if (HyenaLungeBehaviour.exit) yield break; // stop sequence
             StartCoroutine(HyenaLungeBehaviour.ExitLunge(GetTarget));
             yield return new WaitUntil(() => HyenaLungeBehaviour.finishedExiting || HyenaLungeBehaviour.exit); 

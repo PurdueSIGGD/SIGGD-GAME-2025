@@ -4,12 +4,22 @@ using System;
 public class LookFollow : MonoBehaviour
 {
 
-    public Func<Vector3> player;
-    public Vector3 offset = new Vector3(0f, 1.6f, 0f);
+    public GameObject player = null;
 
+    private void Start()
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 100);
+        foreach (Collider collider in colliders)
+        {
+            if (collider.CompareTag("Player"))
+            {
+                player = collider.gameObject;
+            }
+        }
+    }
     void LateUpdate()
     {
         if (player == null) return;
-        transform.position = player() + offset;
+        transform.position = player.transform.position;
     }
 }

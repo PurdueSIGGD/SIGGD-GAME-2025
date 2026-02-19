@@ -11,27 +11,28 @@ public class EnemyAnimator : MonoBehaviour
     private BoxCollider collider;
     private Vector3 boxHalfExtents;
     private Vector3 boxCenter;
-    [SerializeField]
-    private GameObject idleModel;
-    [SerializeField]
-    private GameObject attackModel;
     [SerializeField] private DamageContext damageContext;
     void Awake()
 
     {
         //playerLayer = LayerMask.GetMask("Player");
         mobLayer = LayerMask.GetMask("Mob");
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
         collider = GetComponentInChildren<BoxCollider>();
     }
     private void Start()
     {
-        idleModel.SetActive(true);
+        //idleModel.SetActive(true);
         boxHalfExtents = collider.size * 0.5f;
         boxCenter = collider.transform.TransformPoint(collider.center);
     }
 
-    public void PlayAttack() => animator.SetTrigger("Attack");
+    public void PlayAttack() => animator.SetBool("Attack", true);
+    public void EndAttack()
+    {
+        animator.SetBool("Attack", false);
+        collider.enabled = false;
+    }
 
     /*
     public void AttackHitboxCheck()
@@ -74,22 +75,18 @@ public class EnemyAnimator : MonoBehaviour
 
     public void SetLungeModel()
     {
-        idleModel.SetActive(false);
-        attackModel.SetActive(true);
+        PlayAttack();
     }
 
     void EnableAttack()
     {
         Debug.Log("attack_enabled");
-        //collider.gameObject.SetActive(true);
+
         collider.enabled = true;
     }
     void DisableAttack()
     {
-        idleModel.SetActive(true);
-        attackModel.SetActive(false);
         Debug.Log("attack_disabled");
-        //collider.gameObject.SetActive(false);
 
         collider.enabled = false;
     }
