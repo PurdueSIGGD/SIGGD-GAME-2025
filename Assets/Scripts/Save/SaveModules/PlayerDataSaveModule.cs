@@ -60,7 +60,14 @@ public class PlayerDataSaveModule : ISaveModule
             return false;
         }
 
-        playerData.Position = player.transform.position;
+        if (PlayerID.Instance.IsAlive)
+        {
+            playerData.Position = player.transform.position;
+        }
+        else
+        { // Set player's position as respawn point if saving while dead
+            playerData.Position = PlayerID.Instance.GetComponent<ManageRespawn>().respawnPoint;
+        }
         playerData.Rotation = playerCam.GetRotation();
         playerData.curHealth = health.CurrentHealth;
         playerData.curHunger = hunger.CurrentHunger;
