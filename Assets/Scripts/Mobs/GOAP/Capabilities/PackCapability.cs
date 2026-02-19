@@ -11,7 +11,6 @@ namespace SIGGD.Goap.Capabilities
         public override ICapabilityConfig Create()
         {
             var builder = new CapabilityBuilder("PackCapability");
-
             builder.AddGoal<GrowPackGoal>()
                 .AddCondition<LargePack>(Comparison.GreaterThanOrEqual, 1);
             builder.AddAction<GrowPackAction>()

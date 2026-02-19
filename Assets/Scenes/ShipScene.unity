@@ -412,9 +412,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 111288014}
-  - component: {fileID: 111288013}
   - component: {fileID: 111288012}
-  - component: {fileID: 111288011}
   m_Layer: 0
   m_Name: Window
   m_TagString: Untagged
@@ -422,18 +420,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &111288011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 111288010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fadc1ba187c54cf8a0cf573df9cbe287, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &111288012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,37 +434,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectiveKey: {fileID: 11400000, guid: 44a3dd191ea72d14cadae3184bbf47f1, type: 2}
   conditionStrategy:
-    rid: 9114632714517479507
+    rid: 1516971561598582867
   references:
     version: 2
     RefIds:
-    - rid: 9114632714517479507
-      type: {class: TriggerEnterConditionStrategy, ns: , asm: Assembly-CSharp}
+    - rid: 1516971561598582867
+      type: {class: OnRenderConditionStrategy, ns: , asm: Assembly-CSharp}
       data:
-        triggerListener: {fileID: 111288011}
-        deactivateOnExit: 1
-        inverse: 0
---- !u!65 &111288013
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 111288010}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+        targetTransform: {fileID: 111288014}
+        ignoreMask:
+          serializedVersion: 2
+          m_Bits: 0
 --- !u!4 &111288014
 Transform:
   m_ObjectHideFlags: 0
@@ -488,8 +454,8 @@ Transform:
   m_GameObject: {fileID: 111288010}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 46.07, y: 6.15, z: 466.56}
-  m_LocalScale: {x: 4.507708, y: 1, z: 4.5011}
+  m_LocalPosition: {x: 47.24, y: 6.15, z: 460.87}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -786,7 +752,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3397956530449237605, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 678875.3
+      value: 1805064
       objectReference: {fileID: 0}
     - target: {fileID: 4625199333151958071, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
       propertyPath: m_IsActive
