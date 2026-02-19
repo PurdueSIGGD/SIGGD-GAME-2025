@@ -7,6 +7,7 @@ public class DeathMenu : MonoBehaviour
     [SerializeField] private Canvas canvas;
     [SerializeField] private Button respawnButton;
     [SerializeField] private Button mainMenuButton;
+    [SerializeField] private GameObject escapeMenu;
 
     private ManageRespawn respawnManager;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -20,22 +21,25 @@ public class DeathMenu : MonoBehaviour
             ShowDeathMenu(false);
         });
         mainMenuButton.onClick.AddListener(() =>
-                {
-                    // Respawn player and immediately switch to main menu
-                    respawnManager.RespawnPlayer();
-                    SaveManager.Instance.Save();
-                    SceneManager.LoadScene("Main Menu");
-                    ShowDeathMenu(false);
-                });
+        {
+            // Respawn player and immediately switch to main menu
+            respawnManager.RespawnPlayer();
+            ShowDeathMenu(false);
+            SaveManager.Instance.Save();
+            SceneManager.LoadScene("Main Menu");
+        });
     }
 
     public void ShowDeathMenu(bool enable)
     {
+        escapeMenu.GetComponent<EscapeMenu>().ShowEscapeMenu(false);
+        Debug.Log("Show death menu: " + enable);
         if (enable)
         {
             Cursor.lockState = CursorLockMode.Confined;
             Cursor.visible = true;
             canvas.enabled = true;
+            ObjectPlacer.Instance.ExitPlacementMode();
         }
         else
         {

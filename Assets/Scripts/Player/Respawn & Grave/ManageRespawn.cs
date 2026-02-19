@@ -37,10 +37,10 @@ public class ManageRespawn : MonoBehaviour
     {
         Time.timeScale = 1f;
         player.transform.position = respawnPoint;
-        ObjectPlacer.Instance.ExitPlacementMode();
         health.ResetHealth();
         hunger.ResetHunger();
         stamina.ResetStamina();
+        PlayerID.Instance.IsAlive = true;
     }
 
     private void OnPlayerDeath(DamageContext context)
@@ -48,9 +48,9 @@ public class ManageRespawn : MonoBehaviour
         if (context.victim == PlayerID.Instance.gameObject)
         {
             Time.timeScale = 0f;
+            PlayerID.Instance.IsAlive = false;
             CreateGrave();
             deathMenu.GetComponent<DeathMenu>().ShowDeathMenu(true);
-            RespawnPlayer();
         }
     }
 
