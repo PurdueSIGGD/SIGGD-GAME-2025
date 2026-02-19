@@ -39,6 +39,13 @@ public class Inventory : Singleton<Inventory>, IInventory
         inventoryCanvas.enabled = false;
 
         inputActions = new InventoryInputActions();
+
+        itemInfos = new();
+        foreach (var entry in RecipeInfo.Instance.NamesToItemInfos)
+        {
+            itemInfos[entry.Key.ToString()] = entry.Value;
+        }
+
     }
 
     void OnEnable()
@@ -652,7 +659,8 @@ public class Inventory : Singleton<Inventory>, IInventory
         string s = "{";
         for (int i = 0; i < inventory.Length; i++) {
             if (i % 9 == 0) s += "\n";
-            if (inventory[i].count > 0) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
+            if (inventory[i] == null) s += "null  ";
+            else if (inventory[i].count > 0 && inventory[i].itemInfo) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
             else s += "[empty]  ";
         }
         s += "\n}";
@@ -719,4 +727,11 @@ public class Inventory : Singleton<Inventory>, IInventory
     {
         return inventory;
     }
+
+    public ItemInfo InfoLookup(string itemName)
+    {
+        return itemInfos[itemName];
+    }
+
+
 }
