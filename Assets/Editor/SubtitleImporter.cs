@@ -49,22 +49,23 @@ public class SubtitleImporter : EditorWindow
         string folderName = folderMatch.Groups[1].Value.Trim();
 
         // removes the first name inputted after we grab the folder name so it doesnt get added into the line outputs
-        int lineEnd = input.IndexOf('\n');
+        int lineEnd = input.IndexOf('’');
         if (lineEnd != -1)
         {
             input = input.Substring(lineEnd + 1).TrimStart();
         }
 
         // path to the new folder thatll hold all the AudioLogObjects
-        string folderPath = "Assets/ScriptableObjects/AudioLogs/" + folderName + "/";
+        string folderPath = "Assets/SubtitleImporterTesting/" + folderName + "/";
 
         // if the folder we trying to store these in doesnt exist we make one
         if (!AssetDatabase.IsValidFolder(folderPath))
         {
-            AssetDatabase.CreateFolder("Assets/ScriptableObjects/AudioLogs", folderName);
+            AssetDatabase.CreateFolder("Assets/SubtitleImporterTesting/" , folderName);
         }
 
         string[] splitInput = input.Split(new[] { "~" }, StringSplitOptions.RemoveEmptyEntries);
+
 
         // this dictionary stores the object name and the data that will eventually be used to make an AudioLogObject
         Dictionary<string, List<AudioLogObject.lineInfo>> audioLines = new Dictionary<string, List<AudioLogObject.lineInfo>>();
@@ -88,6 +89,7 @@ public class SubtitleImporter : EditorWindow
 
             foreach (string line in lines)
             {
+                Debug.Log(line);
                 string trimmed = line.Trim();
 
                 // make sure its not empty before we parse
@@ -125,7 +127,13 @@ public class SubtitleImporter : EditorWindow
 
                 trimmed = Regex.Replace(trimmed, @"\[[^\]]*\]", "").Trim();
                 trimmed = Regex.Replace(trimmed, "[\"“”]", "").Trim();
-                trimmed = trimmed.Replace("1 MC:", "").Trim();
+                // should trim name part
+                string preColon = trimmed.Substring(0, trimmed.IndexOf(":") + 1);
+                string postColon = trimmed.Substring(trimmed.IndexOf(":") + 1);
+                trimmed = postColon.Trim();
+                
+                // TODO
+                // amke if check preColon
 
                 // checking if there are multiple lines broken up by \
                 bool continuing = trimmed.EndsWith("\\");
@@ -194,7 +202,10 @@ public class SubtitleImporter : EditorWindow
 
             // adding a new entry if the entry at the key doesnt exist
             if (!audioLines.ContainsKey(name))
+            {
                 audioLines[name] = new List<AudioLogObject.lineInfo>();
+            }
+ 
 
             // add all values from parsedLines to the dictionary
             audioLines[name].AddRange(parsedLines);
@@ -208,7 +219,7 @@ public class SubtitleImporter : EditorWindow
             asset.audioName = entry.Key;
             asset.subtitles = entry.Value.ToArray();
 
-            string assetPath = folderPath + entry.Key + ".asset";
+            string assetPath = "Assets/SubtitleImporterTesting/" + entry.Key + ".asset";
             AssetDatabase.CreateAsset(asset, assetPath);
         }
 
