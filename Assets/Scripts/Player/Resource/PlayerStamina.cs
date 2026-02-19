@@ -7,7 +7,9 @@ public class PlayerStamina : MonoBehaviour
     [SerializeField] float maxStamina = 100f;
     [SerializeField] float staminaDecayRate = 2f;
     [SerializeField] float staminaRegenRate = 1f;
-
+    [SerializeField] float jumpCost = 15f;  // when changing jumpcost, remember to update the number in the animator as well
+                                            // (prevents jumping below a certain amount of stamina)
+    
     [SerializeField] Slider staminaSlider;
     [SerializeField] Image staminaSliderBar;
     
@@ -22,6 +24,7 @@ public class PlayerStamina : MonoBehaviour
 
     private bool isSprinting;
     private bool isClimbing;
+    private bool isGrounded;
 
     private Animator anim;
 
@@ -36,6 +39,8 @@ public class PlayerStamina : MonoBehaviour
 
     void Update()
     {
+        anim.SetFloat("stamina", CurrentStamina);
+
         staminaSlider.value = currentStamina / maxStamina;
         if (coroutine != null)
         {
@@ -48,8 +53,9 @@ public class PlayerStamina : MonoBehaviour
 
         isSprinting = psm.IsSprinting;
         isClimbing = psm.IsClimbing;
+        isGrounded = psm.IsGrounded;
 
-        // stamina decays while exerting effort (climb, sprint; jump triggers once?)
+        // stamina decays while exerting effort (climb, sprint; jump triggers once)
 
         if (isSprinting && currentStamina <= 0)
         {
@@ -73,7 +79,7 @@ public class PlayerStamina : MonoBehaviour
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
         }
-        else if (currentStamina < maxStamina) // stamina regens while not exerting effort, but can't go over max
+        else if (isGrounded && currentStamina < maxStamina) // stamina regens while on ground & not exerting effort, but can't go over max
         {
             currentStamina += staminaRegenRate * Time.deltaTime;
             currentStamina = Mathf.Min(MaxStamina, CurrentStamina);
@@ -91,6 +97,15 @@ public class PlayerStamina : MonoBehaviour
         yield return new WaitForSeconds(5);
         anim.SetBool("hasStamina", true);
         coroutine = null;
+    }
+
+    public void StaminaJump()
+    {
+        UpdateStamina(-jumpCost);
+        if (currentStamina < 0)
+        {
+            currentStamina = 0;
+        }
     }
 }
 
