@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class WorkBenchScript : MonoBehaviour
+public class CheckpointScript : MonoBehaviour
 {
     private GameObject player;
     private ManageRespawn respawnLogic;
