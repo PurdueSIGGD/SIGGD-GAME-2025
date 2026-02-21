@@ -10,7 +10,9 @@ public class CheckpointScript : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             respawnLogic.UpdateSpawnPoint(transform);
+            SaveManager.Instance.Save(); // Save
             Debug.Log("RespawnPoint set at " + transform.position);
+            Debug.Log("Reached checkpoint - Saved");
         }
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
