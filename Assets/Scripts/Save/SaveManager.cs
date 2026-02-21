@@ -47,13 +47,14 @@ public class SaveManager : Singleton<SaveManager>
 
     private void OnApplicationQuit()
     {
+        Debug.Log("SaveManager OnApplicationQuit " + GameStateManager.Instance);
         if (GameStateManager.Instance.canSaveGame())
         {
+            Debug.Log("Saved on application close");
             Save();
         } else
         {
             // TODO: Figure out what to do here -> maybe create a popup modal to say that game cannot be saved before quitting
-            
             Debug.Log("Application closed, but game was not saved as GameStateManager currentState  = " +
                       GameStateManager.Instance.getGameState());
         }

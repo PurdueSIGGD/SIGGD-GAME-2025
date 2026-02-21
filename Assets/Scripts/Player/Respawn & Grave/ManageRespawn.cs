@@ -35,6 +35,7 @@ public class ManageRespawn : MonoBehaviour
 
     public void RespawnPlayer()
     {
+        Debug.Log("Respawing player");
         Time.timeScale = 1f;
         player.transform.position = respawnPoint;
         health.ResetHealth();

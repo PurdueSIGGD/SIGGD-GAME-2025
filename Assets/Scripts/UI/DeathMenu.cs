@@ -25,8 +25,10 @@ public class DeathMenu : MonoBehaviour
             // Respawn player and immediately switch to main menu
             respawnManager.RespawnPlayer();
             ShowDeathMenu(false);
+            Debug.Log("Going to main menu");
             SaveManager.Instance.Save();
             SceneManager.LoadScene("Main Menu");
+            Debug.Log($"Current Scene: {SceneManager.GetActiveScene()}");
         });
     }
 
