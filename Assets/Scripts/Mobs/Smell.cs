@@ -99,11 +99,11 @@ public class Smell : SerializedMonoBehaviour
         {
             if (collider.gameObject == gameObject) continue;
 
-            //var mobSmell = collider.GetComponentInParent<MobCitizenData>();
+           // var agentData = collider.GetComponentInParent<AgentData>();
 
-            //if (mobSmells.TryGetValue(mobSmell.GetRawData().GetMobId(), out float smellIntensity)) { 
-            //    smellValues.Add((collider.transform.position, smellIntensity));
-            //}
+           // if (mobSmells.TryGetValue(agentData.GetMobId(), out float smellIntensity)) { 
+          //      smellValues.Add((collider.transform.position, smellIntensity));
+           // }
         }
     }
     /// <summary>
@@ -139,7 +139,7 @@ public class Smell : SerializedMonoBehaviour
             // The weight varies based off the inverse square of the distance
             float weight = Mathf.Pow(1f - Mathf.Clamp01(dist / smellRadius), 2f) * intensity;
 
-            //float hierarchialWeight = weight * smellValues[i];
+            // float hierarchialWeight = weight * smellValues[i];
 
             if (intensity > 0)
             {

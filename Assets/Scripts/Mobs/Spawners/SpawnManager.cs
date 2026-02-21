@@ -29,7 +29,7 @@ public class SpawnManager : MonoBehaviour
         // register mob in census
         mobCensus.RegisterCitizen(mobPrefab, mobObject, mobId, boundary);
 
-        InitializeMobInternalSystems(mobObject, boundary);
+        InitializeMobInternalSystems(mobObject, boundary, mobId);
         return mobObject;
     }
     // =======
@@ -75,11 +75,11 @@ public class SpawnManager : MonoBehaviour
         // register mob in census
         mobCensus.RegisterCitizen(mobPrefab, mobObject, rawData.GetMobId(), rawData.GetBoundary());
 
-        InitializeMobInternalSystems(mobObject);
+        InitializeMobInternalSystems(mobObject, rawData.GetBoundary(), rawData.GetMobId());
         return mobObject;
     }
 
-    void InitializeMobInternalSystems(GameObject mobObject, Boundary boundary = null)
+    void InitializeMobInternalSystems(GameObject mobObject, Boundary boundary = null, string mobId = null)
     {
         // initialize goap system
         GoapActionProvider goapActionProvider = mobObject.GetComponent<GoapActionProvider>();
@@ -87,9 +87,13 @@ public class SpawnManager : MonoBehaviour
 
         // set boundary for territory capabillity (optional depending on if mob has this capability)
         AgentData agentData = mobObject.GetComponent<AgentData>();
-        if (agentData != null && boundary != null)
+        if (agentData != null)
         {
-            agentData.boundary = boundary;
+            if (boundary != null)
+            {
+                agentData.boundary = boundary;
+            }
+            agentData.SetMobId(mobId);
         }
         // initialize navmesh agent and validate that spawn position is within valid navmesh area
         NavMeshAgent navAgent = mobObject.GetComponent<NavMeshAgent>();

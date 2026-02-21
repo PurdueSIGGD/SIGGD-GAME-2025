@@ -97,7 +97,7 @@ namespace SIGGD.Mobs
             { 
                 // Add hyena to pursuers list
                 if (this.provider.CurrentPlan.Goal is KillPlayerGoal) {
-                    GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PURSUED, this.gameObject);
+                    //GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PURSUED, this.gameObject);
                 }
 
                 if (AudioManager.Instance)
@@ -108,7 +108,7 @@ namespace SIGGD.Mobs
             
             if (this.provider.CurrentPlan.Goal is not KillPlayerGoal) 
             {
-                GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, this.gameObject);
+                //GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, this.gameObject);
             }
         }
         // Action for smell for when prey detected 

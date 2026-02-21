@@ -24,6 +24,8 @@ namespace SIGGD.Mobs
         public Boundary boundary;
         public NavMeshQueryFilter filter { get; private set; }
 
+        private string mobId = "none";
+
 
         private void Awake()
         {
@@ -42,6 +44,15 @@ namespace SIGGD.Mobs
             powerLevel = 1;
             energyLevel = 1;
             aggressionLevel = 1;
+        }
+        public string GetMobId()
+        {
+            return mobId;
+        }
+
+        public void SetMobId(string mobId)
+        {
+            this.mobId = mobId;
         }
 
         void Update()
