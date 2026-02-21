@@ -55,7 +55,16 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         // player will be respawned, so do not destroy
         if (gameObject != PlayerID.Instance.gameObject)
         {
+            // Attempt to change to peaceful if pursuer died
+
+            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
+
             Destroy(gameObject);
+        } else
+        {
+            // Change state of player to peaceful
+
+            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
         }
     }
 
