@@ -9,7 +9,6 @@ public class SubtitleImporter : EditorWindow
 {
     private string inputText = ""; // inputted in the window
 
-
     [MenuItem("Tools/Subtitle Importer")]
     public static void ShowWindow()
     {
@@ -89,8 +88,9 @@ public class SubtitleImporter : EditorWindow
 
             foreach (string line in lines)
             {
-                Debug.Log(line);
                 string trimmed = line.Trim();
+
+                bool isRadioVoice = false;
 
                 // make sure its not empty before we parse
                 if (string.IsNullOrEmpty(trimmed)) continue;
@@ -132,8 +132,11 @@ public class SubtitleImporter : EditorWindow
                 string postColon = trimmed.Substring(trimmed.IndexOf(":") + 1);
                 trimmed = postColon.Trim();
                 
-                // TODO
-                // amke if check preColon
+                if (preColon.Contains("%"))
+                {
+                    isRadioVoice = true;
+                    Debug.Log("RADIO VOICE NOW TRUE");
+                }
 
                 // checking if there are multiple lines broken up by \
                 bool continuing = trimmed.EndsWith("\\");
@@ -141,7 +144,7 @@ public class SubtitleImporter : EditorWindow
                 {
                     trimmed = trimmed.TrimEnd('\\').Trim();
                 }
-
+                Debug.Log("Radio Voice value: " + isRadioVoice);
                 // if a time was found
                 if (secLength > 0f)
                 {
@@ -154,7 +157,8 @@ public class SubtitleImporter : EditorWindow
                             parsedLines.Add(new AudioLogObject.lineInfo
                             {
                                 line = text.Trim(),
-                                seconds = currentSecLength
+                                seconds = currentSecLength,
+                                isFromRadio = isRadioVoice
                             });
                         }
                         
@@ -180,7 +184,8 @@ public class SubtitleImporter : EditorWindow
                         parsedLines.Add(new AudioLogObject.lineInfo
                         {
                             line = text.Trim(),
-                            seconds = currentSecLength
+                            seconds = currentSecLength,
+                            isFromRadio = isRadioVoice
                         });
                     }
                     
