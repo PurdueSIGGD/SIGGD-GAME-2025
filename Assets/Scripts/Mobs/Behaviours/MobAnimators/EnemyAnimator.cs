@@ -1,4 +1,11 @@
+using CrashKonijn.Agent.Core;
+using CrashKonijn.Goap.Runtime;
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
+using UnityEngine.LowLevel;
+using Utility;
 
 public class EnemyAnimator : MonoBehaviour
 {
@@ -12,6 +19,17 @@ public class EnemyAnimator : MonoBehaviour
     private Vector3 boxHalfExtents;
     private Vector3 boxCenter;
     [SerializeField] private DamageContext damageContext;
+
+    [SerializeField]
+    private Transform lookTargetTransform;
+    [SerializeField]
+    private Transform forwardTransform;
+    [SerializeField]
+    private Transform aimTransform;
+
+    public float targetT = 0f;
+    Vector3 vel;
+    public float t;
     void Awake()
 
     {
@@ -19,38 +37,36 @@ public class EnemyAnimator : MonoBehaviour
         mobLayer = LayerMask.GetMask("Mob");
         animator = GetComponentInChildren<Animator>();
         collider = GetComponentInChildren<BoxCollider>();
+        aimTransform.position = forwardTransform.position;
     }
     private void Start()
     {
-        //idleModel.SetActive(true);
         boxHalfExtents = collider.size * 0.5f;
         boxCenter = collider.transform.TransformPoint(collider.center);
     }
+    void LateUpdate()
+    {
+        if (!aimTransform || !forwardTransform) return;
 
+        t = Mathf.MoveTowards(t, targetT, 6f * Time.deltaTime);
+
+        Vector3 forwardPos = forwardTransform.position;
+        Vector3 targetPos = (lookTargetTransform != null) ? lookTargetTransform.position : forwardPos;
+
+        Vector3 desired = Vector3.Lerp(forwardPos, targetPos, t);
+
+        aimTransform.position = Vector3.SmoothDamp(aimTransform.position, desired, ref vel, 0.08f, Mathf.Infinity, Time.deltaTime);
+    }
+    public void SetLook(bool look)
+    {
+        targetT = look ? 1f : 0f;
+    }
     public void PlayAttack() => animator.SetBool("Attack", true);
     public void EndAttack()
     {
         animator.SetBool("Attack", false);
         collider.enabled = false;
     }
-
-    /*
-    public void AttackHitboxCheck()
-    {
-        draw = true;
-        Collider[] results = new Collider[3];
-        int hits = Physics.OverlapBoxNonAlloc(boxCenter, boxHalfExtents, results, Quaternion.identity, mobLayer);
-        for (int i = 0; i < hits; i++)
-        {
-            EntityHealthManager hm = results[i].GetComponent<EntityHealthManager>();
-
-            if (hm != null)
-            {
-                hm.TakeDamage(30, this.gameObject, "Hyena has damaged mob");
-            }
-        }
-    }
-    */
     public AnimatorStateInfo getAnimStateInfo()
     {
         return animator.GetCurrentAnimatorStateInfo(0);
@@ -58,6 +74,10 @@ public class EnemyAnimator : MonoBehaviour
     public float getAnimLength()
     {
         return getAnimStateInfo().length;
+    }
+    public void SetLookTarget(Transform target)
+    {
+        lookTargetTransform = target;
     }
     private void OnDrawGizmos()
     {

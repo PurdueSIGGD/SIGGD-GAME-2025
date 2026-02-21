@@ -48,7 +48,7 @@ namespace SIGGD.Mobs.Hyena
             beginningAttackCooldown = 0f;
         }
 
-        public IEnumerator Lunge(Func<Vector3> GetTarget)
+        public IEnumerator Lunge(Transform target)
         {
             exit = false;
             finishedLunging = false;
@@ -60,8 +60,8 @@ namespace SIGGD.Mobs.Hyena
 
             beginningAttackCooldown = UnityEngine.Random.Range(0.03f, 0.05f);
 
-            Vector3 target = GetTarget();
-            if (target == Vector3.zero)
+            Vector3 targetPos = target.position;
+            if (targetPos == Vector3.zero)
             {
                 ExitBehaviour();
                 yield break;
@@ -70,7 +70,7 @@ namespace SIGGD.Mobs.Hyena
             // Calculates the distance from the target and determines if it should continue
 
             Vector3 from = rb.position;
-            Vector3 delta = target - from;
+            Vector3 delta = targetPos - from;
             float dist = new Vector3(delta.x, 0f, delta.z).magnitude;
             if (dist < 5f || dist > maxLungeDistance)
             {
@@ -91,13 +91,13 @@ namespace SIGGD.Mobs.Hyena
                 agent.isStopped = true;
                 agent.ResetPath();
             }
-            Vector3 toTarget = target - rb.position;
+            Vector3 toTarget = targetPos - rb.position;
             toTarget.y = 0f;
             Vector3 dirToTarget = toTarget.sqrMagnitude > 0.001f ? toTarget.normalized : transform.forward;
 
 
             // Aim slightly before the target
-            Vector3 aimPoint = target - dirToTarget;
+            Vector3 aimPoint = targetPos - dirToTarget;
 
             if (NavMesh.SamplePosition(aimPoint, out NavMeshHit aimHit, 3f, navFilter))
                 aimPoint = aimHit.position;
@@ -227,7 +227,7 @@ namespace SIGGD.Mobs.Hyena
             finishedLunging = true;
         }
 
-        public IEnumerator ExitLunge(Func<Vector3> GetTarget)
+        public IEnumerator ExitLunge(Transform target)
         {
             finishedExiting = false;
             if (agentMove != null) agentMove.enabled = false;
@@ -242,7 +242,7 @@ namespace SIGGD.Mobs.Hyena
             {
                 elapsed += Time.fixedDeltaTime;
 
-                Vector3 targetPos = GetTarget();
+                Vector3 targetPos = target.position;
                 if (targetPos == Vector3.zero)
                 {
                     ExitBehaviour();
