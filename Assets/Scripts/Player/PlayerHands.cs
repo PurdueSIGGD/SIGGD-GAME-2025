@@ -34,16 +34,15 @@ public class PlayerHands : MonoBehaviour
     [Header("Debug")]
     [Tooltip("If true, at runtime, loop and play the current action animation")]
     [SerializeField] private bool DEBUG_TestActionAnimation = false;
-    [Tooltip("If true, while running, config_show(right/left)hand will override hand showing.")]
+    [Tooltip("If true, while running, config_show(right/left)hand will override hand showing. " +
+        "Otherwise, only show the right hand when an animator besides the default one is loaded")]
     [SerializeField] private bool DEBUG_ManualShowHands = false;
 
-    [Header("Config")]
+    [Header("   == Manual Control Needed == ")]
     [Tooltip("If true, at runtime, show the left hand")]
     [SerializeField] private bool CONFIG_ShowLeftHand = false;
     [Tooltip("If true, at runtime, show the right hand")]
     [SerializeField] private bool CONFIG_ShowRightHand = false;
-    [Tooltip("If true, override the previous config, and make right hand visible if there is a non-default override controller")]
-    [SerializeField] private bool CONFIG_ShowRightHand_OnlyWithTool = true;
 
     [Header("Presets")]
     [Tooltip("The default override controller when calling SetOverrideController() with no arguments.")]
@@ -91,7 +90,7 @@ public class PlayerHands : MonoBehaviour
 
         // show the hands
         ToggleLeftArm(CONFIG_ShowLeftHand);
-        ToggleRightArm(CONFIG_ShowRightHand_OnlyWithTool ? false : CONFIG_ShowRightHand);
+        ToggleRightArm(DEBUG_ManualShowHands ? true : CONFIG_ShowRightHand);
 
         if (DEBUG_TestActionAnimation) {
             // this tests the play action
@@ -110,7 +109,7 @@ public class PlayerHands : MonoBehaviour
         }
         showHands = !isClimbing;
 
-        // if disabled, don't show hands.
+        // if hands are disabled, don't show hands.
         if (handsDisabled) {
             showHands = false;
         }
@@ -141,17 +140,45 @@ public class PlayerHands : MonoBehaviour
     }
 
     #region Override Controller Setters
+    [Header("Override Switching Limits")]
+    [Tooltip("Min time between switching override controller. Will buffer to most recently set controller. If too low, switching quickly causes lag.")]
+    [SerializeField] float OverrideSwitchDelay = 0.5f;
+    private float lastOverrideChange = -100f;
+    private bool delayedOverrideSet = false;
+    private AnimatorOverrideController mostRecentlySetController;
+    // switching the override controller too much causes frame drops. So instead, it is delayed
     public void SetOverrideController(AnimatorOverrideController newController) {
-        // need to create a new controller to not modify the original asset
+        mostRecentlySetController = newController;
+
+        if (delayedOverrideSet == true) {
+            return;
+        } if (Time.time - lastOverrideChange < OverrideSwitchDelay) {
+            delayedOverrideSet = true;
+            Invoke("DelayedSetOverrideController", OverrideSwitchDelay - (Time.time - lastOverrideChange));
+        }
+
+        // do nothing if there was no override change
+        if (newController == handAnimator.runtimeAnimatorController) {
+            return;
+        }
+
+        lastOverrideChange = Time.time;
+
         UpdateHandAnimator();
-        handAnimator.runtimeAnimatorController = new AnimatorOverrideController(newController);
+        handAnimator.runtimeAnimatorController = newController;
 
         UpdateClimbScript();
         UpdateHandAnimator();
         DisableHandSocketChildren();
         RefreshArmTransforms();
 
-        ToggleRightArm(newController != defaultOverrideController && CONFIG_ShowRightHand_OnlyWithTool);
+        ToggleRightArm(newController != defaultOverrideController && !DEBUG_ManualShowHands);
+    }
+
+    // should only be invoked by the above function
+    private void DelayedSetOverrideController() {
+        delayedOverrideSet = false;
+        SetOverrideController(mostRecentlySetController);
     }
 
     public void SetOverrideController()

@@ -17,6 +17,7 @@ public class PlayerID : Singleton<PlayerID>
     [HideInInspector] public PlayerMovement playerMovement; // Reference to player movement script
     [HideInInspector] public EntityHealthManager playerHealth;
     [HideInInspector] public PlayerHunger playerHunger;
+    [HideInInspector] public PlayerStamina playerStamina;
     [HideInInspector] public PlayerHUD playerHUD;
     public Inventory Inventory => Inventory.Instance;
     [HideInInspector] public PlayerInteractor playerInteractor;
@@ -34,6 +35,7 @@ public class PlayerID : Singleton<PlayerID>
         playerMovement = GetComponent<PlayerMovement>();
         playerHealth = GetComponent<EntityHealthManager>();
         playerHunger = GetComponent<PlayerHunger>();
+        playerStamina = GetComponent<PlayerStamina>();
         playerHUD = GetComponent<PlayerHUD>();
 
         rb = GetComponent<Rigidbody>();
