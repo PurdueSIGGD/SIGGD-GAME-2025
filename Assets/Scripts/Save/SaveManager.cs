@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SaveManager : Singleton<SaveManager>
 {
@@ -27,6 +28,7 @@ public class SaveManager : Singleton<SaveManager>
     protected override void Awake()
     {
         base.Awake();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     void Start()
@@ -44,6 +46,13 @@ public class SaveManager : Singleton<SaveManager>
         Debug.Log("Loading on start");
         Load();
 
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Safe to call Load() here because all Awake() methods of scene objects and singletons have run
+        Debug.Log($"SaveManager: Loading save after scene '{scene.name}' loaded");
+        Load();
     }
 
     private void OnApplicationQuit()

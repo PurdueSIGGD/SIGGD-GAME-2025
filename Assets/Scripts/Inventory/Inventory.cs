@@ -166,23 +166,14 @@ public class Inventory : Singleton<Inventory>, IInventory
                 inventory[i].index = i;
                 inventory[i].count = InventoryDataSaveModule.inventoryData.inventory[i].count;
                 name = InventoryDataSaveModule.inventoryData.inventory[i].name;
-                if (inventory[i].count != 0)
+                if (inventory[i].count > 0)
                 {
                     inventory[i].itemInfo = itemInfos[name];
-                    /*
-                    // make iteminfo based on name
-                    for (int j = 0; j < itemInfos.Length; j++)
-                    {
-                        if (itemNames[j].Equals(name))
-                        {
-                            inventory[i].itemInfo = itemInfos[j];
-                            break;
-                        }
-                    }
-                    */
+                    Debug.Log($"Name from save ({name}): {inventory[i].itemInfo.itemName}");
                 }
                 else
                 {
+                    Debug.Log("Inventory slot is empty from save");
                     inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
                     // make it an empty iteminfo
                     // inventory[i].itemInfo = itemInfos[0];
@@ -203,7 +194,6 @@ public class Inventory : Singleton<Inventory>, IInventory
                     inventory[i].count = 10;
                     inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Mushroom.ToString()];
                     inventory[i].UpdateSlot();
-                    Debug.Log($"{inventory[i].count} {inventory[i].itemInfo}");
                     continue;
                 }
 
@@ -213,7 +203,7 @@ public class Inventory : Singleton<Inventory>, IInventory
                 inventory[i].UpdateSlot();
             }
         }
-        PrintInventory();
+        
 
         for (int i = 0; i < InventoryLength; i++)
         {
@@ -224,6 +214,7 @@ public class Inventory : Singleton<Inventory>, IInventory
             // Check if slot has a non-null slot.iteminfo
             Debug.Log(uiSlot.itemInfo == null ? "inv slot has null iteminfo!" : "inv slot good");
         }
+        PrintInventory();
     }
 
     /// <summary>
