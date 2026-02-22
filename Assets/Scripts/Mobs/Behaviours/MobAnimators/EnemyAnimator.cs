@@ -37,12 +37,13 @@ public class EnemyAnimator : MonoBehaviour
         mobLayer = LayerMask.GetMask("Mob");
         animator = GetComponentInChildren<Animator>();
         collider = GetComponentInChildren<BoxCollider>();
-        aimTransform.position = forwardTransform.position;
     }
     private void Start()
     {
         boxHalfExtents = collider.size * 0.5f;
         boxCenter = collider.transform.TransformPoint(collider.center);
+        if (aimTransform != null || forwardTransform != null)
+            aimTransform.position = forwardTransform.position;
     }
     void LateUpdate()
     {

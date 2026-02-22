@@ -37,6 +37,11 @@ namespace MobCensus
                 return;
             }
             MobCitizenDataRaw rawData = citizenDataReference.GetRawData();
+            if (rawData == null)
+            {
+                Debug.LogError("No data associated with citizen.");
+                return;
+            }
             rawData.SetPosition(transform.position);
             rawData.SetRotation(transform.eulerAngles);
             if (agentData != null && agentData.boundary != null)

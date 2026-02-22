@@ -334,6 +334,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewRadius: 20
+  crouchRangeMultiplier: 0.5
+  sprintRangeMultiplier: 1.5
   playerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -1233,6 +1235,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0.000063783715
       objectReference: {fileID: 0}
+    - target: {fileID: -6301761298531738630, guid: 82bc73a2cbce0bf459247cdf10f0a4f7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -6155781937069861676, guid: 82bc73a2cbce0bf459247cdf10f0a4f7, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.99999994
@@ -1953,40 +1959,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 82bc73a2cbce0bf459247cdf10f0a4f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 954259349506360999}
-    - targetCorrespondingSourceObject: {fileID: -6301761298531738630, guid: 82bc73a2cbce0bf459247cdf10f0a4f7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2252187224152671551}
   m_SourcePrefab: {fileID: 100100000, guid: 82bc73a2cbce0bf459247cdf10f0a4f7, type: 3}
 --- !u!4 &97987416775921138 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -6155781937069861676, guid: 82bc73a2cbce0bf459247cdf10f0a4f7, type: 3}
   m_PrefabInstance: {fileID: 3156561510471063846}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &235874400593396444 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: -6301761298531738630, guid: 82bc73a2cbce0bf459247cdf10f0a4f7, type: 3}
-  m_PrefabInstance: {fileID: 3156561510471063846}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2252187224152671551
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 235874400593396444}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2d8418b0b9634b1892b0268dd9c2743, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  boneShape: 1
-  drawBones: 1
-  drawTripods: 0
-  boneSize: 1
-  tripodSize: 1
-  boneColor: {r: 0, g: 0, b: 1, a: 0.5}
-  m_Transforms:
-  - {fileID: 7811144623354094301}
 --- !u!4 &572342392991952057 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3188273280169735583, guid: 82bc73a2cbce0bf459247cdf10f0a4f7, type: 3}
@@ -2183,11 +2161,6 @@ Transform:
 --- !u!4 &7790924227041822575 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4048534071492714935, guid: 82bc73a2cbce0bf459247cdf10f0a4f7, type: 3}
-  m_PrefabInstance: {fileID: 3156561510471063846}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &7811144623354094301 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5163545603454893051, guid: 82bc73a2cbce0bf459247cdf10f0a4f7, type: 3}
   m_PrefabInstance: {fileID: 3156561510471063846}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8230691011409793335 stripped
