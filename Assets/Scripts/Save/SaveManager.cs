@@ -41,13 +41,14 @@ public class SaveManager : Singleton<SaveManager>
         modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
                                      questModule, gameProgressModule, graveModule};
 
+        Debug.Log("Loading on start");
         Load();
 
     }
 
     private void OnApplicationQuit()
     {
-        Debug.Log("SaveManager OnApplicationQuit " + GameStateManager.Instance);
+        Debug.Log("SaveManager OnApplicationQuit " + GameStateManager.Instance.name);
         if (GameStateManager.Instance.canSaveGame())
         {
             Debug.Log("Saved on application close");
@@ -62,6 +63,7 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Load()
     {
+        Debug.Log("Loading from save");
         foreach (var module in modules)
         {
             module?.deserialize();
@@ -73,9 +75,10 @@ public class SaveManager : Singleton<SaveManager>
     public bool Save()
     {
         // Save if the game state is peaceful
-
+        Debug.Log($"Trying to save {GameStateManager.Instance.canSaveGame()}");
         if (!GameStateManager.Instance.canSaveGame())
         {
+            Debug.Log("Couldn't save game");
             return false;
         }
 

@@ -27,7 +27,6 @@ public class ManageRespawn : MonoBehaviour
         }
         if (!inv.IsInventoryEmpty())
         {
-
             curGrave = Instantiate(graveObj, transform.position, transform.rotation);
             curGrave.GetComponent<GraveInteract>().FillGrave(inv);
         }
@@ -89,6 +88,7 @@ public class ManageRespawn : MonoBehaviour
     }
 
     public void CreateGrave(Vector3 position, Quaternion rotation, string[] names, int[] count) {
+        Debug.Log("Instantiating grave from save");
         inv = PlayerID.Instance.Inventory;
         curGrave = Instantiate(graveObj, position, rotation);
         curGrave.GetComponent<GraveInteract>().FillGrave(inv, names, count);
