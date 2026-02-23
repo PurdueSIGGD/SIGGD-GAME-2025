@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 using System;
+using System.Collections;
 public class Inventory : Singleton<Inventory>, IInventory
 {
     // reference to the script that control's the player's tool hands.
@@ -607,17 +608,35 @@ public class Inventory : Singleton<Inventory>, IInventory
         Reselect();
     }
 
-    public void SetInventory(ItemInfo[] finfo, int[] fcount)
+    public void LoadInventory(ItemInfo[] finfo, int[] fcount)
     {
         Debug.Log(inventory.Length + " length");
         //Array.Copy(newInv, inventory, newInv.Length);
         
         for (int i = 0; i < finfo.Length; i++)
         {
-            inventory[i].count = fcount[i];
-            inventory[i].itemInfo = finfo[i];
-            inventory[i].UpdateSlot();
+            if (inventory[i].count == 0 || inventory[i].itemInfo.itemName == ItemInfo.ItemName.Empty)
+            { // only add item if the current slot is empty
+                inventory[i].count = fcount[i];
+                inventory[i].itemInfo = finfo[i];
+                inventory[i].UpdateSlot();
+
+                // Set used items to empty
+                fcount[i] = 0;
+                finfo[i] = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+            }
         }
+
+        // Add all unused items
+        for (int i = 0; i < finfo.Length; i++)
+        {
+            if (fcount[i] > 0 && finfo[i].itemName != ItemInfo.ItemName.Empty)
+            {
+                Debug.Log($"Adding {fcount[i]} {finfo[i].itemName.ToString()}");
+                AddItem(finfo[i], fcount[i]);
+            }
+        }
+
         Debug.Log(inventory.Length + " new length");
 
         Reselect();
