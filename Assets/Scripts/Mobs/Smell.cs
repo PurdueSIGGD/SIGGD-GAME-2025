@@ -13,8 +13,13 @@ using CrashKonijn.Agent.Runtime;
 
 public class Smell : MonoBehaviour
 {
-    public float smellRadius;
-    [SerializeField]
+    [SerializeField] private float smellRadius;
+    [SerializeField] private float crouchRangeMultiplier = 0.5f;
+    [SerializeField] private float sprintRangeMultiplier = 1.5f;
+    private float SmellRadius => smellRadius * playerListener.CrouchRangeMultiplier * playerListener.SprintRangeMultiplier;
+    
+    private PlayerListener playerListener;
+
     private LayerMask playerLayer;
     [SerializeField]
     private LayerMask mobLayer;
@@ -41,6 +46,8 @@ public class Smell : MonoBehaviour
         PreyBehaviour = GetComponent<PreyBehaviour>();
 
         smellPos = Vector3.zero;
+        
+        playerListener = new PlayerListener(crouchRangeMultiplier, sprintRangeMultiplier);
 
         smellValues = new();
     }
@@ -50,6 +57,11 @@ public class Smell : MonoBehaviour
         isPrey = gameObject.CompareTag("Prey");
         isPredator = gameObject.CompareTag("Predator");
         StartCoroutine(SmellRoutine());
+    }
+
+    private void OnDisable()
+    {
+        playerListener?.DisableListener();
     }
 
     void Update()
@@ -91,7 +103,7 @@ public class Smell : MonoBehaviour
     private void SmellCheck()
     {
         smellValues.Clear();
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, mobLayer | playerLayer);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, SmellRadius, mobLayer | playerLayer);
         foreach (Collider collider in hitColliders)
         {
             if (collider.gameObject == gameObject) continue;
@@ -108,7 +120,7 @@ public class Smell : MonoBehaviour
     /// </summary>
     private void SmellCheckPlayer()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, playerLayer);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, SmellRadius, playerLayer);
         if (hitColliders.Length < 1) return;
         playerPos = hitColliders[0].transform.position;
     }
@@ -131,7 +143,7 @@ public class Smell : MonoBehaviour
                 continue;
             }
             // The weight varies based off the inverse square of the distance
-            float weight = Mathf.Pow(1f - Mathf.Clamp01(dist / smellRadius), 2f) * intensity;
+            float weight = Mathf.Pow(1f - Mathf.Clamp01(dist / SmellRadius), 2f) * intensity;
 
             //float hierarchialWeight = weight * smellValues[i];
 

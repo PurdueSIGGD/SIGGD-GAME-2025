@@ -1,12 +1,11 @@
 using UnityEngine;
 using System;
-using UnityEngine.SceneManagement;
 
-public class EntityHealthManager : MonoBehaviour, IHealth
+public class EntityHealthManager : StatProvider, IHealth
 {
     // default max health to 100
-    [SerializeField] private float maxHealth = 100f;
-    public float MaxHealth => maxHealth; // => used for read-only property
+    [SerializeField] public Stat maxHealth = new(100f);
+    public float MaxHealth => maxHealth.Value; // => used for read-only property
 
     public float CurrentHealth { get; set; }
 
@@ -16,7 +15,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
 
     void Start()
     {
-        if (CurrentHealth == 0) CurrentHealth = maxHealth; // start at full health
+        if (CurrentHealth == 0) CurrentHealth = maxHealth.Value; // start at full health
     }
 
     public void TakeDamage(DamageContext damageContext)
@@ -41,7 +40,7 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         if (CurrentHealth <= 0) return; // prob a design thing, maybe ability to revive dead creatures in the future?
 
         // increase health but not above max, maybe change in future to allow overheal?
-        CurrentHealth = Mathf.Min(CurrentHealth + healContext.amount, maxHealth);
+        CurrentHealth = Mathf.Min(CurrentHealth + healContext.amount, maxHealth.value);
 
         OnHealthChanged?.Invoke(healContext);
     }
@@ -55,7 +54,16 @@ public class EntityHealthManager : MonoBehaviour, IHealth
         // player will be respawned, so do not destroy
         if (gameObject != PlayerID.Instance.gameObject)
         {
+            // Attempt to change to peaceful if pursuer died
+
+            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
+
             Destroy(gameObject);
+        } else
+        {
+            // Change state of player to peaceful
+
+            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
         }
     }
 

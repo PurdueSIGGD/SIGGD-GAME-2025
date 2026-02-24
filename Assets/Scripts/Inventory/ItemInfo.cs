@@ -15,7 +15,8 @@ public class ItemInfo : ScriptableObject
         Resource,
         Container,
         Trap,
-        Empty
+        Empty, 
+        Keycard
     };
 
     public enum ItemName { // All possible names of items
@@ -27,6 +28,7 @@ public class ItemInfo : ScriptableObject
         CaptureOrb,
         Empty,
         Mushroom,
+        Keycard,
         Flower,
         Slimeball
     };
