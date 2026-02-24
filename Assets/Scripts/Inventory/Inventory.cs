@@ -11,7 +11,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     private PlayerHands handsScript;
 
     public const int HotBarLength = 3;
-    public const int InventoryLength = 9;
+    public const int InventoryLength = 24;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
     [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength]; // hotbar buttons
@@ -24,7 +24,6 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     private Dictionary<string, ItemInfo> itemInfos;
 
-    [SerializeField] public string[] itemNames = new string[7];
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
     private int swapSelection = -1; // index of select item for swapping
@@ -525,6 +524,8 @@ public class Inventory : Singleton<Inventory>, IInventory
     public void SwapSelect(int index) {
         if (swapSelection == -1)
         { // no item selected for swapping
+            // Don't select empty slots
+            if (inventory[index].count == 0 || inventory[index].itemInfo.itemName == ItemInfo.ItemName.Empty) return;
             swapSelection = index;
             inventory[swapSelection].SetColor(Color.green);
             if (inventory[swapSelection].itemInfo && inventory[swapSelection].itemInfo.isIngredient) {
@@ -671,9 +672,14 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// Print out a string representation of player's inventory in console
     /// </summary>
     public void PrintInventory() {
-        string s = "{";
-        for (int i = 0; i < inventory.Length; i++) {
-            if (i % 9 == 0) s += "\n";
+        string s = "{\n";
+        for (int i = 0; i < HotBarLength; i++) {
+            if (inventory[i] == null) s += "null  ";
+            else if (inventory[i].count > 0 && inventory[i].itemInfo) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
+            else s += "[empty]  ";
+        }
+        for (int i = HotBarLength; i < inventory.Length; i++) {
+            if ((i - HotBarLength) % 6 == 0) s += "\n";
             if (inventory[i] == null) s += "null  ";
             else if (inventory[i].count > 0 && inventory[i].itemInfo) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
             else s += "[empty]  ";
