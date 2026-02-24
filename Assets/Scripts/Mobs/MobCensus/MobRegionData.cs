@@ -20,8 +20,8 @@ namespace MobCensus
         }
         public void UpdateRawData()
         {
-            float spawnCooldown = instance.GetSpawnCooldownTimer();
-            rawData.SetSpawnCooldownTimer(spawnCooldown);
+            rawData.SetSpawnRegionState(instance.GetCurrentState());
+            rawData.SetSpawnCooldownTimer(instance.GetSpawnCooldownTimer());
         }
         public MobRegionDataRaw GetRawData()
         {

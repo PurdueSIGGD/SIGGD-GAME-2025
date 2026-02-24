@@ -14,7 +14,7 @@ public class SpawnRegion : MonoBehaviour
     }
     public enum SpawnRegionState
     {
-        Inactive, // player has never entered region or hasn't entered in a while, spawn is not ready and will trigger on player entry
+        Primed, // player has never entered region or hasn't entered in a while, spawn is not ready and will trigger on player entry
         Active, // player is currently in region, spawn is ready and will trigger immediately, or spawn just triggered and is now on cooldown until next trigger
         Cooldown // player has left region but spawn is still on cooldown, spawn is not ready and will trigger on player entry once cooldown ends
     }
@@ -54,11 +54,11 @@ public class SpawnRegion : MonoBehaviour
         if (mobRegionData != null)
         {
             currentState = mobRegionData.GetRawData().GetSpawnRegionState();
-            spawnCooldown = mobRegionData.GetRawData().GetSpawnCooldownTimer();
+            spawnCooldownTimer = mobRegionData.GetRawData().GetSpawnCooldownTimer();
         }
         else
         {
-            currentState = SpawnRegionState.Inactive;
+            currentState = SpawnRegionState.Primed;
         }
         initialized = true;
     }
@@ -75,7 +75,7 @@ public class SpawnRegion : MonoBehaviour
             }
         }
 
-        if (currentState == SpawnRegionState.Inactive)
+        if (currentState == SpawnRegionState.Primed)
         {
             spawnRegionCheckTimer -= Time.deltaTime;
             if (spawnRegionCheckTimer <= 0)
@@ -99,7 +99,7 @@ public class SpawnRegion : MonoBehaviour
                 }
                 else
                 {
-                    SetState(SpawnRegionState.Inactive);
+                    SetState(SpawnRegionState.Primed);
                 }
             }
         }
@@ -111,20 +111,24 @@ public class SpawnRegion : MonoBehaviour
     /// <param name="newState"></param>
     void SetState(SpawnRegionState newState)
     {
-        currentState = newState;
-        if (currentState == SpawnRegionState.Inactive)
+        if (newState == SpawnRegionState.Primed)
         {
-            spawnCooldownTimer = NULL_CONST; // not on cooldown
+            // not on cooldown (no special actions)
         }
-        else if (currentState == SpawnRegionState.Active)
+        else if (newState == SpawnRegionState.Active)
         {
             SpawnMobsInRegion();
             spawnCooldownTimer = spawnCooldown; // start cooldown
         }
-        else if (currentState == SpawnRegionState.Cooldown)
+        else if (newState == SpawnRegionState.Cooldown)
         {
             spawnCooldownTimer = spawnCooldown; // start cooldown
         }
+        currentState = newState;
+    }
+    public SpawnRegionState GetCurrentState()
+    {
+        return currentState;
     }
 
     /// <summary>

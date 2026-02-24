@@ -12,6 +12,28 @@ namespace MobCensus
         public List<MobRegionData> GetRegions() { return regions; }
         public List<MobCitizenData> GetCitizens() { return citizens; }
 
+
+        // timer for updating raw data for citizens and spawn regions. 
+        // Only needs to be updated periodically (not every frame) since it's only used for saving
+        float timer = 0;
+        const float UPDATE_INTERVAL = 1f; // how often to update the raw data for citizens and spawn regions (in seconds)
+        private void Update()
+        {
+            timer += Time.deltaTime;
+            if (timer >= UPDATE_INTERVAL)
+            {
+                timer = 0;
+                foreach (MobCitizenData citizen in citizens)
+                {
+                    citizen.UpdateRawData();
+                }
+                foreach (MobRegionData region in regions)
+                {
+                    region.UpdateRawData();
+                }
+            }
+        }
+
         public void Awake()
         {
             spawnManager = FindFirstObjectByType<SpawnManager>();
@@ -63,7 +85,6 @@ namespace MobCensus
         /// <param name="rawDataList">The list of raw data for mobs.</param>
         public void LoadRawDataFromSave(List<MobCitizenDataRaw> rawDataList)
         {
-            Debug.Log("SPAWNING MOBS FROM SAVE: " + rawDataList.Count);
             foreach (MobCitizenDataRaw rawData in rawDataList)
             {
                 spawnManager.SpawnMobFromSave(rawData);
@@ -85,6 +106,8 @@ namespace MobCensus
             {
                 MobRegionData regionData = regions[i];
                 MobRegionDataRaw rawData = rawDataList[i];
+
+                print("SPAWN REGION " + i + ": " + regionData.GetInstance().name + " | state: " + rawData.GetSpawnRegionState() + " | cooldown: " + rawData.GetSpawnCooldownTimer());
 
                 regionData.GetRawData().SetSpawnCooldownTimer(rawData.GetSpawnCooldownTimer());
                 regionData.GetRawData().SetSpawnRegionState(rawData.GetSpawnRegionState());

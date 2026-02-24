@@ -15,7 +15,7 @@ namespace MobCensus
         public MobRegionDataRaw()
         {
             spawnCooldownTimer = 0;
-            spawnRegionState = SpawnRegion.SpawnRegionState.Inactive;
+            spawnRegionState = SpawnRegion.SpawnRegionState.Primed;
         }
         public MobRegionDataRaw(MobRegionDataRaw regionData)
         {
