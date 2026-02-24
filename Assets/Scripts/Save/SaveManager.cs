@@ -37,15 +37,18 @@ public class SaveManager : Singleton<SaveManager>
         if (saveScreenshot) screenshotModule = new ScreenshotSaveModule();
         if (saveQuests) questModule = new QuestDataSaveModule();
         if (saveGameProgress) gameProgressModule = new GameProgressDataSaveModule();
-        if (saveMobScene) mobSceneDataSaveModule = new MobSceneDataSaveModule(
-            FindFirstObjectByType<MobCensus.MobCensusManager>()
-        );
-        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
-                                     questModule, gameProgressModule, mobSceneDataSaveModule};
+        if (saveMobScene) mobSceneDataSaveModule = new MobSceneDataSaveModule(FindFirstObjectByType<MobCensus.MobCensusManager>());
         if (saveGrave) graveModule = new GraveDataSaveModule();
 
-        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
-                                     questModule, gameProgressModule, graveModule};
+        modules = new ISaveModule[] {
+            inventoryModule,
+            screenshotModule,
+            playerModule,
+            questModule,
+            gameProgressModule,
+            mobSceneDataSaveModule,
+            graveModule
+        };
 
         Load();
     }

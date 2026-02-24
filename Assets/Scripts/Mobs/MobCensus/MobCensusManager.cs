@@ -40,6 +40,7 @@ namespace MobCensus
         }
         public void LoadRawDataFromSave(List<MobCitizenDataRaw> rawDataList)
         {
+            Debug.Log("SPAWNING MOBS FROM SAVE: " + rawDataList.Count);
             foreach (MobCitizenDataRaw rawData in rawDataList)
             {
                 spawnManager.SpawnMobFromSave(rawData);
@@ -47,11 +48,16 @@ namespace MobCensus
         }
         public void LoadSpawnRegionsFromSave(List<MobRegionDataRaw> rawDataList)
         {
+            Debug.Log("LOADING SPAWN REIGONS: " + rawDataList.Count);
+
             InitializeRegionList();
             Debug.Assert(rawDataList != null && rawDataList.Count == regions.Count);
             for (int i = 0; i < regions.Count; i++)
             {
-                regions[i].GetRawData().SetSpawnCooldownTimer(rawDataList[i].GetSpawnCooldownTimer());
+                MobRegionData myRegionData = regions[i];
+                float cooldown = rawDataList[i].GetSpawnCooldownTimer();
+                myRegionData.GetRawData().SetSpawnCooldownTimer(cooldown);
+                myRegionData.GetInstance().Initialize(cooldown);
             }
         }
     }
