@@ -10,10 +10,17 @@ namespace MobCensus
     [Serializable]
     public class MobRegionDataRaw
     {
+        [SerializeField] SpawnRegion.SpawnRegionState spawnRegionState;
         [SerializeField] float spawnCooldownTimer;
         public MobRegionDataRaw()
         {
             spawnCooldownTimer = 0;
+            spawnRegionState = SpawnRegion.SpawnRegionState.Inactive;
+        }
+        public MobRegionDataRaw(MobRegionDataRaw regionData)
+        {
+            spawnCooldownTimer = regionData.GetSpawnCooldownTimer();
+            spawnRegionState = regionData.GetSpawnRegionState();
         }
         public float GetSpawnCooldownTimer()
         {
@@ -22,6 +29,14 @@ namespace MobCensus
         public void SetSpawnCooldownTimer(float spawnCooldownTimer)
         {
             this.spawnCooldownTimer = spawnCooldownTimer;
+        }
+        public SpawnRegion.SpawnRegionState GetSpawnRegionState()
+        {
+            return spawnRegionState;
+        }
+        public void SetSpawnRegionState(SpawnRegion.SpawnRegionState spawnRegionState)
+        {
+            this.spawnRegionState = spawnRegionState;
         }
     }
 }

@@ -17,15 +17,23 @@ public class MobSceneDataSaveModule : ISaveModule
     {
         if (mobCensusManager == null) return false;
 
-        if (!FileManager.Instance.FileExists(regionSavePath)) return false;
-        byte[] regionBytes = FileManager.Instance.ReadFile(regionSavePath);
-        List<MobRegionDataRaw> rawRegionList = SerializationUtility.DeserializeValue<List<MobRegionDataRaw>>(regionBytes, DataFormat.Binary);
-        mobCensusManager.LoadSpawnRegionsFromSave(rawRegionList);
+        if (FileManager.Instance.FileExists(regionSavePath))
+        {
+            byte[] regionBytes = FileManager.Instance.ReadFile(regionSavePath);
+            List<MobRegionDataRaw> rawRegionList = SerializationUtility.DeserializeValue<List<MobRegionDataRaw>>(regionBytes, DataFormat.Binary);
+            mobCensusManager.InitializeSpawnRegionsFromSave(rawRegionList);
+        }
+        else
+        {
+            mobCensusManager.InitializeSpawnRegionsForNewGame();
+        }
 
-        if (!FileManager.Instance.FileExists(mobSavePath)) return false;
-        byte[] bytes = FileManager.Instance.ReadFile(mobSavePath);
-        List<MobCitizenDataRaw> rawDataList = SerializationUtility.DeserializeValue<List<MobCitizenDataRaw>>(bytes, DataFormat.Binary);
-        mobCensusManager.LoadRawDataFromSave(rawDataList);
+        if (FileManager.Instance.FileExists(mobSavePath))
+        {
+            byte[] bytes = FileManager.Instance.ReadFile(mobSavePath);
+            List<MobCitizenDataRaw> rawDataList = SerializationUtility.DeserializeValue<List<MobCitizenDataRaw>>(bytes, DataFormat.Binary);
+            mobCensusManager.LoadRawDataFromSave(rawDataList);
+        }
 
         return true;
     }

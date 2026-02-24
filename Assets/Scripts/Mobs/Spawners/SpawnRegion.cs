@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MobCensus;
 using UnityEngine;
 
 [Serializable]
@@ -11,24 +12,29 @@ public class SpawnRegion : MonoBehaviour
         public GameObject mobPrefab;
         public float spawnWeight;
     }
+    public enum SpawnRegionState
+    {
+        Inactive, // player has never entered region or hasn't entered in a while, spawn is not ready and will trigger on player entry
+        Active, // player is currently in region, spawn is ready and will trigger immediately, or spawn just triggered and is now on cooldown until next trigger
+        Cooldown // player has left region but spawn is still on cooldown, spawn is not ready and will trigger on player entry once cooldown ends
+    }
+    [SerializeField] SpawnRegionState currentState;
     SpawnManager spawnManager;
     [SerializeField] List<SpawnRateData> spawnList;
     [SerializeField] List<SpawnPoint> spawnPoints;
 
     [SerializeField] float spawnCooldown;
+    float initDelaySpawnCooldown = 5f; // for base initialization (no cooldown param loaded from save), set smaller cooldown
+                                       // to wait for save system to initialize
     [SerializeField] float minPropSpawned; // minimum proportion of spawnpoints to spawn at (see spawn mobs function implementation)
     [SerializeField] float maxPropSpawned; // max prop of spawnpoints to spawn at
 
     [Header("SpawnRegionSphereSettings")]
-    [SerializeField] float spawnRegionCheckIntervalSec;
+    float spawnRegionCheckIntervalSec = 1; // how often to check if player is in region when player is not currently in region (either inactive or on cooldown)
     float spawnRegionCheckTimer;
     [SerializeField] Transform centerPosition;
     [SerializeField] float radius;
-    [SerializeField] LayerMask relevantLayers; // MUST AT LEAST INCLUDE PLAYER!!!!
-    bool playerInRegion = false; // toggled true when player enters region, toggled false when player exits region
-    bool spawnReady = false; // toggled true when player enters region, toggled false when cooldown ends
-
-    float spawnCooldownTimer;
+    [SerializeField] float spawnCooldownTimer;
 
     bool initialized = false;
     public float GetSpawnCooldownTimer()
@@ -37,54 +43,93 @@ public class SpawnRegion : MonoBehaviour
     }
     const float NULL_CONST = -676869;
 
-    public void Awake()
+    /// <summary>
+    /// Initializes the spawn region. If a MobRegionData object is provided, the spawn region will be initialized with its data.
+    /// </summary>
+    /// <param name="mobRegionData">The MobRegionData object containing the data for initialization.</param>
+    public void Initialize(MobRegionData mobRegionData = null)
     {
-        Initialize();
-    }
-    public void Initialize(float initialCooldownTimer = NULL_CONST)
-    {
-        spawnManager = FindFirstObjectByType<SpawnManager>();
         ScanChildrenForSpawnPoints();
-        if (initialCooldownTimer == NULL_CONST)
-            spawnCooldownTimer = 0;
+        spawnManager = FindFirstObjectByType<SpawnManager>();
+        if (mobRegionData != null)
+        {
+            currentState = mobRegionData.GetRawData().GetSpawnRegionState();
+            spawnCooldown = mobRegionData.GetRawData().GetSpawnCooldownTimer();
+        }
         else
-            spawnCooldownTimer = initialCooldownTimer;
+        {
+            currentState = SpawnRegionState.Inactive;
+        }
         initialized = true;
     }
 
     void Update()
     {
-        // block update loop pre-init
-        if (!initialized)
-        {
-            return;
-        }
+        if (!initialized) return;
 
-        // periodic spawn region checks - init spawn if conditions are met
-        if (spawnRegionCheckTimer <= 0)
+        if (currentState == SpawnRegionState.Active)
         {
-            CheckSpawnRegion();
-            if (playerInRegion && spawnReady)
+            if (!IsPlayerInRegion())
             {
-                // RAHHHHH player has entered the spawn region
-                spawnReady = false;
-                SpawnMobsInRegion();
+                SetState(SpawnRegionState.Cooldown);
             }
-            spawnRegionCheckTimer = spawnRegionCheckIntervalSec;
         }
-        spawnRegionCheckTimer -= Time.deltaTime;
 
-        // post spawning, run spawn cooldown logic and reset spawn trigger
-        if (spawnReady == false && playerInRegion == false)
+        if (currentState == SpawnRegionState.Inactive)
+        {
+            spawnRegionCheckTimer -= Time.deltaTime;
+            if (spawnRegionCheckTimer <= 0)
+            {
+                spawnRegionCheckTimer = spawnRegionCheckIntervalSec;
+                if (IsPlayerInRegion())
+                {
+                    SetState(SpawnRegionState.Active);
+                }
+            }
+        }
+
+        if (currentState == SpawnRegionState.Cooldown)
         {
             spawnCooldownTimer -= Time.deltaTime;
-            if (spawnCooldownTimer <= 0f)
+            if (spawnCooldownTimer <= 0)
             {
-                spawnReady = true;
-                spawnCooldownTimer = spawnCooldown;
+                if (IsPlayerInRegion())
+                {
+                    SetState(SpawnRegionState.Active);
+                }
+                else
+                {
+                    SetState(SpawnRegionState.Inactive);
+                }
             }
         }
     }
+
+    /// <summary>
+    /// Sets the state of the spawn region and handles necessary logic for each state change (like starting cooldowns or spawning mobs)
+    /// </summary>
+    /// <param name="newState"></param>
+    void SetState(SpawnRegionState newState)
+    {
+        currentState = newState;
+        if (currentState == SpawnRegionState.Inactive)
+        {
+            spawnCooldownTimer = NULL_CONST; // not on cooldown
+        }
+        else if (currentState == SpawnRegionState.Active)
+        {
+            SpawnMobsInRegion();
+            spawnCooldownTimer = spawnCooldown; // start cooldown
+        }
+        else if (currentState == SpawnRegionState.Cooldown)
+        {
+            spawnCooldownTimer = spawnCooldown; // start cooldown
+        }
+    }
+
+    /// <summary>
+    /// Scans children of the spawn region for spawn points and adds them to the spawn point pool.
+    /// </summary>
     void ScanChildrenForSpawnPoints()
     {
         spawnPoints.Clear();
@@ -97,27 +142,22 @@ public class SpawnRegion : MonoBehaviour
             }
         }
     }
-    /// <summary>
-    /// Updates playerInRegion boolean to reflect if player is truly in it or not
-    /// </summary>
-    public void CheckSpawnRegion()
-    {
-        LayerMask myLayers = relevantLayers | (1 << LayerMask.NameToLayer("Player")); // extra security to guarantee player is added
-        Collider[] results = Physics.OverlapSphere(centerPosition.position, radius, myLayers);
 
-        bool playerFound = false;
-        foreach (Collider result in results)
+    /// <summary>
+    /// Checks if player is in the spawn region by doing a sphere check for the player layer, 
+    /// and then verifying that the collider found belongs to the player (just in case)
+    /// </summary>
+    /// <returns></returns>
+    public bool IsPlayerInRegion()
+    {
+        LayerMask myLayers = LayerMask.GetMask("Player");
+        Collider[] results = new Collider[1]; // ONLY ONE PLAYER OR WE RIOT
+        Physics.OverlapSphereNonAlloc(centerPosition.position, radius, results, myLayers);
+        if (results[0] != null && results[0].gameObject == PlayerID.Instance.gameObject)
         {
-            if (result.gameObject == PlayerID.Instance.gameObject)
-            {
-                playerFound = true;
-                playerInRegion = true; // RAHHHHH player has entered the spawn region
-            }
+            return true;
         }
-        if (!playerFound)
-        {
-            playerInRegion = false;
-        }
+        return false;
     }
     public void OnDrawGizmosSelected()
     {

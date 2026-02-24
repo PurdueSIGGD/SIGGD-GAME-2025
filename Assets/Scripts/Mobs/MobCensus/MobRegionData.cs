@@ -9,10 +9,10 @@ namespace MobCensus
         [SerializeField] SpawnRegion instance;
         [SerializeField] MobRegionDataRaw rawData;
 
-        public MobRegionData(SpawnRegion instance)
+        public MobRegionData(SpawnRegion instance, MobRegionDataRaw rawData = null)
         {
             this.instance = instance;
-            rawData = new MobRegionDataRaw();
+            this.rawData = rawData ?? new MobRegionDataRaw();
         }
         public SpawnRegion GetInstance()
         {
