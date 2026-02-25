@@ -65,12 +65,6 @@ namespace SIGGD.Mobs.Hyena
             agentData = GetComponent<AgentData>();
             enemyAnimator = GetComponent<EnemyAnimator>();
 
-            if (agent != null)
-            {
-                agent.updatePosition = false;
-                agent.updateRotation = false;
-            }
-
             rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
         }

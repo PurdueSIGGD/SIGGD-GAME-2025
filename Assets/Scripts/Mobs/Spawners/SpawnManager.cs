@@ -64,7 +64,10 @@ public class SpawnManager : MonoBehaviour
         }
         // initialize goap system
         GoapActionProvider goapActionProvider = mobObject.GetComponent<GoapActionProvider>();
+
         goapActionProvider.gameObject.SetActive(true);
+        if (goapActionProvider != null)
+            goapActionProvider.enabled = false;
 
         // set boundary for territory capabillity (optional depending on if mob has this capability)
         AgentData agentData = mobObject.GetComponent<AgentData>();
@@ -86,20 +89,41 @@ public class SpawnManager : MonoBehaviour
 
         navAgent.updatePosition = false;
         navAgent.updateRotation = false;
-        NavMeshQueryFilter filter = new NavMeshQueryFilter
+        NavMeshQueryFilter navFilter = new NavMeshQueryFilter
         {
             agentTypeID = navAgent.agentTypeID,
             areaMask = NavMesh.AllAreas
         };
-        NavMeshQueryFilter navFilter = agentData.filter;
-        bool success = NavMesh.SamplePosition(mobObject.transform.position, out NavMeshHit hit, 15f, navFilter);
+        if (agentData != null && agentData.filter.areaMask != 0)
+            navFilter = agentData.filter;
+        bool success = NavMesh.SamplePosition(mobObject.transform.position, out NavMeshHit hit, 5f, navFilter);
+
         if (success) {
             mobObject.transform.position = hit.position;
             navAgent.Warp(hit.position);
+            navAgent.nextPosition = hit.position;
+            navAgent.ResetPath();
+            navAgent.isStopped = false;
+            var rb = mobObject.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                if (!rb.isKinematic)
+                {
+                    rb.linearVelocity = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
+                }
+
+                rb.isKinematic = true;
+                rb.useGravity = false;
+                rb.position = hit.position;
+            }
+
             Debug.Log("success");
         } else
         {
             Debug.Log("failure");
         }
+        if (goapActionProvider != null)
+            goapActionProvider.enabled = true;
     }
 }
