@@ -20,7 +20,8 @@ namespace MobCensus
             rawData.SetMobId(mobId);
             rawData.SetBoundary(boundary);
             passport = instance.GetComponent<MobCitizenPassport>();
-            //passport.WriteMobCitizenData();
+            passport.SetCitizenDataReference(this);
+            passport.WriteMobCitizenData();
         }
         public MobCitizenPassport GetPassport()
         {
