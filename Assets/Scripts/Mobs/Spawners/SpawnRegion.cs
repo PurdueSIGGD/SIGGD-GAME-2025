@@ -18,23 +18,17 @@ public class SpawnRegion : MonoBehaviour
         Active, // player is currently in region, spawn is ready and will trigger immediately, or spawn just triggered and is now on cooldown until next trigger
         Cooldown // player has left region but spawn is still on cooldown, spawn is not ready and will trigger on player entry once cooldown ends
     }
+    [SerializeField] SpawnRegionStats regionStats;
+
     [SerializeField] SpawnRegionState currentState;
     SpawnManager spawnManager;
-    [SerializeField] List<SpawnRateData> spawnList;
     [SerializeField] List<SpawnPoint> spawnPoints;
-
-    [SerializeField] float spawnCooldown;
-    float initDelaySpawnCooldown = 5f; // for base initialization (no cooldown param loaded from save), set smaller cooldown
-                                       // to wait for save system to initialize
-    [SerializeField] float minPropSpawned; // minimum proportion of spawnpoints to spawn at (see spawn mobs function implementation)
-    [SerializeField] float maxPropSpawned; // max prop of spawnpoints to spawn at
 
     [Header("SpawnRegionSphereSettings")]
     float spawnRegionCheckIntervalSec = 1; // how often to check if player is in region when player is not currently in region (either inactive or on cooldown)
-    float spawnRegionCheckTimer;
+    float spawnRegionCheckTimer = 0;
     [SerializeField] Transform centerPosition;
-    [SerializeField] float radius;
-    [SerializeField] float spawnCooldownTimer;
+    float spawnCooldownTimer;
 
     bool initialized = false;
     public float GetSpawnCooldownTimer()
@@ -80,6 +74,7 @@ public class SpawnRegion : MonoBehaviour
             spawnRegionCheckTimer -= Time.deltaTime;
             if (spawnRegionCheckTimer <= 0)
             {
+                print("SPAWNREGION -> CHECKING FOR PLAYER IN REGION " + regionStats.Name);
                 spawnRegionCheckTimer = spawnRegionCheckIntervalSec;
                 if (IsPlayerInRegion())
                 {
@@ -118,11 +113,11 @@ public class SpawnRegion : MonoBehaviour
         else if (newState == SpawnRegionState.Active)
         {
             SpawnMobsInRegion();
-            spawnCooldownTimer = spawnCooldown; // start cooldown
+            spawnCooldownTimer = regionStats.SpawnCooldown; // start cooldown
         }
         else if (newState == SpawnRegionState.Cooldown)
         {
-            spawnCooldownTimer = spawnCooldown; // start cooldown
+            spawnCooldownTimer = regionStats.SpawnCooldown; // start cooldown
         }
         currentState = newState;
     }
@@ -155,18 +150,21 @@ public class SpawnRegion : MonoBehaviour
     public bool IsPlayerInRegion()
     {
         LayerMask myLayers = LayerMask.GetMask("Player");
-        Collider[] results = new Collider[1]; // ONLY ONE PLAYER OR WE RIOT
-        Physics.OverlapSphereNonAlloc(centerPosition.position, radius, results, myLayers);
-        if (results[0] != null && results[0].gameObject == PlayerID.Instance.gameObject)
+        Collider[] results = Physics.OverlapSphere(centerPosition.position, regionStats.Radius, myLayers);
+        foreach (Collider c in results)
         {
-            return true;
+            if (c.gameObject == PlayerID.Instance.gameObject)
+            {
+                print("SPAWNREGION -> PLAYER IN REGION " + regionStats.Name);
+                return true;
+            }
         }
         return false;
     }
-    public void OnDrawGizmosSelected()
+    public void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(centerPosition.position, radius);
+        Gizmos.DrawWireSphere(centerPosition.position, regionStats.Radius);
     }
     /// <summary>
     /// Selects a random proportion of spawnpoints in the pool to spawn a random mob at (unless there's an override)
@@ -175,8 +173,8 @@ public class SpawnRegion : MonoBehaviour
     {
         List<SpawnPoint> spawnPointsCopy = new(spawnPoints);
         int numSpawn = UnityEngine.Random.Range(
-            Mathf.FloorToInt(spawnPoints.Count * minPropSpawned),
-            Mathf.CeilToInt(spawnPoints.Count * maxPropSpawned)
+            Mathf.FloorToInt(spawnPoints.Count * regionStats.MinPropSpawned),
+            Mathf.CeilToInt(spawnPoints.Count * regionStats.MaxPropSpawned)
         );
         print("MYSPAWN: " + numSpawn);
         for (int i = 0; i < numSpawn; i++)
@@ -199,7 +197,7 @@ public class SpawnRegion : MonoBehaviour
     GameObject GetRandomMobPrefab()
     {
         float totalChance = 0f;
-        foreach (SpawnRateData spawnData in spawnList)
+        foreach (SpawnRateData spawnData in regionStats.SpawnRates)
         {
             totalChance += spawnData.spawnWeight;
         }
@@ -207,7 +205,7 @@ public class SpawnRegion : MonoBehaviour
         float randomValue = UnityEngine.Random.Range(0f, totalChance);
         float cumulativeChance = 0f;
 
-        foreach (SpawnRateData spawnData in spawnList)
+        foreach (SpawnRateData spawnData in regionStats.SpawnRates)
         {
             cumulativeChance += spawnData.spawnWeight;
             if (randomValue <= cumulativeChance)
@@ -216,6 +214,6 @@ public class SpawnRegion : MonoBehaviour
             }
         }
 
-        return spawnList[0].mobPrefab; // default to 1st mob just in case, should never reach here
+        return regionStats.SpawnRates[0].mobPrefab; // default to 1st mob just in case, should never reach here
     }
 }
