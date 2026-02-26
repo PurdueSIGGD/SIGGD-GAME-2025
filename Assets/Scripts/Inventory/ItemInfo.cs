@@ -28,7 +28,8 @@ public class ItemInfo : ScriptableObject
         CaptureOrb,
         Empty,
         Mushroom,
-        Keycard
+        Keycard,
+        Axe
     };
 
     [SerializeField] public ItemType itemType;// type of item
