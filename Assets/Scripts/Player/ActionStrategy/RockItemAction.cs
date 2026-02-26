@@ -3,11 +3,12 @@ using UnityEngine;
 public class RockItemAction : IPlayerActionStrategy
 {
     private Camera playerCam;
+    [Tooltip("Prefab for GameObject that will be thrown")]
+    public GameObject projectile;
     protected override void OnEnter()
     {
-        playerCam = PlayerID.Instance.cam.GetComponentInChildren<Camera>();
-        Debug.Log("Player is facing " + playerCam.transform.forward);
-
+        
+        RockThrow.Instance.ThrowRock(projectile);
 
         base.OnEnter();
         PlayHandAction(); // plays animation
