@@ -8,7 +8,7 @@ using FMOD;
 
 public class AudioLogManager : MonoBehaviour
 {
-    [SerializeField] AudioLogObject[] logs;
+    public List<AudioLogObject> logs = new();
     [SerializeField] TextMeshProUGUI subtitles;
     private Coroutine lastStarted = null;
 
@@ -61,9 +61,8 @@ public class AudioLogManager : MonoBehaviour
         foreach (var line in curAudio.subtitles)
         {
             // if the line has a % then it is from a radio so set effects to radio effects
-            if (line.line.Contains("%"))
+            if (line.isFromRadio == true)
             {
-                UnityEngine.Debug.Log("AAAHHHHHHHHHHHHH");
                 logSoundEvent.setParameterByName("RadioVoice", 1);
                 //UnityEngine.Debug.Log(logSoundEvent.getParameterByName("RadioVoice", out float value));
             }
