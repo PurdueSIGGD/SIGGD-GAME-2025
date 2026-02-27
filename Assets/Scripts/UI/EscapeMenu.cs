@@ -47,6 +47,7 @@ public class EscapeMenu : MonoBehaviour
             Cursor.visible = true;
             canvas.enabled = true;
             isEnabled = true;
+            ObjectPlacer.Instance.ExitPlacementMode();
         }
         else
         {
