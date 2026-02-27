@@ -81,6 +81,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 7026
+--- !u!114 &-7427789231851435573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Path: 
+  Guid:
+    Data1: 513293115
+    Data2: 1162727511
+    Data3: 1958470315
+    Data4: 1115924691
+  Banks:
+  - {fileID: 8670629471289669497}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &-6381185319756990366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,6 +162,30 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 2664
+--- !u!114 &-5370068447685014958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/pre crash - after samples call command/RadioVoice
+  m_EditorClassIdentifier: 
+  Name: RadioVoice
+  StudioPath: 
+  Min: 0
+  Max: 1
+  Default: 0
+  ID:
+    data1: 2373014100
+    data2: 2088139153
+  Type: 0
+  IsGlobal: 0
+  Labels: []
+  Exists: 1
 --- !u!114 &-4841204124306739538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,37 +209,11 @@ MonoBehaviour:
   IsStream: 0
   Is3D: 0
   IsOneShot: 1
-  Parameters: []
+  Parameters:
+  - {fileID: -5370068447685014958}
   MinDistance: 1
   MaxDistance: 20
   Length: 29020
---- !u!114 &-4836140127082479221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/SFX/Player/Jump
-  m_EditorClassIdentifier: 
-  Path: event:/SFX/Player/Jump
-  Guid:
-    Data1: 513293115
-    Data2: 1162727511
-    Data3: 1958470315
-    Data4: 1115924691
-  Banks:
-  - {fileID: 8670629471289669497}
-  IsStream: 0
-  Is3D: 1
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 0
 --- !u!114 &-4568969671155376313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,7 +229,7 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639058307654660181
+  lastModified: 639077463923483745
   FileSizes:
   - Name: Desktop
     Value: 6178944
@@ -286,7 +311,8 @@ MonoBehaviour:
   IsStream: 0
   Is3D: 0
   IsOneShot: 1
-  Parameters: []
+  Parameters:
+  - {fileID: -226800407981502505}
   MinDistance: 1
   MaxDistance: 20
   Length: 19274
@@ -587,33 +613,6 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 3264
---- !u!114 &-870312549650035625
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/SFX/Hyena/HyenaFootstep
-  m_EditorClassIdentifier: 
-  Path: event:/SFX/Hyena/HyenaFootstep
-  Guid:
-    Data1: 840219068
-    Data2: 1199080129
-    Data3: -1455964528
-    Data4: -1594911427
-  Banks:
-  - {fileID: -597702993067043555}
-  IsStream: 0
-  Is3D: 1
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 461
 --- !u!114 &-597702993067043555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -629,12 +628,12 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639058307654671116
+  lastModified: 639077463923559250
   FileSizes:
   - Name: Desktop
     Value: 101984
   Exists: 1
---- !u!114 &-105281473422231720
+--- !u!114 &-226800407981502505
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -643,24 +642,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/SFX/Hyena/HyenaOnNotice
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/pre crash - CALL COMMAND/RadioVoice
   m_EditorClassIdentifier: 
-  Path: event:/SFX/Hyena/HyenaOnNotice
-  Guid:
-    Data1: -913886673
-    Data2: 1261800695
-    Data3: -433522263
-    Data4: -88628821
-  Banks:
-  - {fileID: -597702993067043555}
-  IsStream: 0
-  Is3D: 1
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 1860
+  Name: RadioVoice
+  StudioPath: 
+  Min: 0
+  Max: 1
+  Default: 0
+  ID:
+    data1: 2373014100
+    data2: 2088139153
+  Type: 0
+  IsGlobal: 0
+  Labels: []
+  Exists: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -730,16 +726,16 @@ MonoBehaviour:
   - {fileID: 5726865950230541323}
   - {fileID: 6169859169709341685}
   - {fileID: -8462448228591880277}
-  - {fileID: -4836140127082479221}
-  - {fileID: 2460152525561194407}
-  - {fileID: -105281473422231720}
-  - {fileID: -870312549650035625}
+  - {fileID: -7427789231851435573}
+  - {fileID: 8799017536566531806}
+  - {fileID: 272507359130910241}
+  - {fileID: 8163865706320950920}
   EditorParameters: []
   MasterBanks:
   - {fileID: 3311945391348741204}
   StringsBanks:
   - {fileID: 8350624701242053860}
-  cacheTime: 639058307654671116
+  cacheTime: 639077463923559250
   cacheVersion: 131633
 --- !u!114 &160774129192895607
 MonoBehaviour:
@@ -795,6 +791,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 1632
+--- !u!114 &272507359130910241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/Hyena/HyenaOnNoticeSFX
+  m_EditorClassIdentifier: 
+  Path: event:/SFX/Hyena/HyenaOnNoticeSFX
+  Guid:
+    Data1: -913886673
+    Data2: 1261800695
+    Data3: -433522263
+    Data4: -88628821
+  Banks:
+  - {fileID: -597702993067043555}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 1860
 --- !u!114 &465413270198525196
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -945,10 +968,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/VoiceLines.bank
   Name: VoiceLines
   StudioPath: bank:/VoiceLines
-  lastModified: 639036803019873831
+  lastModified: 639064401689303582
   FileSizes:
   - Name: Desktop
-    Value: 2313984
+    Value: 2316736
   Exists: 1
 --- !u!114 &1457767654058364857
 MonoBehaviour:
@@ -1031,33 +1054,6 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 8045
---- !u!114 &2460152525561194407
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/Music/Placeholder
-  m_EditorClassIdentifier: 
-  Path: event:/Music/Placeholder
-  Guid:
-    Data1: -1782188567
-    Data2: 1130117058
-    Data3: 1493652377
-    Data4: -1613868262
-  Banks:
-  - {fileID: -4568969671155376313}
-  IsStream: 1
-  Is3D: 1
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 69355
 --- !u!114 &3011947663242016663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1099,7 +1095,7 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639058307654415227
+  lastModified: 639077463923059777
   FileSizes:
   - Name: Desktop
     Value: 5015616
@@ -1536,6 +1532,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 4414
+--- !u!114 &8163865706320950920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/Hyena/HyenaFootstepSFX
+  m_EditorClassIdentifier: 
+  Path: event:/SFX/Hyena/HyenaFootstepSFX
+  Guid:
+    Data1: 840219068
+    Data2: 1199080129
+    Data3: -1455964528
+    Data4: -1594911427
+  Banks:
+  - {fileID: -597702993067043555}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 461
 --- !u!114 &8350624701242053860
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1551,10 +1574,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639058307654436871
+  lastModified: 639064401687613649
   FileSizes:
   - Name: Desktop
-    Value: 3990
+    Value: 4018
   Exists: 1
 --- !u!114 &8664334309593661264
 MonoBehaviour:
@@ -1598,11 +1621,38 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Ambience.bank
   Name: Ambience
   StudioPath: bank:/Ambience
-  lastModified: 639058307654252587
+  lastModified: 639077463922656849
   FileSizes:
   - Name: Desktop
     Value: 2756928
   Exists: 1
+--- !u!114 &8799017536566531806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Music/Vain Redemption
+  m_EditorClassIdentifier: 
+  Path: event:/Music/Vain Redemption
+  Guid:
+    Data1: -1782188567
+    Data2: 1130117058
+    Data3: 1493652377
+    Data4: -1613868262
+  Banks:
+  - {fileID: -4568969671155376313}
+  IsStream: 1
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 69355
 --- !u!114 &8825367514294597688
 MonoBehaviour:
   m_ObjectHideFlags: 0
