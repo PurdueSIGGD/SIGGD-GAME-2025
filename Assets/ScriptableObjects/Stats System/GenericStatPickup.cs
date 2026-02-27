@@ -1,14 +1,28 @@
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
 public class GenericStatPickup : MonoBehaviour
 {
     [Header("Effect Settings")]
-    //[SerializeField] private StatType statToAffect;
+    [SerializeField] private StatType statToAffect;
     public float multiplier = 2f;
     public float duration = 5f;
 
+    private GameObject o;
+
     private void OnTriggerEnter(Collider other)
     {
+        Stat stats = other.GetComponent<Stat>();
+        o = other.gameObject;
+
+        if (stats != null)
+        {
+            stats.ApplyMultiplier(statToAffect, multiplier, duration);
+            Destroy(gameObject);
+        }
+
+         
     }
 
 

@@ -12,23 +12,18 @@ using Unity.Hierarchy;
 
 public class FieldOfView : MonoBehaviour
 {
-    [SerializeField] private float viewRadius;
-    [SerializeField] private float crouchRangeMultiplier = 0.5f;
-    [SerializeField] private float sprintRangeMultiplier = 1.5f;
-    
-    private float ViewRadius => viewRadius * playerListener.CrouchRangeMultiplier * playerListener.SprintRangeMultiplier;
-    
-    private PlayerListener playerListener;
-    
-    private float rangeMultiplier;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public float viewRadius;
     public LayerMask playerMask;
     public LayerMask mobMask;
     public LayerMask obstacleMask;
     [Range(0, 360)]
     public float angleRange;
+    public bool canSeeTarget = true;
     public GameObject targetRef;
     private float loseSightDelay;
     private float lastSeenTime;
+    private Vector3 lastDir;
     private Dictionary<Transform, DetectedTarget> detected = new();
     private List<GameObject> seenTargets = new List<GameObject>();
 
@@ -49,23 +44,15 @@ public class FieldOfView : MonoBehaviour
         playerMask = LayerMask.GetMask("Player");
         mobMask = LayerMask.GetMask("Mob");
         targetRef = null;
+        canSeeTarget = false;
         loseSightDelay = 7f;
-
-        playerListener = new PlayerListener(crouchRangeMultiplier, sprintRangeMultiplier);
-        
+        lastDir = Vector3.zero;
         StartCoroutine(FOVRoutine());
 
     }
-
-    private void OnDisable()
-    {
-        playerListener?.DisableListener();
-    }
-
     void Update()
     {
     }
-    
     private IEnumerator FOVRoutine()
     {
         WaitForSeconds wait = new WaitForSeconds(0.15f);
@@ -76,38 +63,31 @@ public class FieldOfView : MonoBehaviour
             CleanExpiredTargets();
         }
     }
-    /// <summary>
-    /// Checks for mobs or players nearb in a sphere and adds it to detected targets if it is in the agent's field of view. 
-    /// </summary>
     private void FOVCheck()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, ViewRadius, playerMask | mobMask);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, viewRadius, playerMask | mobMask);
+        if (hitColliders.Length == 0) return;
         for (int i = 0; i < hitColliders.Length; i++)
         {
             {
-                Transform target = hitColliders[i]?.transform;
-                if (target == null) continue;
+                Transform target = hitColliders[i].transform;
                 Vector3 directionToTarget = (target.position - transform.position).normalized;
                 if (Vector3.Angle(transform.forward, directionToTarget) > angleRange / 2f)
                     continue;
 
                 float distanceToTarget = Vector3.Distance(transform.position, target.position);
 
-                if (Physics.Raycast(transform.position + Vector3.up, directionToTarget, distanceToTarget, obstacleMask))
+                if (Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
                     continue;
 
                 detected[target] = new DetectedTarget(hitColliders[i].gameObject, 1, Time.time);
             }
         }
     }
-    /// <summary>
-    /// Cleans the expired targets based off of how long the target was not in the agent's sight
-    /// </summary>
     private void CleanExpiredTargets()
     {
-        //List<GameObject> tempSeenTargets = new List<GameObject>();
         seenTargets.Clear();
-        GameObject tempPlayerTarget = null;
+        PlayerTarget = null;
         List<Transform> toRemove = new();
         foreach (KeyValuePair<Transform, DetectedTarget> pair in detected)
         {
@@ -117,11 +97,10 @@ public class FieldOfView : MonoBehaviour
                 continue;
             }
             seenTargets.Add(pair.Value.gameObject);
-            if (pair.Value.gameObject.CompareTag("Player")) tempPlayerTarget = pair.Value.gameObject;
+            if (pair.Value.gameObject.CompareTag("Player")) PlayerTarget = pair.Value.gameObject;
         }
         foreach (var v in toRemove)
             detected.Remove(v);
-        PlayerTarget = tempPlayerTarget;
     }
     public GameObject PlayerTarget { get; private set; }
     public List<GameObject> GetSeenTargets() => seenTargets;

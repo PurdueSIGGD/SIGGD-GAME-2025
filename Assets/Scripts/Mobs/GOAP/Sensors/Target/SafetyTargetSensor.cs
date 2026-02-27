@@ -3,14 +3,12 @@ using CrashKonijn.Goap.Runtime;
 using SIGGD.Goap.Interfaces;
 using Unity.Cinemachine;
 using UnityEngine;
-using SIGGD.Mobs;
 using UnityEngine.AI;
 
 namespace SIGGD.Goap.Sensors
 {
     public class SafetyTargetSensor : LocalTargetSensorBase
     {
-        private NavMeshQueryFilter navFilter;
         public override void Created()
         {
 
@@ -18,7 +16,6 @@ namespace SIGGD.Goap.Sensors
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
-            navFilter = references.GetCachedComponent<AgentData>().filter;
             var random = this.LocateRandomPosition(agent);
             // if the position target exists, update it with a new random position
             if (existingTarget is PositionTarget positionTarget)
@@ -40,7 +37,7 @@ namespace SIGGD.Goap.Sensors
             random += agent.Transform.position;
 
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(random, out hit, 10f, navFilter))
+            if (NavMesh.SamplePosition(random, out hit, 10f, NavMesh.AllAreas))
             {
                 return hit.position;
             }

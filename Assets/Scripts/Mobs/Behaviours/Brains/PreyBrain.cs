@@ -10,6 +10,8 @@ namespace SIGGD.Mobs
 {
     public class PreyBrain : BaseAgentBrain
     {
+        private HungerBehaviour hungerBehaviour;
+
         protected override void Awake()
         {
             base.Awake();
@@ -31,6 +33,7 @@ namespace SIGGD.Mobs
         }
         private void DecideGoal()
         {
+            //this.provider.RequestGoal<HealGoal, GrowPackGoal, FollowAlphaGoal, DontStarveGoal, AvoidDangerGoal>(true);
             this.provider.RequestGoal<WanderGoal, GrowPackGoal, FollowAlphaGoal, DontStarveGoal, AvoidDangerGoal>(true);
         }
     }

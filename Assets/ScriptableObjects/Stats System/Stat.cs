@@ -1,118 +1,112 @@
-using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Events;
 
-/// <summary>
-/// Provides access to a stat value. Its value and modifier can be updated directly or for a duration.
-/// All updates to value and modifier are additive.
-/// </summary>
-[Serializable]
-public class Stat
+// Event for when a stat changes or is modified temporarily
+[System.Serializable]
+public class StatChangeEvent : UnityEvent<StatType, float> { }
+
+public class Stat : MonoBehaviour
 {
-    public float Value => value * (modifier / 100);
-    public float UnmodValue => value;
+    public StatChangeEvent OnStatChanged = new();
 
-    public float value;
-    [NonSerialized] public float modifier;
-    [NonSerialized] public float baselineValue; // value first assigned when stat is initialized, used for resetting stat
+    [SerializeField] private StatData statData;
+    [SerializeField] private MoveData moveData;
 
-    public List<Coroutine> activeValChanges;
-    public List<Coroutine> activeModChanges;
+    // base stats
+    public Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>();
 
-    [NonSerialized] public MonoBehaviour parent;
+    // current modifiers
+    public Dictionary<StatType, float> modifiers = new Dictionary<StatType, float>();
 
-    public Stat(float value)
+    // holds currently running coroutines for each stat
+    private Dictionary<Coroutine, StatType> activeCoroutines = new Dictionary<Coroutine, StatType>();
+
+    private void Awake()
     {
-        this.value = baselineValue = value;
-        modifier = 100f;
+        foreach (var stat in statData.stats)
+        {
+            baseStats[stat.stat] = stat.value;
+            modifiers[stat.stat] = 1f; // 1 is no modifier
+        }
 
-        activeValChanges = new();
-        activeModChanges = new();
-        //this.parent = parent;
+        if (moveData != null)
+        {
+            // align movement stats with the movedata
+            baseStats[StatType.walkSpeed] = moveData.walkSpeed;
+            baseStats[StatType.sprintSpeed] = moveData.sprintSpeed;
+        }
     }
 
-    /// <summary>
-    /// Call to reset all active modifications on the stat
-    /// </summary>
-    public void ResetAll()
+    #region Generic Stat Methods / Modifiers
+
+    public float GetStat(StatType type)
     {
-        ResetModifier();
-        ResetValue();
+        return baseStats[type] * modifiers[type];
+    }   
+
+    public float ChangeStat(StatType type, float amount)
+    {
+        if (!baseStats.ContainsKey(type))
+            return 0f;
+        baseStats[type] += amount;
+
+        OnStatChanged.Invoke(type, GetStat(type));
+
+        return baseStats[type];
     }
 
-    /// <summary>
-    /// Update modifier for the stat for a duration. If no duration is provided, the change will last until stat is reset.
-    /// </summary>
-    /// <param name="newMod">amount to add to modifier value</param>
-    /// <param name="duration">duration of change</param>
-    public void SetModifier(float newMod, float duration = default)
+    public void ApplyMultiplier(StatType type, float multiplier, float duration)
     {
-        //if (!StatManager.Instance)
-        //{
-        //    Debug.LogError("No StatManager instance found. Cannot set modifier.");
-        //}
-        //else
-        //{
-        //    StatManager.Instance.UpdateModifier(this, newMod, duration);
-        //}
-        StatManager.UpdateModifier(this, newMod, duration);
+        Debug.Log($"Applying {multiplier}x multiplier to {type} for {duration} seconds on {gameObject.name}");
+        activeCoroutines[StartCoroutine(ApplyMultiplierCoroutine(type, multiplier, duration))] = type;
+        // StartCoroutine(ApplyMultiplierCoroutine(type, multiplier, duration));
     }
 
-    /// <summary>
-    /// Reset all active modifications to the stat
-    /// </summary>
-    public void ResetModifier()
+    // Coroutine to handle multiplier for x seconds
+    IEnumerator ApplyMultiplierCoroutine(StatType type, float multiplier, float duration)
     {
-        //if (StatManager.Instance)
-        //{
-            foreach (Coroutine modChange in activeModChanges)
+        modifiers[type] *= multiplier;
+        OnStatChanged.Invoke(type, GetStat(type));
+
+        yield return new WaitForSeconds(duration);
+
+        modifiers[type] /= multiplier;
+        OnStatChanged.Invoke(type, GetStat(type));
+    }
+
+    // stop coroutines also
+    public void ResetModifier(StatType type)
+    {
+        // Stop all coroutines affecting this stat
+        for (int i = 0; i < activeCoroutines.Count; i++)
+        {
+            Coroutine coroutine = activeCoroutines.ElementAt(i).Key;
+
+            if (activeCoroutines[coroutine] == type)
             {
-                if (modChange != null) parent.StopCoroutine(modChange);
+                StopCoroutine(coroutine);
+                activeCoroutines.Remove(coroutine);
+                i--; // Adjust index after removal  
             }
-        //}
-        //else
-        //{
-        //    Debug.LogError("No StatManager instance found. Cannot reset modifier.");
-        //}
-        modifier = 1f;
-        activeModChanges.Clear();
+        }
+
+        modifiers[type] = 1f;
     }
 
-    /// <summary>
-    /// Directly update the value of the stat for a duration. If no duration is provided, the change will last until stat is reset.
-    /// </summary>
-    /// <param name="newVal">amount to add to modifier value</param>
-    /// <param name="duration">duration of change</param>
-    public void SetStatValue(float newVal, float duration = default)
+    // Get base stat without modifiers or 0 if not found
+    public float GetBaseStat(StatType stat) => baseStats.ContainsKey(stat) ? baseStats[stat] : 0f;
+
+    public void SetStat(StatType stat, float value)
     {
-        //if (!StatManager.Instance)
-        //{
-        //    Debug.LogError("No StatManager instance found. Cannot set value.");
-        //}
-        //else
-        //{
-        //    StatManager.Instance.UpdateValue(this, newVal, duration);
-        //}
-        StatManager.UpdateValue(this, newVal, duration);
+        baseStats[stat] = value;
+        OnStatChanged.Invoke(stat, GetStat(stat));
     }
 
-    /// <summary>
-    /// Reset all direct stat value modifications
-    /// </summary>
-    public void ResetValue()
-    {
-        //if (StatManager.Instance)
-        //{
-            foreach (Coroutine valChange in activeValChanges)
-            {
-                if (valChange != null) parent.StopCoroutine(valChange);
-            }
-        //}
-        //else
-        //{
-        //    Debug.LogError("No StatManager instance found. Cannot rest value");
-        //}
-        value = baselineValue;
-        activeValChanges.Clear();
-    }
+    #endregion
+
+ 
 }

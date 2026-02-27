@@ -152,7 +152,6 @@ public class PlayerMovement : MonoBehaviour
     {
         rb.linearVelocity = rb.linearVelocity.SetY(0);
         rb.AddForce(Vector3.up * force, ForceMode.Impulse);
-        GetComponent<PlayerStamina>().StaminaJump();  // decrease stamina
     }
 
     /**

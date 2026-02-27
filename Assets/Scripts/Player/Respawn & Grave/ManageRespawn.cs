@@ -6,7 +6,6 @@ public class ManageRespawn : MonoBehaviour
     private Inventory inv;
     private EntityHealthManager health;
     private PlayerHunger hunger;
-    private PlayerStamina stamina;
 
     public Vector3 respawnPoint;
     public GameObject graveObj;
@@ -31,10 +30,8 @@ public class ManageRespawn : MonoBehaviour
         }
 
         player.transform.position = respawnPoint;
-        ObjectPlacer.Instance.ExitPlacementMode();
         health.ResetHealth();
         hunger.ResetHunger();
-        stamina.ResetStamina();
     }
 
     private void OnPlayerDeath(DamageContext context)
@@ -61,7 +58,6 @@ public class ManageRespawn : MonoBehaviour
         inv = PlayerID.Instance.Inventory;
         health = PlayerID.Instance.playerHealth;
         hunger = PlayerID.Instance.playerHunger;
-        stamina = PlayerID.Instance.playerStamina;
     }
 
     void Update()
@@ -72,15 +68,5 @@ public class ManageRespawn : MonoBehaviour
             RespawnPlayer();
         }
 #endif
-    }
-
-    public GameObject GetCurGrave() {
-        return curGrave;
-    }
-
-    public void CreateGrave(Vector3 position, Quaternion rotation, string[] names, int[] count) {
-        inv = PlayerID.Instance.Inventory;
-        curGrave = Instantiate(graveObj, position, rotation);
-        curGrave.GetComponent<GraveInteract>().FillGrave(inv, names, count);
     }
 }

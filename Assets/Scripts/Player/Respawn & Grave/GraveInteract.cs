@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
 {
-    public ItemInfo[] info;
-    public int[] count;
+    private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
+    ItemInfo[] info;
+    int[] count;
     Inventory inventoryObj;
     void Start()
     {
@@ -23,7 +24,6 @@ public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
 
     public void OnInteract(IInteractor interactor)
     {
-        Debug.Log("Grave interacted");
         inventoryObj.SetInventory(info, count);
         Destroy(this.gameObject); // Remove the item from the scene
     }
@@ -39,19 +39,6 @@ public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
             count[i] = inventoryObj.GetInventory()[i].count;
         }
         inventoryObj.RemoveInventory();
-    }
-
-    public void FillGrave(Inventory inv, string[] fnames, int[] fcount)
-    {
-        Debug.Log("grave filled from save");
-        inventoryObj = inv;
-        info = new ItemInfo[fnames.Length];
-        count = new int[fnames.Length];
-        for (int i = 0; i < info.Length; i++)
-        {
-            info[i] = inv.InfoLookup(fnames[i]);
-            count[i] = fcount[i];
-        }
     }
 
 }

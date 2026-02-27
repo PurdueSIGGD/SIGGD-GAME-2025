@@ -211,11 +211,7 @@ namespace Utility
         {
             return 1 - Mathf.Exp(-damping * dt);
         }
-        public static float ExponentialCurve(float t)
-        {
-            float sqr = t * t;
-            return sqr / (2.0f * (sqr - t) + 1.0f);
-        }
+
         #endregion
     }
 }

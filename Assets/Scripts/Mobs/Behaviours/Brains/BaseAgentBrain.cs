@@ -77,7 +77,5 @@ namespace SIGGD.Mobs
         {
             return agentType;
         }
-        
-        
     }
 }

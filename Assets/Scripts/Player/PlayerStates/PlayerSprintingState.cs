@@ -1,4 +1,4 @@
-using Extensions.EventBus;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerSprintingState : StateMachineBehaviour
@@ -10,10 +10,7 @@ public class PlayerSprintingState : StateMachineBehaviour
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
         playerMovement = PlayerID.Instance.playerMovement;
-        PlayerID.Instance.stateMachine.SetSprinting(true); 
-        
-        EventBus<OnPlayerActionEvent>.Raise(new OnPlayerActionEvent(PlayerID.Instance.stateMachine.IsCrouched, 
-                                                                    PlayerID.Instance.stateMachine.IsSprinting));
+        PlayerID.Instance.stateMachine.IsSprinting = true; 
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -25,7 +22,7 @@ public class PlayerSprintingState : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        PlayerID.Instance.stateMachine.SetSprinting(false);
+        PlayerID.Instance.stateMachine.IsSprinting = false;
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

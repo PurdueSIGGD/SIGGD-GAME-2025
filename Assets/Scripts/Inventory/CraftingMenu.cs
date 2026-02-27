@@ -58,7 +58,6 @@ public class CraftingMenu : Singleton<CraftingMenu>
 
     public void Enable()
     {
-        Debug.Log("Enabled crafting menu");
         canvas.enabled = true;
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;

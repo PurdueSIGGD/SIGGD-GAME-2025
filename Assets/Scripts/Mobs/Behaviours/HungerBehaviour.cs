@@ -15,13 +15,17 @@ namespace SIGGD.Mobs
         [field:SerializeField]
         public float hunger { get; private set; }
 
-        [SerializeField] private BaseStats HungerConfig;
+        public int foodCount = 0;
+
+        [SerializeField]
+        private BaseStats HungerConfig;
 
         [SerializeField] private DamageContext hungerDamageContext;
 
         private bool damageTickActive = false;
 
-        [SerializeField] private EntityHealthManager HealthManager;
+        [SerializeField]
+        private EntityHealthManager HealthManager;
         private void Awake()
         {
             hunger = Random.Range(HungerConfig.minStartingHunger, HungerConfig.maxStartingHunger);

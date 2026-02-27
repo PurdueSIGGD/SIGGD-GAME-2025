@@ -6,7 +6,7 @@ public class PlayerHunger : MonoBehaviour
     [SerializeField] float hungerDecayRate = 1f;
     [SerializeField] float hungerDamageInterval = 10f; // seconds between starvation damage
     [SerializeField] DamageContext hungerDamageContext;
-    [SerializeField] GenericLingeringVignette hungerVignette;
+
     public float MaxHunger => maxHunger;
     public float CurrentHunger
     {
@@ -22,7 +22,6 @@ public class PlayerHunger : MonoBehaviour
     {
         if (currentHunger < 0) currentHunger = maxHunger;
         playerHealth = GetComponent<EntityHealthManager>();
-
     }
 
     void Update()
@@ -45,9 +44,6 @@ public class PlayerHunger : MonoBehaviour
                 Debug.Log("Starving - Took 1 damage");
             }
         }
-        float hungerPercent = CurrentHunger / MaxHunger;
-        float targetStrength = (1 - hungerPercent) * 1.5f;
-        hungerVignette.SetStrength(targetStrength);
     }
 
     public void UpdateHunger(float ammount)

@@ -17,13 +17,6 @@ public class FirstPersonCamera : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        if(xRotation == 0 && yRotation == 0)
-        {
-            Vector3 rot = transform.rotation.eulerAngles;
-            xRotation = rot.x;
-            yRotation = rot.y;
-        }
     }
 
     void Update()

@@ -5,7 +5,6 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
     public Action<ItemInfo, IInteractor> OnItemInteract;
 
     public ItemInfo itemInfo;
-    public bool destroyAfterPickup;
 
     private bool interactable = true;
     private InteractableUI currentUi;
@@ -35,7 +34,6 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
             OnItemInteract?.Invoke(itemInfo, interactor);
             interactable = false;
             if (currentUi) currentUi.DeactivateUI();
-            if (destroyAfterPickup) Destroy(this.gameObject); // Remove the item from the scene
         }
     }
 }

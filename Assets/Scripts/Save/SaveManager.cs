@@ -1,9 +1,7 @@
-using System;
 using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
 {
-
     public InventoryDataSaveModule inventoryModule = null;
     public bool saveInventory = true;
     
@@ -19,9 +17,6 @@ public class SaveManager : Singleton<SaveManager>
     public GameProgressDataSaveModule gameProgressModule = null;
     public bool saveGameProgress = true;
 
-    public GraveDataSaveModule graveModule = null;
-    public bool saveGrave = true;
-
     private ISaveModule[] modules;
 
     protected override void Awake()
@@ -36,27 +31,16 @@ public class SaveManager : Singleton<SaveManager>
         if (saveScreenshot) screenshotModule = new ScreenshotSaveModule();
         if (saveQuests) questModule = new QuestDataSaveModule();
         if (saveGameProgress) gameProgressModule = new GameProgressDataSaveModule();
-        if (saveGrave) graveModule = new GraveDataSaveModule();
 
         modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
-                                     questModule, gameProgressModule, graveModule};
+                                     questModule, gameProgressModule};
 
         Load();
-
     }
 
     private void OnApplicationQuit()
     {
-        if (GameStateManager.Instance.canSaveGame())
-        {
-            Save();
-        } else
-        {
-            // TODO: Figure out what to do here -> maybe create a popup modal to say that game cannot be saved before quitting
-            
-            Debug.Log("Application closed, but game was not saved as GameStateManager currentState  = " +
-                      GameStateManager.Instance.getGameState());
-        }
+        Save();
     }
 
     public bool Load()
@@ -71,20 +55,10 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Save()
     {
-        // Save if the game state is peaceful
-
-        if (!GameStateManager.Instance.canSaveGame())
-        {
-            return false;
-        }
-
-        Debug.Log("SaveManager : Game was saved.");
-
         foreach (var module in modules)
         {
             module?.serialize();
         }
         return true;
     }
-
 }

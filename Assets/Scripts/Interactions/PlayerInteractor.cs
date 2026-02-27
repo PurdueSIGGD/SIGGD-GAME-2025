@@ -24,16 +24,11 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
         {
             if (hit.collider.TryGetComponent<IInteractable<IInteractor>>(out var interactable))
             {
-                if ((Interactable == null || !Interactable.Equals(interactable)) && !ObjectPlacer.Instance.InPlacementMode)
+                if (Interactable == null || !Interactable.Equals(interactable))
                 {
                     Interactable?.OnHoverExit(interactableUI);
                     Interactable = interactable;
                     Interactable.OnHoverEnter(interactableUI);
-                }
-                else if (Interactable != null && ObjectPlacer.Instance.InPlacementMode)
-                { // Disable interactable UI if entered placement mode
-                    Interactable?.OnHoverExit(interactableUI);
-                    Interactable = null;
                 }
             }
             else
@@ -68,6 +63,6 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
             interactable.OnInteract(this);
         }, () => !PlayerInput.Instance.interactionHeld);
     }
-
+    
     #endregion
 }
