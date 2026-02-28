@@ -25,7 +25,7 @@ public class EscapeMenu : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Tab) && PlayerID.Instance.IsAlive)
         {
             ShowEscapeMenu(!canvas.enabled);
         }

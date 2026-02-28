@@ -21,9 +21,12 @@ public class UISlot : MonoBehaviour
 
     void Start()
     {
-        Debug.Log(RecipeInfo.Instance == null ? "recipeinfo null" : "recipeinfo not null");
-        itemInfo = RecipeInfo.Instance.NamesToItemInfos[ItemInfo.ItemName.Empty];
-        Debug.Log(itemInfo == null ? "iteminfo is null" : "ItemInfo is not null now");
+        // Inventory will handle all of the initialization for UISlots to avoid overwriting slots with Empty
+
+        //Debug.Log(RecipeInfo.Instance == null ? "recipeinfo null" : "recipeinfo not null");
+        //Debug.Log((itemInfo == null ? "iteminfo is before" : "ItemInfo is not null before") + " " + index);
+        //itemInfo = RecipeInfo.Instance.NamesToItemInfos[ItemInfo.ItemName.Empty];
+        //Debug.Log(itemInfo == null ? "iteminfo is null" : "ItemInfo is not null now");
     }
 
     public void Clicked() {
