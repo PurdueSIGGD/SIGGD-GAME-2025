@@ -96,6 +96,7 @@ public class AudioManager : Singleton<AudioManager>
     public void PlayOneShot(string name, Vector3 worldPos = default)
     {
         name = name.ToLower();
+
         StartCoroutine(PlayOneShotCoroutine(name, worldPos));
     }
 
@@ -214,6 +215,9 @@ public class AudioManager : Singleton<AudioManager>
     private IEnumerator PlayOneShotCoroutine(string name, Vector3 pos = default)
     {
         yield return new WaitUntil(() => FMODEvents.Instance.Initialized);
+
+        name = name.ToLower();
+
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
         if (!eventRef.IsNull)
         {
@@ -232,6 +236,9 @@ public class AudioManager : Singleton<AudioManager>
         // dictioary holding all event instances
         if (crossfading == false)
         {
+            toKey = toKey.ToLower();
+            fromKey = fromKey.ToLower();
+
             EventInstance to = InitalizeMusicNotStart(toKey);
             EventInstance from = InitalizeMusicNotStart(fromKey);
 

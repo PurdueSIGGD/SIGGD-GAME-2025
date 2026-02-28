@@ -132,6 +132,8 @@ public class AudioLogManager : MonoBehaviour
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
 
+            audioName = audioName.ToLower();
+
             // get the sound event from our dictionary and store it
             if (FMODEvents.Instance.soundEvents.TryGetValue(audioName, out EventReference eventRef))
             {

@@ -108,6 +108,11 @@ public class FMODEvents : Singleton<FMODEvents>
         Initialized = true;
         loadroutine = null;
         if (logAudioNameOnLoad) Debug.Log("All " + soundEvents.Count + " events loaded");
+
+        foreach (string key in soundEvents.Keys)
+        {
+            Debug.Log("key: " + key);
+        }
     }
 
     private IEnumerator GetEventInstanceCoroutine(string key, Action<EventInstance> callback)
