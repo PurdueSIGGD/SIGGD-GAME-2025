@@ -15,7 +15,8 @@ public class ItemInfo : ScriptableObject
         Resource,
         Container,
         Trap,
-        Empty
+        Empty, 
+        Keycard
     };
 
     public enum ItemName { // All possible names of items
@@ -26,7 +27,10 @@ public class ItemInfo : ScriptableObject
         Apple,
         CaptureOrb,
         Empty,
-        Mushroom
+        Mushroom,
+        Keycard,
+        Flower,
+        Slimeball
     };
 
     [SerializeField] public ItemType itemType;// type of item
