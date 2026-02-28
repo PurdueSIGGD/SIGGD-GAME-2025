@@ -4,14 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 using System;
-using System.Collections;
+
 public class Inventory : Singleton<Inventory>, IInventory
 {
-    // reference to the script that control's the player's tool hands.
-    private PlayerHands handsScript;
-
     public const int HotBarLength = 3;
-    public const int InventoryLength = 24;
+    public const int InventoryLength = 9;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
     [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength]; // hotbar buttons
@@ -24,9 +21,10 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     private Dictionary<string, ItemInfo> itemInfos;
 
+    [SerializeField] public string[] itemNames = new string[7];
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
-    private int swapSelection = -1; // index of select item for swapping
+    private UISlot _tempUISlot; // temporary slot for holding item that is being moved
     private InventoryInputActions inputActions;
 
     protected override void Awake()
@@ -38,13 +36,6 @@ public class Inventory : Singleton<Inventory>, IInventory
         inventoryCanvas.enabled = false;
 
         inputActions = new InventoryInputActions();
-
-        itemInfos = new();
-        foreach (var entry in RecipeInfo.Instance.NamesToItemInfos)
-        {
-            itemInfos[entry.Key.ToString()] = entry.Value;
-        }
-
     }
 
     void OnEnable()
@@ -81,45 +72,8 @@ public class Inventory : Singleton<Inventory>, IInventory
         Select(index);
     }
 
-    #region Player Hands Helper Functions
-    /// <summary>
-    /// loads animator controller into player hands
-    /// </summary>
-    private void LoadHandAnimation(AnimatorOverrideController handAnimatorController) {
-        if (handAnimatorController != null) {
-            handsScript.SetOverrideController(handAnimatorController);
-        }
-    }
-
-    /// <summary>
-    /// deloads animator controller from player hands, reverting to default controller for hands.
-    /// </summary>
-    private void DeloadHandAnimator() {
-        handsScript.SetOverrideController();
-    }
-
-    /// <summary>
-    /// returns the animator override controller of the given ui slot. Returns null if there is none
-    /// </summary>
-    private AnimatorOverrideController GetUISlotAnimation(UISlot slot) {
-        ItemInfo itemInfo = slot.itemInfo;
-
-        if (itemInfo != null) {
-            IPlayerActionStrategy actionStrategy = itemInfo.playerActionStrategy;
-            if (actionStrategy != null) {
-                return actionStrategy.handAnimatorController;
-            }
-        }
-
-        return null;
-    }
-    #endregion
-
     void Start()
     {
-        // fetches the reference to the player hand's script.
-        handsScript = PlayerHands.instance;
-
 
         // Update inventory to match manually placed items in scene/saved items
         // get UI slots from scene
@@ -155,6 +109,11 @@ public class Inventory : Singleton<Inventory>, IInventory
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
 
+        itemInfos = new();
+        foreach (var entry in RecipeInfo.Instance.NamesToItemInfos) {
+            itemInfos[entry.Key.ToString()] = entry.Value;
+        }
+
         // Load inventory info from save
         if (InventoryDataSaveModule.inventoryData.inventory != null) // load from save data
         {
@@ -166,14 +125,23 @@ public class Inventory : Singleton<Inventory>, IInventory
                 inventory[i].index = i;
                 inventory[i].count = InventoryDataSaveModule.inventoryData.inventory[i].count;
                 name = InventoryDataSaveModule.inventoryData.inventory[i].name;
-                if (inventory[i].count > 0)
+                if (inventory[i].count != 0)
                 {
                     inventory[i].itemInfo = itemInfos[name];
-                    Debug.Log($"Name from save ({name}): {inventory[i].itemInfo.itemName}");
+                    /*
+                    // make iteminfo based on name
+                    for (int j = 0; j < itemInfos.Length; j++)
+                    {
+                        if (itemNames[j].Equals(name))
+                        {
+                            inventory[i].itemInfo = itemInfos[j];
+                            break;
+                        }
+                    }
+                    */
                 }
                 else
                 {
-                    Debug.Log("Inventory slot is empty from save");
                     inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
                     // make it an empty iteminfo
                     // inventory[i].itemInfo = itemInfos[0];
@@ -193,7 +161,7 @@ public class Inventory : Singleton<Inventory>, IInventory
                 inventory[i].UpdateSlot();
             }
         }
-        
+        PrintInventory();
 
         for (int i = 0; i < InventoryLength; i++)
         {
@@ -204,7 +172,6 @@ public class Inventory : Singleton<Inventory>, IInventory
             // Check if slot has a non-null slot.iteminfo
             Debug.Log(uiSlot.itemInfo == null ? "inv slot has null iteminfo!" : "inv slot good");
         }
-        PrintInventory();
     }
 
     /// <summary>
@@ -213,30 +180,6 @@ public class Inventory : Singleton<Inventory>, IInventory
     public void ShowInventory(bool enabled)
     {
         inventoryCanvas.enabled = enabled;
-        PlayerInput.Instance.DebugToggleInput(enabled);
-        if (inventoryCanvas.enabled)
-        {
-            Cursor.lockState = CursorLockMode.Confined;
-            Cursor.visible = true;
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = false;
-        }
-        if (swapSelection != -1)
-        {
-            // Reset the color of buttons if necessary
-            inventory[swapSelection].SetColor(Color.white);
-            if (inventory[swapSelection].itemInfo && inventory[swapSelection].itemInfo.isIngredient)
-            {
-                for (int i = 0; i < HotBarLength; i++)
-                {
-                    inventory[i].SetColor(Color.white);
-                }
-            }
-            swapSelection = -1;
-        }
     }
 
     public bool isEnabled() {
@@ -281,53 +224,16 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// </summary>
     /// <param name="index">Index to switch to</param>
     public void Select(int index) {
-        // is true if new index is an empty hotbar index. Is false if not
-        bool newIndexIsEmpty = (!inventory[index]) || (inventory[index].count == 0) || (!inventory[index].itemInfo);
-
-        // is true if given index points to a new slot of the hotbar
-        bool indexIsNew = selected != index;
-
         selected = index;
-
-        if (indexIsNew) {
-            AnimatorOverrideController itemAnimator = GetUISlotAnimation(inventory[index]);
-            if (itemAnimator != null) {
-                LoadHandAnimation(itemAnimator);
-            } else {
-                Debug.LogWarning("no tool animation found for current tool!");
-                DeloadHandAnimator();
-            }
-        } else {
-            DeloadHandAnimator();
-        }
-
-        // debugging
-        /*if (newIndexIsEmpty)
+        if (!inventory[index] || inventory[index].count == 0 || !inventory[index].itemInfo)
         {
             Debug.Log("Selected index " + index + ", which is empty");
         }
-        else
-        {
+        else {
             Debug.Log("Selected index " + index + ", containing " + inventory[index].count + " " + inventory[index].itemInfo.itemName + "s");
-        }*/
+        } 
     }
 
-    /// <summary>
-    /// reselects currently selected index. Do this if the tool's animation may change
-    /// </summary>
-    public void Reselect() { 
-        AnimatorOverrideController itemAnimator = GetUISlotAnimation(inventory[selected]);
-        if (itemAnimator != null) {
-            LoadHandAnimation(itemAnimator);
-        } else {
-            DeloadHandAnimator();
-        }
-    }
-
-
-    /// <summary>
-    /// de increments currently selected tool. Use this when you like eat an apple or something.
-    /// </summary>
     public void Decrement()
     {
         inventory[selected].count--;
@@ -337,8 +243,6 @@ public class Inventory : Singleton<Inventory>, IInventory
             inventory[selected].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
         }
         inventory[selected].UpdateSlot();
-
-        Reselect();
     }
 
     /// <summary>
@@ -409,9 +313,6 @@ public class Inventory : Singleton<Inventory>, IInventory
     public int AddItem(ItemInfo itemInfo, int count) { // maybe change input type
         // first add to existing stacks
         for (int i = 0; i < inventory.Length; i++) {
-            if (itemInfo.isIngredient && i < HotBarLength) { // ingredients are not allowed in the hotbar
-                continue;
-            }
             if (inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName) // matches item
             {
                 if (itemInfo.maxStackCount > inventory[i].count) { // has space for at least one item
@@ -426,9 +327,6 @@ public class Inventory : Singleton<Inventory>, IInventory
                         inventory[i].UpdateSlot(); // update UI
                         count = 0;
                     }
-
-                    Reselect();
-
                     Debug.Log("Added " + itemInfo.itemName + " to existing stack at index " + i + ". Current count is " + inventory[i].count);
                     if (count <= 0) return 0;
                 }
@@ -438,10 +336,6 @@ public class Inventory : Singleton<Inventory>, IInventory
         // otherwise create new stack if possible
         if (count > 0) {
             for (int i = 0; i < inventory.Length; i++) {
-                if (itemInfo.isIngredient && i < HotBarLength)
-                { // ingredients are not allowed in the hotbar
-                    continue;
-                }
                 if (inventory[i]?.count == 0) { // is empty slot
                     if (count > itemInfo.maxStackCount) // will need to split the items between slots
                     {
@@ -457,16 +351,10 @@ public class Inventory : Singleton<Inventory>, IInventory
                         count = 0;
                     }
                     Debug.Log("Added " + itemInfo.itemName + " to new stack at index " + i + ". Current count is " + inventory[i].count);
-
-                    Reselect();
-
                     if (count <= 0) return 0;
                 }
             }
         }
-
-        Reselect();
-
         return count; // leftover items that could not be added
         // otherwise replace current selected item
 
@@ -494,8 +382,6 @@ public class Inventory : Singleton<Inventory>, IInventory
                         inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
                     }
                     inventory[i].UpdateSlot();
-
-                    Reselect();
                     return true; // done removing
                 }
                 else { // not enough in this stack; remove entire stack and keep looping
@@ -506,81 +392,7 @@ public class Inventory : Singleton<Inventory>, IInventory
                 }
             }
         }
-
-        Reselect();
         return false;
-    }
-
-    public void SwapSelect(int index) {
-        if (swapSelection == -1)
-        { // no item selected for swapping
-            // Don't select empty slots
-            if (inventory[index].count == 0 || inventory[index].itemInfo.itemName == ItemInfo.ItemName.Empty) return;
-            swapSelection = index;
-            inventory[swapSelection].SetColor(Color.green);
-            if (inventory[swapSelection].itemInfo && inventory[swapSelection].itemInfo.isIngredient) {
-                // Make hotbar slots red to indicate that player cannot swap ingredient to hotbar
-                for (int i = 0; i < HotBarLength; i++) {
-                    inventory[i].SetColor(Color.red);
-                }
-            }
-            Debug.Log("Swap selected " + index);
-        }
-        else 
-        {
-            if (swapSelection == index)
-            { // deselect
-                inventory[swapSelection].SetColor(Color.white);
-                swapSelection = -1;
-                Debug.Log("Deselected " + index);
-            }
-            else 
-            {
-                if (inventory[swapSelection].itemInfo.isIngredient && index < HotBarLength) {
-                    Debug.Log("Cannot swap ingredient to hotbar");
-                    return; // cannot swap ingredient into hotbar
-                }
-                if (inventory[index].itemInfo && inventory[swapSelection].itemInfo &&
-                    inventory[index].itemInfo.itemName == inventory[swapSelection].itemInfo.itemName)
-                {   // try to stack on index if they are the same item
-                    if (inventory[index].count + inventory[swapSelection].count <= inventory[index].itemInfo.maxStackCount)
-                    {   // move all from swapSelection into index
-                        inventory[index].count += inventory[swapSelection].count;
-                        inventory[swapSelection].count = 0;
-                    }
-                    else 
-                    {   // stack as much as possible
-                        int moveAmount = inventory[index].itemInfo.maxStackCount - inventory[index].count;
-                        inventory[index].count += moveAmount;
-                        inventory[swapSelection].count -= moveAmount;
-                    }
-                    Debug.Log("Stacked " + swapSelection + " onto " + index);
-                }
-                else
-                {   // normal swapping
-                    int tempCount = inventory[index].count;
-                    ItemInfo tempItemInfo = inventory[index].itemInfo;
-                    inventory[index].count = inventory[swapSelection].count;
-                    inventory[index].itemInfo = inventory[swapSelection].itemInfo;
-                    inventory[swapSelection].count = tempCount;
-                    inventory[swapSelection].itemInfo = tempItemInfo;
-                    Debug.Log("Swapped " + index + " and " + swapSelection);
-                }
-
-                inventory[index].SetColor(Color.white);
-                inventory[swapSelection].SetColor(Color.white);
-                inventory[index].UpdateSlot();
-                inventory[swapSelection].UpdateSlot();
-
-                for (int i = 0; i < HotBarLength; i++)
-                {
-                    inventory[i].SetColor(Color.white);
-                }
-                swapSelection = -1;
-            }
-        }
-
-        Reselect();
     }
     public void RemoveInventory()
     {
@@ -595,42 +407,20 @@ public class Inventory : Singleton<Inventory>, IInventory
             inventory[i].UpdateSlot();
         }
         //return copy;
-
-        Reselect();
     }
 
-    public void LoadInventory(ItemInfo[] finfo, int[] fcount)
+    public void SetInventory(ItemInfo[] finfo, int[] fcount)
     {
         Debug.Log(inventory.Length + " length");
         //Array.Copy(newInv, inventory, newInv.Length);
         
         for (int i = 0; i < finfo.Length; i++)
         {
-            if (inventory[i].count == 0 || inventory[i].itemInfo.itemName == ItemInfo.ItemName.Empty)
-            { // only add item if the current slot is empty
-                inventory[i].count = fcount[i];
-                inventory[i].itemInfo = finfo[i];
-                inventory[i].UpdateSlot();
-
-                // Set used items to empty
-                fcount[i] = 0;
-                finfo[i] = itemInfos[ItemInfo.ItemName.Empty.ToString()];
-            }
+            inventory[i].count = fcount[i];
+            inventory[i].itemInfo = finfo[i];
+            inventory[i].UpdateSlot();
         }
-
-        // Add all unused items
-        for (int i = 0; i < finfo.Length; i++)
-        {
-            if (fcount[i] > 0 && finfo[i].itemName != ItemInfo.ItemName.Empty)
-            {
-                Debug.Log($"Adding {fcount[i]} {finfo[i].itemName.ToString()}");
-                AddItem(finfo[i], fcount[i]);
-            }
-        }
-
         Debug.Log(inventory.Length + " new length");
-
-        Reselect();
     }
 
     /// <summary>
@@ -659,19 +449,23 @@ public class Inventory : Singleton<Inventory>, IInventory
     }
 
     /// <summary>
+    /// Swaps item in tempSlot with chosen item
+    /// </summary>
+    /// <param name="index">Index of item to be moved</param>
+    public void Move(int index) {
+        UISlot temp = inventory[index];
+        inventory[index] = _tempUISlot;
+        _tempUISlot = temp;
+    }
+
+    /// <summary>
     /// Print out a string representation of player's inventory in console
     /// </summary>
     public void PrintInventory() {
-        string s = "{\n";
-        for (int i = 0; i < HotBarLength; i++) {
-            if (inventory[i] == null) s += "null  ";
-            else if (inventory[i].count > 0 && inventory[i].itemInfo) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
-            else s += "[empty]  ";
-        }
-        for (int i = HotBarLength; i < inventory.Length; i++) {
-            if ((i - HotBarLength) % 6 == 0) s += "\n";
-            if (inventory[i] == null) s += "null  ";
-            else if (inventory[i].count > 0 && inventory[i].itemInfo) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
+        string s = "{";
+        for (int i = 0; i < inventory.Length; i++) {
+            if (i % 9 == 0) s += "\n";
+            if (inventory[i].count > 0) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
             else s += "[empty]  ";
         }
         s += "\n}";
@@ -697,6 +491,14 @@ public class Inventory : Singleton<Inventory>, IInventory
             }
         }
         return isEmpty;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>Whether or not an item is being moved (stored in tempSlot)</returns>
+    public bool IsMovingItem() {
+        return _tempUISlot.count > 0;
     }
 
     /// <summary>
@@ -738,11 +540,4 @@ public class Inventory : Singleton<Inventory>, IInventory
     {
         return inventory;
     }
-
-    public ItemInfo InfoLookup(string itemName)
-    {
-        return itemInfos[itemName];
-    }
-
-
 }

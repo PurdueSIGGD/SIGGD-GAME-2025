@@ -12,16 +12,8 @@ public class ApexSpawnExternalEvent: ExternalEventTriggerer
     [SerializeField] float spawnAttempts;
 
     [SerializeField] GameObject apexPrefab;
-    [SerializeField] QuestEventBroadcaster questEventBroadcaster;
-
-    GameObject spawnedApex = null;
     public override void TriggerExternalEvent()
     {
-        if (spawnedApex != null)
-        {
-            return;
-        }
-
         if (spawnPosition != default)
         {
             Debug.Log("Spawning apex at location: " + spawnPosition);
@@ -48,15 +40,6 @@ public class ApexSpawnExternalEvent: ExternalEventTriggerer
         }
 
         Debug.Log("Spawning apex at location: " + spawnPos);
-        spawnedApex = Instantiate(apexPrefab, spawnPos, transform.rotation);
-
-        ApexSpawnConditionStrategy apexSpawnStrategy = questEventBroadcaster.conditionStrategy as ApexSpawnConditionStrategy;
-        if (apexSpawnStrategy != null)
-        {
-            apexSpawnStrategy.SetSpawnedApex(spawnedApex);
-        } else
-        {
-            Debug.Log("Apex Spawner not using Apex Spawn strategy");
-        }
+        Instantiate(apexPrefab, spawnPos, transform.rotation);
     }
 }
