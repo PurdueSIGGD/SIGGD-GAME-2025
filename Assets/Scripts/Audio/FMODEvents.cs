@@ -16,7 +16,7 @@ public class FMODEvents : Singleton<FMODEvents>
     [Tooltip("Toggle to print to console each audio as they are loaded")]
     [SerializeField] bool logAudioNameOnLoad;
 
-    public Dictionary<string, EventReference> soundEvents = new();
+    [SerializeField] public Dictionary<string, EventReference> soundEvents = new();
     private Coroutine loadroutine;
 
     protected override void Awake()
@@ -41,6 +41,8 @@ public class FMODEvents : Singleton<FMODEvents>
     /// </summary>
     public EventReference GetEventReferenceNoAsync(string key)
     {
+        key = key.ToLower();
+
         if (soundEvents.TryGetValue(key, out var eventRef))
         {
             return eventRef;
@@ -55,11 +57,15 @@ public class FMODEvents : Singleton<FMODEvents>
     /// </summary>
     public void GetEventInstance(string key, Action<EventInstance> callback)
     {
+        key = key.ToLower();
+
         StartCoroutine(GetEventInstanceCoroutine(key, callback));
     }
     
     public EventInstance GetEventInstanceNoAsync(string key)
     {
+        key = key.ToLower();
+
         if (soundEvents.TryGetValue(key, out var eventRef))
         {
             return RuntimeManager.CreateInstance(eventRef);
@@ -94,7 +100,7 @@ public class FMODEvents : Singleton<FMODEvents>
 
                 EventReference eventRef = RuntimeManager.PathToEventReference(eventPath);
                 
-                soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1), eventRef); // the replace just makes the names a little nicer
+                soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1).ToLower(), eventRef); // the replace just makes the names a little nicer
                 if (logAudioNameOnLoad) Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
             }
         }
@@ -107,6 +113,9 @@ public class FMODEvents : Singleton<FMODEvents>
     private IEnumerator GetEventInstanceCoroutine(string key, Action<EventInstance> callback)
     {
         yield return new WaitUntil(() => Initialized);
+
+        key = key.ToLower();
+
         if (soundEvents.TryGetValue(key, out var eventRef))
         {
             callback?.Invoke(RuntimeManager.CreateInstance(eventRef));

@@ -124,9 +124,10 @@ public class AudioLogManager : MonoBehaviour
             StopCoroutine(lastStarted);
             StopCurrentAudio();
         }
-
+        UnityEngine.Debug.Log(audioName);
         if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
         {
+            UnityEngine.Debug.Log("we in those?");
             curPlayer = player;
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
@@ -134,6 +135,7 @@ public class AudioLogManager : MonoBehaviour
             // get the sound event from our dictionary and store it
             if (FMODEvents.Instance.soundEvents.TryGetValue(audioName, out EventReference eventRef))
             {
+                UnityEngine.Debug.Log("we in these?");
                 logSoundEvent = RuntimeManager.CreateInstance(eventRef);
             }
 

@@ -95,6 +95,7 @@ public class AudioManager : Singleton<AudioManager>
     /// </summary>
     public void PlayOneShot(string name, Vector3 worldPos = default)
     {
+        name = name.ToLower();
         StartCoroutine(PlayOneShotCoroutine(name, worldPos));
     }
 
@@ -103,6 +104,8 @@ public class AudioManager : Singleton<AudioManager>
     /// </summary>
     public void PlayOneShotNoAsync(string name, Vector3 worldPos = default)
     {
+        name = name.ToLower();
+
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
         if (!eventRef.IsNull)
         {
@@ -271,6 +274,8 @@ public class AudioManager : Singleton<AudioManager>
     // also checks to see if that music event is already in the dict
     private EventInstance InitalizeMusicNotStart(string key)
     {
+        key = key.ToLower();
+
         if (musicEventInstances.TryGetValue(key, out var eventInstance))
         {
             EventInstance tempInstance = eventInstance;
