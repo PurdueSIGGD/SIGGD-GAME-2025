@@ -30,6 +30,8 @@ public class PlayerInput : Singleton<PlayerInput>
     protected override void Awake()
     {
         base.Awake();
+        Console.WriteLine("I, PlayerInput.cs, hereby declare myself AWAKE!!!");
+
         inputActions = new PlayerInputActions();
         climbingScript = gameObject.GetComponent<ClimbAction>();
         stateMachine = gameObject.GetComponent<PlayerStateMachine>();
@@ -38,6 +40,8 @@ public class PlayerInput : Singleton<PlayerInput>
     ////// when enabled, activate inputs
     private void OnEnable()
     {
+        Console.WriteLine("I, PlayerInput.cs, hereby declare myself ENABLED!!!");
+
         inputActions.Enable();
 
         inputActions.Player.Move.performed += InputOnMove;
