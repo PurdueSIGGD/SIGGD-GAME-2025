@@ -36,6 +36,8 @@ public class SpawnRegion : MonoBehaviour
     [SerializeField] float radius;
     [SerializeField] float spawnCooldownTimer;
 
+    [SerializeField] Boundary boundary;
+
     bool initialized = false;
     public float GetSpawnCooldownTimer()
     {
@@ -62,11 +64,16 @@ public class SpawnRegion : MonoBehaviour
         }
         initialized = true;
     }
+    void Awake()
+    {
+        Initialize();
+    }
 
     void Update()
     {
+        Debug.Log("test");
         if (!initialized) return;
-
+        Debug.Log("madeit");
         if (currentState == SpawnRegionState.Active)
         {
             if (!IsPlayerInRegion())
@@ -154,6 +161,7 @@ public class SpawnRegion : MonoBehaviour
     /// <returns></returns>
     public bool IsPlayerInRegion()
     {
+        return true;
         LayerMask myLayers = LayerMask.GetMask("Player");
         Collider[] results = new Collider[1]; // ONLY ONE PLAYER OR WE RIOT
         Physics.OverlapSphereNonAlloc(centerPosition.position, radius, results, myLayers);
@@ -193,7 +201,7 @@ public class SpawnRegion : MonoBehaviour
             else
                 mobPrefab = GetRandomMobPrefab();
             print("MYSPAWN AHHHHH");
-            spawnManager.SpawnMobNew(mobPrefab, spawnPoint.transform.position);
+            spawnManager.SpawnMobNew(mobPrefab, spawnPoint.transform.position, boundary);
         }
     }
     GameObject GetRandomMobPrefab()

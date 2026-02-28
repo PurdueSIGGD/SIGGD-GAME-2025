@@ -62,12 +62,6 @@ public class SpawnManager : MonoBehaviour
             Debug.LogError($"Mob gameobject is null");
             return;
         }
-        // initialize goap system
-        GoapActionProvider goapActionProvider = mobObject.GetComponent<GoapActionProvider>();
-
-        goapActionProvider.gameObject.SetActive(true);
-        if (goapActionProvider != null)
-            goapActionProvider.enabled = false;
 
         // set boundary for territory capabillity (optional depending on if mob has this capability)
         AgentData agentData = mobObject.GetComponent<AgentData>();
@@ -123,7 +117,14 @@ public class SpawnManager : MonoBehaviour
         {
             Debug.Log("failure");
         }
-        if (goapActionProvider != null)
-            goapActionProvider.enabled = true;
+
+        // initialize goap system
+        GoapActionProvider goapActionProvider = mobObject.GetComponent<GoapActionProvider>();
+        if (goapActionProvider == null)
+        {
+            Debug.LogWarning("Mob does not have a goap action provider", mobObject);
+            return;
+        }
+        goapActionProvider.gameObject.SetActive(true);
     }
 }

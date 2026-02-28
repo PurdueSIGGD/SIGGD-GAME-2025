@@ -25,6 +25,8 @@ namespace SIGGD.Goap
         }
         public override void BeforePerform(IMonoAgent agent, CommonData data)
         {
+            var target = data.Target;
+            if (target == null) return;
             float distance = Vector3.Distance(data.Target.Position, agent.Transform.position);
             if (distance <= 100 && distance > 0)
             {
@@ -32,7 +34,6 @@ namespace SIGGD.Goap
                 {
                     data.am.StartAttackSequence(agent);
                     data.am.SetTarget(data.Target as TransformTarget);
-                    data.am.isLunging = true;
                 }
             } 
         }
@@ -47,11 +48,12 @@ namespace SIGGD.Goap
         }
         public override void Stop(IMonoAgent agent, CommonData data)
         {
+            data.am.CancelAttack();
         }
         public override void End(IMonoAgent agent, CommonData data)
         {
+            data.am.CancelAttack();
             data.mv.DisableSprint();
-            this.Disable(agent, ActionDisabler.ForTime(0.0f));
                
         }
 
