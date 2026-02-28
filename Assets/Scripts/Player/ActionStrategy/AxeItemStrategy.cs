@@ -99,7 +99,8 @@ public class AxeItemStrategy : IPlayerActionStrategy
 
                 Vector3 rayDirection = ringRotation * tiltRotation * forwardVector;
 
-                Debug.DrawRay(origin, rayDirection * raycastMagnitude, Color.red, .1f);
+                // use this to debug the ray
+                //Debug.DrawRay(origin, rayDirection * raycastMagnitude, Color.red, .1f);
 
                 RaycastHit hit;
                 if (Physics.Raycast(origin, rayDirection, out hit, raycastMagnitude, validRaycastLayers))
