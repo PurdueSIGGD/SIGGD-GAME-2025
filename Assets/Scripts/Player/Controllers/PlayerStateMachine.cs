@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using Extensions.EventBus;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -118,7 +119,7 @@ public class PlayerStateMachine : MonoBehaviour
 
     [Header("Other Checks")]
 
-    public bool IsSprinting;
+    public bool IsSprinting { get; private set; }
 
     public bool HasStamina => PlayerID.Instance.GetComponent<PlayerStamina>().CurrentStamina > 0;
 
@@ -220,6 +221,12 @@ public class PlayerStateMachine : MonoBehaviour
             ToggleCrouch(false);
         }
     }
+    
+    public void SetSprinting(bool sprinting)
+    {
+        IsSprinting = sprinting;
+        EventBus<OnPlayerActionEvent>.Raise(new OnPlayerActionEvent(IsCrouched, IsSprinting));
+     }
 
     #endregion
 
@@ -334,6 +341,8 @@ public class PlayerStateMachine : MonoBehaviour
         if (returnedValue == true) {
             IsCrouched = toggle;
         }
+
+        EventBus<OnPlayerActionEvent>.Raise(new OnPlayerActionEvent(IsCrouched, IsSprinting));
 
         return returnedValue;
     }
