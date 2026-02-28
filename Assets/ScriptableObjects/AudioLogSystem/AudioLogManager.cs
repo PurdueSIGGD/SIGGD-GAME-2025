@@ -6,7 +6,7 @@ using FMODUnity;
 using FMOD.Studio;
 using FMOD;
 
-public class AudioLogManager : MonoBehaviour
+public class AudioLogManager : Singleton<AudioLogManager>
 {
     public List<AudioLogObject> logs = new();
     [SerializeField] TextMeshProUGUI subtitles;
@@ -90,6 +90,7 @@ public class AudioLogManager : MonoBehaviour
         // the most recently called audio log will take priority over the ones called before it 
         if (lastStarted != null)
         {
+            UnityEngine.Debug.Log("audio log already started stopping old one before playing new one");
             StopCoroutine(lastStarted);
             StopCurrentAudio();
         }

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UISlot : MonoBehaviour
 {
@@ -9,17 +10,32 @@ public class UISlot : MonoBehaviour
     [HideInInspector] public int index;
 
     private TextMeshProUGUI textDisplay;
+    private Button button;
 
     void Awake()
     {
         textDisplay = GetComponentInChildren<TextMeshProUGUI>();
+        button = GetComponent<Button>();
+        button.onClick.AddListener(Clicked);
     }
 
     void Start()
     {
-        Debug.Log(RecipeInfo.Instance == null ? "recipeinfo null" : "recipeinfo not null");
-        itemInfo = RecipeInfo.Instance.NamesToItemInfos[ItemInfo.ItemName.Empty];
-        Debug.Log(itemInfo == null ? "iteminfo is null" : "ItemInfo is not null now");
+        // Inventory will handle all of the initialization for UISlots to avoid overwriting slots with Empty
+
+        //Debug.Log(RecipeInfo.Instance == null ? "recipeinfo null" : "recipeinfo not null");
+        //Debug.Log((itemInfo == null ? "iteminfo is before" : "ItemInfo is not null before") + " " + index);
+        //itemInfo = RecipeInfo.Instance.NamesToItemInfos[ItemInfo.ItemName.Empty];
+        //Debug.Log(itemInfo == null ? "iteminfo is null" : "ItemInfo is not null now");
+    }
+
+    public void Clicked() {
+        Debug.Log("Clicked " + index);
+        Inventory.Instance.SwapSelect(index);
+    }
+
+    public void SetColor(Color color) {
+        button.GetComponent<Image>().color = color;
     }
 
     public void UpdateSlot()
