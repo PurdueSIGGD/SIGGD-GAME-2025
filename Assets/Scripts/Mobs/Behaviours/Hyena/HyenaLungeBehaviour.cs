@@ -10,6 +10,10 @@ using Utility;
 
 namespace SIGGD.Mobs.Hyena
 {
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(Movement))]
+    [RequireComponent(typeof(AgentData))]
     public class HyenaLungeBehaviour : MonoBehaviour
     {
         private Rigidbody rb;

@@ -11,6 +11,11 @@ using CrashKonijn.Goap.Runtime;
 
 namespace SIGGD.Mobs.Hyena
 {
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(Movement))]
+    [RequireComponent(typeof(AgentData))]
+    [RequireComponent(typeof(EnemyAnimator))]
     public class HyenaCirclingBehaviour : MonoBehaviour
     {
         private Rigidbody rb;
@@ -228,7 +233,16 @@ namespace SIGGD.Mobs.Hyena
                     }
 
 
-                    move.MoveTowards(dir, 1.0f, distToTargetMulti);         
+                    move.MoveTowardsNoRotation(dir, 1.0f, distToTargetMulti);
+
+                    // Face the target while circling, not the movement direction
+                    Vector3 toTarget = targetPos - rb.position;
+                    toTarget.y = 0f;
+                    if (toTarget.sqrMagnitude > 0.001f)
+                    {
+                        Quaternion targetRot = Quaternion.LookRotation(toTarget.normalized, Vector3.up);
+                        rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 3f, Time.fixedDeltaTime));
+                    }
 
                     // If movement is negligible for a period of time then it starts an escape sequence
 

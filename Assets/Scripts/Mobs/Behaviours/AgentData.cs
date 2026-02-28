@@ -8,6 +8,7 @@ using UnityEngine.AI;
 
 namespace SIGGD.Mobs
 {
+    [RequireComponent(typeof(NavMeshAgent))]
     public class AgentData : MonoBehaviour
     {
         private EntityHealthManager healthManager;

@@ -7,6 +7,9 @@ using System;
 
 namespace SIGGD.Mobs.Hyena
 {
+    [RequireComponent(typeof(EnemyAnimator))]
+    [RequireComponent(typeof(HyenaLungeBehaviour))]
+    [RequireComponent(typeof(HyenaCirclingBehaviour))]
     public class HyenaAttackManager : MonoBehaviour
     {
         private EnemyAnimator animatorController;

@@ -5,6 +5,10 @@ using Sirenix.OdinInspector;
 
 namespace SIGGD.Mobs
 {
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(StaminaBehaviour))]
+    [RequireComponent(typeof(AgentData))]
     public class Movement : MonoBehaviour
     {
         [ShowInInspector] private float speed;

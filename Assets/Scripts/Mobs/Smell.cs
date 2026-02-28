@@ -19,6 +19,7 @@ public class Smell : SerializedMonoBehaviour
 {
     [SerializeField]
     private float smellRadius;
+    public float SmellRadius => smellRadius;
     [SerializeField]
     private LayerMask playerLayer;
     [SerializeField]
@@ -48,6 +49,11 @@ public class Smell : SerializedMonoBehaviour
     private float playerSmellIntensity = 0.0f;
    
     private Vector3 position;
+
+    public Transform ClosestFood { get; private set; }
+    public Transform PlayerTarget { get; private set; }
+    public Transform ClosestPrey { get; private set; }
+
     void Awake()
     {
 
@@ -85,6 +91,8 @@ public class Smell : SerializedMonoBehaviour
 
             SmellCheck();
             SmellCheckPlayer();
+            SmellCheckPrey();
+            SmellCheckFood();
             CalculateSmellIntensity();
         }
     }
@@ -107,14 +115,67 @@ public class Smell : SerializedMonoBehaviour
         }
     }
     /// <summary>
-    /// Checks for the presence of a player within the defined smell radius and updates the player's position if
-    /// detected.
+    /// Checks for the presence of a player within the defined smell radius and caches the player's
+    /// transform and position.
     /// </summary>
     private void SmellCheckPlayer()
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, playerLayer);
-        if (hitColliders.Length < 1) return;
+        if (hitColliders.Length < 1)
+        {
+            PlayerTarget = null;
+            return;
+        }
+        PlayerTarget = hitColliders[0].transform;
         playerPos = hitColliders[0].transform.position;
+    }
+
+    /// <summary>
+    /// Checks for the closest PreyBehaviour within the smell radius and caches its transform.
+    /// </summary>
+    private void SmellCheckPrey()
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, mobLayer);
+        float closestDist = float.MaxValue;
+        Transform closest = null;
+
+        foreach (Collider col in hitColliders)
+        {
+            if (col == null || col.gameObject == gameObject) continue;
+            if (!col.TryGetComponent<PreyBehaviour>(out _)) continue;
+
+            float dist = Vector3.Distance(transform.position, col.transform.position);
+            if (dist < closestDist)
+            {
+                closestDist = dist;
+                closest = col.transform;
+            }
+        }
+        ClosestPrey = closest;
+    }
+
+    /// <summary>
+    /// Checks for the closest FoodBehaviour within the smell radius and caches its transform.
+    /// </summary>
+    private void SmellCheckFood()
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius);
+        float closestDist = float.MaxValue;
+        Transform closest = null;
+
+        foreach (Collider col in hitColliders)
+        {
+            if (col == null) continue;
+            if (!col.TryGetComponent<FoodBehaviour>(out _)) continue;
+
+            float dist = Vector3.Distance(transform.position, col.transform.position);
+            if (dist < closestDist)
+            {
+                closestDist = dist;
+                closest = col.transform;
+            }
+        }
+        ClosestFood = closest;
     }
 
     private void CalculateSmellIntensity()

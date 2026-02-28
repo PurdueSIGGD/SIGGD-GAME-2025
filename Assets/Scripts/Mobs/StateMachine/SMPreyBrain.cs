@@ -1,0 +1,105 @@
+using SIGGD.Mobs.PackScripts;
+using SIGGD.Mobs.StateMachine.States;
+using UnityEngine;
+using UnityEngine.AI;
+
+namespace SIGGD.Mobs.StateMachine
+{
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(Movement))]
+    [RequireComponent(typeof(AgentData))]
+    [RequireComponent(typeof(PackBehavior))]
+    [RequireComponent(typeof(PreyBehaviour))]
+    [RequireComponent(typeof(PerceptionManager))]
+    public class SMPreyBrain : MonoBehaviour
+    {
+        private MobStateMachine stateMachine;
+        private MobContext ctx;
+
+        private WanderState wanderState;
+        private FollowPackState followPackState;
+        private FleeState fleeState;
+
+        private void Awake()
+        {
+            ctx = new MobContext
+            {
+                Transform = transform,
+                Rigidbody = GetComponent<Rigidbody>(),
+                NavAgent = GetComponent<NavMeshAgent>(),
+                Movement = GetComponent<Movement>(),
+                AgentData = GetComponent<AgentData>(),
+                Pack = GetComponent<PackBehavior>(),
+                PreyBehaviour = GetComponent<PreyBehaviour>(),
+                Perception = GetComponent<PerceptionManager>()
+            };
+
+            wanderState = new WanderState(ctx);
+            followPackState = new FollowPackState(ctx);
+            fleeState = new FleeState(ctx);
+
+            stateMachine = new MobStateMachine();
+        }
+
+        private void Start()
+        {
+            stateMachine.ChangeState(wanderState);
+        }
+
+        private void Update()
+        {
+            stateMachine.Update();
+            EvaluateTransitions();
+        }
+
+        private void FixedUpdate()
+        {
+            stateMachine.FixedUpdate();
+        }
+
+        private void EvaluateTransitions()
+        {
+            var current = stateMachine.CurrentState;
+            bool inDanger = ctx.Perception != null && ctx.Perception.predatorTargets.Count > 0;
+
+            // Top priority: flee from predators
+            if (inDanger && current != fleeState)
+            {
+                stateMachine.ChangeState(fleeState);
+                return;
+            }
+
+            // Fleeing — wait until safe
+            if (current == fleeState)
+            {
+                if (fleeState.IsSafe)
+                    stateMachine.ChangeState(wanderState);
+                return;
+            }
+
+            // Follow pack when idle
+            if (current == wanderState && HasPackToFollow())
+            {
+                stateMachine.ChangeState(followPackState);
+                return;
+            }
+
+            // Pack lost alpha
+            if (current == followPackState && !followPackState.HasValidAlpha)
+            {
+                stateMachine.ChangeState(wanderState);
+                return;
+            }
+        }
+
+        private bool HasPackToFollow()
+        {
+            if (ctx.Pack == null) return false;
+            var pack = ctx.Pack.GetPack();
+            if (pack == null) return false;
+            var alpha = pack.GetAlpha();
+            return alpha != null && alpha != ctx.Pack;
+        }
+    }
+}
