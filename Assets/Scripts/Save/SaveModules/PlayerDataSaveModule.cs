@@ -11,6 +11,7 @@ public class PlayerDataSaveModule : ISaveModule
     private PlayerHunger hunger;
     private EntityHealthManager health;
     private PlayerStamina stamina;
+    private ManageRespawn respawnManager;
 
     public bool deserialize()
     {
@@ -24,6 +25,7 @@ public class PlayerDataSaveModule : ISaveModule
         if (!health) health = PlayerID.Instance.playerHealth;
         if (!hunger) hunger = PlayerID.Instance.playerHunger;
         if (!stamina) stamina = PlayerID.Instance.playerStamina;
+        if (!respawnManager) respawnManager = PlayerID.Instance.GetComponent<ManageRespawn>();
         playerData ??= new PlayerSaveData();
 
         if (!FileManager.Instance.FileExists(savePath)) return false;
@@ -36,6 +38,8 @@ public class PlayerDataSaveModule : ISaveModule
         hunger.CurrentHunger = playerData.curHunger;
         stamina.CurrentStamina = playerData.curStamina;
         stamina.StaminaDisabled = playerData.staminaDisabled;
+        respawnManager.respawnPoint = playerData.RespawnPosition;
+
         Debug.Log("Set stamina " + stamina.CurrentStamina);
 
         return true;
@@ -60,12 +64,20 @@ public class PlayerDataSaveModule : ISaveModule
             return false;
         }
 
-        playerData.Position = player.transform.position;
+        if (PlayerID.Instance.IsAlive)
+        {
+            playerData.Position = player.transform.position;
+        }
+        else
+        { // Set player's position as respawn point if saving while dead
+            playerData.Position = respawnManager.respawnPoint;
+        }
         playerData.Rotation = playerCam.GetRotation();
         playerData.curHealth = health.CurrentHealth;
         playerData.curHunger = hunger.CurrentHunger;
         playerData.curStamina = stamina.CurrentStamina;
         playerData.staminaDisabled = stamina.StaminaDisabled;
+        playerData.RespawnPosition = respawnManager.respawnPoint;
         
         byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);
         FileManager.Instance.WriteFile(savePath, bytes);
