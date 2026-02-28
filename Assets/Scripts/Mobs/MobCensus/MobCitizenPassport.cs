@@ -18,6 +18,15 @@ namespace MobCensus
             healthManager = GetComponent<EntityHealthManager>();
         }
 
+        void OnEnable()
+        {
+            EntityHealthManager.OnDeath += HandleOnDeath;
+        }
+        void OnDsable()
+        {
+            EntityHealthManager.OnDeath -= HandleOnDeath;
+        }
+
         public void SetCitizenDataReference(MobCitizenData reference)
         {
             citizenDataReference = reference;
@@ -60,6 +69,11 @@ namespace MobCensus
             }
         }
 
+        public void HandleOnDeath(DamageContext context)
+        {
+            if (context.victim != null && context.victim.gameObject == gameObject)
+                EmmigrateFromPandora();
+        }
         /// <summary>
         /// Remotely removes this mob's citizen data from the census
         /// Should only be called when the mob is dead/destroyed/permanently removed from the world
