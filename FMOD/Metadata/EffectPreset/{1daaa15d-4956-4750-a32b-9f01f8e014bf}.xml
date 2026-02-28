@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="EffectPreset" id="{1daaa15d-4956-4750-a32b-9f01f8e014bf}">
+		<property name="name">
+			<value>Distortion</value>
+		</property>
+		<relationship name="folder">
+			<destination>{56b69807-c42d-40b3-97a6-bf8e27ab5699}</destination>
+		</relationship>
+		<relationship name="effect">
+			<destination>{2cb82b00-c496-4cf1-813b-53d5ab031a8c}</destination>
+		</relationship>
+	</object>
+	<object class="DistortionEffect" id="{2cb82b00-c496-4cf1-813b-53d5ab031a8c}">
+		<property name="level">
+			<value>0</value>
+		</property>
+		<relationship name="automators">
+			<destination>{0c9abbd4-2cd5-4b74-9ad6-2881a49987f3}</destination>
+		</relationship>
+	</object>
+	<object class="Automator" id="{0c9abbd4-2cd5-4b74-9ad6-2881a49987f3}">
+		<property name="nameOfPropertyBeingAutomated">
+			<value>level</value>
+		</property>
+		<relationship name="automationCurves">
+			<destination>{9f0e9cc6-f4f3-4733-9cb1-5db2d086cfe5}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationCurve" id="{9f0e9cc6-f4f3-4733-9cb1-5db2d086cfe5}">
+		<relationship name="parameter">
+			<destination>{f0132579-77b9-40f9-9163-2f5abd49e416}</destination>
+		</relationship>
+		<relationship name="automationPoints">
+			<destination>{91e0cc78-26c2-4abc-a13f-b8759c17ccff}</destination>
+			<destination>{7ae46f6f-0730-4f37-a992-01786b1aab13}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationPoint" id="{91e0cc78-26c2-4abc-a13f-b8759c17ccff}">
+		<property name="position">
+			<value>0</value>
+		</property>
+		<property name="value">
+			<value>0.5</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{7ae46f6f-0730-4f37-a992-01786b1aab13}">
+		<property name="position">
+			<value>1</value>
+		</property>
+		<property name="value">
+			<value>0.960000038</value>
+		</property>
+	</object>
+</objects>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="EffectPreset" id="{9c3edd75-3218-42f1-aa9e-cd55623665de}">
+		<property name="name">
+			<value>Effect Chain</value>
+		</property>
+		<relationship name="folder">
+			<destination>{bdeb4cde-a0b5-42bc-92ae-63c3798982a9}</destination>
+		</relationship>
+		<relationship name="effect">
+			<destination>{cb99e594-2cdd-4479-890e-3ca0640150a7}</destination>
+		</relationship>
+	</object>
+	<object class="EffectChain" id="{cb99e594-2cdd-4479-890e-3ca0640150a7}">
+		<relationship name="effects">
+			<destination>{360178e7-aabf-4eb1-a2d8-8fa5c1403e91}</destination>
+			<destination>{c8c1b060-1f3b-427e-90fa-e6f7e7b5a5dd}</destination>
+			<destination>{b420a855-4406-4bf0-a137-3bd606a31ae4}</destination>
+		</relationship>
+	</object>
+	<object class="DistortionEffect" id="{360178e7-aabf-4eb1-a2d8-8fa5c1403e91}" />
+	<object class="CompressorEffect" id="{c8c1b060-1f3b-427e-90fa-e6f7e7b5a5dd}" />
+	<object class="ThreeEQEffect" id="{b420a855-4406-4bf0-a137-3bd606a31ae4}" />
+</objects>

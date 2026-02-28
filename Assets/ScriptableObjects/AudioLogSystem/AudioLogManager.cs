@@ -63,13 +63,17 @@ public class AudioLogManager : MonoBehaviour
             // if the line has a % then it is from a radio so set effects to radio effects
             if (line.isFromRadio == true)
             {
-                logSoundEvent.setParameterByName("RadioVoice", 1);
-                //UnityEngine.Debug.Log(logSoundEvent.getParameterByName("RadioVoice", out float value));
+                RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 1);
             }
             else
             {
-                logSoundEvent.setParameterByName("RadioVoice", 0);
+                RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
             }
+
+            float globalValue;
+            RuntimeManager.StudioSystem.getParameterByName("RadioVoice", out globalValue);
+            UnityEngine.Debug.Log("Global RadioVoice is now: " + globalValue);
+
             subtitles.text = line.line;
             yield return new WaitForSeconds(line.seconds);
         }
@@ -124,10 +128,9 @@ public class AudioLogManager : MonoBehaviour
             StopCoroutine(lastStarted);
             StopCurrentAudio();
         }
-        UnityEngine.Debug.Log(audioName);
+
         if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
         {
-            UnityEngine.Debug.Log("we in those?");
             curPlayer = player;
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
@@ -137,7 +140,6 @@ public class AudioLogManager : MonoBehaviour
             // get the sound event from our dictionary and store it
             if (FMODEvents.Instance.soundEvents.TryGetValue(audioName, out EventReference eventRef))
             {
-                UnityEngine.Debug.Log("we in these?");
                 logSoundEvent = RuntimeManager.CreateInstance(eventRef);
             }
 

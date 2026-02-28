@@ -99,7 +99,7 @@ public class FMODEvents : Singleton<FMODEvents>
                 description.getPath(out string eventPath);
 
                 EventReference eventRef = RuntimeManager.PathToEventReference(eventPath);
-                
+
                 soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1).ToLower(), eventRef); // the replace just makes the names a little nicer
                 if (logAudioNameOnLoad) Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
             }
