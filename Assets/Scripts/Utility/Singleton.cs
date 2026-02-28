@@ -36,6 +36,7 @@ public class Singleton<T> : MonoBehaviour where T : Component
      */
     protected virtual void Awake()
     {
+        Debug.Log($"Awake called on {gameObject.name}");
         if (_instance == null)
         {
             _instance = this as T;
@@ -45,6 +46,7 @@ public class Singleton<T> : MonoBehaviour where T : Component
             // Debug.Log("DESTROY");
             // Debug.Log(_instance == this);
             // Debug.Log(gameObject);
+            Debug.Log($"{gameObject.name} Destroying duplicate singleton");
             Destroy(gameObject);
             // Destroy(_instance.gameObject);
         }

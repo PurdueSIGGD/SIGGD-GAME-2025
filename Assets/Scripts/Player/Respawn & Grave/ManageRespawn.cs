@@ -8,6 +8,8 @@ public class ManageRespawn : MonoBehaviour
     private PlayerHunger hunger;
     private PlayerStamina stamina;
 
+    [SerializeField] private GameObject deathMenu;
+
     public Vector3 respawnPoint;
     public GameObject graveObj;
     GameObject curGrave = null;
@@ -17,7 +19,7 @@ public class ManageRespawn : MonoBehaviour
         respawnPoint = spawnPoint.position;
     }
 
-    public void RespawnPlayer()
+    public void CreateGrave()
     {
         if (curGrave)
         {
@@ -25,23 +27,30 @@ public class ManageRespawn : MonoBehaviour
         }
         if (!inv.IsInventoryEmpty())
         {
-
             curGrave = Instantiate(graveObj, transform.position, transform.rotation);
             curGrave.GetComponent<GraveInteract>().FillGrave(inv);
         }
+    }
 
+    public void RespawnPlayer()
+    {
+        Debug.Log("Respawing player");
+        Time.timeScale = 1f;
         player.transform.position = respawnPoint;
-        ObjectPlacer.Instance.ExitPlacementMode();
         health.ResetHealth();
         hunger.ResetHunger();
         stamina.ResetStamina();
+        PlayerID.Instance.IsAlive = true;
     }
 
     private void OnPlayerDeath(DamageContext context)
     {
         if (context.victim == PlayerID.Instance.gameObject)
         {
-            RespawnPlayer();
+            Time.timeScale = 0f;
+            PlayerID.Instance.IsAlive = false;
+            CreateGrave();
+            deathMenu.GetComponent<DeathMenu>().ShowDeathMenu(true);
         }
     }
 
@@ -79,6 +88,7 @@ public class ManageRespawn : MonoBehaviour
     }
 
     public void CreateGrave(Vector3 position, Quaternion rotation, string[] names, int[] count) {
+        Debug.Log("Instantiating grave from save");
         inv = PlayerID.Instance.Inventory;
         curGrave = Instantiate(graveObj, position, rotation);
         curGrave.GetComponent<GraveInteract>().FillGrave(inv, names, count);
