@@ -29,7 +29,7 @@ public class ItemInfo : ScriptableObject
         Empty,
         Mushroom,
         Keycard,
-        Axe
+        Axe,
         Flower,
         Slimeball
     };
