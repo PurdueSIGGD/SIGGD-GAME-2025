@@ -1,4 +1,5 @@
 using CrashKonijn.Agent.Runtime;
+using MobCensus;
 using SIGGD.Goap.Capabilities;
 using SIGGD.Mobs;
 using Sirenix.OdinInspector;
@@ -10,10 +11,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using UnityEngine.Windows.Speech;
-using MobCensus;
+using static UnityEditor.PlayerSettings;
 
 public class Smell : SerializedMonoBehaviour
 {
@@ -23,27 +25,35 @@ public class Smell : SerializedMonoBehaviour
     private LayerMask playerLayer;
     [SerializeField]
     private LayerMask mobLayer;
+    [SerializeField]
+    private LayerMask lureLayer;
 
     //public LayerMask targetMask;
     //public LayerMask smellReductionMask;
 
-    private List<(Vector3 position, float intensity)> smellValues;
+    [SerializeField]
+    private Dictionary<GameObject, SmellValue> smellValues;
 
     private Vector3 playerPos;
     private Vector3 toSmellPos;
     private Vector3 awaySmellPos;
 
+    public struct SmellValue
+    {
+        public Vector3 position;
+        public float intensity;
+    }
+
     [SerializeField]
     private float awayDistanceBase = 30.0f;
 
     [SerializeField]
-    private float toDistanceBase = 30.0f;
+    private float toDistanceBase = 80.0f;
 
     [OdinSerialize]
     [ShowInInspector]
     [DictionaryDrawerSettings(KeyLabel = "Mob Id", ValueLabel = "Intensity")]
     private Dictionary<string, float> mobSmells = MobIds.listOfMobsIds.ToDictionary(key => key, key => 0.0f);
-
     [SerializeField]
     private float playerSmellIntensity = 0.0f;
    
@@ -53,7 +63,7 @@ public class Smell : SerializedMonoBehaviour
 
         toSmellPos = Vector3.zero;
         awaySmellPos = Vector3.zero;
-        smellValues = new();
+        smellValues = new Dictionary<GameObject, SmellValue>();
     }
     void Start()
     {
@@ -69,22 +79,23 @@ public class Smell : SerializedMonoBehaviour
         {
             yield return wait;
             // For each smell, check if its intensity is low enough to be removed, otherwise it assigns a reduced intensity to the smell
-            for (int i = smellValues.Count - 1; i >= 0; i--)
+            foreach (var key in smellValues.Keys.ToList())
             {
-                var (pos, intensity) = smellValues[i];
-                intensity -= 0.2f * Time.deltaTime; 
-                if (intensity <= 0.05f)
+                var value = smellValues[key];
+                value.intensity -= 0.2f * 0.5f; 
+                if (value.intensity <= 0.05f)
                 {
-                    smellValues.RemoveAt(i);
+                    smellValues.Remove(key);
                 }
                 else
                 {
-                    smellValues[i] = (pos, intensity);
+                    smellValues[key] = value;
                 }
             }
 
             SmellCheck();
             SmellCheckPlayer();
+            SmellCheckLures();
             CalculateSmellIntensity();
         }
     }
@@ -93,17 +104,34 @@ public class Smell : SerializedMonoBehaviour
     /// </summary>
     private void SmellCheck()
     {
-        smellValues.Clear();
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, mobLayer);
         foreach (Collider collider in hitColliders)
         {
             if (collider.gameObject == gameObject) continue;
 
-           // var agentData = collider.GetComponentInParent<AgentData>();
+            GameObject key = collider.gameObject;
+            Vector3 pos = collider.transform.position;
 
-           // if (mobSmells.TryGetValue(agentData.GetMobId(), out float smellIntensity)) { 
-          //      smellValues.Add((collider.transform.position, smellIntensity));
-           // }
+            var agentData = collider.GetComponentInParent<AgentData>();
+
+            if (agentData == null) continue;
+
+            if (!mobSmells.TryGetValue(agentData.GetMobId(), out float smellIntensity))
+            {
+                continue;
+            }
+            if (smellValues.TryGetValue(key, out var existingSmell))
+            {
+                existingSmell.position = pos;
+                existingSmell.intensity = smellIntensity;
+                smellValues[key] = existingSmell;
+            } else {
+                smellValues.Add(key, new SmellValue
+                {
+                    position = pos,
+                    intensity = smellIntensity
+                });
+            }
         }
     }
     /// <summary>
@@ -125,32 +153,46 @@ public class Smell : SerializedMonoBehaviour
         float totalAwaySmellWeight = 0f;
 
         // Finds the total weight and force of all the smells
-        for (int i = smellValues.Count - 1; i >= 0; i--) {
-            var (pos, intensity) = smellValues[i];
-            Vector3 smellDir = smellValues[i].position - transform.position;
+        List<GameObject> toRemove = null;
+
+        foreach (var kvp in smellValues) {
+            var source = kvp.Key;
+            var smell = kvp.Value;
+
+            if (source == null)
+            {
+                (toRemove ??= new List<GameObject>()).Add(kvp.Key);
+                continue;
+            }
+            Vector3 smellDir = smell.position - transform.position;
 
             float dist = Mathf.Max(smellDir.magnitude, 0.01f);
 
             if (smellDir.sqrMagnitude < 0.1f)
             {
-                smellValues.RemoveAt(i);
                 continue;
             }
             // The weight varies based off the inverse square of the distance
-            float weight = Mathf.Pow(1f - Mathf.Clamp01(dist / smellRadius), 2f) * intensity;
+            float weight = Mathf.Pow(1f - Mathf.Clamp01(dist / smellRadius), 2f) * smell.intensity;
 
-            // float hierarchialWeight = weight * smellValues[i];
 
-            if (intensity > 0)
+            if (smell.intensity > 0)
             {
-                totalToSmellForce -= smellDir.normalized * weight;
+                totalToSmellForce += smellDir.normalized * weight;
                 totalToSmellWeight += weight;
 
             }
             else
             {
-                totalAwaySmellForce += smellDir.normalized * weight;
+                totalAwaySmellForce -= smellDir.normalized * weight;
                 totalAwaySmellWeight += weight;
+            }
+        }
+        if (toRemove != null)
+        {
+            foreach (var k in toRemove)
+            {
+                smellValues.Remove(k);
             }
         }
         if (totalToSmellWeight > 0f)
@@ -166,7 +208,7 @@ public class Smell : SerializedMonoBehaviour
         }
         if (totalAwaySmellWeight > 0f)
         {
-            Vector3 averageDir = totalToSmellForce / totalToSmellWeight;
+            Vector3 averageDir = totalAwaySmellForce / totalAwaySmellWeight;
             float intensityFactor = Mathf.Clamp01(totalAwaySmellWeight);
 
             // Calculates an overall position for the smell
@@ -175,6 +217,35 @@ public class Smell : SerializedMonoBehaviour
         else
         {
             awaySmellPos = transform.position;
+        }
+    }
+
+    private void SmellCheckLures()
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, lureLayer);
+        foreach (Collider collider in hitColliders)
+        {
+            if (collider == null) continue;
+            var lure = collider.GetComponentInParent<Lure>();
+            if (lure == null) continue;
+            GameObject key = collider.gameObject;
+            Vector3 pos = collider.transform.position;
+            float smellIntensity = lure.intensity;
+            if (smellValues.TryGetValue(key, out var existingSmell))
+            {
+                existingSmell.position = pos;
+                existingSmell.intensity = smellIntensity;
+                smellValues[key] = existingSmell;
+            }
+            else
+            {
+                smellValues.Add(key, new SmellValue
+                {
+                    position = pos,
+                    intensity = smellIntensity
+                });
+            }
+
         }
     }
     public Vector3 GetAwaySmellPos()
@@ -189,6 +260,6 @@ public class Smell : SerializedMonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(position, 2f);
+        Gizmos.DrawWireSphere(toSmellPos, 10f);
     }
 }

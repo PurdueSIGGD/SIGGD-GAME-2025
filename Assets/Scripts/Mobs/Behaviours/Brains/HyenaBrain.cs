@@ -53,15 +53,22 @@ namespace SIGGD.Mobs
 
             if (this.provider.CurrentPlan == null)
             {
-                this.provider.RequestGoal<WanderGoal, DontStarveGoal, GrowPackGoal>(true);
+                this.provider.RequestGoal<FindLureGoal, WanderGoal, DontStarveGoal, GrowPackGoal>(true);
                 return;
             }
-
-            if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal && this.provider.CurrentPlan.Goal is not KillPlayerGoal)
+            if (this.provider.CurrentPlan.Goal is KillPlayerGoal)
             {
-                this.provider.RequestGoal<DontStarveGoal, WanderGoal>(true);
                 return;
-            } 
+            }
+            if (this.provider.CurrentPlan.Goal is FindLureGoal)
+            {
+                return;
+            }
+            if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
+            {
+                this.provider.RequestGoal<FindLureGoal, DontStarveGoal, WanderGoal>(true);
+                return;
+            }
         }
         protected override void OnNoActionFound(IGoalRequest request)
         {
@@ -72,22 +79,22 @@ namespace SIGGD.Mobs
             
             if (this.provider.CurrentPlan == null)
             {
-                this.provider.RequestGoal<DontStarveGoal, FollowAlphaGoal, WanderGoal, GrowPackGoal>(true);
+                this.provider.RequestGoal<FindLureGoal, DontStarveGoal, FollowAlphaGoal, WanderGoal, GrowPackGoal>(true);
                 return;
             }
             if (this.provider.CurrentPlan.Goal is KillPlayerGoal)
             {
-                this.provider.RequestGoal<DontStarveGoal, FollowAlphaGoal, WanderGoal, GrowPackGoal>(true);
+                this.provider.RequestGoal<FindLureGoal, DontStarveGoal, FollowAlphaGoal, WanderGoal, GrowPackGoal>(true);
                 return;
             }
 
             if (HungerBehaviour.hunger > 50 && this.provider.CurrentPlan.Goal is not DontStarveGoal)
             {
-                this.provider.RequestGoal<DontStarveGoal, WanderGoal>(true);
+                this.provider.RequestGoal<FindLureGoal, DontStarveGoal, WanderGoal>(true);
             }
             else
             {
-                this.provider.RequestGoal<FollowAlphaGoal, GrowPackGoal, WanderGoal>(true);
+                this.provider.RequestGoal<FindLureGoal, FollowAlphaGoal, GrowPackGoal, WanderGoal>(true);
             }
         }
         protected override void OnActionStart(IAction action)

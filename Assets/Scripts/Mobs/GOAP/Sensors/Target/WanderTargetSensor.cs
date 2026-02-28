@@ -73,17 +73,19 @@ namespace SIGGD.Goap.Sensors
 
             float biasStrength = 0.7f;
             Vector3 dir;
+            float step = 10f;
             if (smellPos != Vector3.zero)
             {
-                Vector3 toSmell = (smellPos - agent.Transform.position);
+                Vector3 toSmell = (smellPos - agent.Transform.position).normalized;
                 dir = Vector3.Slerp(toRandom, toSmell, biasStrength).normalized;
+                step = 20f;
             }
             else
             {
                 dir = toRandom;
             }
-            Vector3 target = agent.Transform.position + dir * 10f;
-            Vector2 queryTarget = new Vector2(target.x, target.y);
+            Vector3 target = agent.Transform.position + dir * step;
+            Vector2 queryTarget = new Vector2(target.x, target.z);
             if (!boundary.IsInBoundary(queryTarget))
                 target = resultPos;
             return target;
@@ -101,7 +103,7 @@ namespace SIGGD.Goap.Sensors
             Vector3 dir;
             if (smellPos != Vector3.zero)
             {
-                Vector3 toSmell = (smellPos - agent.Transform.position);
+                Vector3 toSmell = (smellPos - agent.Transform.position).normalized;
                 dir = Vector3.Slerp(toRandom, toSmell, biasStrength).normalized;
             }
             else

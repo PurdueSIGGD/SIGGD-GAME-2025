@@ -394,7 +394,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56299dbcc5bc4f145a4dbbd3ea5bbecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth:
+    value: 100
 --- !u!114 &5040513272939026828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,6 +417,9 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes:
+    - Name: smellValues
+      Entry: 6
+      Data: 
     - Name: mobSmells
       Entry: 7
       Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Single,
@@ -450,7 +454,7 @@ MonoBehaviour:
       Data: PreyAgent
     - Name: $v
       Entry: 4
-      Data: 0
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -484,16 +488,19 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  smellRadius: 40
+  smellRadius: 70
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
   mobLayer:
     serializedVersion: 2
     m_Bits: 512
+  lureLayer:
+    serializedVersion: 2
+    m_Bits: 1024
   awayDistanceBase: 30
-  toDistanceBase: 30
-  playerSmellIntensity: 0
+  toDistanceBase: 80
+  playerSmellIntensity: 1
 --- !u!114 &1109127171278550248
 MonoBehaviour:
   m_ObjectHideFlags: 0

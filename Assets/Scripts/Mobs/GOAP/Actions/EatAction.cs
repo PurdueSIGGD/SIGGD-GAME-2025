@@ -39,7 +39,7 @@ namespace SIGGD.Goap
             // nutrition check either here or in hunger behaviour
             data.HungerBehaviour.ReduceHunger(60);
             GameObject.Destroy(transformTarget.Transform.gameObject);
-    }
+        }
 
         public override void Stop(IMonoAgent agent, Data data)
         {

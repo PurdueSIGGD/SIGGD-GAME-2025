@@ -16,6 +16,7 @@ namespace SIGGD.Goap.AgentTypes
             factory.AddCapability<PackCapability>();
             factory.AddCapability<HuntPreyCapability>();
             factory.AddCapability<AttackPlayerCapability>();
+            factory.AddCapability<LureCapability>();
             return factory.Build();
         }
     }
