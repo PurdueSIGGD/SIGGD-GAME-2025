@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerHunger : MonoBehaviour
 {
+    [SerializeField] bool inShipScene = false; // if in ship scene dont do hunger
+
     [SerializeField] float maxHunger = 100f;
     [SerializeField] float hungerDecayRate = 1f;
     [SerializeField] float hungerDamageInterval = 10f; // seconds between starvation damage
@@ -22,32 +24,34 @@ public class PlayerHunger : MonoBehaviour
     {
         if (currentHunger < 0) currentHunger = maxHunger;
         playerHealth = GetComponent<EntityHealthManager>();
-
     }
 
     void Update()
     {
-        //hunger goes down and takes health when starving
-        if (currentHunger > 0)
+        if (inShipScene == true)
         {
-            currentHunger = Mathf.Max(currentHunger - hungerDecayRate * Time.deltaTime, 0);
-            hungerDamageTimer = 0f; // Reset timer if not starving
-        }
-        else 
-        {
-            //player is starving stuff
-            hungerDamageTimer += Time.deltaTime;
-
-            if (hungerDamageTimer >= hungerDamageInterval)
+            //hunger goes down and takes health when starving
+            if (currentHunger > 0)
             {
-                hungerDamageTimer = 0f; // Reset timer
-                playerHealth.TakeDamage(hungerDamageContext);
-                Debug.Log("Starving - Took 1 damage");
+                currentHunger = Mathf.Max(currentHunger - hungerDecayRate * Time.deltaTime, 0);
+                hungerDamageTimer = 0f; // Reset timer if not starving
             }
+            else
+            {
+                //player is starving stuff
+                hungerDamageTimer += Time.deltaTime;
+
+                if (hungerDamageTimer >= hungerDamageInterval)
+                {
+                    hungerDamageTimer = 0f; // Reset timer
+                    playerHealth.TakeDamage(hungerDamageContext);
+                    Debug.Log("Starving - Took 1 damage");
+                }
+            }
+            float hungerPercent = CurrentHunger / MaxHunger;
+            float targetStrength = (1 - hungerPercent) * 1.5f;
+            hungerVignette.SetStrength(targetStrength);
         }
-        float hungerPercent = CurrentHunger / MaxHunger;
-        float targetStrength = (1 - hungerPercent) * 1.5f;
-        hungerVignette.SetStrength(targetStrength);
     }
 
     public void UpdateHunger(float ammount)
