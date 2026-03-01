@@ -22,7 +22,7 @@ namespace Extensions.CutsceneEngine
             }
         }
         
-        [CutsceneAction("WaveHello")]
+        [CutsceneAction("WaveHello", CutsceneActionExecutionMode.OnEnter)]
         public void WaveHello()
         {
             Debug.Log($"Hello from CutsceneActorProxy: {name}!");
@@ -32,6 +32,12 @@ namespace Extensions.CutsceneEngine
         public void SaySomething(string message)
         {
             Debug.Log($"CutsceneActorProxy {name} says: {message}");
+        }
+
+        [CutsceneAction("WaveHelloContinuous", CutsceneActionExecutionMode.OnUpdate)]
+        public void WaveHelloContinuous(float normalizedTime)
+        {
+            
         }
         
         #region ICutsceneActor implementation
