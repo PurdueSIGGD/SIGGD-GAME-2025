@@ -70,10 +70,6 @@ public class AudioLogManager : MonoBehaviour
                 RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
             }
 
-            float globalValue;
-            RuntimeManager.StudioSystem.getParameterByName("RadioVoice", out globalValue);
-            UnityEngine.Debug.Log("Global RadioVoice is now: " + globalValue);
-
             subtitles.text = line.line;
             yield return new WaitForSeconds(line.seconds);
         }
