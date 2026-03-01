@@ -14,6 +14,7 @@ using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using UnityEngine.Windows.Speech;
 using MobCensus;
+using SIGGD.Mobs.StateMachine;
 
 public class Smell : SerializedMonoBehaviour
 {
@@ -54,6 +55,8 @@ public class Smell : SerializedMonoBehaviour
     public Transform PlayerTarget { get; private set; }
     public Transform ClosestPrey { get; private set; }
 
+    public Transform ClosestPred { get; private set; }
+
     void Awake()
     {
 
@@ -90,92 +93,86 @@ public class Smell : SerializedMonoBehaviour
             }
 
             SmellCheck();
-            SmellCheckPlayer();
-            SmellCheckPrey();
-            SmellCheckFood();
             CalculateSmellIntensity();
         }
     }
     /// <summary>
-    /// Checks for mobs or players in a nearby range and adds a smell if the mob is not a predator
+    /// Checks for mobs, players, and food in a nearby range and caches targets.
     /// </summary>
     private void SmellCheck()
     {
-        smellValues.Clear();
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, mobLayer);
-        foreach (Collider collider in hitColliders)
-        {
-            if (collider.gameObject == gameObject) continue;
+        // One overlap sphere using a combined layer mask might be faster, but since food might be on default or another layer,
+        // casting without a mask (or passing ~0) will hit everything. We can just use one physics query.
+        Collider[] allColliders = Physics.OverlapSphere(transform.position, smellRadius);
 
-           // var agentData = collider.GetComponentInParent<AgentData>();
+        float closestPreyDist = float.MaxValue;
+        Transform closestPrey = null;
 
-           // if (mobSmells.TryGetValue(agentData.GetMobId(), out float smellIntensity)) { 
-          //      smellValues.Add((collider.transform.position, smellIntensity));
-           // }
-        }
-    }
-    /// <summary>
-    /// Checks for the presence of a player within the defined smell radius and caches the player's
-    /// transform and position.
-    /// </summary>
-    private void SmellCheckPlayer()
-    {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, playerLayer);
-        if (hitColliders.Length < 1)
-        {
-            PlayerTarget = null;
-            return;
-        }
-        PlayerTarget = hitColliders[0].transform;
-        playerPos = hitColliders[0].transform.position;
-    }
+        float closestFoodDist = float.MaxValue;
+        Transform closestFood = null;
 
-    /// <summary>
-    /// Checks for the closest PreyBehaviour within the smell radius and caches its transform.
-    /// </summary>
-    private void SmellCheckPrey()
-    {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius, mobLayer);
-        float closestDist = float.MaxValue;
-        Transform closest = null;
+        float closestPredDist = float.MaxValue;
+        Transform closestPred = null;
 
-        foreach (Collider col in hitColliders)
+        Transform closestPlayer = null;
+        float closestPlayerDist = float.MaxValue;
+
+        foreach (Collider col in allColliders)
         {
             if (col == null || col.gameObject == gameObject) continue;
-            if (!col.TryGetComponent<PreyBehaviour>(out _)) continue;
 
             float dist = Vector3.Distance(transform.position, col.transform.position);
-            if (dist < closestDist)
+
+            // Check if it's Player (Using playerLayer mask check via layer bitwise operation)
+            if (((1 << col.gameObject.layer) & playerLayer) != 0)
             {
-                closestDist = dist;
-                closest = col.transform;
+                if (dist < closestPlayerDist)
+                {
+                    closestPlayerDist = dist;
+                    closestPlayer = col.transform;
+                }
+            }
+
+            // Check if it's Prey
+            if (col.TryGetComponent<SMPreyBrain>(out _))
+            {
+                if (dist < closestPreyDist)
+                {
+                    closestPreyDist = dist;
+                    closestPrey = col.transform;
+                }
+            }
+
+            // Check if it's Predator
+            if (col.TryGetComponent<SMHyenaBrain>(out _))
+            {
+                if (dist < closestPredDist)
+                {
+                    closestPredDist = dist;
+                    closestPred = col.transform;
+                }
+            }
+
+            // Check if it's Food
+            if (col.TryGetComponent<FoodBehaviour>(out _))
+            {
+                if (dist < closestFoodDist)
+                {
+                    closestFoodDist = dist;
+                    closestFood = col.transform;
+                }
             }
         }
-        ClosestPrey = closest;
-    }
 
-    /// <summary>
-    /// Checks for the closest FoodBehaviour within the smell radius and caches its transform.
-    /// </summary>
-    private void SmellCheckFood()
-    {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, smellRadius);
-        float closestDist = float.MaxValue;
-        Transform closest = null;
-
-        foreach (Collider col in hitColliders)
+        PlayerTarget = closestPlayer;
+        if (closestPlayer != null)
         {
-            if (col == null) continue;
-            if (!col.TryGetComponent<FoodBehaviour>(out _)) continue;
-
-            float dist = Vector3.Distance(transform.position, col.transform.position);
-            if (dist < closestDist)
-            {
-                closestDist = dist;
-                closest = col.transform;
-            }
+            playerPos = closestPlayer.position;
         }
-        ClosestFood = closest;
+
+        ClosestPrey = closestPrey;
+        ClosestFood = closestFood;
+        ClosestPred = closestPred;
     }
 
     private void CalculateSmellIntensity()

@@ -71,12 +71,23 @@ namespace SIGGD.Mobs.StateMachine.States
             jitter.y = 0f;
             Vector3 fleeDir = (awayDir + jitter).normalized * FleeRadius;
 
-            Vector3 candidate = ctx.Rigidbody.position + fleeDir;
+            Vector3 startPos = ctx.Rigidbody.position;
+            // Ensure raycast starts safely on the NavMesh
+            if (NavMesh.SamplePosition(startPos, out NavMeshHit startHit, 2f, ctx.AgentData.filter))
+            {
+                startPos = startHit.position;
+            }
 
-            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, 10f, ctx.AgentData.filter))
+            Vector3 candidate = startPos + fleeDir;
+
+            if (NavMesh.Raycast(startPos, candidate, out NavMeshHit hit, ctx.AgentData.filter))
+            {
                 fleeTarget = hit.position;
+            }
             else
-                fleeTarget = ctx.Rigidbody.position + fleeDir * 0.5f;
+            {
+                fleeTarget = candidate;
+            }
         }
 
         private Vector3 GetAwayFromPredatorsDir()

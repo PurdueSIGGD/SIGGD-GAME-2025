@@ -3,13 +3,9 @@ using UnityEngine.AI;
 
 public class SlimeAnimator : MonoBehaviour
 {
-    private NavMeshAgent navAgent;
-    private Animator animator;
-    void Start()
-    {
-        navAgent = GetComponent<NavMeshAgent>();
-        animator = GetComponentInChildren<Animator>();
-    }
+    [SerializeField] NavMeshAgent navAgent;
+    [SerializeField] Animator animator;
+
     void Update()
     {
         float speedAnim = navAgent.velocity.magnitude / Mathf.Max(navAgent.speed, 0.01f);

@@ -1,5 +1,6 @@
 using SIGGD.Mobs.PackScripts;
 using SIGGD.Mobs.StateMachine.States;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,8 +11,8 @@ namespace SIGGD.Mobs.StateMachine
     [RequireComponent(typeof(Movement))]
     [RequireComponent(typeof(AgentData))]
     [RequireComponent(typeof(PackBehavior))]
-    [RequireComponent(typeof(PreyBehaviour))]
     [RequireComponent(typeof(PerceptionManager))]
+    [RequireComponent(typeof(Smell))]
     public class SMPreyBrain : MonoBehaviour
     {
         private MobStateMachine stateMachine;
@@ -31,8 +32,8 @@ namespace SIGGD.Mobs.StateMachine
                 Movement = GetComponent<Movement>(),
                 AgentData = GetComponent<AgentData>(),
                 Pack = GetComponent<PackBehavior>(),
-                PreyBehaviour = GetComponent<PreyBehaviour>(),
-                Perception = GetComponent<PerceptionManager>()
+                Perception = GetComponent<PerceptionManager>(),
+                Smell = GetComponent<Smell>()
             };
 
             wanderState = new WanderState(ctx);
@@ -61,10 +62,9 @@ namespace SIGGD.Mobs.StateMachine
         private void EvaluateTransitions()
         {
             var current = stateMachine.CurrentState;
-            bool inDanger = ctx.Perception != null && ctx.Perception.predatorTargets.Count > 0;
 
             // Top priority: flee from predators
-            if (inDanger && current != fleeState)
+            if (InDanger() && current != fleeState)
             {
                 stateMachine.ChangeState(fleeState);
                 return;
@@ -100,6 +100,19 @@ namespace SIGGD.Mobs.StateMachine
             if (pack == null) return false;
             var alpha = pack.GetAlpha();
             return alpha != null && alpha != ctx.Pack;
+        }
+
+        private bool InDanger()
+        {
+            return (ctx.Perception != null && ctx.Perception.predatorTargets.Count > 0) ||
+                   (ctx.Smell != null && ctx.Smell.ClosestPred != null);
+        }
+
+        void OnDrawGizmos()
+        {
+            if (stateMachine == null) return;
+
+            Handles.Label(transform.position + Vector3.up * 2f, stateMachine.CurrentState.GetType().Name);
         }
     }
 }

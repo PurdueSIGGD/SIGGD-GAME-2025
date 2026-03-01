@@ -14,6 +14,7 @@ namespace SIGGD.Mobs
         [ShowInInspector] private float speed;
         [SerializeField] private float baseSpeed = 12f;
         [SerializeField] private float rotationSpeed = 25f;
+        [SerializeField] private float sprintMultiplier = 1.5f;
 
         private StaminaBehaviour sprint;
         public bool sprintAllowed;
@@ -61,7 +62,7 @@ namespace SIGGD.Mobs
             // Applies sprinting
             if (moveWithSprint && sprintAllowed && sprint != null && sprint.stamina > 0f)
             {
-                speed = baseSpeed * 1.5f;
+                speed = baseSpeed * sprintMultiplier;
                 sprint.ReduceStamina(50f * Time.fixedDeltaTime);
             } else
             {
@@ -128,7 +129,7 @@ namespace SIGGD.Mobs
             // Applies sprinting
             if (moveWithSprint && sprintAllowed && sprint != null && sprint.stamina > 0f)
             {
-                speed = baseSpeed * 1.5f;
+                speed = baseSpeed * sprintMultiplier;
                 sprint.ReduceStamina(50f * Time.fixedDeltaTime);
             }
             else

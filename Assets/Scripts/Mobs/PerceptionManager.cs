@@ -47,10 +47,10 @@ public class PerceptionManager : MonoBehaviour
                         OnPlayerDetected?.Invoke(PlayerTarget.transform);
                     }
                 } 
-                else if (target.TryGetComponent<PreyBehaviour>(out _)) {
+                else if (target.TryGetComponent<SMPreyBrain>(out _)) {
                     preyTargets.Add(target);
                 }
-                else if (target.TryGetComponent<SMHyenaBrain>(out var hyenaBrain))
+                else if (target.TryGetComponent<SMHyenaBrain>(out _))
                 {
                     predatorTargets.Add(target);
                 }
