@@ -1,6 +1,7 @@
 using SIGGD.Mobs.Hyena;
 using SIGGD.Mobs.PackScripts;
 using SIGGD.Mobs.StateMachine.States;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,7 +15,6 @@ namespace SIGGD.Mobs.StateMachine
     [RequireComponent(typeof(PackBehavior))]
     [RequireComponent(typeof(PerceptionManager))]
     [RequireComponent(typeof(HyenaAttackManager))]
-    [RequireComponent(typeof(AgentHuntBehaviour))]
     [RequireComponent(typeof(Smell))]
     public class SMHyenaBrain : MonoBehaviour
     {
@@ -44,7 +44,6 @@ namespace SIGGD.Mobs.StateMachine
                 Pack = GetComponent<PackBehavior>(),
                 Perception = GetComponent<PerceptionManager>(),
                 AttackManager = GetComponent<HyenaAttackManager>(),
-                HuntBehaviour = GetComponent<AgentHuntBehaviour>(),
                 Smell = GetComponent<Smell>()
             };
 
@@ -57,6 +56,51 @@ namespace SIGGD.Mobs.StateMachine
             attackPreyState = new AttackPreyState(ctx);
 
             stateMachine = new MobStateMachine();
+
+
+            // initialize navmesh agent and validate that spawn position is within valid navmesh area
+            NavMeshAgent navAgent = ctx.NavAgent;
+            navAgent.updatePosition = false;
+            navAgent.updateRotation = false;
+
+            NavMeshQueryFilter navFilter = new NavMeshQueryFilter
+            {
+                agentTypeID = ctx.NavAgent.agentTypeID,
+                areaMask = NavMesh.AllAreas
+            };
+            if (ctx.AgentData != null && ctx.AgentData.filter.areaMask != 0)
+                navFilter = ctx.AgentData.filter;
+            bool success = NavMesh.SamplePosition(gameObject.transform.position, out NavMeshHit hit, 5f, navFilter);
+
+            if (success)
+            {
+                transform.position = hit.position;
+                navAgent.Warp(hit.position);
+                navAgent.nextPosition = hit.position;
+                navAgent.ResetPath();
+                navAgent.isStopped = false;
+
+                Rigidbody rb = ctx.Rigidbody;
+                if (rb != null)
+                {
+                    if (!rb.isKinematic)
+                    {
+                        rb.linearVelocity = Vector3.zero;
+                        rb.angularVelocity = Vector3.zero;
+                    }
+
+                    rb.isKinematic = true;
+                    rb.useGravity = false;
+                    rb.position = hit.position;
+                }
+
+                Debug.Log("Successfully initialized a Hyena");
+            }
+            else
+            {
+                Debug.Log("Failed to initlaize a Hyena");
+                Destroy(gameObject);
+            }
         }
 
         private void OnEnable()
@@ -240,6 +284,13 @@ namespace SIGGD.Mobs.StateMachine
             if (pack == null) return false;
             var alpha = pack.GetAlpha();
             return alpha != null && alpha != ctx.Pack;
+        }
+
+        void OnDrawGizmos()
+        {
+            if (stateMachine == null) return;
+            
+            Handles.Label(transform.position + Vector3.up * 2f, stateMachine.CurrentState.GetType().Name);
         }
     }
 }
