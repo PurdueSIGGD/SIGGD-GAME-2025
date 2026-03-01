@@ -1,29 +1,15 @@
 using SIGGD.Mobs.Hyena;
-using SIGGD.Mobs.PackScripts;
 using SIGGD.Mobs.StateMachine.States;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace SIGGD.Mobs.StateMachine
 {
-    [RequireComponent(typeof(Rigidbody))]
-    [RequireComponent(typeof(NavMeshAgent))]
-    [RequireComponent(typeof(Movement))]
-    [RequireComponent(typeof(AgentData))]
     [RequireComponent(typeof(HungerBehaviour))]
-    [RequireComponent(typeof(PackBehavior))]
-    [RequireComponent(typeof(PerceptionManager))]
     [RequireComponent(typeof(HyenaAttackManager))]
-    [RequireComponent(typeof(Smell))]
-    public class SMHyenaBrain : MonoBehaviour
+    public class SMHyenaBrain : MobBrainBase
     {
-        private MobStateMachine stateMachine;
-        private MobContext ctx;
-
-        private WanderState wanderState;
         private SeekFoodState seekFoodState;
-        private FollowPackState followPackState;
         private ChasePlayerState chasePlayerState;
         private AttackPlayerState attackPlayerState;
         private ChasePreyState chasePreyState;
@@ -31,9 +17,11 @@ namespace SIGGD.Mobs.StateMachine
 
         [SerializeField] private float hungerThreshold = 50f;
 
-        private void Awake()
+        protected override string MobName => "Hyena";
+
+        protected override MobContext BuildContext()
         {
-            ctx = new MobContext
+            return new MobContext
             {
                 Transform = transform,
                 Rigidbody = GetComponent<Rigidbody>(),
@@ -41,66 +29,20 @@ namespace SIGGD.Mobs.StateMachine
                 Movement = GetComponent<Movement>(),
                 AgentData = GetComponent<AgentData>(),
                 Hunger = GetComponent<HungerBehaviour>(),
-                Pack = GetComponent<PackBehavior>(),
+                Pack = GetComponent<PackScripts.PackBehavior>(),
                 Perception = GetComponent<PerceptionManager>(),
                 AttackManager = GetComponent<HyenaAttackManager>(),
                 Smell = GetComponent<Smell>()
             };
+        }
 
-            wanderState = new WanderState(ctx);
+        protected override void InitializeStates()
+        {
             seekFoodState = new SeekFoodState(ctx);
-            followPackState = new FollowPackState(ctx);
             chasePlayerState = new ChasePlayerState(ctx);
             attackPlayerState = new AttackPlayerState(ctx);
             chasePreyState = new ChasePreyState(ctx);
             attackPreyState = new AttackPreyState(ctx);
-
-            stateMachine = new MobStateMachine();
-
-
-            // initialize navmesh agent and validate that spawn position is within valid navmesh area
-            NavMeshAgent navAgent = ctx.NavAgent;
-            navAgent.updatePosition = false;
-            navAgent.updateRotation = false;
-
-            NavMeshQueryFilter navFilter = new NavMeshQueryFilter
-            {
-                agentTypeID = ctx.NavAgent.agentTypeID,
-                areaMask = NavMesh.AllAreas
-            };
-            if (ctx.AgentData != null && ctx.AgentData.filter.areaMask != 0)
-                navFilter = ctx.AgentData.filter;
-            bool success = NavMesh.SamplePosition(gameObject.transform.position, out NavMeshHit hit, 5f, navFilter);
-
-            if (success)
-            {
-                transform.position = hit.position;
-                navAgent.Warp(hit.position);
-                navAgent.nextPosition = hit.position;
-                navAgent.ResetPath();
-                navAgent.isStopped = false;
-
-                Rigidbody rb = ctx.Rigidbody;
-                if (rb != null)
-                {
-                    if (!rb.isKinematic)
-                    {
-                        rb.linearVelocity = Vector3.zero;
-                        rb.angularVelocity = Vector3.zero;
-                    }
-
-                    rb.isKinematic = true;
-                    rb.useGravity = false;
-                    rb.position = hit.position;
-                }
-
-                Debug.Log("Successfully initialized a Hyena");
-            }
-            else
-            {
-                Debug.Log("Failed to initlaize a Hyena");
-                Destroy(gameObject);
-            }
         }
 
         private void OnEnable()
@@ -115,23 +57,7 @@ namespace SIGGD.Mobs.StateMachine
                 ctx.Perception.OnPlayerDetected -= OnPlayerDetected;
         }
 
-        private void Start()
-        {
-            stateMachine.ChangeState(wanderState);
-        }
-
-        private void Update()
-        {
-            stateMachine.Update();
-            EvaluateTransitions();
-        }
-
-        private void FixedUpdate()
-        {
-            stateMachine.FixedUpdate();
-        }
-
-        private void EvaluateTransitions()
+        protected override void EvaluateTransitions()
         {
             var current = stateMachine.CurrentState;
             bool isAttacking = current == attackPlayerState || current == attackPreyState;
@@ -275,22 +201,6 @@ namespace SIGGD.Mobs.StateMachine
                           ctx.Perception.preyTargets.Count > 0;
             bool canSmell = ctx.Smell != null && ctx.Smell.ClosestPrey != null;
             return canSee || canSmell;
-        }
-
-        private bool HasPackToFollow()
-        {
-            if (ctx.Pack == null) return false;
-            var pack = ctx.Pack.GetPack();
-            if (pack == null) return false;
-            var alpha = pack.GetAlpha();
-            return alpha != null && alpha != ctx.Pack;
-        }
-
-        void OnDrawGizmos()
-        {
-            if (stateMachine == null) return;
-            
-            Handles.Label(transform.position + Vector3.up * 2f, stateMachine.CurrentState.GetType().Name);
         }
     }
 }
