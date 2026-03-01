@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using SIGGD.Mobs;
 using SIGGD.Mobs.PackScripts;
-using SIGGD.Goap;
-using UnityEngine.ProBuilder.MeshOperations;
 using Utility;
-using CrashKonijn.Goap.Runtime;
 
 namespace SIGGD.Mobs.Hyena
 {
@@ -18,6 +13,11 @@ namespace SIGGD.Mobs.Hyena
     [RequireComponent(typeof(EnemyAnimator))]
     public class HyenaCirclingBehaviour : MonoBehaviour
     {
+        [Tooltip("Speed multiplier of Hyena when circling around target")]
+        [SerializeField] float circlingSpeedMultiplier;
+        [Tooltip("Speed multiplier of Hyena when pacing before lunge")]
+        [SerializeField] float lungePreparationMultiplier;
+
         private Rigidbody rb;
         private NavMeshAgent agent;
         private AgentMoveBehaviour agentMove;
@@ -150,11 +150,11 @@ namespace SIGGD.Mobs.Hyena
             initialRadius = radius;
 
             
-            angleRad = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
-            float sign = UnityEngine.Random.value > 0.5f ? 1f : -1f;
-            angSpeed = sign * UnityEngine.Random.Range(AngularSpeedMin, AngularSpeedMax);
+            angleRad = Random.Range(0f, Mathf.PI * 2f);
+            float sign = Random.value > 0.5f ? 1f : -1f;
+            angSpeed = sign * Random.Range(AngularSpeedMin, AngularSpeedMax);
 
-            float duration = UnityEngine.Random.Range(6f, 10f);
+            float duration = Random.Range(6f, 10f);
             float timeAtBeginning = Time.time;
             float elapsed = 0f;
 
@@ -233,7 +233,7 @@ namespace SIGGD.Mobs.Hyena
                     }
 
 
-                    move.MoveTowardsNoRotation(dir, 1.0f, distToTargetMulti);
+                    move.MoveTowardsNoRotation(dir, circlingSpeedMultiplier, distToTargetMulti);
 
                     // Face the target while circling, not the movement direction
                     Vector3 toTarget = targetPos - rb.position;
@@ -325,7 +325,7 @@ namespace SIGGD.Mobs.Hyena
                     dir = (-toTarget).normalized;
                 }
                 dir = ApplyEdgeAvoidance(rb.position, dir);
-                move.MoveTowardsNoRotation(dir, 0.5f, 1.0f, false);
+                move.MoveTowardsNoRotation(dir, lungePreparationMultiplier, 1.0f, false);
                 Quaternion targetRot = Quaternion.LookRotation(toTarget.normalized, Vector3.up);
                 rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 3f, Time.fixedDeltaTime));
 
