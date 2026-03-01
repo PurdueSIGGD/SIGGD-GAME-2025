@@ -6,7 +6,7 @@ using FMODUnity;
 using FMOD.Studio;
 using FMOD;
 
-public class AudioLogManager : Singleton<AudioLogManager>
+public class AudioLogManager : MonoBehaviour
 {
     public List<AudioLogObject> logs = new();
     [SerializeField] TextMeshProUGUI subtitles;
@@ -47,7 +47,7 @@ public class AudioLogManager : Singleton<AudioLogManager>
 
     private void Update()
     {
-        if(isPlaying && curPlayer != null)
+        if (isPlaying && curPlayer != null)
         {
             ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(playerRb.position, playerRb.linearVelocity, playerRb.transform.forward, playerRb.transform.up);
             logSoundEvent.set3DAttributes(attr);
@@ -63,13 +63,17 @@ public class AudioLogManager : Singleton<AudioLogManager>
             // if the line has a % then it is from a radio so set effects to radio effects
             if (line.isFromRadio == true)
             {
-                logSoundEvent.setParameterByName("RadioVoice", 1);
-                //UnityEngine.Debug.Log(logSoundEvent.getParameterByName("RadioVoice", out float value));
+                RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 1);
             }
             else
             {
-                logSoundEvent.setParameterByName("RadioVoice", 0);
+                RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
             }
+
+            float globalValue;
+            RuntimeManager.StudioSystem.getParameterByName("RadioVoice", out globalValue);
+            UnityEngine.Debug.Log("Global RadioVoice is now: " + globalValue);
+
             subtitles.text = line.line;
             yield return new WaitForSeconds(line.seconds);
         }
@@ -90,7 +94,6 @@ public class AudioLogManager : Singleton<AudioLogManager>
         // the most recently called audio log will take priority over the ones called before it 
         if (lastStarted != null)
         {
-            UnityEngine.Debug.Log("audio log already started stopping old one before playing new one");
             StopCoroutine(lastStarted);
             StopCurrentAudio();
         }
@@ -117,7 +120,7 @@ public class AudioLogManager : Singleton<AudioLogManager>
     }
     */
 
-    public void PlayAudioLog (string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
+    public void PlayAudioLog(string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
     {
         // the most recently called audio log will take priority over the ones called before it 
         if (lastStarted != null)
@@ -131,6 +134,8 @@ public class AudioLogManager : Singleton<AudioLogManager>
             curPlayer = player;
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
+
+            audioName = audioName.ToLower();
 
             // get the sound event from our dictionary and store it
             if (FMODEvents.Instance.soundEvents.TryGetValue(audioName, out EventReference eventRef))

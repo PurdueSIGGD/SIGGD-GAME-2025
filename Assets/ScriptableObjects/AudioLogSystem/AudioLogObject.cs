@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AudioLogObject", menuName = "Scriptable Objects/AudioLogObject")]
 public class AudioLogObject : ScriptableObject
 {
-    
+
     [System.Serializable]
     public struct lineInfo
     {

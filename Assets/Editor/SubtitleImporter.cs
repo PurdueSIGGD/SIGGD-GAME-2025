@@ -8,7 +8,7 @@ using System.IO;
 
 public class SubtitleImporter : EditorWindow
 {
-    private string inputText = ""; // inputted in the window
+    private string inputText = "";
 
     [MenuItem("Tools/Subtitle Importer")]
     public static void ShowWindow()
@@ -31,148 +31,129 @@ public class SubtitleImporter : EditorWindow
     {
         if (string.IsNullOrWhiteSpace(input))
         {
-            Debug.LogError("Empty input.");
             return;
         }
 
-        // ===============================
-        // 1. Extract Folder Name
-        // ===============================
+        // Get Folder Name
         Match folderMatch = Regex.Match(input, @"['‘]([^'’]+)['’]");
         if (!folderMatch.Success)
         {
-            Debug.LogError("No folder name found.");
             return;
         }
 
         string folderName = folderMatch.Groups[1].Value.Trim();
 
-        // Remove folder line from input
-        input = input.Substring(folderMatch.Index + folderMatch.Length);
-
         string baseFolder = "Assets/ScriptableObjects/AudioLogs";
-
-        string folderPath = baseFolder + "/" + folderName;
-
+        string folderPath = $"{baseFolder}/{folderName}";
         if (!AssetDatabase.IsValidFolder(folderPath))
-            AssetDatabase.CreateFolder("Assets/ScriptableObjects/AudioLogs", folderName);
+        {
+            AssetDatabase.CreateFolder(baseFolder, folderName);
+        }
 
-        // ===============================
-        // 2. Split Into Blocks
-        // ===============================
+        // Split into blocks by ~
         string[] blocks = input.Split(new[] { "~" }, StringSplitOptions.RemoveEmptyEntries);
 
         foreach (string rawBlock in blocks)
         {
             string block = rawBlock.Trim();
-            if (string.IsNullOrEmpty(block))
-                continue;
+            if (string.IsNullOrEmpty(block)) continue;
 
-            // ===============================
-            // 3. Extract {AudioLog Name}
-            // ===============================
+            // Get Audio Name {Name}
             Match nameMatch = Regex.Match(block, @"\{([^}]+)\}");
-            if (!nameMatch.Success)
-            {
-                Debug.LogWarning("Block missing {Name}, skipped.");
-                continue;
-            }
-
+            if (!nameMatch.Success) continue;
             string audioLogName = nameMatch.Groups[1].Value.Trim();
-
-            // Remove {Name} from block
-            block = block.Substring(nameMatch.Index + nameMatch.Length);
-
-            // ===============================
-            // 4. Remove Stage Directions
-            // ===============================
-            block = Regex.Replace(block, @"\[.*?\]", "");
-
-            // ===============================
-            // 5. Merge Continuation Lines
-            // ===============================
-            List<string> mergedLines = MergeContinuationLines(block);
 
             List<AudioLogObject.lineInfo> parsedLines = new List<AudioLogObject.lineInfo>();
 
-            // ===============================
-            // 6. Parse Each Subtitle Line
-            // ===============================
-            Regex lineRegex = new Regex(@"\d+\s*([$%]?)\s*[^:]+:\s*""?(.*?)""?\s*<(\d{2}:\d{2}\.\d{3})>", RegexOptions.Compiled);
+            // --- STATE TRACKING ---
+            bool currentIsRadio = false;
 
-            foreach (string line in mergedLines)
+            string[] lines = block.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string rawLine in lines)
             {
-                Match match = lineRegex.Match(line);
-                if (!match.Success)
+                string line = rawLine.Trim();
+
+                // Skip headers, folder names, and bracketed notes [Note]
+                if (line.StartsWith("{") || line.StartsWith("‘") || line.StartsWith("'") ||
+                    line.StartsWith("[") || string.IsNullOrEmpty(line))
                     continue;
 
-                string flag = match.Groups[1].Value;
-                string dialogue = match.Groups[2].Value.Trim();
-                string timeText = match.Groups[3].Value;
+                // This Regex handles BOTH "Full Lines" and "Continuation Lines"
+                // Group 1: ID (optional)
+                // Group 2: Flag % or $ (optional)
+                // Group 3: Speaker Name (optional)
+                // Group 4: Dialogue Text (required)
+                // Group 5: Timestamp (required)
+                Regex lineRegex = new Regex(@"^(?:(\d+)\s*([$%]?)\s*([^:]+):\s*)?[""“'‘]?(.*?)[""”'’]?\s*\\?\s*<(\d{2}:\d{2}\.\d{3})>$");
+                Match match = lineRegex.Match(line);
 
-                TimeSpan ts = TimeSpan.ParseExact(timeText, @"mm\:ss\.fff", null);
-
-                parsedLines.Add(new AudioLogObject.lineInfo
+                if (match.Success)
                 {
-                    line = dialogue,
-                    seconds = (float)ts.TotalSeconds,
-                    isFromRadio = flag == "%"
-                });
+                    string idStr = match.Groups[1].Value;
+                    string flag = match.Groups[2].Value;
+                    string dialogue = match.Groups[4].Value.Trim();
+                    string timeText = match.Groups[5].Value;
+
+                    // Update the radio state ONLY if a new ID or Flag is provided
+                    // This allows Mark's line 2 and 3 to inherit the "%" from line 1
+                    if (!string.IsNullOrEmpty(idStr) || !string.IsNullOrEmpty(flag))
+                    {
+                        currentIsRadio = (flag == "%");
+                    }
+
+                    if (TimeSpan.TryParseExact(timeText, @"mm\:ss\.fff", null, out TimeSpan ts))
+                    {
+                        parsedLines.Add(new AudioLogObject.lineInfo
+                        {
+                            line = dialogue,
+                            seconds = (float)ts.TotalSeconds,
+                            isFromRadio = currentIsRadio
+                        });
+                    }
+                }
             }
 
-            if (parsedLines.Count == 0)
-                continue;
-
-            // ===============================
-            // 7. Create ScriptableObject
-            // ===============================
-            AudioLogObject asset = CreateInstance<AudioLogObject>();
-            asset.audioName = audioLogName;
-            asset.subtitles = parsedLines.ToArray();
-
-            string assetPath = folderPath + "/" + audioLogName + ".asset";
-            AssetDatabase.CreateAsset(asset, assetPath);
-
-            AddOrUpdateLogInScene(asset);
+            if (parsedLines.Count > 0)
+            {
+                // (Reusing your logic to save the asset)
+                SaveAndRegisterAsset(folderPath, audioLogName, parsedLines);
+            }
         }
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-
         EditorUtility.DisplayDialog("Success", "Subtitle assets created.", "OK");
     }
-    List<string> MergeContinuationLines(string block)
+
+    private void SaveAndRegisterAsset(string folderPath, string audioLogName, List<AudioLogObject.lineInfo> lines)
     {
-        List<string> result = new List<string>();
+        string assetPath = $"{folderPath}/{audioLogName}.asset";
 
-        string[] lines = block.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+        // Try to load existing asset to keep references intact
+        AudioLogObject asset = AssetDatabase.LoadAssetAtPath<AudioLogObject>(assetPath);
 
-        string currentLine = "";
-
-        foreach (string raw in lines)
+        bool isNew = false;
+        if (asset == null)
         {
-            string trimmed = raw.Trim();
-            if (string.IsNullOrEmpty(trimmed))
-                continue;
-
-            currentLine += " " + trimmed;
-
-            if (!trimmed.EndsWith("\\"))
-            {
-                result.Add(currentLine.Replace("\\", "").Trim());
-                currentLine = "";
-            }
+            asset = CreateInstance<AudioLogObject>();
+            isNew = true;
         }
 
-        if (!string.IsNullOrEmpty(currentLine))
-            result.Add(currentLine.Replace("\\", "").Trim());
+        asset.audioName = audioLogName;
+        asset.subtitles = lines.ToArray();
 
-        return result;
+        if (isNew)
+            AssetDatabase.CreateAsset(asset, assetPath);
+        else
+            EditorUtility.SetDirty(asset);
+
+        // Update the AudioManager in the current scene
+        AddOrUpdateLogInScene(asset);
     }
-
     private void AddOrUpdateLogInScene(AudioLogObject asset)
     {
-        // Find the AudioManager GameObject in the active scene
+        // Find the AudioManager GameObject in the current scene
         GameObject audioManagerGO = GameObject.Find("AudioManager");
         if (audioManagerGO == null)
         {
@@ -196,47 +177,23 @@ public class SubtitleImporter : EditorWindow
             return;
         }
 
-        // Initialize logs list if null
-        if (manager.logs == null)
-            manager.logs = new List<AudioLogObject>();
+        // clean list of Null entries
+        manager.logs.RemoveAll(item => (item == null));
 
-        // Remove any null entries to keep the list clean
-        manager.logs.RemoveAll(item => item == null);
-
-        // Add or replace the asset in the list
-        int index = manager.logs.FindIndex(x => x.audioName == asset.audioName);
+        // see if it already exists in the list and if it does replace it with the now updated version
+        int index = manager.logs.FindIndex(x => (x.audioName == asset.audioName));
         if (index >= 0)
         {
             manager.logs[index] = asset; // Replace existing
         }
         else
         {
-            manager.logs.Add(asset);     // Add new
+            manager.logs.Add(asset); // Add new
         }
 
         // Mark the manager as dirty so Unity knows it changed
         EditorUtility.SetDirty(manager);
 
-        // Optionally mark the scene dirty if you want to prompt saving
-        // using UnityEditor.SceneManagement;
-        // EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
-
         Debug.Log($"AudioLogObject '{asset.audioName}' added/updated in scene AudioManager's AudioLogList.");
-    }
-    private void CreateFolderIfNotExists(string folderPath)
-    {
-        if (AssetDatabase.IsValidFolder(folderPath))
-            return;
-
-        string parent = Path.GetDirectoryName(folderPath).Replace("\\", "/");
-        string newFolderName = Path.GetFileName(folderPath);
-
-        if (!AssetDatabase.IsValidFolder(parent))
-        {
-            // Recursively create parent folders first
-            CreateFolderIfNotExists(parent);
-        }
-
-        AssetDatabase.CreateFolder(parent, newFolderName);
     }
 }
