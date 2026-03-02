@@ -1,4 +1,4 @@
-using Autodesk.Fbx;
+ using Autodesk.Fbx;
 using SIGGD.Goap;
 using System;
 using System.Collections;
@@ -101,7 +101,10 @@ namespace SIGGD.Mobs.Hyena
 
 
             // Aim slightly before the target
-            Vector3 aimPoint = targetPos - dirToTarget;
+            //Vector3 aimPoint = targetPos - dirToTarget;
+
+            // ^ commented out the above code to test if we should not stop before the target
+            Vector3 aimPoint = targetPos;
 
             if (NavMesh.SamplePosition(aimPoint, out NavMeshHit aimHit, 3f, navFilter))
                 aimPoint = aimHit.position;

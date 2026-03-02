@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CrashKonijn.Agent.Runtime;
 using SIGGD.Mobs;
+using SIGGD.Mobs.StateMachine;
 using UnityEngine;
 
 namespace MobCensus
@@ -24,11 +25,11 @@ namespace MobCensus
             {
                 if (mobId == null)
                 {
-                    if (mobPrefab.GetComponent<HyenaBrain>() != null)
+                    if (mobPrefab.GetComponent<HyenaBrain>() != null || mobPrefab.GetComponent<SMHyenaBrain>() != null)
                     {
                         mobId = MobIds.hyena;
                     }
-                    else if (mobPrefab.GetComponent<PreyBrain>() != null)
+                    else if (mobPrefab.GetComponent<PreyBrain>() != null || mobPrefab.GetComponent<SMPreyBrain>() != null)
                     {
                         mobId = MobIds.prey;
                     }

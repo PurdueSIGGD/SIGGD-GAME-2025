@@ -51,7 +51,7 @@ public class SpawnRegion : MonoBehaviour
     /// <param name="mobRegionData">The MobRegionData object containing the data for initialization.</param>
     public void Initialize(MobRegionData mobRegionData = null)
     {
-        ScanChildrenForSpawnPoints();
+        //ScanChildrenForSpawnPoints();
         spawnManager = FindFirstObjectByType<SpawnManager>();
         if (mobRegionData != null)
         {
