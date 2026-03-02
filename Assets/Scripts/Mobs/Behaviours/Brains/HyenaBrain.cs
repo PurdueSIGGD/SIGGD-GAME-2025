@@ -1,13 +1,10 @@
 ﻿using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
-using Unity.VisualScripting;
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Core;
-using SIGGD.Mobs.PackScripts;
 using SIGGD.Goap;
 using SIGGD.Mobs.Hyena;
-using Autodesk.Fbx;
 
 namespace SIGGD.Mobs
 {
