@@ -1,13 +1,10 @@
 ﻿using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
-using Unity.VisualScripting;
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Core;
-using SIGGD.Mobs.PackScripts;
 using SIGGD.Goap;
 using SIGGD.Mobs.Hyena;
-using Autodesk.Fbx;
 
 namespace SIGGD.Mobs
 {
@@ -97,7 +94,7 @@ namespace SIGGD.Mobs
             { 
                 // Add hyena to pursuers list
                 if (this.provider.CurrentPlan.Goal is KillPlayerGoal) {
-                    GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PURSUED, this.gameObject);
+                    //GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PURSUED, this.gameObject);
                 }
 
                 if (AudioManager.Instance)
@@ -108,7 +105,7 @@ namespace SIGGD.Mobs
             
             if (this.provider.CurrentPlan.Goal is not KillPlayerGoal) 
             {
-                GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, this.gameObject);
+                //GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, this.gameObject);
             }
         }
         // Action for smell for when prey detected 
