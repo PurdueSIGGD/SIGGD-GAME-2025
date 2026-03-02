@@ -1,9 +1,5 @@
- using Autodesk.Fbx;
 using SIGGD.Goap;
-using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
-using TMPro.Examples;
 using UnityEngine;
 using UnityEngine.AI;
 using Utility;

@@ -1,58 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &709337006311690065
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4826648084541595261}
-  - component: {fileID: 4611664780387385360}
-  m_Layer: 9
-  m_Name: HyenaAttackCollider
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4826648084541595261
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 709337006311690065}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8804698847694790233}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &4611664780387385360
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 709337006311690065}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 1, z: 1}
 --- !u!1 &1190784574920443337
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,6 +144,7 @@ GameObject:
   - component: {fileID: 764752379092394237}
   - component: {fileID: 4315462740173429191}
   - component: {fileID: 2859842446402070587}
+  - component: {fileID: 4592052858178173330}
   m_Layer: 9
   m_Name: Alt Hyena
   m_TagString: Predator
@@ -217,7 +165,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 4826648084541595261}
   - {fileID: 5264189034830762277}
   - {fileID: 3189923498184228557}
   - {fileID: 3409753489851347960}
@@ -531,6 +478,8 @@ MonoBehaviour:
   mobLayer:
     serializedVersion: 2
     m_Bits: 512
+  animator: {fileID: 2577189185898330804}
+  damageCollider: {fileID: 4592052858178173330}
   damageContext:
     attacker: {fileID: 4822427246891486894, guid: 4dc4c527abb039345bacc86569af1159, type: 3}
     victim: {fileID: 0}
@@ -631,6 +580,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c2dd1c954384d0480d76585fd740e52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!65 &4592052858178173330
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4822427246891486894}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 576
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 2.5}
+  m_Center: {x: 0, y: 0.5, z: 0.15}
 --- !u!1 &5140589375491285124
 GameObject:
   m_ObjectHideFlags: 0

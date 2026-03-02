@@ -10,12 +10,10 @@ using Utility;
 public class EnemyAnimator : MonoBehaviour
 {
     // is called once before the first execution of Update after the MonoBehaviour is created
-    [SerializeField]
-    private LayerMask playerLayer;
-    [SerializeField]
-    private LayerMask mobLayer;
-    private Animator animator;
-    private BoxCollider collider;
+    [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private LayerMask mobLayer;
+    [SerializeField] private Animator animator;
+    [SerializeField] Collider damageCollider;
     private Vector3 boxHalfExtents;
     private Vector3 boxCenter;
     [SerializeField] private DamageContext damageContext;
@@ -30,18 +28,11 @@ public class EnemyAnimator : MonoBehaviour
     public float targetT = 0f;
     Vector3 vel;
     public float t;
-    void Awake()
 
-    {
-        //playerLayer = LayerMask.GetMask("Player");
-        mobLayer = LayerMask.GetMask("Mob");
-        animator = GetComponentInChildren<Animator>();
-        collider = GetComponentInChildren<BoxCollider>();
-    }
     private void Start()
     {
-        boxHalfExtents = collider.size * 0.5f;
-        boxCenter = collider.transform.TransformPoint(collider.center);
+        boxHalfExtents = damageCollider.bounds.size * 0.5f;
+        boxCenter = damageCollider.transform.TransformPoint(damageCollider.bounds.center);
         if (aimTransform != null || forwardTransform != null)
             aimTransform.position = forwardTransform.position;
     }
@@ -66,7 +57,7 @@ public class EnemyAnimator : MonoBehaviour
     public void EndAttack()
     {
         animator.SetBool("Attack", false);
-        collider.enabled = false;
+        damageCollider.enabled = false;
     }
     public AnimatorStateInfo getAnimStateInfo()
     {
@@ -82,38 +73,43 @@ public class EnemyAnimator : MonoBehaviour
     }
     private void OnDrawGizmos()
     {
-        if (collider == null) return;
-        if (collider.enabled)
+        if (damageCollider == null) return;
+        if (damageCollider.enabled)
         {
             Gizmos.color = Color.red;
         } else
         {
             Gizmos.color = Color.clear;
         }
-        Gizmos.matrix = collider.transform.localToWorldMatrix;
-        Gizmos.DrawCube(collider.center, boxHalfExtents * 2);
+        Gizmos.matrix = damageCollider.transform.localToWorldMatrix;
+        Gizmos.DrawCube(damageCollider.bounds.center, boxHalfExtents * 2);
     }
 
     public void SetLungeModel()
     {
         PlayAttack();
+        damageCollider.enabled = true;
     }
 
     void EnableAttack()
     {
         Debug.Log("attack_enabled");
 
-        collider.enabled = true;
+        damageCollider.enabled = true;
     }
     void DisableAttack()
     {
         Debug.Log("attack_disabled");
 
-        collider.enabled = false;
+        damageCollider.enabled = false;
     }
     private void OnTriggerEnter(Collider other)
     {
         EntityHealthManager hm = other.GetComponent<EntityHealthManager>();
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("hit");
+        }
         if (hm != null)
         {
             if (other.CompareTag("Predator")) return;
