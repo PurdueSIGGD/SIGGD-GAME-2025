@@ -11,7 +11,7 @@ public class VillagerInteract : MonoBehaviour, IInteractable<IInteractor>
     private void Update()
     {
         // Smoothly rotate toward the player while they are looking at us and holding a flower
-        if (playerIsLooking && playerTransform != null && PlayerIsHoldingFlower())
+        if (playerIsLooking && playerTransform != null /*&& PlayerIsHoldingFlower()*/)
         {
             Vector3 direction = playerTransform.position - transform.position;
             direction.y = 0f;
