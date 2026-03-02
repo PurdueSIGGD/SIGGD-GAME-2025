@@ -47,7 +47,7 @@ public class PlayerHunger : MonoBehaviour
         }
         float hungerPercent = CurrentHunger / MaxHunger;
         float targetStrength = (1 - hungerPercent) * 1.5f;
-        hungerVignette.SetStrength(targetStrength);
+        hungerVignette?.SetStrength(targetStrength);
     }
 
     public void UpdateHunger(float ammount)

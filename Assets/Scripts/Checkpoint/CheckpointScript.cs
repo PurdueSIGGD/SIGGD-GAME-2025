@@ -1,6 +1,7 @@
+using UnityEditor;
 using UnityEngine;
 
-public class WorkBenchScript : MonoBehaviour
+public class CheckpointScript : MonoBehaviour
 {
     private GameObject player;
     private ManageRespawn respawnLogic;
@@ -10,19 +11,20 @@ public class WorkBenchScript : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             respawnLogic.UpdateSpawnPoint(transform);
-            Debug.Log("RespawnPoint set at " + transform.position);
+            SaveManager.Instance.Save(); // Save
+            Debug.Log("Reached checkpoint, respawnPoint set at " + transform.position);
         }
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         player = PlayerID.Instance.gameObject;
         respawnLogic = player.GetComponent<ManageRespawn>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnDrawGizmos()
     {
-        
+        Gizmos.DrawWireSphere(transform.position, 1);
+        Handles.Label(transform.position + Vector3.up * 1.5f, "Checkpoint");
     }
 }
