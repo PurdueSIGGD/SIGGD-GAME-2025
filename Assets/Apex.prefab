@@ -46,16 +46,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   headBone: {fileID: 599802027159053169}
   headBoneCorrectionEuler: {x: 0, y: 0, z: 180}
-  viewRadius: 22.12
+  viewRadius: 25
   halfAngle: 46
   heightAbove: 15
   heightBelow: 15
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   targetMask:
     serializedVersion: 2
-    m_Bits: 1015
+    m_Bits: 576
 --- !u!1 &6906967935226233989
 GameObject:
   m_ObjectHideFlags: 0
@@ -70,6 +70,14 @@ GameObject:
   - component: {fileID: 7429837115259080724}
   - component: {fileID: 1298024596188453325}
   - component: {fileID: 3654695270874870991}
+  - component: {fileID: 5860744705928299663}
+  - component: {fileID: 5478478728004345972}
+  - component: {fileID: 7931076778475859239}
+  - component: {fileID: 9146791659147993122}
+  - component: {fileID: 7286631008651382149}
+  - component: {fileID: 5951891855327937426}
+  - component: {fileID: 7720021577077407300}
+  - component: {fileID: 5976809616658123427}
   m_Layer: 0
   m_Name: Apex
   m_TagString: Apex
@@ -87,7 +95,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 4.52, y: 8.37, z: 4.59}
-  m_LocalScale: {x: 9.147918, y: 9.147918, z: 9.147918}
+  m_LocalScale: {x: 3.5417993, y: 3.5417993, z: 3.5417993}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4871764326391940166}
@@ -182,13 +190,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a5bdcad8a424f3d93441206980bd115, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  navMeshAgent: {fileID: 3654695270874870991}
   headBone: {fileID: 599802027159053169}
   lineOfSight: {fileID: 4054441306856076960}
-  approachSpeed: 30
-  roamSpeed: 8
-  chaseSpeed: 12
-  roamRadius: 30
+  approachSpeedMulti: 1
+  roamSpeedMulti: 0.6
+  chaseSpeedMulti: 1.5
+  arrivalDistance: 5
+  roamRadius: 20
   roamPauseDuration: 0.5
   roamDuration: 8
   headSweepAngle: 90
@@ -200,7 +208,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1015
   attackContext:
-    attacker: {fileID: 0}
+    attacker: {fileID: 6906967935226233989}
     victim: {fileID: 0}
     amount: 0
     xxtraContext: 
@@ -213,7 +221,7 @@ NavMeshAgent:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6906967935226233989}
   m_Enabled: 1
-  m_AgentTypeID: -1372625422
+  m_AgentTypeID: 1479372276
   m_Radius: 0.91
   m_Speed: 3.5
   m_Acceleration: 8
@@ -224,9 +232,233 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 1.79
-  m_BaseOffset: 1
+  m_BaseOffset: 4
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!54 &5860744705928299663
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6906967935226233989}
+  serializedVersion: 4
+  m_Mass: 1000
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
+--- !u!114 &5478478728004345972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6906967935226233989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1690c74f17bc54c9fcca3ae621173e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <stamina>k__BackingField: 100
+  stats: {fileID: 11400000, guid: c791ccfee0abc86498340017db4d4953, type: 2}
+  energyLevel: 1
+--- !u!114 &7931076778475859239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6906967935226233989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9bab191272c80e42b577728b4262dc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boundary: {fileID: 0}
+--- !u!114 &9146791659147993122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6906967935226233989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 454339f393dde5f4cb124a3697745d27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseSpeed: 12
+  rotationSpeed: 25
+  sprintMultiplier: 1.5
+  sprintAllowed: 0
+--- !u!114 &7286631008651382149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6906967935226233989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d8959aa515204c4ba4205ad94a61106, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  powerLevel: 0
+  Data: {fileID: 0}
+--- !u!114 &5951891855327937426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6906967935226233989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9c14e0c3a4ccc24799b6b639449e191, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: mobSmells
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Single,
+        mscorlib]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
+        mscorlib]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 4
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: BaseAgent
+    - Name: $v
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: PreyAgent
+    - Name: $v
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: HyenaAgent
+    - Name: $v
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: Buffalo
+    - Name: $v
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  smellRadius: 2
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  mobLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  awayDistanceBase: 30
+  toDistanceBase: 30
+  playerSmellIntensity: 0
+--- !u!114 &7720021577077407300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6906967935226233989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff99b16054770f347b2548973d255cba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewRadius: 0
+  crouchRangeMultiplier: 0.5
+  sprintRangeMultiplier: 1.5
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  mobMask:
+    serializedVersion: 2
+    m_Bits: 0
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  angleRange: 0
+  targetRef: {fileID: 0}
+--- !u!114 &5976809616658123427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6906967935226233989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 581c35eadc897db4da1b1f2fd2f4703a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preyTargets: []
+  predatorTargets: []
 --- !u!1001 &4904774769892549549
 PrefabInstance:
   m_ObjectHideFlags: 0

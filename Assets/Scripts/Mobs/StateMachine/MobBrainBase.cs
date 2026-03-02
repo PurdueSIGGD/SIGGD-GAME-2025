@@ -1,7 +1,7 @@
 using SIGGD.Mobs.PackScripts;
 using SIGGD.Mobs.StateMachine.States;
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
 using UnityEngine.AI;
 
 namespace SIGGD.Mobs.StateMachine
@@ -95,55 +95,57 @@ namespace SIGGD.Mobs.StateMachine
             navAgent.updatePosition = false;
             navAgent.updateRotation = false;
 
-            NavMeshQueryFilter navFilter = new NavMeshQueryFilter
-            {
-                agentTypeID = ctx.NavAgent.agentTypeID,
-                areaMask = NavMesh.AllAreas
-            };
-            if (ctx.AgentData != null && ctx.AgentData.filter.areaMask != 0)
-                navFilter = ctx.AgentData.filter;
+            //NavMeshQueryFilter navFilter = new NavMeshQueryFilter
+            //{
+            //    agentTypeID = ctx.NavAgent.agentTypeID,
+            //    areaMask = NavMesh.AllAreas
+            //};
+            //if (ctx.AgentData != null && ctx.AgentData.filter.areaMask != 0)
+            //    navFilter = ctx.AgentData.filter;
 
-            bool success = NavMesh.SamplePosition(
-                gameObject.transform.position, out NavMeshHit hit, 5f, navFilter);
+            //bool success = NavMesh.SamplePosition(
+            //    gameObject.transform.position, out NavMeshHit hit, 5f, navFilter);
 
-            if (success)
-            {
-                transform.position = hit.position;
-                navAgent.Warp(hit.position);
-                navAgent.nextPosition = hit.position;
-                navAgent.ResetPath();
-                navAgent.isStopped = false;
+            //if (success)
+            //{
+            //    transform.position = hit.position;
+            //    navAgent.Warp(hit.position);
+            //    navAgent.nextPosition = hit.position;
+            //    navAgent.ResetPath();
+            //    navAgent.isStopped = false;
 
-                Rigidbody rb = ctx.Rigidbody;
-                if (rb != null)
-                {
-                    if (!rb.isKinematic)
-                    {
-                        rb.linearVelocity = Vector3.zero;
-                        rb.angularVelocity = Vector3.zero;
-                    }
+            //    Rigidbody rb = ctx.Rigidbody;
+            //    if (rb != null)
+            //    {
+            //        if (!rb.isKinematic)
+            //        {
+            //            rb.linearVelocity = Vector3.zero;
+            //            rb.angularVelocity = Vector3.zero;
+            //        }
 
-                    rb.isKinematic = true;
-                    rb.useGravity = false;
-                    rb.position = hit.position;
-                }
+            //        rb.isKinematic = true;
+            //        rb.useGravity = false;
+            //        rb.position = hit.position;
+            //    }
 
-                Debug.Log($"Successfully initialized a {MobName}");
-            }
-            else
-            {
-                Debug.Log($"Failed to initialize a {MobName}");
-                Destroy(gameObject);
-            }
+            //    Debug.Log($"Successfully initialized a {MobName}");
+            //}
+            //else
+            //{
+            //    Debug.Log($"Failed to initialize a {MobName}");
+            //    Destroy(gameObject);
+            //}
         }
 
         protected virtual void OnDrawGizmos()
         {
+#if UNITY_EDITOR
             if (stateMachine == null) return;
 
             Handles.Label(
                 transform.position + Vector3.up * 2f,
                 stateMachine.CurrentState.GetType().Name);
+#endif
         }
     }
 }

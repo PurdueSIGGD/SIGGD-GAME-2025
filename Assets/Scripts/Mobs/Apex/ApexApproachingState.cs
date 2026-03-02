@@ -1,34 +1,44 @@
+using SIGGD.Mobs.StateMachine;
+using UnityEngine;
+
 /// <summary>
 /// The Apex moves toward the alert position it was spawned with.
-/// Once it arrives it transitions to <see cref="ApexSearchingState"/> and
-/// begins scanning its surroundings.
+/// Once it arrives it transitions to <see cref="ApexSearchingState"/>.
+/// LOS detection during approach is handled globally by <see cref="Apex.EvaluateTransitions"/>.
 /// </summary>
-public class ApexApproachingState : ApexState
+public class ApexApproachingState : IMobState
 {
-    public ApexApproachingState(Apex apex) : base(apex) { }
+    private readonly Apex apex;
+    private readonly MobContext ctx;
 
-    public override void OnEnter()
+    public ApexApproachingState(Apex apex)
     {
-        base.OnEnter();
-        apex.MoveTowardTarget(apex.TargetPosition);
+        this.apex = apex;
+        this.ctx = apex.Context;
+    }
+
+    public void Enter()
+    {
         apex.ApexLog($"Entering ApproachingState — moving to alert position {apex.TargetPosition}.");
     }
 
-    public override void OnUpdate()
+    public void Update()
     {
-        base.OnUpdate();
-
-        if (apex.IsAtTarget())
+        if (apex.IsAtPosition(apex.TargetPosition))
         {
             apex.ApexLog("ApproachingState — reached alert position, switching to SearchingState.");
-            apex.stateController.ChangeState(new ApexSearchingState(apex));
+            apex.StateMachine.ChangeState(apex.SearchingState);
         }
     }
 
-    public override void OnExit()
+    public void FixedUpdate()
     {
-        base.OnExit();
-        apex.StopMoving();
+        Vector3 dir = apex.GetSteeringTo(apex.TargetPosition);
+        ctx.Movement.MoveTowards(dir, apex.ApproachSpeedMulti, 3f, false);
+    }
+
+    public void Exit()
+    {
         apex.ApexLog("Exiting ApproachingState.");
     }
 }

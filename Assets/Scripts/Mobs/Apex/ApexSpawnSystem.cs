@@ -61,7 +61,7 @@ public class ApexSpawnSystem : MonoBehaviour
         if (meter >= meterMax)
         {
             meter = meterMax;
-            SpawnApex(transform.position); // no specific alert pos, spawn near center
+            SpawnApex(PlayerID.Instance.transform.position); // no specific alert pos, spawn near player
         }
     }
 

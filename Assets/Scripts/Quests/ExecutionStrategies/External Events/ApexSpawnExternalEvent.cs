@@ -14,6 +14,7 @@ public class ApexSpawnExternalEvent: ExternalEventTriggerer
     [SerializeField] GameObject apexPrefab;
     [SerializeField] QuestEventBroadcaster questEventBroadcaster;
 
+    Apex apexScript;
     GameObject spawnedApex = null;
     public override void TriggerExternalEvent()
     {
@@ -25,7 +26,8 @@ public class ApexSpawnExternalEvent: ExternalEventTriggerer
         if (spawnPosition != default)
         {
             Debug.Log("Spawning apex at location: " + spawnPosition);
-            Instantiate(apexPrefab, spawnPosition, transform.rotation);
+            apexScript = Instantiate(apexPrefab, spawnPosition, transform.rotation).GetComponent<Apex>();
+            //apexScript.InitializeApex(PlayerID.Instance.transform.position);
             return;
         }
 
@@ -33,7 +35,11 @@ public class ApexSpawnExternalEvent: ExternalEventTriggerer
         // find random point next to player
         for (int i = 0; i < spawnAttempts; i++)
         {
-            spawnPos = PlayerID.Instance.transform.position + Random.insideUnitSphere * Random.Range(spawnRange.x, spawnRange.y);
+            Vector3 deviation = new();
+            deviation.x = Random.Range(spawnRange.x, spawnRange.y) * (Random.value < 0.5f ? -1 : 1);
+            deviation.z = Random.Range(spawnRange.x, spawnRange.y) * (Random.value < 0.5f ? -1 : 1);
+
+            spawnPos = PlayerID.Instance.transform.position + deviation;
             spawnPos = Pathfinding.ShiftTargetToNavMesh(spawnPos, 10f);
             if (spawnPos != Pathfinding.ERR_VECTOR)
             {
@@ -49,6 +55,8 @@ public class ApexSpawnExternalEvent: ExternalEventTriggerer
 
         Debug.Log("Spawning apex at location: " + spawnPos);
         spawnedApex = Instantiate(apexPrefab, spawnPos, transform.rotation);
+        apexScript = spawnedApex.GetComponent<Apex>();
+        //apexScript.InitializeApex(PlayerID.Instance.transform.position);
 
         ApexSpawnConditionStrategy apexSpawnStrategy = questEventBroadcaster.conditionStrategy as ApexSpawnConditionStrategy;
         if (apexSpawnStrategy != null)
@@ -59,4 +67,11 @@ public class ApexSpawnExternalEvent: ExternalEventTriggerer
             Debug.Log("Apex Spawner not using Apex Spawn strategy");
         }
     }
+    
+    [Button]
+    private void TestSpawn()
+    {
+        TriggerExternalEvent();
+    }
+
 }
