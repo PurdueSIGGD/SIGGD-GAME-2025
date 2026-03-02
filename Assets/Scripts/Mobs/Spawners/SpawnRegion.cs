@@ -124,8 +124,8 @@ public class SpawnRegion : MonoBehaviour
         }
         else if (newState == SpawnRegionState.Active)
         {
-            SpawnMobsInRegion();
             spawnCooldownTimer = spawnCooldown; // start cooldown
+            SpawnMobsInRegion();
         }
         else if (newState == SpawnRegionState.Cooldown)
         {

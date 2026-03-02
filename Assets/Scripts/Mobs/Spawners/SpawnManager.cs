@@ -1,9 +1,6 @@
-using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
 using MobCensus;
 using SIGGD.Mobs;
-using System.Collections.Generic;
-using UnityEditor.TerrainTools;
 using UnityEngine;
 using UnityEngine.AI;
 public class SpawnManager : MonoBehaviour
