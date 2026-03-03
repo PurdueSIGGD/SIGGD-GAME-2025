@@ -181,7 +181,7 @@ public class Apex : MobBrainBase
     private IEnumerator DelayedEnterInvestigate()
     {
         yield return new WaitForSeconds(0.5f);
-        stateMachine.ChangeState(investigateState);
+        stateMachine.ChangeState(RoamingState);
     }
 
     protected override void EvaluateTransitions()

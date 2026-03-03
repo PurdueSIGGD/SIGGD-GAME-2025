@@ -66,7 +66,7 @@ namespace MobCensus
             }
             transform.position = rawData.GetPosition();
             transform.eulerAngles = rawData.GetRotation();
-            agentData.boundary = rawData.GetBoundary();
+            if (agentData) agentData.boundary = rawData.GetBoundary();
             if (healthManager != null)
             {
                 healthManager.CurrentHealth = rawData.GetHealth();

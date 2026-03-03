@@ -1,5 +1,6 @@
 using SIGGD.Mobs.StateMachine;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// The Apex moves to a single random roam point (once) around a guard position.
@@ -17,7 +18,12 @@ public class ApexRoamingState : IMobState
     private bool hasTarget;
     private bool loggedZeroDir = false;
 
-    private const float ArrivalDistance = 2f;
+    // Fallback: if Apex cannot find a path OR hasn't moved significantly for this duration,
+    // abandon roaming and switch to SearchingState.
+    private readonly float stuckTimeoutSec = 5f;
+    private readonly float moveThreshold = 0.5f;
+    private float stuckElapsedSec;
+    private Vector3 lastPosition;
 
     public ApexRoamingState(Apex apex)
     {
@@ -42,6 +48,10 @@ public class ApexRoamingState : IMobState
             targetPosition = point;
             hasTarget = true;
             apex.ApexLog($"RoamingState — will move once to waypoint {point}.");
+
+            // initialize fallback trackers
+            lastPosition = ctx.Rigidbody != null ? ctx.Rigidbody.position : apex.transform.position;
+            stuckElapsedSec = 0f;
         }
         else
         {
@@ -74,10 +84,38 @@ public class ApexRoamingState : IMobState
                 apex.ApexLog($"RoamingState.FixedUpdate: invalid or near-zero steering dir for target {targetPosition}. Skipping movement.");
                 loggedZeroDir = true;
             }
+
+            // still track being stuck when steering invalid
+            stuckElapsedSec += Time.fixedDeltaTime;
+            if (stuckElapsedSec >= stuckTimeoutSec)
+            {
+                apex.ApexLog("RoamingState — no movement detected for timeout, switching to SearchingState.");
+                hasTarget = false;
+                apex.StateMachine.ChangeState(apex.SearchingState);
+            }
             return;
         }
 
         ctx.Movement.MoveTowards(dir, apex.RoamSpeedMulti, 3f, false);
+
+        // Progress check: consider moved if changed position beyond threshold
+        Vector3 currentPos = ctx.Rigidbody != null ? ctx.Rigidbody.position : apex.transform.position;
+        float moved = Vector3.Distance(currentPos, lastPosition);
+        if (moved > moveThreshold)
+        {
+            lastPosition = currentPos;
+            stuckElapsedSec = 0f;
+        }
+        else
+        {
+            stuckElapsedSec += Time.fixedDeltaTime;
+            if (stuckElapsedSec >= stuckTimeoutSec)
+            {
+                apex.ApexLog("RoamingState — insufficient movement for timeout, switching to SearchingState.");
+                hasTarget = false;
+                apex.StateMachine.ChangeState(apex.SearchingState);
+            }
+        }
     }
 
     public void Exit()
