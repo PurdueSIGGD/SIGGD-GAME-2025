@@ -3,6 +3,7 @@ using UnityEngine.AI;
 
 public class Villager : MonoBehaviour {
     [SerializeField] private Boundary boundary;
+    [SerializeField] private float unboundTravelRadius;
     [SerializeField] private float minIdleTime = 2f;
     [SerializeField] private float maxIdleTime = 5f;
     [SerializeField] private float maxTravelTime = 10f;
@@ -81,7 +82,7 @@ public class Villager : MonoBehaviour {
 
     private Vector3 LocateRandomPosition()
     {
-        var randomInCircle = Random.insideUnitCircle * 20f;
+        var randomInCircle = Random.insideUnitCircle * unboundTravelRadius;
         return transform.position + new Vector3(randomInCircle.x, 0f, randomInCircle.y);
     }
 }
