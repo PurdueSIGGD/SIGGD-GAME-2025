@@ -4,11 +4,11 @@ using System;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 
 public class SubtitleImporter : EditorWindow
 {
-    private string inputText = ""; // inputted in the window
-
+    private string inputText = "";
 
     [MenuItem("Tools/Subtitle Importer")]
     public static void ShowWindow()
@@ -29,192 +29,171 @@ public class SubtitleImporter : EditorWindow
 
     void ParseAndCreateAssets(string input)
     {
-        // make sure there is input
-        if (string.IsNullOrEmpty(input))
+        if (string.IsNullOrWhiteSpace(input))
         {
-            Debug.LogError("Empty string inputted");
             return;
         }
 
-        // first we get folder name (inside quotations for now)
+        // Get Folder Name
         Match folderMatch = Regex.Match(input, @"['‘]([^'’]+)['’]");
-
-        // if a folder name isnt in the input
         if (!folderMatch.Success)
         {
-            Debug.LogError("No folder name please input a file with a folder name");
             return;
         }
 
         string folderName = folderMatch.Groups[1].Value.Trim();
 
-        // removes the first name inputted after we grab the folder name so it doesnt get added into the line outputs
-        int lineEnd = input.IndexOf('\n');
-        if (lineEnd != -1)
-        {
-            input = input.Substring(lineEnd + 1).TrimStart();
-        }
-
-        // path to the new folder thatll hold all the AudioLogObjects
-        string folderPath = "Assets/ScriptableObjects/AudioLogs/" + folderName + "/";
-
-        // if the folder we trying to store these in doesnt exist we make one
+        string baseFolder = "Assets/ScriptableObjects/AudioLogs";
+        string folderPath = $"{baseFolder}/{folderName}";
         if (!AssetDatabase.IsValidFolder(folderPath))
         {
-            AssetDatabase.CreateFolder("Assets/ScriptableObjects/AudioLogs", folderName);
+            AssetDatabase.CreateFolder(baseFolder, folderName);
         }
 
-        string[] splitInput = input.Split(new[] { "~" }, StringSplitOptions.RemoveEmptyEntries);
+        // Split into blocks by ~
+        string[] blocks = input.Split(new[] { "~" }, StringSplitOptions.RemoveEmptyEntries);
 
-        // this dictionary stores the object name and the data that will eventually be used to make an AudioLogObject
-        Dictionary<string, List<AudioLogObject.lineInfo>> audioLines = new Dictionary<string, List<AudioLogObject.lineInfo>>();
-
-        foreach (string block in splitInput)
+        foreach (string rawBlock in blocks)
         {
-            string[] lines = block.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            string block = rawBlock.Trim();
+            if (string.IsNullOrEmpty(block)) continue;
 
-            // another check to make sure we dont parse if the lines is empty
-            if (lines.Length == 0)
-            {
-                continue;
-            }
+            // Get Audio Name {Name}
+            Match nameMatch = Regex.Match(block, @"\{([^}]+)\}");
+            if (!nameMatch.Success) continue;
+            string audioLogName = nameMatch.Groups[1].Value.Trim();
 
-            // temporarily hold the lineInfo while the rest of the line is being parsed before it all gets put into one AudioLogObject
             List<AudioLogObject.lineInfo> parsedLines = new List<AudioLogObject.lineInfo>();
 
-            string name = null;
-            string text = "";
-            float currentSecLength = 0f;
+            // --- STATE TRACKING ---
+            bool currentIsRadio = false;
 
-            foreach (string line in lines)
+            string[] lines = block.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string rawLine in lines)
             {
-                string trimmed = line.Trim();
+                string line = rawLine.Trim();
 
-                // make sure its not empty before we parse
-                if (string.IsNullOrEmpty(trimmed)) continue;
-
-                Match stageDirectionMatch = Regex.Match(trimmed, @"^\[.*\]$");
-                if (stageDirectionMatch.Success)
-                {
+                // Skip headers, folder names, and bracketed notes [Note]
+                if (line.StartsWith("{") || line.StartsWith("‘") || line.StartsWith("'") ||
+                    line.StartsWith("[") || string.IsNullOrEmpty(line))
                     continue;
-                }
 
-                // getting name between {}
-                Match nameMatch = Regex.Match(trimmed, @"\{([^}]+)\}");
-                if (nameMatch.Success)
+                // This Regex handles BOTH "Full Lines" and "Continuation Lines"
+                // Group 1: ID (optional)
+                // Group 2: Flag % or $ (optional)
+                // Group 3: Speaker Name (optional)
+                // Group 4: Dialogue Text (required)
+                // Group 5: Timestamp (required)
+                Regex lineRegex = new Regex(@"^(?:(\d+)\s*([$%]?)\s*([^:]+):\s*)?[""“'‘]?(.*?)[""”'’]?\s*\\?\s*<(\d{2}:\d{2}\.\d{3})>$");
+                Match match = lineRegex.Match(line);
+
+                if (match.Success)
                 {
-                    name = nameMatch.Groups[1].Value.Trim();
-                    continue;
-                }
+                    string idStr = match.Groups[1].Value;
+                    string flag = match.Groups[2].Value;
+                    string dialogue = match.Groups[4].Value.Trim();
+                    string timeText = match.Groups[5].Value;
 
-                float secLength = 0;
-
-                // getting timestamp between <>
-                Match timeMatch = Regex.Match(trimmed, @"<([^>]+)>");
-                if (timeMatch.Success)
-                {
-                    string timeText = timeMatch.Groups[1].Value.Trim();
-
-                    // with the way that the time is formatted its easy to parse
-                    TimeSpan ts = TimeSpan.ParseExact(timeText, @"mm\:ss\.fff", null);
-                    secLength = (float)ts.TotalSeconds;
-
-                    // Remove timestamp from line text so it doesnt get added to the final line
-                    trimmed = Regex.Replace(trimmed, @"<([^>]+)>", "").Trim();
-                }
-
-                trimmed = Regex.Replace(trimmed, @"\[[^\]]*\]", "").Trim();
-                trimmed = Regex.Replace(trimmed, "[\"“”]", "").Trim();
-                trimmed = trimmed.Replace("1 MC:", "").Trim();
-
-                // checking if there are multiple lines broken up by \
-                bool continuing = trimmed.EndsWith("\\");
-                if (continuing)
-                {
-                    trimmed = trimmed.TrimEnd('\\').Trim();
-                }
-
-                // if a time was found
-                if (secLength > 0f)
-                {
-                    // make sure text has content
-                    if (!string.IsNullOrEmpty(text))
+                    // Update the radio state ONLY if a new ID or Flag is provided
+                    // This allows Mark's line 2 and 3 to inherit the "%" from line 1
+                    if (!string.IsNullOrEmpty(idStr) || !string.IsNullOrEmpty(flag))
                     {
-                        if (currentSecLength > 0f)
-                        {
-                            // store the lineInfo in the list until we make the scriptable objects later
-                            parsedLines.Add(new AudioLogObject.lineInfo
-                            {
-                                line = text.Trim(),
-                                seconds = currentSecLength
-                            });
-                        }
-                        
+                        currentIsRadio = (flag == "%");
                     }
 
-                    text = "";
-                    currentSecLength = secLength;
-                }
-
-                // adding trimmed text to the current line
-                if (text.Length > 0f)
-                {
-                    text += " ";
-                }
-
-                text += trimmed;
-
-                // the line doesnt end wtih \ so we add it to the list
-                if (!continuing)
-                {
-                    if (currentSecLength > 0f)
+                    if (TimeSpan.TryParseExact(timeText, @"mm\:ss\.fff", null, out TimeSpan ts))
                     {
                         parsedLines.Add(new AudioLogObject.lineInfo
                         {
-                            line = text.Trim(),
-                            seconds = currentSecLength
+                            line = dialogue,
+                            seconds = (float)ts.TotalSeconds,
+                            isFromRadio = currentIsRadio
                         });
                     }
-                    
-                    // reset for next line
-                    text = "";
-                    currentSecLength = 0f;
                 }
             }
 
-            // if nothing was parsed skip the rest of the loop
-            if (parsedLines.Count == 0) continue;
-
-            // error checking for if a line is just a unicode character and doesnt have any real content
-            if (string.IsNullOrEmpty(name))
+            if (parsedLines.Count > 0)
             {
-                Debug.LogWarning("Block has no {Name} and is being skipped");
-                continue;
+                // (Reusing your logic to save the asset)
+                SaveAndRegisterAsset(folderPath, audioLogName, parsedLines);
             }
-
-            // adding a new entry if the entry at the key doesnt exist
-            if (!audioLines.ContainsKey(name))
-                audioLines[name] = new List<AudioLogObject.lineInfo>();
-
-            // add all values from parsedLines to the dictionary
-            audioLines[name].AddRange(parsedLines);
-        }
-
-        // now we loop through the dictionary and turn each entry into a real AudioLogObject
-        foreach (var entry in audioLines)
-        {
-            AudioLogObject asset = ScriptableObject.CreateInstance<AudioLogObject>();
-
-            asset.audioName = entry.Key;
-            asset.subtitles = entry.Value.ToArray();
-
-            string assetPath = folderPath + entry.Key + ".asset";
-            AssetDatabase.CreateAsset(asset, assetPath);
         }
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+        EditorUtility.DisplayDialog("Success", "Subtitle assets created.", "OK");
+    }
 
-        EditorUtility.DisplayDialog("Success", "All subtitle ScriptableObjects created.", "OK");
+    private void SaveAndRegisterAsset(string folderPath, string audioLogName, List<AudioLogObject.lineInfo> lines)
+    {
+        string assetPath = $"{folderPath}/{audioLogName}.asset";
+
+        // Try to load existing asset to keep references intact
+        AudioLogObject asset = AssetDatabase.LoadAssetAtPath<AudioLogObject>(assetPath);
+
+        bool isNew = false;
+        if (asset == null)
+        {
+            asset = CreateInstance<AudioLogObject>();
+            isNew = true;
+        }
+
+        asset.audioName = audioLogName;
+        asset.subtitles = lines.ToArray();
+
+        if (isNew)
+            AssetDatabase.CreateAsset(asset, assetPath);
+        else
+            EditorUtility.SetDirty(asset);
+
+        // Update the AudioManager in the current scene
+        AddOrUpdateLogInScene(asset);
+    }
+    private void AddOrUpdateLogInScene(AudioLogObject asset)
+    {
+        // Find the AudioManager GameObject in the current scene
+        GameObject audioManagerGO = GameObject.Find("AudioManager");
+        if (audioManagerGO == null)
+        {
+            Debug.LogError("No AudioManager GameObject found in the scene.");
+            return;
+        }
+
+        // Find the child AudioLogList under AudioManager
+        Transform logListTransform = audioManagerGO.transform.Find("AudioLogList");
+        if (logListTransform == null)
+        {
+            Debug.LogError("AudioLogList child not found under AudioManager in the scene.");
+            return;
+        }
+
+        // Get the AudioLogManager component on AudioLogList
+        AudioLogManager manager = logListTransform.GetComponent<AudioLogManager>();
+        if (manager == null)
+        {
+            Debug.LogError("AudioLogManager component missing on AudioLogList in the scene.");
+            return;
+        }
+
+        // clean list of Null entries
+        manager.logs.RemoveAll(item => (item == null));
+
+        // see if it already exists in the list and if it does replace it with the now updated version
+        int index = manager.logs.FindIndex(x => (x.audioName == asset.audioName));
+        if (index >= 0)
+        {
+            manager.logs[index] = asset; // Replace existing
+        }
+        else
+        {
+            manager.logs.Add(asset); // Add new
+        }
+
+        // Mark the manager as dirty so Unity knows it changed
+        EditorUtility.SetDirty(manager);
+
+        Debug.Log($"AudioLogObject '{asset.audioName}' added/updated in scene AudioManager's AudioLogList.");
     }
 }
