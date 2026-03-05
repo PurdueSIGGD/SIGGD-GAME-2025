@@ -48,16 +48,10 @@ public class PlayerHunger : MonoBehaviour
                     Debug.Log("Starving - Took 1 damage");
                 }
             }
-            float hungerPercent = CurrentHunger / MaxHunger;
-            float targetStrength = (1 - hungerPercent) * 1.5f;
-            hungerVignette.SetStrength(targetStrength);
         }
-<<<<<<< iwjifji
-=======
         float hungerPercent = CurrentHunger / MaxHunger;
         float targetStrength = (1 - hungerPercent) * 1.5f;
         hungerVignette?.SetStrength(targetStrength);
->>>>>>> dev
     }
 
     public void UpdateHunger(float ammount)
