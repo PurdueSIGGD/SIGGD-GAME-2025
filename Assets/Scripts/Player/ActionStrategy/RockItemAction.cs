@@ -7,13 +7,9 @@ public class RockItemAction : IPlayerActionStrategy
     public GameObject projectile;
     protected override void OnEnter()
     {
-        
         RockThrow.Instance.ThrowRock(projectile);
-
         base.OnEnter();
         PlayHandAction(); // plays animation
         Inventory.Instance.Decrement();
-        Debug.Log("player threw a rock");
-
     }
 }
