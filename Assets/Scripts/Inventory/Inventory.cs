@@ -4,14 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 using System;
-
+using System.Collections;
 public class Inventory : Singleton<Inventory>, IInventory
 {
     // reference to the script that control's the player's tool hands.
     private PlayerHands handsScript;
 
     public const int HotBarLength = 3;
-    public const int InventoryLength = 9;
+    public const int InventoryLength = 24;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
     [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength]; // hotbar buttons
@@ -24,7 +24,6 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     private Dictionary<string, ItemInfo> itemInfos;
 
-    [SerializeField] public string[] itemNames = new string[7];
     private Canvas inventoryCanvas;
     private int selected; // index of selected item in hotbar
     private int swapSelection = -1; // index of select item for swapping
@@ -156,11 +155,6 @@ public class Inventory : Singleton<Inventory>, IInventory
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
 
-        itemInfos = new();
-        foreach (var entry in RecipeInfo.Instance.NamesToItemInfos) {
-            itemInfos[entry.Key.ToString()] = entry.Value;
-        }
-
         // Load inventory info from save
         if (InventoryDataSaveModule.inventoryData.inventory != null) // load from save data
         {
@@ -172,23 +166,14 @@ public class Inventory : Singleton<Inventory>, IInventory
                 inventory[i].index = i;
                 inventory[i].count = InventoryDataSaveModule.inventoryData.inventory[i].count;
                 name = InventoryDataSaveModule.inventoryData.inventory[i].name;
-                if (inventory[i].count != 0)
+                if (inventory[i].count > 0)
                 {
                     inventory[i].itemInfo = itemInfos[name];
-                    /*
-                    // make iteminfo based on name
-                    for (int j = 0; j < itemInfos.Length; j++)
-                    {
-                        if (itemNames[j].Equals(name))
-                        {
-                            inventory[i].itemInfo = itemInfos[j];
-                            break;
-                        }
-                    }
-                    */
+                    Debug.Log($"Name from save ({name}): {inventory[i].itemInfo.itemName}");
                 }
                 else
                 {
+                    Debug.Log("Inventory slot is empty from save");
                     inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
                     // make it an empty iteminfo
                     // inventory[i].itemInfo = itemInfos[0];
@@ -208,7 +193,7 @@ public class Inventory : Singleton<Inventory>, IInventory
                 inventory[i].UpdateSlot();
             }
         }
-        PrintInventory();
+        
 
         for (int i = 0; i < InventoryLength; i++)
         {
@@ -219,6 +204,7 @@ public class Inventory : Singleton<Inventory>, IInventory
             // Check if slot has a non-null slot.iteminfo
             Debug.Log(uiSlot.itemInfo == null ? "inv slot has null iteminfo!" : "inv slot good");
         }
+        PrintInventory();
     }
 
     /// <summary>
@@ -528,6 +514,8 @@ public class Inventory : Singleton<Inventory>, IInventory
     public void SwapSelect(int index) {
         if (swapSelection == -1)
         { // no item selected for swapping
+            // Don't select empty slots
+            if (inventory[index].count == 0 || inventory[index].itemInfo.itemName == ItemInfo.ItemName.Empty) return;
             swapSelection = index;
             inventory[swapSelection].SetColor(Color.green);
             if (inventory[swapSelection].itemInfo && inventory[swapSelection].itemInfo.isIngredient) {
@@ -611,17 +599,35 @@ public class Inventory : Singleton<Inventory>, IInventory
         Reselect();
     }
 
-    public void SetInventory(ItemInfo[] finfo, int[] fcount)
+    public void LoadInventory(ItemInfo[] finfo, int[] fcount)
     {
         Debug.Log(inventory.Length + " length");
         //Array.Copy(newInv, inventory, newInv.Length);
         
         for (int i = 0; i < finfo.Length; i++)
         {
-            inventory[i].count = fcount[i];
-            inventory[i].itemInfo = finfo[i];
-            inventory[i].UpdateSlot();
+            if (inventory[i].count == 0 || inventory[i].itemInfo.itemName == ItemInfo.ItemName.Empty)
+            { // only add item if the current slot is empty
+                inventory[i].count = fcount[i];
+                inventory[i].itemInfo = finfo[i];
+                inventory[i].UpdateSlot();
+
+                // Set used items to empty
+                fcount[i] = 0;
+                finfo[i] = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+            }
         }
+
+        // Add all unused items
+        for (int i = 0; i < finfo.Length; i++)
+        {
+            if (fcount[i] > 0 && finfo[i].itemName != ItemInfo.ItemName.Empty)
+            {
+                Debug.Log($"Adding {fcount[i]} {finfo[i].itemName.ToString()}");
+                AddItem(finfo[i], fcount[i]);
+            }
+        }
+
         Debug.Log(inventory.Length + " new length");
 
         Reselect();
@@ -656,9 +662,14 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// Print out a string representation of player's inventory in console
     /// </summary>
     public void PrintInventory() {
-        string s = "{";
-        for (int i = 0; i < inventory.Length; i++) {
-            if (i % 9 == 0) s += "\n";
+        string s = "{\n";
+        for (int i = 0; i < HotBarLength; i++) {
+            if (inventory[i] == null) s += "null  ";
+            else if (inventory[i].count > 0 && inventory[i].itemInfo) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
+            else s += "[empty]  ";
+        }
+        for (int i = HotBarLength; i < inventory.Length; i++) {
+            if ((i - HotBarLength) % 6 == 0) s += "\n";
             if (inventory[i] == null) s += "null  ";
             else if (inventory[i].count > 0 && inventory[i].itemInfo) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
             else s += "[empty]  ";
