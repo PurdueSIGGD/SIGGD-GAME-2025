@@ -24,7 +24,7 @@ public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
     public void OnInteract(IInteractor interactor)
     {
         Debug.Log("Grave interacted");
-        inventoryObj.SetInventory(info, count);
+        inventoryObj.LoadInventory(info, count);
         Destroy(this.gameObject); // Remove the item from the scene
     }
     public void FillGrave(Inventory inv)
