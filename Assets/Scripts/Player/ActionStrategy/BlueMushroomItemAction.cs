@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MushroomItemAction : IPlayerActionStrategy
+public class BlueMushroomItemAction : IPlayerActionStrategy
 {
     protected override void OnEnter()
     {

@@ -26,7 +26,8 @@ public class ItemInfo : ScriptableObject
         Apple,
         CaptureOrb,
         Empty,
-        Mushroom
+        BlueMushroom,
+        PurpleMushroom
     };
 
     [SerializeField] public ItemType itemType;// type of item
