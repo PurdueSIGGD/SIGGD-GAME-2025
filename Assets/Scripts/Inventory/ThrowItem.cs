@@ -2,10 +2,9 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UIElements;
 
-public class RockThrow : MonoBehaviour
+public class ThrowItem : MonoBehaviour
 {  
-    public static RockThrow Instance { get; private set; }
-    public float defaultThrowForce;
+    public static ThrowItem Instance { get; private set; }
     private Camera playerCam;
     private void Awake()
     {
@@ -19,10 +18,10 @@ public class RockThrow : MonoBehaviour
     {
         playerCam = PlayerID.Instance.cam.GetComponentInChildren<Camera>();
     }
-    public void ThrowRock(GameObject projectile)
+    public void Throw(GameObject projectile, float throwForce)
     {
-        Debug.Log("The script is working :)");
+        // creates the projectile and applies force in the direction of the camera
         GameObject createdProj = Instantiate(projectile, playerCam.transform.position + playerCam.transform.forward, transform.rotation);
-        createdProj.GetComponent<Rigidbody>().AddForce(playerCam.transform.forward * defaultThrowForce, ForceMode.VelocityChange);
+        createdProj.GetComponent<Rigidbody>().AddForce(playerCam.transform.forward * throwForce, ForceMode.VelocityChange);
     }
 }

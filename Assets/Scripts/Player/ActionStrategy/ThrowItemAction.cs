@@ -1,13 +1,14 @@
 using UnityEngine;
 
-public class RockItemAction : IPlayerActionStrategy
+public class ThrowItemAction : IPlayerActionStrategy
 {
-    private Camera playerCam;
     [Tooltip("Prefab for GameObject that will be thrown")]
     public GameObject projectile;
+    [Tooltip("Force the projectile will be thrown with")]
+    public float throwForce = 15f;
     protected override void OnEnter()
     {
-        RockThrow.Instance.ThrowRock(projectile);
+        ThrowItem.Instance.Throw(projectile, throwForce);
         base.OnEnter();
         PlayHandAction(); // plays animation
         Inventory.Instance.Decrement();
