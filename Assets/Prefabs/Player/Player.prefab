@@ -207,6 +207,7 @@ MonoBehaviour:
   playerMovement: {fileID: 0}
   playerHealth: {fileID: 0}
   playerHunger: {fileID: 0}
+  playerStamina: {fileID: 0}
   playerHUD: {fileID: 0}
   playerInteractor: {fileID: 0}
 --- !u!114 &1067857772922756551
@@ -236,7 +237,6 @@ MonoBehaviour:
   groundCheckHorizontalRays: 12
   groundCheckVerticalRays: 6
   groundCheckSlopeAngle: 50
-  IsSprinting: 0
   IsCrouched: 0
 --- !u!95 &4859207873926038107
 Animator:
@@ -290,7 +290,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56299dbcc5bc4f145a4dbbd3ea5bbecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth:
+    value: 100
 --- !u!114 &6491714649861698900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -482,6 +483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f59992f81fbb574b930ee14a1647b16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deathMenu: {fileID: 0}
   respawnPoint: {x: 484, y: 7.2, z: 11.5}
   graveObj: {fileID: 5559485195172781043, guid: 8ddbf044fd303cd4980d8961ca654920, type: 3}
 --- !u!114 &2382692356741175953
@@ -502,7 +504,6 @@ MonoBehaviour:
   previewMaterial: {fileID: 2100000, guid: d8a6f60ec94ab444f8180accc3076314, type: 2}
   validColor: {r: 0.2216981, g: 0.80244476, b: 1, a: 0}
   invalidColor: {r: 0.5660378, g: 0.19490923, b: 0.19490923, a: 0}
-  objectDistanceFromPlayer: 2
   raycastStartVerticalOffset: 1
   raycastDistance: 8
   minDistance: 1.5
@@ -537,6 +538,7 @@ MonoBehaviour:
   maxStamina: 100
   staminaDecayRate: 8
   staminaRegenRate: 10
+  jumpCost: 15
   staminaSlider: {fileID: 8131535977890595846}
   staminaSliderBar: {fileID: 4503848958787865837}
 --- !u!1 &4791394868699375998
@@ -791,7 +793,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4568006538744203930, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 19501.59
+      value: 19446.217
       objectReference: {fileID: 0}
     - target: {fileID: 5109036826564441246, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_Enabled
