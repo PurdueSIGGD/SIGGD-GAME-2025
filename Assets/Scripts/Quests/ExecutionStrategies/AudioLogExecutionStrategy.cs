@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class AudioLogExecutionStrategy : IQuestExecutionStrategy
 {
-    [SerializeField] public string audioLogID;
+    [SerializeField] public AudioLogObject audioObject;
 
     protected override void OnInitialize()
     {
         base.OnInitialize();
-        AudioLogManager.Instance.PlayAudioLog(audioLogID, PlayerID.Instance.gameObject);
-        Debug.Log($"Playing audio log with ID: {audioLogID}");
+        AudioLogManager.Instance.PlayAudioLog(audioObject.audioName, PlayerID.Instance.gameObject);
+        Debug.Log($"Playing audio log with ID: {audioObject.audioName}");
     }
 
     public override string ToString()
