@@ -1,13 +1,17 @@
 using System;
 using UnityEngine;
 using SIGGD.Mobs;
+using SIGGD.Mobs.StateMachine;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(Smell))]
+[RequireComponent(typeof(FieldOfView))]
 public class PerceptionManager : MonoBehaviour
 {
     private Smell smell;
     private FieldOfView fov;
     public List<GameObject> preyTargets = new List<GameObject>();
+    public List<GameObject> predatorTargets = new List<GameObject>();
     public event Action<Transform> OnPlayerDetected;
     public Transform PlayerTarget { get; private set; }
     public bool CanSeePlayer { get; private set; }
@@ -30,6 +34,7 @@ public class PerceptionManager : MonoBehaviour
         bool tempSeePlayer = false;
 
         preyTargets.Clear();
+        predatorTargets.Clear();
 
         foreach (var target in seen)
         {
@@ -41,8 +46,13 @@ public class PerceptionManager : MonoBehaviour
                     {
                         OnPlayerDetected?.Invoke(PlayerTarget.transform);
                     }
-                } else if (target.TryGetComponent<PreyBehaviour>(out _)) {
+                } 
+                else if (target.TryGetComponent<SMPreyBrain>(out _)) {
                     preyTargets.Add(target);
+                }
+                else if (target.TryGetComponent<SMHyenaBrain>(out _))
+                {
+                    predatorTargets.Add(target);
                 }
             }
         }
@@ -80,6 +90,6 @@ public class PerceptionManager : MonoBehaviour
     }
     public Vector3 GetSmellPosition()
     {
-        return smell != null ? smell.GetSmellPos() : Vector3.zero;
+        return smell != null ? smell.GetToSmellPos() : Vector3.zero;
     }
 }
