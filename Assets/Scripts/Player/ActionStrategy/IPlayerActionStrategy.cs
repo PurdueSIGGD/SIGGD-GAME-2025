@@ -34,7 +34,6 @@ public abstract class IPlayerActionStrategy
      */
     protected virtual void OnEnter()
     {
-        LoadHandAnimation();
         if (animationClip != null)
             stateMachine.animator.Play(animationClip.name);
     }
@@ -48,7 +47,7 @@ public abstract class IPlayerActionStrategy
      * Called when the action state is exited. Can be used for cleanup or resetting variables.
      */
     protected virtual void OnExit() {
-        DeloadHandAnimator();
+        
     }
 
     /**
@@ -90,22 +89,6 @@ public abstract class IPlayerActionStrategy
         if (handAnimatorController != null) {
             handsScript.PlayAction();
         }
-    }
-
-    /// <summary>
-    /// loads animator controller into player hands
-    /// </summary>
-    protected void LoadHandAnimation() {
-        if (handAnimatorController != null) {
-            handsScript.SetOverrideController(handAnimatorController);
-        }
-    }
-
-    /// <summary>
-    /// deloads animator controller from player hands, reverting to default controller for hands.
-    /// </summary>
-    protected void DeloadHandAnimator() {
-        handsScript.SetOverrideController();
     }
     #endregion
 }

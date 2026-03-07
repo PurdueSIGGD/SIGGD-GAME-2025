@@ -12,7 +12,15 @@ using Unity.Hierarchy;
 
 public class FieldOfView : MonoBehaviour
 {
-    public float viewRadius;
+    [SerializeField] private float viewRadius;
+    [SerializeField] private float crouchRangeMultiplier = 0.5f;
+    [SerializeField] private float sprintRangeMultiplier = 1.5f;
+    
+    private float ViewRadius => viewRadius * playerListener.CrouchRangeMultiplier * playerListener.SprintRangeMultiplier;
+    
+    private PlayerListener playerListener;
+    
+    private float rangeMultiplier;
     public LayerMask playerMask;
     public LayerMask mobMask;
     public LayerMask obstacleMask;
@@ -42,12 +50,22 @@ public class FieldOfView : MonoBehaviour
         mobMask = LayerMask.GetMask("Mob");
         targetRef = null;
         loseSightDelay = 7f;
+
+        playerListener = new PlayerListener(crouchRangeMultiplier, sprintRangeMultiplier);
+        
         StartCoroutine(FOVRoutine());
 
     }
+
+    private void OnDisable()
+    {
+        playerListener?.DisableListener();
+    }
+
     void Update()
     {
     }
+    
     private IEnumerator FOVRoutine()
     {
         WaitForSeconds wait = new WaitForSeconds(0.15f);
@@ -63,7 +81,7 @@ public class FieldOfView : MonoBehaviour
     /// </summary>
     private void FOVCheck()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, viewRadius, playerMask | mobMask);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, ViewRadius, playerMask | mobMask);
         for (int i = 0; i < hitColliders.Length; i++)
         {
             {

@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using CrashKonijn.Agent.Runtime;
-using CrashKonijn.Goap.Core;
-using CrashKonijn.Goap.Runtime;
-using SIGGD.Mobs;
 using UnityEngine;
 
 namespace SIGGD.Mobs.PackScripts
@@ -12,8 +7,8 @@ namespace SIGGD.Mobs.PackScripts
     public class PackBehavior : MonoBehaviour
     {
         PackManager packManager;
-        BaseAgentBrain myBrain;
-        GoapActionProvider provider;
+        //BaseAgentBrain myBrain;
+        //GoapActionProvider provider;
         [SerializeField] public string agentType { get; private set; } = "N/A";
         PackData myPack = null;
         [SerializeField] int powerLevel; // dummy value for now since powerLevel implementation is not done yet
@@ -25,10 +20,10 @@ namespace SIGGD.Mobs.PackScripts
 
         void Start()
         {
-            myBrain = GetComponent<BaseAgentBrain>();
+            //myBrain = GetComponent<BaseAgentBrain>();
             packManager = FindFirstObjectByType<PackManager>().GetComponent<PackManager>();
             powerLevel = UnityEngine.Random.Range(MINPOWER, MAXPOWER);
-            agentType = myBrain.GetAgentType();
+            //agentType = myBrain.GetAgentType();
         }
         void FixedUpdate()
         {
