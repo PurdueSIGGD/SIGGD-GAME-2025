@@ -16,10 +16,14 @@ public class GraveDataSaveModule : ISaveModule
 
         if (graveSaveData.names != null && graveSaveData.count != null)
         {
+            Debug.Log("Deserialized grave: " + (PlayerID.Instance == null));
             PlayerID.Instance.GetComponent<ManageRespawn>().CreateGrave(graveSaveData.position, graveSaveData.rotation,
                 graveSaveData.names, graveSaveData.count);
         }
-
+        else
+        {
+            Debug.Log("No grave in save");
+        }
         return true;
     }
 

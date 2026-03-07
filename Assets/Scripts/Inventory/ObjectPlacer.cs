@@ -19,13 +19,13 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private Color invalidColor;
 
     [Header("Raycast Parameters")]
-    [SerializeField] private float objectDistanceFromPlayer = 2;
+    //[SerializeField] private float objectDistanceFromPlayer = 2;
     [SerializeField] private float raycastStartVerticalOffset = 1;
     [SerializeField] private float raycastDistance = 8;
 
     [Header("Adjustment Variables for Placement Location")]
     [SerializeField] private float minDistance = 1.5f;
-    [SerializeField] private float maxDistance = 5f;
+    [SerializeField] private float maxDistance = 10f;
     [SerializeField] private float distanceChangeSpeed = 1f;
 
     private GameObject _previewObject = null;
@@ -94,12 +94,12 @@ public class ObjectPlacer : MonoBehaviour
         {
 
             // change distance from player with mouse scroll
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (scroll != 0f)
-            {
-                objectDistanceFromPlayer += scroll * distanceChangeSpeed;
-                objectDistanceFromPlayer = Mathf.Clamp(objectDistanceFromPlayer, minDistance, maxDistance);
-            }
+            //float scroll = Input.GetAxis("Mouse ScrollWheel");
+            //if (scroll != 0f)
+            //{
+            //    objectDistanceFromPlayer += scroll * distanceChangeSpeed;
+            //    objectDistanceFromPlayer = Mathf.Clamp(objectDistanceFromPlayer, minDistance, maxDistance);
+            //}
 
             // update preview object position
             UpdateCurrentPlacementPosition();
@@ -110,7 +110,7 @@ public class ObjectPlacer : MonoBehaviour
             else
                 SetInvalidPreviewState();
             // press f to place object
-            if (Input.GetKeyDown(KeyCode.F))
+            if (Input.GetMouseButtonDown(0))
             {
                 Debug.Log("Attempting to place object, Position: " + _currentPlacementPosition);
                 PlaceObject();
@@ -127,24 +127,34 @@ public class ObjectPlacer : MonoBehaviour
     private void UpdateCurrentPlacementPosition()
     {
         // Calculate the start position for the raycast
-        Vector3 cameraForward = new Vector3(playerCamera.transform.forward.x, 0f, playerCamera.transform.forward.z);
-        cameraForward.Normalize();
+        //Vector3 cameraForward = new Vector3(playerCamera.transform.forward.x, playerCamera.transform.forward.y, playerCamera.transform.forward.z);
+        //cameraForward.Normalize();
 
         // Start position is in front of the player at a set distance, with a vertical offset
-        Vector3 startPos = playerCamera.transform.position + (cameraForward * objectDistanceFromPlayer);
-        startPos.y += raycastStartVerticalOffset;
-        Debug.DrawRay(startPos, Vector3.down, Color.green);
-        _raycastHit = Physics.Raycast(startPos, Vector3.down, out RaycastHit hitInfo, raycastDistance, placementSurfaceLayerMask);
-        if (_raycastHit)
+        //Vector3 startPos = playerCamera.transform.position + (cameraForward * objectDistanceFromPlayer);
+        //startPos.y += raycastStartVerticalOffset;
+        //Debug.DrawRay(startPos, Vector3.down, Color.green);
+
+        //update preview object rotation
+        Quaternion rotation = Quaternion.Euler(0f, playerCamera.transform.eulerAngles.y, 0f);
+        _previewObject.transform.rotation = rotation;
+
+        _raycastHit = Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out RaycastHit hitInfo, Mathf.Infinity, placementSurfaceLayerMask);
+        if (_raycastHit && hitInfo.distance >= minDistance && hitInfo.distance <= maxDistance)
         {
             _currentPlacementPosition = hitInfo.point;
+            _previewObject.transform.position = _currentPlacementPosition;
             // TODO: Trap disappears from scene as well after replaying
-        }
 
-        // Update preview object position and rotation
-        Quaternion rotation = Quaternion.Euler(0f, playerCamera.transform.eulerAngles.y, 0f);
-        _previewObject.transform.position = _currentPlacementPosition;
-        _previewObject.transform.rotation = rotation;
+            // Update preview object position
+            _previewObject.transform.position = _previewObject.transform.position;
+        }
+        else
+        {
+            //raycast was unsuccessful / not the right distance (preview object needs to be updated, otherwise it's just off screen)
+            _raycastHit = false;
+            _previewObject.transform.position = playerCamera.transform.position + (playerCamera.transform.forward.normalized * maxDistance);
+        }
     }
 
 
