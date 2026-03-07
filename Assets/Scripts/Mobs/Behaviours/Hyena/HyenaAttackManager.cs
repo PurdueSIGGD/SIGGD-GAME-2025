@@ -7,11 +7,14 @@ using System;
 
 namespace SIGGD.Mobs.Hyena
 {
+    [RequireComponent(typeof(EnemyAnimator))]
+    [RequireComponent(typeof(HyenaLungeBehaviour))]
+    [RequireComponent(typeof(HyenaCirclingBehaviour))]
     public class HyenaAttackManager : MonoBehaviour
     {
         private EnemyAnimator animatorController;
-        private HyenaLungeBehaviour HyenaLungeBehaviour;
-        private HyenaCirclingBehaviour HyenaCirclingBehaviour;
+        private HyenaLungeBehaviour hyenaLungeBehaviour;
+        private HyenaCirclingBehaviour hyenaCirclingBehaviour;
         public bool isLunging;
         private TransformTarget currentTarget;
         private Coroutine attackRoutine;
@@ -21,8 +24,8 @@ namespace SIGGD.Mobs.Hyena
         {
             isLunging = false;
             animatorController = GetComponent<EnemyAnimator>();
-            HyenaLungeBehaviour = GetComponent<HyenaLungeBehaviour>();
-            HyenaCirclingBehaviour = GetComponent<HyenaCirclingBehaviour>();
+            hyenaLungeBehaviour = GetComponent<HyenaLungeBehaviour>();
+            hyenaCirclingBehaviour = GetComponent<HyenaCirclingBehaviour>();
         }
 
         void Update()
@@ -39,11 +42,21 @@ namespace SIGGD.Mobs.Hyena
         private IEnumerator AttackSequenceWrapper()
         {
             isLunging = true;
-            HyenaLungeBehaviour.exit = false;
-            HyenaCirclingBehaviour.exit = false;
+            hyenaLungeBehaviour.exit = false;
+            hyenaCirclingBehaviour.exit = false;
+            Transform target = GetTarget();
+            if (target == null)
+            {
+                isLunging = false;
+                attackRoutine = null;
+                yield break;
+            }
+            animatorController.SetLook(true);
+            animatorController.SetLookTarget(target);
 
-            yield return StartCoroutine(AttackSequence());
+            yield return StartCoroutine(AttackSequence(target));
 
+            animatorController.SetLook(false);
             isLunging = false;
             attackRoutine = null;
         }
@@ -55,22 +68,25 @@ namespace SIGGD.Mobs.Hyena
          * 3. Changing hyena model
          * 4. Exiting the attack
          */
-        private IEnumerator AttackSequence()
+        private IEnumerator AttackSequence(Transform target)
         {
-            StartCoroutine(HyenaCirclingBehaviour.CircleLoop(GetTarget));
-            yield return new WaitUntil(() => HyenaCirclingBehaviour.finished || HyenaCirclingBehaviour.exit);
-            if (HyenaCirclingBehaviour.exit) yield break; // stop sequence
-            StartCoroutine(HyenaLungeBehaviour.Lunge(GetTarget));
+            if (hyenaCirclingBehaviour == null || hyenaLungeBehaviour == null || animatorController == null)
+                yield break;
+            StartCoroutine(hyenaCirclingBehaviour.CircleLoop(target));
+            yield return new WaitUntil(() => hyenaCirclingBehaviour.finished || hyenaCirclingBehaviour.exit);
+            if (hyenaCirclingBehaviour.exit) yield break; // stop sequence
+            StartCoroutine(hyenaLungeBehaviour.Lunge(target));
             animatorController.SetLungeModel(); // set hyena model
-            yield return new WaitUntil(() => HyenaLungeBehaviour.lungeArriving || HyenaLungeBehaviour.exit);
-            if (HyenaLungeBehaviour.exit) yield break; // stop sequence
+            yield return new WaitUntil(() => hyenaLungeBehaviour.lungeArriving || hyenaLungeBehaviour.exit);
+            if (hyenaLungeBehaviour.exit) yield break; // stop sequence
             Debug.Log($"{gameObject.name} has begun attack animation");
             animatorController.PlayAttack();
-            yield return new WaitUntil(() => HyenaLungeBehaviour.finishedLunging || HyenaLungeBehaviour.exit);
-            if (HyenaLungeBehaviour.exit) yield break; // stop sequence
-            StartCoroutine(HyenaLungeBehaviour.ExitLunge(GetTarget));
-            yield return new WaitUntil(() => HyenaLungeBehaviour.finishedExiting || HyenaLungeBehaviour.exit); 
-            if (HyenaLungeBehaviour.exit) yield break; // stop sequence
+            yield return new WaitUntil(() => hyenaLungeBehaviour.finishedLunging || hyenaLungeBehaviour.exit);
+            animatorController.EndAttack();
+            if (hyenaLungeBehaviour.exit) yield break; // stop sequence
+            StartCoroutine(hyenaLungeBehaviour.ExitLunge(target));
+            yield return new WaitUntil(() => hyenaLungeBehaviour.finishedExiting || hyenaLungeBehaviour.exit); 
+            if (hyenaLungeBehaviour.exit) yield break; // stop sequence
         }
         /// <summary>
         /// Sets the current target
@@ -86,21 +102,22 @@ namespace SIGGD.Mobs.Hyena
         /// <returns> Returns Vector3.zero if currentTarget is null otherwise return the current target's position </returns>
         /// 
 
-        public Vector3 GetTarget() => this.currentTarget != null ? this.currentTarget.Position : Vector3.zero;
+        public Transform GetTarget() => this.currentTarget != null ? this.currentTarget.Transform : null;
         public void CancelAttack()
         {
-            if (Vector3.Distance(GetTarget(), transform.position) < 20f) return;
+            Transform currTarget = GetTarget();
+            if (currTarget != null && Vector3.Distance(currentTarget.Transform.position, transform.position) < 20f) return;
             if (attackRoutine != null)
             {
                 StopCoroutine(attackRoutine);
                 attackRoutine = null;
             }
 
-            if (HyenaCirclingBehaviour != null)
-                HyenaCirclingBehaviour.ExitBehaviour();
+            if (hyenaCirclingBehaviour != null)
+                hyenaCirclingBehaviour.ExitBehaviour();
 
-            if (HyenaLungeBehaviour != null)
-                HyenaLungeBehaviour.ExitBehaviour(); // and/or add an ExitBehaviour there too
+            if (hyenaLungeBehaviour != null)
+                hyenaLungeBehaviour.ExitBehaviour(); // and/or add an ExitBehaviour there too
             isLunging = false;
             currentTarget = null;
         }
