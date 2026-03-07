@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="EffectPreset" id="{59a1d832-8e2b-4511-83cc-9615b4e8504e}">
+		<property name="name">
+			<value>Compressor</value>
+		</property>
+		<relationship name="folder">
+			<destination>{bdeb4cde-a0b5-42bc-92ae-63c3798982a9}</destination>
+		</relationship>
+		<relationship name="effect">
+			<destination>{43813e94-a91f-41df-824d-2f185e449d10}</destination>
+		</relationship>
+	</object>
+	<object class="CompressorEffect" id="{43813e94-a91f-41df-824d-2f185e449d10}">
+		<relationship name="automators">
+			<destination>{517517de-17c2-4c8c-9573-e923b2c7863a}</destination>
+		</relationship>
+	</object>
+	<object class="Automator" id="{517517de-17c2-4c8c-9573-e923b2c7863a}">
+		<property name="nameOfPropertyBeingAutomated">
+			<value>gain</value>
+		</property>
+		<relationship name="automationCurves">
+			<destination>{5aea55be-c4fc-47f2-874c-7e933b85951c}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationCurve" id="{5aea55be-c4fc-47f2-874c-7e933b85951c}">
+		<relationship name="parameter">
+			<destination>{f3ec80ac-305d-4408-b8e3-47347d408b5a}</destination>
+		</relationship>
+		<relationship name="automationPoints">
+			<destination>{3071ac8f-21fa-4558-92ba-ab4d1287143d}</destination>
+			<destination>{b11d56e4-192f-4506-8afb-acb93ba20153}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationPoint" id="{3071ac8f-21fa-4558-92ba-ab4d1287143d}">
+		<property name="position">
+			<value>0</value>
+		</property>
+		<property name="value">
+			<value>0</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{b11d56e4-192f-4506-8afb-acb93ba20153}">
+		<property name="position">
+			<value>1</value>
+		</property>
+		<property name="value">
+			<value>-30</value>
+		</property>
+	</object>
+</objects>
