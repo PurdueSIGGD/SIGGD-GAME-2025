@@ -12,6 +12,7 @@ public class RadioactiveParticlesVFXManager : MonoBehaviour
     }
     void OnPlay()
     {
+        particlesVFX.Reinit();
         particlesVFX.Play();
     }
 
