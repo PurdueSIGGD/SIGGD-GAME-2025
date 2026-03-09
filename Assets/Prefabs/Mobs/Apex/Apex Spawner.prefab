@@ -47,9 +47,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPosition: {x: 0, y: 0, z: 0}
-  spawnRange: {x: 60, y: 60}
+  spawnRange: {x: 30, y: 45}
   spawnAttempts: 30
-  apexPrefab: {fileID: 2827905534200682142, guid: 6253eac03dc69b142bce7ea0278fb96f, type: 3}
+  apexPrefab: {fileID: 6906967935226233989, guid: 0b3def44900d5484ea1a5c9b67e202bc, type: 3}
+  questEventBroadcaster: {fileID: 474820382325767586}
 --- !u!114 &474820382325767586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,14 +65,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectiveKey: {fileID: 11400000, guid: ebfd24e7f56774aac8231c523cf4740c, type: 2}
   conditionStrategy:
-    rid: 8869038009947521110
+    rid: 5381889050926645331
   references:
     version: 2
     RefIds:
-    - rid: 8869038009947521110
-      type: {class: TimerConditionStrategy, ns: , asm: Assembly-CSharp}
+    - rid: 5381889050926645331
+      type: {class: ApexSpawnConditionStrategy, ns: , asm: Assembly-CSharp}
       data:
-        duration: 300
+        duration: 5
         timeScale: 1
         pauseOnComplete: 0
         singleUse: 0
