@@ -30,6 +30,8 @@ public class TitleScreenInputHandler : MonoBehaviour
         loadingPanel.SetActive(true);
         titleMusic.StopActiveMusic();
         SceneManager.LoadScene(mainSceneName, LoadSceneMode.Single);
+        //Debug.Log("Loading save on start");
+        //SaveManager.Instance.Load();
         // not awaiting this because we don't need to
         // _ = SceneManager.UnloadSceneAsync("Assets/UI/titlescreen.unity");
     }

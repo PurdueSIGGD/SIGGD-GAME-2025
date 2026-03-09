@@ -13,6 +13,14 @@ using UnityEngine;
 public abstract class IPlayerActionStrategy
 {
     protected PlayerStateMachine stateMachine;
+    protected PlayerHands handsScript;
+
+    [Header("Player Hands Animation")]
+    [Tooltip("If null, this item has no player hands. If not, these are the player hand animations used for this item")]
+    [SerializeField] public AnimatorOverrideController handAnimatorController;
+
+
+    [Header("Player State Machine Animation")]
     public AnimationClip animationClip;
 
     [Tooltip("If set to a value greater than 0, this duration will override the animation clip length for timing purposes.")]
@@ -38,7 +46,9 @@ public abstract class IPlayerActionStrategy
     /**
      * Called when the action state is exited. Can be used for cleanup or resetting variables.
      */
-    protected virtual void OnExit() { }
+    protected virtual void OnExit() {
+        
+    }
 
     /**
      * Staying consistent with the template design pattern, we define Enter, Update, and Exit methods that call the
@@ -47,6 +57,7 @@ public abstract class IPlayerActionStrategy
      */
     public void Enter()
     {
+        handsScript = PlayerHands.instance;
         stateMachine = PlayerID.Instance.stateMachine;
         OnEnter();
     }
@@ -68,4 +79,16 @@ public abstract class IPlayerActionStrategy
     }
 
     public void Exit() => OnExit();
+
+
+    #region Player Hands Functions
+    /// <summary>
+    /// plays hand action for player hands if hand animation is loaded
+    /// </summary>
+    protected void PlayHandAction() {
+        if (handAnimatorController != null) {
+            handsScript.PlayAction();
+        }
+    }
+    #endregion
 }

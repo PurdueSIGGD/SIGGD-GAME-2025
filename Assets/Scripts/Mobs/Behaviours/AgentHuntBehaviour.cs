@@ -8,7 +8,6 @@ namespace SIGGD.Mobs
     public class AgentHuntBehaviour : MonoBehaviour
     {
 
-        // Use this for initialization
         Smell smell;
         public bool engagedInHunt;
         public bool inDanger;
@@ -17,28 +16,6 @@ namespace SIGGD.Mobs
             currentTargetOfHunt = null;
         }
 
-        // Update is called once per frame
-        /*
-        void Update()
-        {
-            if (smell.sensed && !inDanger)
-            {
-                if (smell.targetRef.getHierachialRank > .baseStateConfig + margin) {
-                    inDanger = true;
-                    engagedInHunt = false;
-                }
-                   // if stronger 
-                // if weaker ignore
-                engagedInHunt == false &&
-                // goap goal?
-
-            }
-            if (engagedInHunt == true)
-            {
-
-            }
-        }
-        */
         public void SatisfiedWithHunt()
         {
             

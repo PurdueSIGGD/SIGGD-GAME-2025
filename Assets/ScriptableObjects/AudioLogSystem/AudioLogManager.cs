@@ -8,7 +8,7 @@ using FMOD;
 
 public class AudioLogManager : MonoBehaviour
 {
-    [SerializeField] AudioLogObject[] logs;
+    public List<AudioLogObject> logs = new();
     [SerializeField] TextMeshProUGUI subtitles;
     private Coroutine lastStarted = null;
 
@@ -47,7 +47,7 @@ public class AudioLogManager : MonoBehaviour
 
     private void Update()
     {
-        if(isPlaying && curPlayer != null)
+        if (isPlaying && curPlayer != null)
         {
             ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(playerRb.position, playerRb.linearVelocity, playerRb.transform.forward, playerRb.transform.up);
             logSoundEvent.set3DAttributes(attr);
@@ -60,6 +60,16 @@ public class AudioLogManager : MonoBehaviour
 
         foreach (var line in curAudio.subtitles)
         {
+            // if the line has a % then it is from a radio so set effects to radio effects
+            if (line.isFromRadio == true)
+            {
+                RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 1);
+            }
+            else
+            {
+                RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
+            }
+
             subtitles.text = line.line;
             yield return new WaitForSeconds(line.seconds);
         }
@@ -106,7 +116,7 @@ public class AudioLogManager : MonoBehaviour
     }
     */
 
-    public void PlayAudioLog (string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
+    public void PlayAudioLog(string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
     {
         // the most recently called audio log will take priority over the ones called before it 
         if (lastStarted != null)
@@ -120,6 +130,8 @@ public class AudioLogManager : MonoBehaviour
             curPlayer = player;
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
+
+            audioName = audioName.ToLower();
 
             // get the sound event from our dictionary and store it
             if (FMODEvents.Instance.soundEvents.TryGetValue(audioName, out EventReference eventRef))
@@ -156,7 +168,7 @@ public class AudioLogManager : MonoBehaviour
        logSoundEvent.release();
     }*/
 
-    // this can be used for interrupt
+    // this can be used for interruptting the current voice line (monster attack, etc.)
     public void StopCurrentAudio()
     {
         // itll break if we try to stop stuff while nothing is playing
@@ -164,7 +176,6 @@ public class AudioLogManager : MonoBehaviour
         {
             return;
         }
-
 
         // run all the normal stop stuff including stopping audio
         logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
