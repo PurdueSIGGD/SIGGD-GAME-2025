@@ -4,39 +4,14 @@ using SIGGD.Mobs;
 
 public class SpawnPoint : MonoBehaviour
 {
-    [SerializeField] GameObject mobPrefab;
-    bool spawned = false;
-    private GameObject thingSpawned = null;
-    [SerializeField] float spawnChance = 0.5f;
-    //public Boundary boundary;
-
-    private void OnTriggerEnter(Collider other)
+    // this class is just a marker for spawn regions to verify valid spawn points on first load of scene
+    [SerializeField] GameObject optionalMobOverride = null;
+    public bool HasMobOverride()
     {
-        if (other.CompareTag("Player") && !spawned && Random.value <= spawnChance)
-        {
-            thingSpawned = Instantiate(mobPrefab, transform.position, Quaternion.identity);
-            var agentData = thingSpawned.GetComponent<AgentData>();
-            NavMeshQueryFilter navFilter = agentData.filter;
-            agentData.boundary = gameObject.GetComponentInParent<Boundary>(false);
-            NavMeshAgent navAgent = thingSpawned.GetComponent<NavMeshAgent>();
-            if (!NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 15f, navFilter))
-            {
-                return;
-            }
-            navAgent.Warp(hit.position);
-            Debug.Log("Mob Spawned at Spawn Point");
-            thingSpawned.SetActive(true);
-            spawned = true;
-        }
+        return optionalMobOverride != null;
     }
-
-    private void OnTriggerExit(Collider other)
+    public GameObject GetMobOverride()
     {
-        if (other.CompareTag("Player") && spawned)
-        {
-            spawned = false;
-            Destroy(thingSpawned);
-            Debug.Log("Player Exited Spawn Point Area");
-        }
+        return optionalMobOverride;
     }
 }
