@@ -40,8 +40,14 @@ public class EntityHealthManager : MonoBehaviour, IHealth
     {
         if (CurrentHealth <= 0) return; // prob a design thing, maybe ability to revive dead creatures in the future?
 
+        float healAmount = healContext.amount * -1; // healing is negative damage
+        if (healAmount > 0)
+        {
+            Debug.LogWarning("Healing should be negative damage");
+        }
+
         // increase health but not above max, maybe change in future to allow overheal?
-        CurrentHealth = Mathf.Min(CurrentHealth + healContext.amount, maxHealth);
+        CurrentHealth = Mathf.Min(CurrentHealth + healAmount, maxHealth);
 
         OnHealthChanged?.Invoke(healContext);
     }
