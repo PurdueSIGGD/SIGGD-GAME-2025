@@ -112,6 +112,7 @@ public class PlayerStamina : MonoBehaviour
         }
         else if (isClimbing && hasGloves)
         {
+            Debug.Log("Climbing stamina decay reduced by gloves");
             currentStamina -= staminaDecayRate * climbingGlovesReduction * Time.deltaTime;
         }
         else if (isGrounded && currentStamina < maxStamina) // stamina regens while on ground & not exerting effort, but can't go over max
