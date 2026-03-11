@@ -10,6 +10,7 @@ public class PlayerStamina : MonoBehaviour
     [SerializeField] float staminaRegenRate = 1f;
     [SerializeField] float jumpCost = 15f;  // when changing jumpcost, remember to update the number in the animator as well
                                             // (prevents jumping below a certain amount of stamina)
+    [SerializeField] float climbingGlovesReduction = 0.5f;
     
     [SerializeField] Slider staminaSlider;
     [SerializeField] Image staminaSliderBar;
@@ -28,6 +29,14 @@ public class PlayerStamina : MonoBehaviour
     {
         get => staminaDisabled;
         set => staminaDisabled = value;
+    }
+
+    private bool hasGloves;
+
+    public bool HasGloves
+    {
+        get => hasGloves;
+        set => hasGloves = value;
     }
 
     public bool HasStamina => (currentStamina > 0 && anim.GetBool("hasStamina"));
@@ -97,9 +106,13 @@ public class PlayerStamina : MonoBehaviour
                 StartCoroutine(coroutine);
             }
         }
-        else if (isClimbing || isSprinting)
+        else if ((isClimbing && !hasGloves) || isSprinting)
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
+        }
+        else if (isClimbing && hasGloves)
+        {
+            currentStamina -= staminaDecayRate * climbingGlovesReduction * Time.deltaTime;
         }
         else if (isGrounded && currentStamina < maxStamina) // stamina regens while on ground & not exerting effort, but can't go over max
         {
