@@ -157,6 +157,10 @@ public class PlayerStamina : MonoBehaviour
     {
         currentStamina = MaxStamina;
     }
+
+    public bool HasStaminaForJump() {
+        return !StaminaDisabled && currentStamina >= jumpCost;
+    }
 }
 
 

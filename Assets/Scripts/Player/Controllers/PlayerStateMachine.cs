@@ -203,7 +203,8 @@ public class PlayerStateMachine : MonoBehaviour
         //animator.SetBool(Animator.StringToHash("hasStamina"), HasStamina);
 
 
-        if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0 && IsClimbing == false)
+        if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0 && IsClimbing == false &&
+            PlayerID.Instance.GetComponent<PlayerStamina>().HasStaminaForJump())
         {
             animator.SetTrigger(Animator.StringToHash("Jumping"));
             lastTimeJumpPressed = 0;
