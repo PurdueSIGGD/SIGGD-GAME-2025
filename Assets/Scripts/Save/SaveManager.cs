@@ -22,6 +22,11 @@ public class SaveManager : Singleton<SaveManager>
     public GraveDataSaveModule graveModule = null;
     public bool saveGrave = true;
 
+    public InputOverrideSaveModule inputOverrideSaveModule = null;
+    public bool saveInputOverrides = true;
+
+    // public InputOverrideSaveModule inputOverrideModule = null;
+
     private ISaveModule[] modules;
 
     protected override void Awake()
@@ -37,9 +42,10 @@ public class SaveManager : Singleton<SaveManager>
         if (saveQuests) questModule = new QuestDataSaveModule();
         if (saveGameProgress) gameProgressModule = new GameProgressDataSaveModule();
         if (saveGrave) graveModule = new GraveDataSaveModule();
+        if (saveInputOverrides) inputOverrideSaveModule = new InputOverrideSaveModule();
 
         modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
-                                     questModule, gameProgressModule, graveModule};
+                                     questModule, gameProgressModule, graveModule, inputOverrideSaveModule};
 
         Load();
 
@@ -47,7 +53,7 @@ public class SaveManager : Singleton<SaveManager>
 
     private void OnApplicationQuit()
     {
-        if (GameStateManager.Instance.canSaveGame())
+        if (GameStateManager.Instance == null || GameStateManager.Instance.canSaveGame())
         {
             Save();
         } else
@@ -73,7 +79,7 @@ public class SaveManager : Singleton<SaveManager>
     {
         // Save if the game state is peaceful
 
-        if (!GameStateManager.Instance.canSaveGame())
+        if (GameStateManager.Instance != null && !GameStateManager.Instance.canSaveGame())
         {
             return false;
         }

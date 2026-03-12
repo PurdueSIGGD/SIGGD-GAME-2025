@@ -37,16 +37,23 @@ public class InputRebinder : MonoBehaviour
         text.text = "Listening...";
         // button.interactable = false;
 
+        Debug.Log($"Before: {actionRef.asset.SaveBindingOverridesAsJson()}");
+
         actionRef.action.Disable();
         actionRef.action.PerformInteractiveRebinding(bindingIndex)
             .OnMatchWaitForAnother(0.1f)
             .OnComplete(op =>
             {
-                Debug.Log("WEFOPIJEFWPOIEWJFPOIEWFJPWEFOIJWEFP");
+                Debug.Log("INPUT HAS BEEN REBINDED");
                 op.Dispose();
                 listening = false;
                 text.text = GetActionString();
                 button.interactable = true;
+
+                SaveManager.Instance.Save();
+
+                Debug.Log($"After: {actionRef.asset.SaveBindingOverridesAsJson()}");
+                // InputOverrideSaveModule.SaveOverride(actionRef);
 
                 actionRef.action.Enable();
             }).Start();
@@ -67,4 +74,10 @@ public class InputRebinder : MonoBehaviour
         
         ptr.EnumerateChangedControls();
     }
+
+    public void Restart()
+    {
+        text.text = GetActionString();
+    }
 }
+

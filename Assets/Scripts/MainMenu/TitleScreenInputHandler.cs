@@ -12,6 +12,7 @@ public class TitleScreenInputHandler : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        loadingPanel.SetActive(false);
         // loadScene = SceneManager.LoadSceneAsync(mainSceneName, LoadSceneMode.Additive);
         // loadScene.allowSceneActivation = false;
         Cursor.lockState = CursorLockMode.None;

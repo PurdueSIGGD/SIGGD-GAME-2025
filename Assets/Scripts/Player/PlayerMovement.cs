@@ -36,6 +36,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+        UnityEngine.Debug.Log("I, PlayerMovement.cs, hereby declare myself AWAKE!!!");
+
         rb = GetComponent<Rigidbody>(); 
         rb = GetComponent<Rigidbody>();
         psm = PlayerID.Instance.stateMachine;
