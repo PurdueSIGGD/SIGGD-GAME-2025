@@ -87,24 +87,26 @@ public class PlayerStamina : MonoBehaviour
         isGrounded = psm.IsGrounded;
 
         // stamina decays while exerting effort (climb, sprint; jump triggers once)
-
-        if (isSprinting && currentStamina <= 0)
+        Debug.Log("Current stamina: " + currentStamina);
+        //if (isSprinting && currentStamina <= 0)
+        //{
+        //    Debug.Log("Ran out of stamina, stopped sprinting");
+        //    if (coroutine == null)
+        //    {
+        //        coroutine = DisableStamina();
+        //        StartCoroutine(coroutine);
+        //    }
+        //}
+        if (coroutine == null && currentStamina <= 0)
         {
-            Debug.Log("Ran out of stamina, stopped sprinting");
-            if (coroutine == null)
-            {
-                coroutine = DisableStamina();
-                StartCoroutine(coroutine);
-            }
-        }
-        else if (isClimbing && currentStamina <= 0)
-        {
-            Debug.Log("Ran out of stamina, stopped climbing");
-            if (coroutine == null)
-            {
-                coroutine = DisableStamina();
-                StartCoroutine(coroutine);
-            }
+            
+            //if (coroutine == null)
+            //{
+            if (isSprinting) Debug.Log("Ran out of stamina, stopped sprinting");
+            else Debug.Log("Ran out of stamina, stopped climbing");
+            coroutine = DisableStamina();
+            StartCoroutine(coroutine);
+            //}
         }
         else if ((isClimbing && !hasGloves) || isSprinting)
         {
@@ -133,7 +135,10 @@ public class PlayerStamina : MonoBehaviour
         anim.SetBool("hasStamina", false);
         // Stamina is disabled until 50%
         // Calculate wait time based on how much current stamina is at (for when stamina is recharging when game was stopped)
-        yield return new WaitForSeconds(5 * (MaxStamina / 2 - currentStamina) / (MaxStamina / 2)); 
+        Debug.Log("Out of stamina");
+        yield return new WaitUntil(() => currentStamina >= MaxStamina / 2);
+        Debug.Log("Stamina at half");
+        //yield return new WaitForSeconds(5 * (MaxStamina / 2 - currentStamina) / (MaxStamina / 2)); 
         anim.SetBool("hasStamina", true);
         staminaDisabled = false;
         coroutine = null;
