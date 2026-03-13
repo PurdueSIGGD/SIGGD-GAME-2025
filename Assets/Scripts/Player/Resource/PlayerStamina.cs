@@ -87,26 +87,12 @@ public class PlayerStamina : MonoBehaviour
         isGrounded = psm.IsGrounded;
 
         // stamina decays while exerting effort (climb, sprint; jump triggers once)
-        Debug.Log("Current stamina: " + currentStamina);
-        //if (isSprinting && currentStamina <= 0)
-        //{
-        //    Debug.Log("Ran out of stamina, stopped sprinting");
-        //    if (coroutine == null)
-        //    {
-        //        coroutine = DisableStamina();
-        //        StartCoroutine(coroutine);
-        //    }
-        //}
         if (coroutine == null && currentStamina <= 0)
         {
-            
-            //if (coroutine == null)
-            //{
             if (isSprinting) Debug.Log("Ran out of stamina, stopped sprinting");
             else Debug.Log("Ran out of stamina, stopped climbing");
             coroutine = DisableStamina();
             StartCoroutine(coroutine);
-            //}
         }
         else if ((isClimbing && !hasGloves) || isSprinting)
         {
