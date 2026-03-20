@@ -8004,7 +8004,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3397956530449237605, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 18172240
+      value: 18308938
       objectReference: {fileID: 0}
     - target: {fileID: 4113205039137807809, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
       propertyPath: m_AnchorMax.y
@@ -8120,13 +8120,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radiationThreshold: 100
-  radiationDecayRate: 1
-  radiationBuildRate: 1
-  radiationDamageInterval: 10
+  radiationDecayRate:
+  - 3
+  - 2.5
+  - 2
+  - 1.5
+  - 1
+  radiationBuildRate:
+  - 1
+  - 1.5
+  - 2
+  - 2.5
+  - 3
+  radiationDamageInterval:
+  - 8
+  - 7
+  - 6
+  - 5
+  - 4
   radiationDamageContext:
     attacker: {fileID: 425215555}
     victim: {fileID: 425215555}
-    amount: 3
+    amount: 5
     xxtraContext: Radiation Damage
   radiationVignette: {fileID: 0}
 --- !u!1001 &425345246
