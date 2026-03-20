@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class PlayerRadiation : MonoBehaviour
 {
-    //TODO change builduprate, decayrate, and damageinterval to arrays with values for the 5 levels
-    [SerializeField] float radiationThreshold = 100f;
-    [SerializeField] float radiationDecayRate = 1f;
-    [SerializeField] float radiationBuildRate = 1f;
-    [SerializeField] float radiationDamageInterval = 10f; // seconds between radiation damage
+    [SerializeField] float radiationThreshold = 100f; // once threshold is reached, player starts taking damage
+    // these arrays are for the 5 levels of radiation (0 is first/safest level, 4 is most dangerous)
+    [SerializeField] float[] radiationDecayRate = { 3f, 2.5f, 2f, 1.5f, 1f}; 
+    [SerializeField] float[] radiationBuildRate = { 1f, 1.5f, 2f, 2.5f, 3f };
+    [SerializeField] float[] radiationDamageInterval = { 8f, 7f, 6f, 5f, 4f }; // seconds between radiation damage
     [SerializeField] DamageContext radiationDamageContext;
     [SerializeField] GenericLingeringVignette radiationVignette;
     public float RadiationThreshold => radiationThreshold;
@@ -15,15 +15,20 @@ public class PlayerRadiation : MonoBehaviour
         get => currentRadiation;
         set => currentRadiation = Mathf.Clamp(value, 0, radiationThreshold);
     }
-    private bool inRadiation; //TODO update this from the radiation area object?
 
-    private float currentRadiation = 0;
+    //these are updated from the radiation zone object
+    private bool inRadiation = false;
+    private int radiationZone = 0; // indicates what level the radiation zone is; use as the index for the arrays
+    public bool InRadiation => inRadiation;
+    public int RadiationZone => radiationZone;
+
+    private float currentRadiation = 0f;
     private float radiationDamageTimer;     // tracks time since last radiation tick
     private EntityHealthManager playerHealth;
 
     void Start()
     {
-        if (currentRadiation < 0) currentRadiation = 0;
+        if (currentRadiation < 0) currentRadiation = 0f;
         playerHealth = GetComponent<EntityHealthManager>();
     }
 
@@ -37,11 +42,11 @@ public class PlayerRadiation : MonoBehaviour
         {
             if (currentRadiation > 0)
             {
-                currentRadiation = Mathf.Max(currentRadiation - radiationDecayRate * Time.deltaTime, 0); // decay the radiation, but don't go below 0
+                currentRadiation = Mathf.Max(currentRadiation - radiationDecayRate[radiationZone] * Time.deltaTime, 0); // decay the radiation, but not below 0
             }
             else
             {
-                currentRadiation = 0; // radiation shouldn't be below 0
+                currentRadiation = 0f; // radiation shouldn't be below 0
             }
             radiationDamageTimer = 0f; // reset timer if not taking rad damage - possible case where going in and 
         } 
@@ -51,13 +56,13 @@ public class PlayerRadiation : MonoBehaviour
             if (currentRadiation < radiationThreshold) // radiation isn't at the threshold
             {
                 // buildup
-                currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate * Time.deltaTime, radiationThreshold); // don't go above threshold
+                currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate[radiationZone] * Time.deltaTime, radiationThreshold); // don't go over threshold
             }
             else // radiation is at the threshold -> take rad damage
             { 
                 radiationDamageTimer += Time.deltaTime;
 
-                if (radiationDamageTimer >= radiationDamageInterval)
+                if (radiationDamageTimer >= radiationDamageInterval[radiationZone])
                 {
                     radiationDamageTimer = 0f; // Reset timer
                     playerHealth.TakeDamage(radiationDamageContext);
@@ -77,6 +82,6 @@ public class PlayerRadiation : MonoBehaviour
 
     public void ResetRadiation()
     {
-        currentRadiation = 0;
+        currentRadiation = 0f;
     }
 }
