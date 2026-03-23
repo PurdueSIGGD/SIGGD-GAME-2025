@@ -1,21 +1,25 @@
 using SIGGD.Goap;
 using Sirenix.OdinInspector;
+using System.Linq;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class ApexSpawnExternalEvent : ExternalEventTriggerer
 {
-    [Tooltip("Hardset point to spawn the apex at, will override random spawning")]
-    [SerializeField] Vector3 spawnPosition;
-    [Tooltip("The range from player within which the script will attempt to spawn in the apex")]
-    [SerializeField, MinMaxSlider(30, 60, true)] Vector2 spawnRange;
-    [Tooltip("The number of times the script will sample random points to find a valid spawn point")]
-    [SerializeField] float spawnAttempts;
+    [Tooltip("Possible spawn locations for Apex")]
+    [SerializeField] Transform[] possibleSpawnPoints;
+
+    [Tooltip("Spawn points closer than this to the target location will be ignored. Indicated by magenta wire spheres")]
+    [SerializeField] float minimumSpawnDistance = 30f;
 
     [SerializeField] GameObject apexPrefab;
     [SerializeField] QuestEventBroadcaster questEventBroadcaster;
 
     Apex apexScript;
     GameObject spawnedApex = null;
+
     public override void TriggerExternalEvent()
     {
         if (spawnedApex != null)
@@ -23,14 +27,7 @@ public class ApexSpawnExternalEvent : ExternalEventTriggerer
             return;
         }
 
-        if (spawnPosition != default)
-        {
-            Debug.Log("Spawning apex at location: " + spawnPosition);
-            apexScript = Instantiate(apexPrefab, spawnPosition, transform.rotation).GetComponent<Apex>();
-            apexScript.InitializeApex(PlayerID.Instance.transform.position);
-            return;
-        }
-
+        // TODO: replace with trigger event location
         Vector3 targetPos = PlayerID.Instance.transform.position;
         if (UnityEngine.AI.NavMesh.SamplePosition(targetPos, out UnityEngine.AI.NavMeshHit targetHit, 10f, UnityEngine.AI.NavMesh.AllAreas))
         {
@@ -38,77 +35,41 @@ public class ApexSpawnExternalEvent : ExternalEventTriggerer
         }
 
         Vector3 spawnPos = Pathfinding.ERR_VECTOR;
-        UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath();
-
-        // Local function to try finding a random point in a specific range bounds
-        bool TryFindValidSpot(float rangeMin, float rangeMax, out Vector3 validPos)
+        if (possibleSpawnPoints == null || possibleSpawnPoints.Length == 0)
         {
-            Vector3 deviation = new Vector3();
-            deviation.x = Random.Range(rangeMin, rangeMax) * (Random.value < 0.5f ? -1f : 1f);
-            deviation.z = Random.Range(rangeMin, rangeMax) * (Random.value < 0.5f ? -1f : 1f);
-
-            Vector3 candidatePos = targetPos + deviation;
-
-            Vector3 rayOrigin = candidatePos + Vector3.up * 100f;
-            // Ignore triggers (like large Music, Post-Processing, or Room volumes) that often cover the whole scene
-            if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit groundHit, Mathf.Infinity, LayerMask.GetMask("Ground"), QueryTriggerInteraction.Ignore))
-            {
-                candidatePos = groundHit.point;
-            }
-
-            candidatePos = Pathfinding.ShiftTargetToNavMesh(candidatePos, 5f);
-
-
-            if (candidatePos != Pathfinding.ERR_VECTOR)
-            {
-                // Verify we can actually pathfind to the player from this random spot
-                if (UnityEngine.AI.NavMesh.CalculatePath(candidatePos, targetPos, UnityEngine.AI.NavMesh.AllAreas, path))
-                {
-                    if (path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete)
-                    {
-                        validPos = candidatePos;
-                        return true;
-                    }
-                }
-            }
-            validPos = Pathfinding.ERR_VECTOR;
-            return false;
-        }
-
-        // 1. Initial attempts at strictly defined spawn range bounds
-        for (int i = 0; i < spawnAttempts; i++)
-        {
-            if (TryFindValidSpot(spawnRange.x, spawnRange.y, out spawnPos))
-                break;
-        }
-
-        // 2. Fallback attempts: Search again but incrementally massively expand the range outwards each time
-        if (spawnPos == Pathfinding.ERR_VECTOR)
-        {
-            Debug.Log($"Apex initial spawn attempts failed. Falling back to expanding range...");
-            for (int j = 0; j < 3; j++)
-            {
-                float expansion = (j + 1) * 10f;
-                for (int i = 0; i < spawnAttempts; i++)
-                {
-                    // Push the search ring further and further inward linearly on each attempt
-                    if (TryFindValidSpot(spawnRange.x - expansion, spawnRange.y - expansion, out spawnPos))
-                    {
-                        Debug.Log($"Apex successfully found an expanded spawn point bounded at -{expansion} units.");
-                        break;
-                    }
-                }
-                if (spawnPos != Pathfinding.ERR_VECTOR) break;
-            }
-        }
-
-        if (spawnPos == Pathfinding.ERR_VECTOR)
-        {
-            Debug.LogError($"Cannot find valid spawn point for Apex even after standard and expanded attempts.");
+            Debug.LogError("ApexSpawnExternalEvent: no spawn points provided — populate list of spawn points in editor");
             return;
         }
 
-        Debug.Log("Spawning apex at location: " + spawnPos);
+        var orderedSpawns = possibleSpawnPoints
+            .Where(sp => sp != null && Vector3.Distance(sp.position, targetPos) > minimumSpawnDistance)
+            .OrderBy(sp => Vector3.Distance(sp.position, targetPos));
+
+        if (!orderedSpawns.Any())
+        {
+            Debug.LogError("ApexSpawnExternalEvent: no viable spawn points founds - spawn points too close to target location, adjust minimumSpawnDistance");
+            return;
+        }
+
+        foreach (var sp in orderedSpawns)
+        {
+            Vector3 candidate = sp.position;
+
+            // Ensure position exists on navmesh
+            candidate = Pathfinding.ShiftTargetToNavMesh(candidate, 5f);
+            if (candidate == Pathfinding.ERR_VECTOR) continue;
+
+            spawnPos = candidate;
+            break;
+        }
+
+        if (spawnPos == Pathfinding.ERR_VECTOR)
+        {
+            Debug.LogError("ApexSpawnExternalEvent: no viable spawn point found - cannot shift to navmesh");
+            return;
+        }
+
+        Debug.Log("ApexSpawnExternalEvent: Spawning apex at location: " + spawnPos);
         spawnedApex = Instantiate(apexPrefab, spawnPos, transform.rotation);
         apexScript = spawnedApex.GetComponent<Apex>();
         apexScript.InitializeApex(targetPos);
@@ -119,15 +80,33 @@ public class ApexSpawnExternalEvent : ExternalEventTriggerer
         }
         else
         {
-            Debug.Log("Apex Spawner not using Apex Spawn strategy");
+            Debug.Log("ApexSpawnExternalEvent: Apex Spawner not using Apex Spawn strategy");
         }
     }
 
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (possibleSpawnPoints == null || possibleSpawnPoints.Length == 0) return;
+
+        foreach (var sp in possibleSpawnPoints)
+        {
+            if (sp == null) continue;
+
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(sp.position, minimumSpawnDistance);
+
+            Gizmos.color = Color.blue;
+            Gizmos.DrawSphere(sp.position, 1f);
+
+            Handles.Label(sp.position + Vector3.up * 5f, "Apex Spawn Point");
+        }
+    }
 
     [Button]
     private void TestSpawn()
     {
         TriggerExternalEvent();
     }
-
+#endif
 }
