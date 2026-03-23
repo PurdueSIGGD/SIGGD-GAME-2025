@@ -121,6 +121,8 @@ public class PlayerStateMachine : MonoBehaviour
 
     public bool IsSprinting { get; private set; }
 
+    private PlayerStamina playerStamina;
+
     public bool HasStamina => PlayerID.Instance.GetComponent<PlayerStamina>().CurrentStamina > 0;
 
     #endregion
@@ -129,6 +131,8 @@ public class PlayerStateMachine : MonoBehaviour
     public bool IsMoving => PlayerInput.Instance.movementInput.magnitude > 0.1f && !IsClimbing; // Whether the player is currently moving.
     public bool IsClimbing => PlayerID.Instance.gameObject.GetComponent<ClimbAction>().IsClimbing();
     public bool IsCrouched = false;
+
+    
 
     #endregion
 
@@ -140,6 +144,7 @@ public class PlayerStateMachine : MonoBehaviour
 
         mainCol = GetComponent<Collider>();
         allCols = GetComponentsInChildren<Collider>();
+        playerStamina = PlayerID.Instance.GetComponent<PlayerStamina>();
 
         PlayerInput.Instance.OnJump += OnJumpAction;
         PlayerInput.Instance.OnAction += TriggerAction;
@@ -204,7 +209,7 @@ public class PlayerStateMachine : MonoBehaviour
 
 
         if (lastTimeJumpPressed > 0 && lastTimeGrounded > 0 && IsClimbing == false &&
-            PlayerID.Instance.GetComponent<PlayerStamina>().HasStaminaForJump())
+            playerStamina.HasStaminaForJump())
         {
             animator.SetTrigger(Animator.StringToHash("Jumping"));
             lastTimeJumpPressed = 0;
