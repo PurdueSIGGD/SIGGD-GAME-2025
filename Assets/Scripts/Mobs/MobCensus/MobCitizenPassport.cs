@@ -1,3 +1,4 @@
+using SIGGD.Mobs;
 using System;
 using UnityEngine;
 
@@ -11,11 +12,13 @@ namespace MobCensus
         MobCensusManager census;
         MobCitizenData citizenDataReference = null;
         EntityHealthManager healthManager;
+        AgentData agentData;
 
         void Start()
         {
             census = FindFirstObjectByType<MobCensusManager>();
             healthManager = GetComponent<EntityHealthManager>();
+            agentData = GetComponent<AgentData>();
         }
 
         void OnEnable()
@@ -43,8 +46,17 @@ namespace MobCensus
                 return;
             }
             MobCitizenDataRaw rawData = citizenDataReference.GetRawData();
+            if (rawData == null)
+            {
+                Debug.LogError("No data associated with citizen.");
+                return;
+            }
             rawData.SetPosition(transform.position);
             rawData.SetRotation(transform.eulerAngles);
+            if (agentData != null && agentData.boundary != null)
+            {
+                rawData.SetBoundary(agentData.boundary);
+            }
             if (healthManager != null)
             {
                 rawData.SetHealth(healthManager.CurrentHealth);
@@ -63,10 +75,11 @@ namespace MobCensus
             }
             transform.position = rawData.GetPosition();
             transform.eulerAngles = rawData.GetRotation();
+            if (agentData) agentData.boundary = rawData.GetBoundary();
             if (healthManager != null)
             {
                 healthManager.CurrentHealth = rawData.GetHealth();
-            }
+            }        
         }
 
         public void HandleOnDeath(DamageContext context)

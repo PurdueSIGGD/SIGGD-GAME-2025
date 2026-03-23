@@ -56,14 +56,14 @@ public class EntityHealthManager : StatProvider, IHealth
         {
             // Attempt to change to peaceful if pursuer died
 
-            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
+            if (GameStateManager.Instance) GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
 
             Destroy(gameObject);
         } else
         {
             // Change state of player to peaceful
 
-            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
+            if (GameStateManager.Instance) GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
         }
     }
 

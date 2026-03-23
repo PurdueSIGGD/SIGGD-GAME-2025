@@ -1,68 +1,42 @@
-using System.Collections.Generic;
+using CrashKonijn.Goap.Runtime;
+using MobCensus;
+using SIGGD.Mobs;
 using UnityEngine;
 using UnityEngine.AI;
-using CrashKonijn.Goap.Runtime;
-using SIGGD.Mobs;
-
-using MobCensus;
 public class SpawnManager : MonoBehaviour
 {
     MobCensusManager mobCensus;
     MobSpeciesRegistry mobSpeciesRegistry;
 
     public GameObject boundaryObject;
-    private Boundary boundary;
+    [SerializeField]
+    private float spawnPointRadius = 3f;
     void Awake()
     {
-        boundary = boundaryObject.GetComponent<Boundary>();
         mobCensus = FindFirstObjectByType<MobCensusManager>();
         mobSpeciesRegistry = FindFirstObjectByType<MobSpeciesRegistry>();
     }
 
 
-    public GameObject SpawnMobNew(GameObject mobPrefab, Vector3 spawnPosition)
+    public GameObject SpawnMobNew(GameObject mobPrefab, Vector3 spawnPosition, Boundary boundary)
     {
         GameObject mobObject = Instantiate(mobPrefab, spawnPosition, Quaternion.identity);
         string mobId = mobSpeciesRegistry.GetMobIdByPrefab(mobPrefab);
 
         // register mob in census
-        mobCensus.RegisterCitizen(mobPrefab, mobObject, mobId);
+        mobCensus.RegisterCitizen(mobPrefab, mobObject, mobId, boundary);
 
-        InitializeMobInternalSystems(mobObject);
+        InitializeMobInternalSystems(mobObject, boundary, mobId);
         return mobObject;
     }
-    // =======
-    //                 spawners[i].spawnInterval += timer;
-    //                 SpawnMob(spawners[i]);
-    //             }
-    //         }
-    //     }
-
-    //     private void SpawnMob(MobSpawner spawner)
-    //     {
-    //         Vector3 spawnPos = (spawner.spawnRadius != 0
-    //             ? GetRandomPositionCircle(spawner.spawnPosition, spawner.spawnRadius)
-    //             : spawner.spawnPosition);
-    //         for (int i = 0; i < spawner.spawnCount; i++)
-    //         {
-    //             var agent = Instantiate(spawner.prefab, spawnPos, Quaternion.identity).GetComponent<GoapActionProvider>();
-    //             agent.gameObject.SetActive(true);
-    //             var agentData = agent.GetComponent<AgentData>();
-    //             NavMeshQueryFilter navFilter = agentData.filter;
-    //             agentData.boundary = boundary;
-    //             NavMeshAgent navAgent = agent.GetComponent<NavMeshAgent>();
-    //             if (!NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 15f, navFilter))
-    //             {
-    //                 Debug.Log($"Could not spawn {spawner.name}");
-    //                 continue;
-    //             }
-    //             navAgent.Warp(hit.position);
-    //         }
-    // >>>>>>> dev
-    //     }
 
     public GameObject SpawnMobFromSave(MobCitizenDataRaw rawData)
     {
+        if (rawData == null)
+        {
+            Debug.LogError($"Trying to spawn mob with missing data");
+            return null;
+        }
         // pull prefab from registry
         GameObject mobPrefab = mobSpeciesRegistry.GetMobPrefabById(rawData.GetMobId());
         GameObject mobObject = Instantiate(mobPrefab, rawData.GetPosition(), Quaternion.identity);
@@ -72,36 +46,82 @@ public class SpawnManager : MonoBehaviour
         passport.ReadMobCitizenData(rawData);
 
         // register mob in census
-        mobCensus.RegisterCitizen(mobPrefab, mobObject, rawData.GetMobId());
+        mobCensus.RegisterCitizen(mobPrefab, mobObject, rawData.GetMobId(), rawData.GetBoundary());
 
-        InitializeMobInternalSystems(mobObject);
+        InitializeMobInternalSystems(mobObject, rawData.GetBoundary(), rawData.GetMobId());
         return mobObject;
     }
 
-    void InitializeMobInternalSystems(GameObject mobObject)
+    void InitializeMobInternalSystems(GameObject mobObject, Boundary boundary = null, string mobId = null)
     {
-        // initialize goap system
-        GoapActionProvider goapActionProvider = mobObject.GetComponent<GoapActionProvider>();
-        goapActionProvider.gameObject.SetActive(true);
+        if (mobObject == null)
+        {
+            Debug.LogError($"Mob gameobject is null");
+            return;
+        }
 
         // set boundary for territory capabillity (optional depending on if mob has this capability)
         AgentData agentData = mobObject.GetComponent<AgentData>();
-        if (agentData != null) agentData.boundary = boundary;
-
+        if (agentData != null)
+        {
+            if (boundary != null)
+            {
+                agentData.boundary = boundary;
+            }
+            agentData.SetMobId(mobId);
+        }
         // initialize navmesh agent and validate that spawn position is within valid navmesh area
         NavMeshAgent navAgent = mobObject.GetComponent<NavMeshAgent>();
-        NavMesh.SamplePosition(mobObject.transform.position, out NavMeshHit hit, 15f, NavMesh.AllAreas);
-        navAgent.Warp(hit.position);
-        // =======
-        //         Vector2 randomPos = Random.insideUnitCircle * spawnRadius;
-        //         Vector3 candidatePos = spawnPosition + new Vector3(randomPos.x, 0f, randomPos.y);
+        if (navAgent == null)
+        {
+            Debug.LogError($"{mobObject.name} missing NavMeshAgent");
+            return;
+        }
 
-        //         if (NavMesh.SamplePosition(candidatePos, out NavMeshHit hit, spawnRadius, NavMesh.AllAreas))
-        //             return hit.position;
+        navAgent.updatePosition = false;
+        navAgent.updateRotation = false;
+        NavMeshQueryFilter navFilter = new NavMeshQueryFilter
+        {
+            agentTypeID = navAgent.agentTypeID,
+            areaMask = NavMesh.AllAreas
+        };
+        if (agentData != null && agentData.filter.areaMask != 0)
+            navFilter = agentData.filter;
+        bool success = NavMesh.SamplePosition(mobObject.transform.position, out NavMeshHit hit, 5f, navFilter);
 
-        //         // fallback to spawnPosition if sampling fails
-        //         return spawnPosition;
-        // >>>>>>> dev
+        if (success) {
+            mobObject.transform.position = hit.position;
+            navAgent.Warp(hit.position);
+            navAgent.nextPosition = hit.position;
+            navAgent.ResetPath();
+            navAgent.isStopped = false;
+            var rb = mobObject.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                if (!rb.isKinematic)
+                {
+                    rb.linearVelocity = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
+                }
+
+                rb.isKinematic = true;
+                rb.useGravity = false;
+                rb.position = hit.position;
+            }
+
+            Debug.Log("success");
+        } else
+        {
+            Debug.Log("failure");
+        }
+
+        // initialize goap system
+        GoapActionProvider goapActionProvider = mobObject.GetComponent<GoapActionProvider>();
+        if (goapActionProvider == null)
+        {
+            Debug.LogWarning("Mob does not have a goap action provider", mobObject);
+            return;
+        }
+        goapActionProvider.gameObject.SetActive(true);
     }
-
 }

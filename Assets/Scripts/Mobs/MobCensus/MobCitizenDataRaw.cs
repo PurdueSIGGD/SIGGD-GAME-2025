@@ -14,6 +14,7 @@ namespace MobCensus
         [SerializeField] Vector3 position;
         [SerializeField] Vector3 rotation;
         [SerializeField] float health;
+        [SerializeField] Boundary boundary;
 
         public MobCitizenDataRaw()
         {
@@ -21,6 +22,7 @@ namespace MobCensus
             this.position = Vector3.zero;
             this.rotation = Vector3.zero;
             this.health = 0f;
+            this.boundary = null;
         }
 
         public string GetMobId() { return mobId; }
@@ -31,5 +33,8 @@ namespace MobCensus
         public Vector3 SetPosition(Vector3 position) { return this.position = position; }
         public Vector3 SetRotation(Vector3 rotation) { return this.rotation = rotation; }
         public float SetHealth(float health) { return this.health = health; }
+
+        public Boundary GetBoundary() { return boundary; }
+        public Boundary SetBoundary(Boundary boundary) { return this.boundary = boundary; }
     }
 }

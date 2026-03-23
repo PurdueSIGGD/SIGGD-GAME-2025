@@ -11,13 +11,14 @@ namespace MobCensus
         [SerializeField] MobCitizenPassport passport;
         [SerializeField] MobCitizenDataRaw rawData;
 
-        public MobCitizenData(GameObject prefab, GameObject instance, string mobId)
+        public MobCitizenData(GameObject prefab, GameObject instance, string mobId, Boundary boundary)
         {
             this.prefab = prefab;
             this.instance = instance;
 
             rawData = new MobCitizenDataRaw();
             rawData.SetMobId(mobId);
+            rawData.SetBoundary(boundary);
             passport = instance.GetComponent<MobCitizenPassport>();
             passport.SetCitizenDataReference(this);
             passport.WriteMobCitizenData();

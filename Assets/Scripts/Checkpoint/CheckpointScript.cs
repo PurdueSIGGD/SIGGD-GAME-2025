@@ -25,6 +25,8 @@ public class CheckpointScript : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(transform.position, 1);
+#if UNITY_EDITOR
         Handles.Label(transform.position + Vector3.up * 1.5f, "Checkpoint");
+#endif
     }
 }

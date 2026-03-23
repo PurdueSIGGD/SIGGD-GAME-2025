@@ -61,9 +61,9 @@ namespace MobCensus
         /// <param name="prefab">The prefab of the mob being registered.</param>
         /// <param name="instance">The instance of the mob being registered.</param>
         /// <param name="mobId">The unique ID of the mob for save/load purposes.</param>
-        public void RegisterCitizen(GameObject prefab, GameObject instance, string mobId)
+        public void RegisterCitizen(GameObject prefab, GameObject instance, string mobId, Boundary boundary)
         {
-            MobCitizenData newCitizen = new MobCitizenData(prefab, instance, mobId);
+            MobCitizenData newCitizen = new MobCitizenData(prefab, instance, mobId, boundary);
             MobCitizenPassport pass = instance.GetComponent<MobCitizenPassport>();
             pass.SetCitizenDataReference(newCitizen);
             citizens.Add(newCitizen);
