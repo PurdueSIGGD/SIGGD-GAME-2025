@@ -28,9 +28,8 @@ namespace FMODUnity
         private static readonly string HelpText =
             string.Format("Click {0} to search your project for obsolete event references.", SearchButtonText);
 
-        private readonly string[] SearchFolders = {
-            "Assets",
-        };
+        [SerializeField] private string searchFolder = "Assets";
+        [SerializeField] private string excludedFolder = "Assets/Plugins";
 
         private SceneSetup[] sceneSetup;
 
@@ -203,10 +202,20 @@ namespace FMODUnity
 
         private IEnumerator<string> SearchProject()
         {
-            string[] prefabGuids = AssetDatabase.FindAssets("t:GameObject", SearchFolders);
-            string[] sceneGuids = AssetDatabase.FindAssets("t:Scene", SearchFolders);
+            string[] prefabGuids = AssetDatabase.FindAssets("t:GameObject", new[] { searchFolder });
+            string[] sceneGuids = AssetDatabase.FindAssets("t:Scene", new[] { searchFolder });
             string[] scriptableObjectGuids =
-                AssetDatabase.FindAssets("t:ScriptableObject", SearchFolders).Distinct().ToArray();
+                AssetDatabase.FindAssets("t:ScriptableObject", new[] { searchFolder }).Distinct().ToArray();
+
+            prefabGuids = prefabGuids
+                .Where(guid => !AssetDatabase.GUIDToAssetPath(guid).StartsWith(excludedFolder))
+                .ToArray();
+            sceneGuids = sceneGuids
+                .Where(guid => !AssetDatabase.GUIDToAssetPath(guid).StartsWith(excludedFolder))
+                .ToArray();
+            scriptableObjectGuids = scriptableObjectGuids
+                .Where(guid => !AssetDatabase.GUIDToAssetPath(guid).StartsWith(excludedFolder))
+                .ToArray();
 
             prefabProgress = new SearchProgress(prefabGuids.Length);
             sceneProgress = new SearchProgress(sceneGuids.Length);
@@ -2082,6 +2091,74 @@ namespace FMODUnity
             }
 
             GUILayout.Label(status, Styles.RichTextBox);
+
+            // search folder field
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField(L10n.Tr("Search Folder"), GUILayout.Width(EditorGUIUtility.labelWidth));
+                EditorGUILayout.LabelField(searchFolder, EditorStyles.textField);
+
+                if (GUILayout.Button(L10n.Tr("Browse…"), GUILayout.Width(70)))
+                {
+                    string selected = EditorUtility.OpenFolderPanel(
+                        L10n.Tr("Select Folder to Scan"), searchFolder, string.Empty);
+
+                    if (!string.IsNullOrEmpty(selected))
+                    {
+                        // Convert absolute path to project-relative (must start with "Assets")
+                        if (selected.StartsWith(Application.dataPath))
+                        {
+                            searchFolder = "Assets" + selected.Substring(Application.dataPath.Length);
+                        }
+                        else
+                        {
+                            EditorUtility.DisplayDialog(
+                                L10n.Tr("Invalid Folder"),
+                                L10n.Tr("Please select a folder inside the project's Assets directory."),
+                                L10n.Tr("OK"));
+                        }
+                    }
+                }
+
+                if (GUILayout.Button(L10n.Tr("Reset"), GUILayout.Width(50)))
+                {
+                    searchFolder = "Assets";
+                }                
+            }
+
+            // exclude folder field
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField(L10n.Tr("Exclude Folder"), GUILayout.Width(EditorGUIUtility.labelWidth));
+                EditorGUILayout.LabelField(excludedFolder, EditorStyles.textField);
+
+                if (GUILayout.Button(L10n.Tr("Browse…"), GUILayout.Width(70)))
+                {
+                    string selected = EditorUtility.OpenFolderPanel(
+                        L10n.Tr("Select Folder to Exclude"), excludedFolder, string.Empty);
+
+                    if (!string.IsNullOrEmpty(selected))
+                    {
+                        // Convert absolute path to project-relative (must start with "Assets")
+                        if (selected.StartsWith(Application.dataPath))
+                        {
+                            excludedFolder = "Assets" + selected.Substring(Application.dataPath.Length);
+                        }
+                        else
+                        {
+                            EditorUtility.DisplayDialog(
+                                L10n.Tr("Invalid Folder"),
+                                L10n.Tr("Please select a folder inside the project's Assets directory."),
+                                L10n.Tr("OK"));
+                        }
+                    }
+                }
+
+                if (GUILayout.Button(L10n.Tr("Reset"), GUILayout.Width(50)))
+                {
+                    excludedFolder = "Assets";
+                }
+            }
 
             // Buttons
             using (new EditorGUILayout.HorizontalScope())
