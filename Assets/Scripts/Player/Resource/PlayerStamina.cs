@@ -31,14 +31,6 @@ public class PlayerStamina : MonoBehaviour
         set => staminaDisabled = value;
     }
 
-    private bool hasGloves;
-
-    public bool HasGloves
-    {
-        get => hasGloves;
-        set => hasGloves = value;
-    }
-
     public bool HasStamina => (currentStamina > 0 && anim.GetBool("hasStamina"));
 
     private PlayerStateMachine psm;
@@ -94,11 +86,11 @@ public class PlayerStamina : MonoBehaviour
             coroutine = DisableStamina();
             StartCoroutine(coroutine);
         }
-        else if ((isClimbing && !hasGloves) || isSprinting)
+        else if ((isClimbing && !SaveManager.Instance.playerModule.playerData.hasGloves) || isSprinting)
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
         }
-        else if (isClimbing && hasGloves)
+        else if (isClimbing && SaveManager.Instance.playerModule.playerData.hasGloves)
         {
             Debug.Log("Climbing stamina decay reduced by gloves");
             currentStamina -= staminaDecayRate * climbingGlovesReduction * Time.deltaTime;

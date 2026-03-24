@@ -18,7 +18,7 @@ public class ClimbingGlovesInteract : MonoBehaviour, IInteractable<IInteractor>
     public void OnInteract(IInteractor interactor)
     {
         Debug.Log("Picked up climbing gloves");
-        playerStamina.HasGloves = true;
+        SaveManager.Instance.playerModule.playerData.hasGloves = true;
         Destroy(this.gameObject);
     }
 }

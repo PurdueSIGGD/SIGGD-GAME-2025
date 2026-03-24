@@ -38,7 +38,6 @@ public class PlayerDataSaveModule : ISaveModule
         hunger.CurrentHunger = playerData.curHunger;
         stamina.CurrentStamina = playerData.curStamina;
         stamina.StaminaDisabled = playerData.staminaDisabled;
-        stamina.HasGloves = playerData.hasGloves;
         respawnManager.respawnPoint = playerData.RespawnPosition;
 
         Debug.Log("Set stamina " + stamina.CurrentStamina);
@@ -78,7 +77,6 @@ public class PlayerDataSaveModule : ISaveModule
         playerData.curHunger = hunger.CurrentHunger;
         playerData.curStamina = stamina.CurrentStamina;
         playerData.staminaDisabled = stamina.StaminaDisabled;
-        playerData.hasGloves = stamina.HasGloves;
         playerData.RespawnPosition = respawnManager.respawnPoint;
         
         byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);
