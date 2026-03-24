@@ -27,7 +27,7 @@ public class ThrowItem : MonoBehaviour
     public void ThrowBait(GameObject projectile, float throwForce, float radius, float duration)
     {
         // creates the projectile and applies force in the direction of the camera
-        GameObject createdProj = Instantiate(projectile, playerCam.transform.position + playerCam.transform.forward, transform.rotation);
+        GameObject createdProj = Instantiate(projectile, playerCam.transform.position + playerCam.transform.forward, playerCam.transform.rotation);
         createdProj.GetComponent<Rigidbody>().AddForce(playerCam.transform.forward * throwForce, ForceMode.VelocityChange);
     }
 }
