@@ -19,8 +19,15 @@ public class PlayerRadiation : MonoBehaviour
     //these are updated from the radiation zone object
     private bool inRadiation = false;
     private int radiationZone = 0; // indicates what level the radiation zone is; use as the index for the arrays
-    public bool InRadiation => inRadiation;
-    public int RadiationZone => radiationZone;
+    public bool InRadiation {
+        get => inRadiation;
+        set => inRadiation = value;
+    }
+    public int RadiationZone
+    {
+        get => radiationZone;
+        set => radiationZone = value;
+    }
 
     private float currentRadiation = 0f;
     private float radiationDamageTimer;     // tracks time since last radiation tick
@@ -48,7 +55,7 @@ public class PlayerRadiation : MonoBehaviour
             {
                 currentRadiation = 0f; // radiation shouldn't be below 0
             }
-            radiationDamageTimer = 0f; // reset timer if not taking rad damage - possible case where going in and 
+            radiationDamageTimer = 0f; // reset timer if not taking rad damage
         } 
         else // inside radiation area
         {
