@@ -4,9 +4,9 @@ public class PlayerRadiation : MonoBehaviour
 {
     [SerializeField] float radiationThreshold = 100f; // once threshold is reached, player starts taking damage
     // these arrays are for the 5 levels of radiation (0 is first/safest level, 4 is most dangerous)
-    [SerializeField] float[] radiationDecayRate = { 3f, 2.5f, 2f, 1.5f, 1f}; 
-    [SerializeField] float[] radiationBuildRate = { 1f, 1.5f, 2f, 2.5f, 3f };
-    [SerializeField] float[] radiationDamageInterval = { 8f, 7f, 6f, 5f, 4f }; // seconds between radiation damage
+    [SerializeField] float[] radiationDecayRate = { 9f, 8f, 7f, 6f, 5f}; 
+    [SerializeField] float[] radiationBuildRate = { 5f, 7f, 9f, 11f, 13f };
+    [SerializeField] float[] radiationDamageInterval = { 5f, 4.5f, 4f, 3.5f, 3f }; // seconds between radiation damage
     [SerializeField] DamageContext radiationDamageContext;
     [SerializeField] GenericLingeringVignette radiationVignette;
     public float RadiationThreshold => radiationThreshold;
@@ -45,6 +45,7 @@ public class PlayerRadiation : MonoBehaviour
         //when in a radiation area, buildup the radiation
         //  if the radiation gets to the threshold, start taking damage
 
+        //Debug.Log("current radiation: " + currentRadiation);
         if (!inRadiation)
         {
             if (currentRadiation > 0)
@@ -73,7 +74,7 @@ public class PlayerRadiation : MonoBehaviour
                 {
                     radiationDamageTimer = 0f; // Reset timer
                     playerHealth.TakeDamage(radiationDamageContext);
-                    Debug.Log("Radiation - Took 1 damage");
+                    //Debug.Log("Radiation - Took damage");
                 }
             }
             float radiationPercent = CurrentRadiation / RadiationThreshold;

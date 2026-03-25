@@ -6,7 +6,6 @@ public class RadiationZone : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("entered radiation zone");
         if (other.CompareTag("Player"))
         {
             other.gameObject.GetComponent<PlayerRadiation>().InRadiation = true;
