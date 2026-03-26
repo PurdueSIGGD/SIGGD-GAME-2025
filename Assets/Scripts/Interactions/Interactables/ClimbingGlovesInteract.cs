@@ -7,6 +7,10 @@ public class ClimbingGlovesInteract : MonoBehaviour, IInteractable<IInteractor>
 
     void Start() {
         playerStamina = PlayerID.Instance.playerStamina;
+        if (SaveManager.Instance.playerModule.playerData.hasGloves) {
+            Debug.Log("Removed climbing gloves from scene since they've already been picked up");
+            Destroy(gameObject);
+        }
     }
     public void OnHoverEnter(InteractableUI ui) {
         ui.ActivateUI(this);
