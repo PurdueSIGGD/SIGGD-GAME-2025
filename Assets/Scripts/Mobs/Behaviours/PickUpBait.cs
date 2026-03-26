@@ -24,9 +24,10 @@ public class PickUpBait : MonoBehaviour, IInteractable<IInteractor>
             if (randomValue < cumulativeRate)
             {
                 selectedItem = itemInfos[i];
-                break;
+                return;
             }
         }
+        selectedItem = itemInfos[itemInfos.Length - 1];
     }
     public void OnHoverEnter(InteractableUI ui)
     {

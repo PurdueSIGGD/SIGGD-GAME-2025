@@ -28,6 +28,8 @@ public class ThrowItem : MonoBehaviour
     {
         // creates the projectile and applies force in the direction of the camera
         GameObject createdProj = Instantiate(projectile, playerCam.transform.position + playerCam.transform.forward, playerCam.transform.rotation);
+        createdProj.GetComponent<ActivateBait>().Initialize(radius, duration);
+        createdProj.GetComponentInChildren<SphereCollider>().radius = radius; // set the radius of the trigger sphere to match the bait's 
         createdProj.GetComponent<Rigidbody>().AddForce(playerCam.transform.forward * throwForce, ForceMode.VelocityChange);
     }
 }
