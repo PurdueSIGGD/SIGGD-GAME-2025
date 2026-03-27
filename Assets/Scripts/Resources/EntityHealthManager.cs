@@ -42,6 +42,7 @@ public class EntityHealthManager : StatProvider, IHealth
         if (healContext.amount > 0)
         {
             Debug.LogWarning("Healing should be negative damage");
+            return;
         }
         float healAmount = healContext.amount * -1; // healing is negative damage
 
