@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEditor;
 
 /**
  * <summary>
@@ -54,6 +55,17 @@ public class PlayerID : Singleton<PlayerID>
         }
         cameraMovement = cam.GetComponentInParent<CameraMovement>();
     }
+
+    #endregion
+
+    #region Gizmos
+    
+    #if UNITY_EDITOR
+    void OnDrawGizmos() 
+    {
+        Handles.Label(transform.position, "Player");
+    }
+    #endif
 
     #endregion
 }
