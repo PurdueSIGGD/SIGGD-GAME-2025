@@ -10,6 +10,7 @@ public class PlayerStamina : MonoBehaviour
     [SerializeField] float staminaRegenRate = 1f;
     [SerializeField] float jumpCost = 15f;  // when changing jumpcost, remember to update the number in the animator as well
                                             // (prevents jumping below a certain amount of stamina)
+    [SerializeField] float climbingGlovesReduction = 0.5f;
     
     [SerializeField] Slider staminaSlider;
     [SerializeField] Image staminaSliderBar;
@@ -78,28 +79,21 @@ public class PlayerStamina : MonoBehaviour
         isGrounded = psm.IsGrounded;
 
         // stamina decays while exerting effort (climb, sprint; jump triggers once)
-
-        if (isSprinting && currentStamina <= 0)
+        if (coroutine == null && currentStamina <= 0)
         {
-            Debug.Log("Ran out of stamina, stopped sprinting");
-            if (coroutine == null)
-            {
-                coroutine = DisableStamina();
-                StartCoroutine(coroutine);
-            }
+            if (isSprinting) Debug.Log("Ran out of stamina, stopped sprinting");
+            else Debug.Log("Ran out of stamina, stopped climbing");
+            coroutine = DisableStamina();
+            StartCoroutine(coroutine);
         }
-        else if (isClimbing && currentStamina <= 0)
-        {
-            Debug.Log("Ran out of stamina, stopped climbing");
-            if (coroutine == null)
-            {
-                coroutine = DisableStamina();
-                StartCoroutine(coroutine);
-            }
-        }
-        else if (isClimbing || isSprinting)
+        else if ((isClimbing && !SaveManager.Instance.playerModule.playerData.hasGloves) || isSprinting)
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
+        }
+        else if (isClimbing && SaveManager.Instance.playerModule.playerData.hasGloves)
+        {
+            Debug.Log("Climbing stamina decay reduced by gloves");
+            currentStamina -= staminaDecayRate * climbingGlovesReduction * Time.deltaTime;
         }
         else if (isGrounded && currentStamina < maxStamina) // stamina regens while on ground & not exerting effort, but can't go over max
         {
@@ -119,7 +113,10 @@ public class PlayerStamina : MonoBehaviour
         anim.SetBool("hasStamina", false);
         // Stamina is disabled until 50%
         // Calculate wait time based on how much current stamina is at (for when stamina is recharging when game was stopped)
-        yield return new WaitForSeconds(5 * (MaxStamina / 2 - currentStamina) / (MaxStamina / 2)); 
+        Debug.Log("Out of stamina");
+        yield return new WaitUntil(() => currentStamina >= MaxStamina / 2);
+        Debug.Log("Stamina at half");
+        //yield return new WaitForSeconds(5 * (MaxStamina / 2 - currentStamina) / (MaxStamina / 2)); 
         anim.SetBool("hasStamina", true);
         staminaDisabled = false;
         coroutine = null;
@@ -137,6 +134,10 @@ public class PlayerStamina : MonoBehaviour
     public void ResetStamina()
     {
         currentStamina = MaxStamina;
+    }
+
+    public bool HasStaminaForJump() {
+        return !StaminaDisabled && currentStamina >= jumpCost;
     }
 }
 
