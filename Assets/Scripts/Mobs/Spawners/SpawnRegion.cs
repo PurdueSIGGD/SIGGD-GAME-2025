@@ -22,6 +22,7 @@ public class SpawnRegion : MonoBehaviour
 
     [SerializeField] SpawnRegionState currentState;
     SpawnManager spawnManager;
+    [SerializeField] Transform spawnPointSource;
     [SerializeField] List<SpawnPoint> spawnPoints;
 
     [Header("SpawnRegionSphereSettings")]
@@ -29,24 +30,20 @@ public class SpawnRegion : MonoBehaviour
     float spawnRegionCheckTimer = 0;
     [SerializeField] Transform centerPosition;
     float spawnCooldownTimer;
-
-    [SerializeField] Boundary boundary;
-
+    Boundary boundary;
     bool initialized = false;
+
     public float GetSpawnCooldownTimer()
     {
         return spawnCooldownTimer;
     }
-    const float NULL_CONST = -676869;
-
     /// <summary>
     /// Initializes the spawn region. If a MobRegionData object is provided, the spawn region will be initialized with its data.
     /// </summary>
     /// <param name="mobRegionData">The MobRegionData object containing the data for initialization.</param>
     public void Initialize(MobRegionData mobRegionData = null)
     {
-        //ScanChildrenForSpawnPoints();
-        spawnManager = FindFirstObjectByType<SpawnManager>();
+        ScanChildrenForSpawnPoints();
         if (mobRegionData != null)
         {
             currentState = mobRegionData.GetRawData().GetSpawnRegionState();
@@ -60,14 +57,15 @@ public class SpawnRegion : MonoBehaviour
     }
     void Awake()
     {
+        spawnManager = FindFirstObjectByType<SpawnManager>();
+        boundary = GetComponent<Boundary>();
         Initialize();
     }
 
     void Update()
     {
-        Debug.Log("test");
         if (!initialized) return;
-        Debug.Log("madeit");
+
         if (currentState == SpawnRegionState.Active)
         {
             if (!IsPlayerInRegion())
@@ -81,7 +79,7 @@ public class SpawnRegion : MonoBehaviour
             spawnRegionCheckTimer -= Time.deltaTime;
             if (spawnRegionCheckTimer <= 0)
             {
-                print("SPAWNREGION -> CHECKING FOR PLAYER IN REGION " + regionStats.Name);
+                // print("SPAWNREGION -> CHECKING FOR PLAYER IN REGION " + regionStats.Name);
                 spawnRegionCheckTimer = spawnRegionCheckIntervalSec;
                 if (IsPlayerInRegion())
                 {
@@ -139,7 +137,7 @@ public class SpawnRegion : MonoBehaviour
     void ScanChildrenForSpawnPoints()
     {
         spawnPoints.Clear();
-        foreach (Transform child in transform)
+        foreach (Transform child in spawnPointSource)
         {
             SpawnPoint pt = child.GetComponent<SpawnPoint>();
             if (pt != null)
@@ -156,14 +154,13 @@ public class SpawnRegion : MonoBehaviour
     /// <returns></returns>
     public bool IsPlayerInRegion()
     {
-        return true;
         LayerMask myLayers = LayerMask.GetMask("Player");
         Collider[] results = Physics.OverlapSphere(centerPosition.position, regionStats.Radius, myLayers);
         foreach (Collider c in results)
         {
             if (c.gameObject == PlayerID.Instance.gameObject)
             {
-                print("SPAWNREGION -> PLAYER IN REGION " + regionStats.Name);
+                // print("SPAWNREGION -> PLAYER IN REGION " + regionStats.Name);
                 return true;
             }
         }
