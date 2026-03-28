@@ -47,7 +47,7 @@ namespace SIGGD.Goap
             if (data.Timer < 0 || data.hm.CurrentHealth >= data.hm.MaxHealth) return ActionRunState.Completed;
             healContext.attacker = agent.gameObject;
             healContext.victim = agent.gameObject;
-            healContext.amount = context.DeltaTime * 2f;
+            healContext.amount = context.DeltaTime * 2f * -1;
             data.hm.Heal(healContext);
             return ActionRunState.ContinueOrResolve;
         }
