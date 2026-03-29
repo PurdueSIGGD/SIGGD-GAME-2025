@@ -119,7 +119,37 @@ namespace SIGGD.Mobs.Hyena
                 loopCount++;
             } while (failedWalking);
 
+            yield return StartCoroutine(TurnTowardsTarget(target));
+
             finished = true;
+        }
+
+        private IEnumerator TurnTowardsTarget(Transform target)
+        {
+            float t = 0f;
+            while (t < 2.5f && !exit)
+            {
+                t += Time.fixedDeltaTime;
+
+                Vector3 targetRaw = target.position;
+                if (targetRaw == Vector3.zero)
+                    break;
+
+                Vector3 to = targetRaw - transform.position;
+                to.y = 0f;
+                if (to.sqrMagnitude < 0.0001f)
+                    break;
+
+                Quaternion targetRot = Quaternion.LookRotation(to.normalized, Vector3.up);
+                float angle = Quaternion.Angle(rb.rotation, targetRot);
+                if (angle <= 10f)
+                    break;
+
+                Quaternion newRot = UnityUtil.DampQuaternion(rb.rotation, targetRot, 10f, Time.fixedDeltaTime);
+                rb.MoveRotation(newRot);
+
+                yield return new WaitForFixedUpdate();
+            }
         }
 
         private IEnumerator Circle(Transform target)
@@ -235,13 +265,13 @@ namespace SIGGD.Mobs.Hyena
 
                     move.MoveTowardsNoRotation(dir, circlingSpeedMultiplier, distToTargetMulti);
 
-                    // Face the target while circling, not the movement direction
-                    Vector3 toTarget = targetPos - rb.position;
-                    toTarget.y = 0f;
-                    if (toTarget.sqrMagnitude > 0.001f)
+                    // Face the movement direction
+                    Vector3 moveDir = dir;
+                    moveDir.y = 0f;
+                    if (moveDir.sqrMagnitude > 0.001f)
                     {
-                        Quaternion targetRot = Quaternion.LookRotation(toTarget.normalized, Vector3.up);
-                        rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 3f, Time.fixedDeltaTime));
+                        Quaternion targetRot = Quaternion.LookRotation(moveDir.normalized, Vector3.up);
+                        rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 5f, Time.fixedDeltaTime));
                     }
 
                     // If movement is negligible for a period of time then it starts an escape sequence
@@ -326,8 +356,14 @@ namespace SIGGD.Mobs.Hyena
                 }
                 dir = ApplyEdgeAvoidance(rb.position, dir);
                 move.MoveTowardsNoRotation(dir, lungePreparationMultiplier, 1.0f, false);
-                Quaternion targetRot = Quaternion.LookRotation(toTarget.normalized, Vector3.up);
-                rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 3f, Time.fixedDeltaTime));
+
+                Vector3 moveDir = dir;
+                moveDir.y = 0f;
+                if (moveDir.sqrMagnitude > 0.001f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(moveDir.normalized, Vector3.up);
+                    rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 5f, Time.fixedDeltaTime));
+                }
 
 
 
