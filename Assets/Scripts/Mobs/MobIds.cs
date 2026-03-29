@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -5,11 +6,13 @@ namespace SIGGD.Mobs
 {
     public static class MobIds
     {
+
         public const string generic = "BaseAgent";
         public const string prey = "PreyAgent";
         public const string hyena = "HyenaAgent";
         public const string buffalo = "Buffalo";
-        
+        public static string[] listOfMobsIds = new string[] { generic, prey, hyena, buffalo };
+
         public static int GetAgentTypeByName(string name)
         {
             int count = NavMesh.GetSettingsCount();

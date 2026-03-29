@@ -1,25 +1,20 @@
 using System;
-using Extensions.StateMachine;
+using System.Collections;
+using SIGGD.Mobs;
+using SIGGD.Mobs.StateMachine;
 using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// Root MonoBehaviour for the Apex predator. Holds all shared data and helper
-/// methods used by the state machine. States are never aware of each other —
-/// they communicate only through this class and the <see cref="stateController"/>.
+/// Brain for the Apex predator, built on <see cref="MobBrainBase"/>.
+/// Holds all shared data and helper methods used by the Apex state machine.
+/// States communicate only through this class and the <see cref="MobBrainBase.stateMachine"/>.
 /// </summary>
-public class Apex : MonoBehaviour
+public class Apex : MobBrainBase
 {
-    #region State Machine
+    #region Apex References
 
-    public StateController<ApexState> stateController;
-
-    #endregion
-
-    #region References
-
-    [Header("References")]
-    [SerializeField] private NavMeshAgent navMeshAgent;
+    [Header("Apex References")]
     [Tooltip("The head bone. Assign this here and also in ApexLineOfSight — the LOS component drives it.")]
     [SerializeField] private Transform headBone;
     [Tooltip("Standalone LOS component that mirrors the head bone each frame.")]
@@ -29,19 +24,21 @@ public class Apex : MonoBehaviour
 
     #region Movement Settings
 
-    [Header("Movement Settings")]
-    [Tooltip("Speed used while approaching the initial alert position.")]
-    [SerializeField] private float approachSpeed = 4f;
-    [Tooltip("Speed used while roaming between searches.")]
-    [SerializeField] private float roamSpeed = 2.5f;
-    [Tooltip("Speed used while chasing a target.")]
-    [SerializeField] private float chaseSpeed = 6f;
+    [Header("Apex Movement")]
+    [Tooltip("Speed multiplier used while approaching the initial alert position.")]
+    [SerializeField] private float approachSpeedMulti = 1.0f;
+    [Tooltip("Speed multiplier used while roaming between searches.")]
+    [SerializeField] private float roamSpeedMulti = 0.6f;
+    [Tooltip("Speed multiplier used while chasing a target.")]
+    [SerializeField] private float chaseSpeedMulti = 1.5f;
+    [Tooltip("Distance from a target position at which the Apex is considered to have arrived.")]
+    [SerializeField] private float arrivalDistance = 1.5f;
 
     #endregion
 
     #region Roam Settings
 
-    [Header("Roam Settings")]
+    [Header("Apex Roam")]
     [Tooltip("Radius around the current guard position in which roam targets are picked.")]
     [SerializeField] private float roamRadius = 12f;
     [Tooltip("How long the Apex stays at a roam point before picking a new one.")]
@@ -53,21 +50,21 @@ public class Apex : MonoBehaviour
 
     #region Search Settings
 
-    [Header("Search Settings")]
+    [Header("Apex Search")]
     [Tooltip("Total angular sweep of the head (degrees) during a search pause.")]
     [SerializeField] private float headSweepAngle = 90f;
     [Tooltip("Time in seconds to complete one full head sweep.")]
     [SerializeField] private float headSweepDuration = 3f;
     [Tooltip("How many sweeps the Apex performs before transitioning to roaming.")]
     [SerializeField] private int sweepsBeforeRoam = 2;
-    [Tooltip("Local axis the head bone rotates around during a sweep. X = nod up/down, Y = turn left/right, Z = tilt side to side.")]
+    [Tooltip("Local axis the head bone rotates around during a sweep.")]
     [SerializeField] private HeadSweepAxis headSweepAxis = HeadSweepAxis.Y;
 
     #endregion
 
     #region Attack Settings
 
-    [Header("Attack Settings")]
+    [Header("Apex Attack")]
     [SerializeField] private float attackRange = 2.5f;
     [SerializeField] private LayerMask attackLayerMask;
     [SerializeField] private DamageContext attackContext;
@@ -76,13 +73,12 @@ public class Apex : MonoBehaviour
 
     #region Debug
 
-    [Header("Debug")]
+    [Header("Apex Debug")]
     [Tooltip("When enabled, all Apex state and behaviour changes are printed to the console.")]
     [SerializeField] private bool debugLogs = false;
 
     /// <summary>
     /// Prints <paramref name="message"/> prefixed with "APEX: " only when <see cref="debugLogs"/> is enabled.
-    /// Call this from any state using <c>apex.ApexLog(...)</c>.
     /// </summary>
     public void ApexLog(string message)
     {
@@ -91,19 +87,12 @@ public class Apex : MonoBehaviour
 
     #endregion
 
-    #region Runtime State
-
-    /// <summary>The world position the Apex was initially alerted toward.</summary>
-    public Vector3 TargetPosition { get; private set; }
-
-    private Action onDespawn;
-
-    #endregion
-
     #region Public Accessors
 
-    /// <summary>Returns the LOS component, or null if not assigned in the inspector.</summary>
     public ApexLineOfSight LineOfSight => lineOfSight;
+    public float ApproachSpeedMulti => approachSpeedMulti;
+    public float RoamSpeedMulti => roamSpeedMulti;
+    public float ChaseSpeedMulti => chaseSpeedMulti;
     public float RoamRadius => roamRadius;
     public float RoamPauseDuration => roamPauseDuration;
     public float RoamDuration => roamDuration;
@@ -114,6 +103,102 @@ public class Apex : MonoBehaviour
     public float AttackRange => attackRange;
     public LayerMask AttackLayerMask => attackLayerMask;
     public DamageContext AttackContext => attackContext;
+
+    #endregion
+
+    #region Runtime State
+
+    /// <summary>The world position the Apex was initially alerted toward.</summary>
+    public Vector3 TargetPosition { get; private set; }
+
+    private Action onDespawn;
+    private bool initialized;
+
+    #endregion
+
+    #region Apex States
+
+    private ApexApproachingState approachingState;
+    private ApexSearchingState searchingState;
+    private ApexRoamingState roamingState;
+    private ApexChasingState chasingState;
+    private ApexAttackingState attackingState;
+    private ApexInvestigateState investigateState;
+
+    public ApexApproachingState ApproachingState => approachingState;
+    public ApexSearchingState SearchingState => searchingState;
+    public ApexRoamingState RoamingState => roamingState;
+    public ApexChasingState ChasingState => chasingState;
+    public ApexAttackingState AttackingState => attackingState;
+    public ApexInvestigateState InvestigateState => investigateState;
+
+    #endregion
+
+    #region MobBrainBase Overrides
+
+    protected override string MobName => "Apex";
+
+    protected override MobContext BuildContext()
+    {
+        return new MobContext
+        {
+            Transform = transform,
+            Rigidbody = GetComponent<Rigidbody>(),
+            NavAgent = GetComponent<NavMeshAgent>(),
+            Movement = GetComponent<Movement>(),
+            AgentData = GetComponent<AgentData>(),
+            Perception = GetComponent<PerceptionManager>(),
+            Smell = GetComponent<Smell>()
+        };
+    }
+
+    protected override void InitializeStates()
+    {
+        approachingState = new ApexApproachingState(this);
+        searchingState = new ApexSearchingState(this);
+        roamingState = new ApexRoamingState(this);
+        chasingState = new ApexChasingState(this);
+        attackingState = new ApexAttackingState(this);
+        investigateState = new ApexInvestigateState(this);
+    }
+
+    protected override void Start()
+    {
+        // Don't call base — the Apex doesn't start in WanderState.
+        // Initial state is set by InitializeApex(), called by ApexSpawnSystem
+        // between Awake() and Start().
+        if (!initialized)
+        {
+            ApexLog("Warning: Start() without InitializeApex(). Defaulting to approaching current position.");
+            TargetPosition = PlayerID.Instance.transform.position;
+            investigateState.SetTarget(TargetPosition);
+
+            StartCoroutine(DelayedEnterInvestigate());
+        }
+    }
+
+    // Wait one frame then enter investigate state.
+    private IEnumerator DelayedEnterInvestigate()
+    {
+        yield return new WaitForSeconds(0.5f);
+        stateMachine.ChangeState(InvestigateState);
+    }
+
+    protected override void EvaluateTransitions()
+    {
+        // Global LOS transition — if a target is spotted while not already chasing or attacking,
+        // immediately switch to chasing.
+        if (lineOfSight != null && lineOfSight.VisibleTarget != null)
+        {
+            var current = stateMachine.CurrentState;
+            if (current is not ApexChasingState && current is not ApexAttackingState)
+            {
+                ApexLog($"EvaluateTransitions — spotted '{lineOfSight.VisibleTarget.gameObject.name}', switching to ChasingState.");
+                chasingState.SetTarget(lineOfSight.VisibleTarget);
+                stateMachine.ChangeState(chasingState);
+            }
+        }
+    }
 
     #endregion
 
@@ -128,12 +213,13 @@ public class Apex : MonoBehaviour
     {
         TargetPosition = targetPosition;
         onDespawn = despawnCallback;
+        initialized = true;
 
         if (lineOfSight == null)
-            Debug.LogWarning("APEX: No ApexLineOfSight assigned — LOS checks will be skipped. Assign it in the inspector.");
+            Debug.LogWarning("APEX: No ApexLineOfSight assigned — LOS checks will be skipped.");
 
-        stateController = new StateController<ApexState>(this);
-        stateController.ChangeState(new ApexApproachingState(this));
+        InvestigateState.SetTarget(targetPosition);
+        StartCoroutine(DelayedEnterInvestigate());
         ApexLog($"Initialized. Approaching alert position {targetPosition}.");
     }
 
@@ -146,40 +232,20 @@ public class Apex : MonoBehaviour
 
     #region Movement Helpers
 
-    /// <summary>Sends the NavMeshAgent toward <paramref name="target"/> at approach speed.</summary>
-    public void MoveTowardTarget(Vector3 target)
+    /// <summary>
+    /// Returns true when the Rigidbody is within <see cref="arrivalDistance"/> of <paramref name="target"/>.
+    /// </summary>
+    public bool IsAtPosition(Vector3 target)
     {
-        navMeshAgent.SetDestination(target);
-        navMeshAgent.speed = approachSpeed;
-        navMeshAgent.updateRotation = true;
+        return Vector3.Distance(ctx.Rigidbody.position, target) <= arrivalDistance;
     }
 
-    /// <summary>Sends the NavMeshAgent toward <paramref name="target"/> at roam speed.</summary>
-    public void RoamTowardTarget(Vector3 target)
+    /// <summary>
+    /// Gets the NavSteering direction toward <paramref name="target"/>.
+    /// </summary>
+    public Vector3 GetSteeringTo(Vector3 target)
     {
-        navMeshAgent.SetDestination(target);
-        navMeshAgent.speed = roamSpeed;
-        navMeshAgent.updateRotation = true;
-    }
-
-    /// <summary>Sends the NavMeshAgent toward <paramref name="target"/> at chase speed.</summary>
-    public void ChaseTarget(Vector3 target)
-    {
-        navMeshAgent.SetDestination(target);
-        navMeshAgent.speed = chaseSpeed;
-        navMeshAgent.updateRotation = true;
-    }
-
-    /// <summary>Cancels any active NavMesh path and stops the agent.</summary>
-    public void StopMoving()
-    {
-        navMeshAgent.ResetPath();
-    }
-
-    /// <returns>True when the agent has arrived at its current destination.</returns>
-    public bool IsAtTarget()
-    {
-        return !navMeshAgent.pathPending && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance;
+        return NavSteering.GetSteeringDirection(ctx.NavAgent, ctx.Rigidbody.position, target, 0.1f);
     }
 
     /// <summary>
@@ -207,7 +273,7 @@ public class Apex : MonoBehaviour
 
     /// <summary>
     /// Performs the overlap-sphere attack — deals damage equal to target's max health
-    /// to every entity in <see cref="attackRange"/>. Called by the attacking state.
+    /// to every entity in <see cref="attackRange"/>.
     /// </summary>
     public void DoAttack()
     {
@@ -218,18 +284,31 @@ public class Apex : MonoBehaviour
             EntityHealthManager health = col.GetComponent<EntityHealthManager>();
             if (health == null) continue;
 
-            DamageContext ctx = attackContext;
-            ctx.attacker = gameObject;
-            ctx.victim = col.gameObject;
-            ctx.amount = health.MaxHealth;
-            health.TakeDamage(ctx);
-            ApexLog($"Attacked {col.gameObject.name} for {ctx.amount} damage.");
+            DamageContext dmgCtx = attackContext;
+            dmgCtx.attacker = gameObject;
+            dmgCtx.victim = col.gameObject;
+            dmgCtx.amount = health.MaxHealth;
+            health.TakeDamage(dmgCtx);
+            ApexLog($"Attacked {col.gameObject.name} for {dmgCtx.amount} damage.");
         }
     }
 
     #endregion
 
     #region Gizmos
+
+    protected override void OnDrawGizmos()
+    {
+        base.OnDrawGizmos();
+        if (StateMachine != null && StateMachine.CurrentState is ApexRoamingState)
+        {
+            RoamingState.OnDrawGizmos();
+        }
+        if (StateMachine != null && StateMachine.CurrentState is ApexInvestigateState)
+        {
+            InvestigateState.OnDrawGizmos();
+        }
+    }
 
     private void OnDrawGizmosSelected()
     {

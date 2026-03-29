@@ -1,20 +1,25 @@
 using SIGGD.Goap;
 using Sirenix.OdinInspector;
+using System.Linq;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
-public class ApexSpawnExternalEvent: ExternalEventTriggerer
+public class ApexSpawnExternalEvent : ExternalEventTriggerer
 {
-    [Tooltip("Hardset point to spawn the apex at, will override random spawning")]
-    [SerializeField] Vector3 spawnPosition;
-    [Tooltip("The range from player within which the script will attempt to spawn in the apex")]
-    [SerializeField, MinMaxSlider(30, 60, true)] Vector2 spawnRange;
-    [Tooltip("The number of times the script will sample random points to find a valid spawn point")]
-    [SerializeField] float spawnAttempts;
+    [Tooltip("Possible spawn locations for Apex")]
+    [SerializeField] Transform[] possibleSpawnPoints;
+
+    [Tooltip("Spawn points closer than this to the target location will be ignored. Indicated by magenta wire spheres")]
+    [SerializeField] float minimumSpawnDistance = 30f;
 
     [SerializeField] GameObject apexPrefab;
     [SerializeField] QuestEventBroadcaster questEventBroadcaster;
 
+    Apex apexScript;
     GameObject spawnedApex = null;
+
     public override void TriggerExternalEvent()
     {
         if (spawnedApex != null)
@@ -22,41 +27,86 @@ public class ApexSpawnExternalEvent: ExternalEventTriggerer
             return;
         }
 
-        if (spawnPosition != default)
+        // TODO: replace with trigger event location
+        Vector3 targetPos = PlayerID.Instance.transform.position;
+        if (UnityEngine.AI.NavMesh.SamplePosition(targetPos, out UnityEngine.AI.NavMeshHit targetHit, 10f, UnityEngine.AI.NavMesh.AllAreas))
         {
-            Debug.Log("Spawning apex at location: " + spawnPosition);
-            Instantiate(apexPrefab, spawnPosition, transform.rotation);
-            return;
+            targetPos = targetHit.position;
         }
 
         Vector3 spawnPos = Pathfinding.ERR_VECTOR;
-        // find random point next to player
-        for (int i = 0; i < spawnAttempts; i++)
+        if (possibleSpawnPoints == null || possibleSpawnPoints.Length == 0)
         {
-            spawnPos = PlayerID.Instance.transform.position + Random.insideUnitSphere * Random.Range(spawnRange.x, spawnRange.y);
-            spawnPos = Pathfinding.ShiftTargetToNavMesh(spawnPos, 10f);
-            if (spawnPos != Pathfinding.ERR_VECTOR)
-            {
-                break;
-            }
+            Debug.LogError("ApexSpawnExternalEvent: no spawn points provided — populate list of spawn points in editor");
+            return;
+        }
+
+        var orderedSpawns = possibleSpawnPoints
+            .Where(sp => sp != null && Vector3.Distance(sp.position, targetPos) > minimumSpawnDistance)
+            .OrderBy(sp => Vector3.Distance(sp.position, targetPos));
+
+        if (!orderedSpawns.Any())
+        {
+            Debug.LogError("ApexSpawnExternalEvent: no viable spawn points founds - spawn points too close to target location, adjust minimumSpawnDistance");
+            return;
+        }
+
+        foreach (var sp in orderedSpawns)
+        {
+            Vector3 candidate = sp.position;
+
+            // Ensure position exists on navmesh
+            candidate = Pathfinding.ShiftTargetToNavMesh(candidate, 5f);
+            if (candidate == Pathfinding.ERR_VECTOR) continue;
+
+            spawnPos = candidate;
+            break;
         }
 
         if (spawnPos == Pathfinding.ERR_VECTOR)
         {
-            Debug.LogError("Cannot find valid spawn point for Apex after " + spawnAttempts + " attempts");
+            Debug.LogError("ApexSpawnExternalEvent: no viable spawn point found - cannot shift to navmesh");
             return;
         }
 
-        Debug.Log("Spawning apex at location: " + spawnPos);
+        Debug.Log("ApexSpawnExternalEvent: Spawning apex at location: " + spawnPos);
         spawnedApex = Instantiate(apexPrefab, spawnPos, transform.rotation);
+        apexScript = spawnedApex.GetComponent<Apex>();
+        apexScript.InitializeApex(targetPos);
 
-        ApexSpawnConditionStrategy apexSpawnStrategy = questEventBroadcaster.conditionStrategy as ApexSpawnConditionStrategy;
-        if (apexSpawnStrategy != null)
+        if (questEventBroadcaster.conditionStrategy is ApexSpawnConditionStrategy apexSpawnStrategy)
         {
             apexSpawnStrategy.SetSpawnedApex(spawnedApex);
-        } else
+        }
+        else
         {
-            Debug.Log("Apex Spawner not using Apex Spawn strategy");
+            Debug.Log("ApexSpawnExternalEvent: Apex Spawner not using Apex Spawn strategy");
         }
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (possibleSpawnPoints == null || possibleSpawnPoints.Length == 0) return;
+
+        foreach (var sp in possibleSpawnPoints)
+        {
+            if (sp == null) continue;
+
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(sp.position, minimumSpawnDistance);
+
+            Gizmos.color = Color.blue;
+            Gizmos.DrawSphere(sp.position, 1f);
+
+            Handles.Label(sp.position + Vector3.up * 5f, "Apex Spawn Point");
+        }
+    }
+
+    [Button]
+    private void TestSpawn()
+    {
+        TriggerExternalEvent();
+    }
+#endif
 }
