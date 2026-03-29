@@ -9,6 +9,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: e28a0c5f8c4e88e459ef549fabda0c3a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e28a0c5f8c4e88e459ef549fabda0c3a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e28a0c5f8c4e88e459ef549fabda0c3a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e28a0c5f8c4e88e459ef549fabda0c3a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -28.838335
       objectReference: {fileID: 0}
@@ -48,6 +60,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e28a0c5f8c4e88e459ef549fabda0c3a, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: e28a0c5f8c4e88e459ef549fabda0c3a, type: 3}
       propertyPath: m_Name
       value: droopstalk
@@ -60,6 +76,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: -3794062574269502704}
   m_SourcePrefab: {fileID: 100100000, guid: e28a0c5f8c4e88e459ef549fabda0c3a, type: 3}
+--- !u!23 &2423791093441303531 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5901893356585517859, guid: e28a0c5f8c4e88e459ef549fabda0c3a, type: 3}
+  m_PrefabInstance: {fileID: 8089790480672854216}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8972820022721949081 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: e28a0c5f8c4e88e459ef549fabda0c3a, type: 3}
@@ -81,11 +102,14 @@ LODGroup:
   m_LODs:
   - screenRelativeHeight: 0.6
     fadeTransitionWidth: 0
-    renderers: []
+    renderers:
+    - renderer: {fileID: 2423791093441303531}
   - screenRelativeHeight: 0.3
     fadeTransitionWidth: 0
-    renderers: []
+    renderers:
+    - renderer: {fileID: 2423791093441303531}
   - screenRelativeHeight: 0.1
     fadeTransitionWidth: 0
-    renderers: []
+    renderers:
+    - renderer: {fileID: 2423791093441303531}
   m_Enabled: 1
