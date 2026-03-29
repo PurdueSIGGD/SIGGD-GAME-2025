@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic;
 
 namespace SIGGD.Mobs
 {
@@ -24,7 +24,8 @@ namespace SIGGD.Mobs
             agent.nextPosition = currentPos;
 
             // Only set destination at the requested rate to avoid thrashing
-            if (Time.time >= nextUpdate[id]) {
+            if (Time.time >= nextUpdate[id])
+            {
                 nextUpdate[id] = Time.time + updateRate;
                 if (agent.isOnNavMesh) // guard against agents not on the navmesh
                     agent.SetDestination(destination);
@@ -43,14 +44,14 @@ namespace SIGGD.Mobs
                 // This helps when agent.path hasn't been populated yet or agent has updatePosition = false.
                 var calcPath = new NavMeshPath();
                 bool calcSuccess = NavMesh.CalculatePath(currentPos, destination, NavMesh.AllAreas, calcPath);
-                if (calcSuccess && calcPath.status == NavMeshPathStatus.PathComplete && calcPath.corners != null && calcPath.corners.Length >= 2)
+                if (calcSuccess && (calcPath.status == NavMeshPathStatus.PathComplete || calcPath.status == NavMeshPathStatus.PathPartial) && calcPath.corners != null && calcPath.corners.Length >= 2)
                 {
                     raw = calcPath.corners[1];
                 }
                 else
                 {
-                    // Last-resort fallback: use raw XZ direction to guarantee movement.
-                    raw = destination - currentPos;
+                    // Last-resort fallback: Use the destination position directly.
+                    raw = destination;
                 }
             }
 
@@ -98,13 +99,13 @@ namespace SIGGD.Mobs
             {
                 var calcPath = new NavMeshPath();
                 bool calcSuccess = NavMesh.CalculatePath(agent.transform.position, destination, NavMesh.AllAreas, calcPath);
-                if (calcSuccess && calcPath.status == NavMeshPathStatus.PathComplete && calcPath.corners != null && calcPath.corners.Length >= 2)
+                if (calcSuccess && (calcPath.status == NavMeshPathStatus.PathComplete || calcPath.status == NavMeshPathStatus.PathPartial) && calcPath.corners != null && calcPath.corners.Length >= 2)
                 {
                     raw = calcPath.corners[1];
                 }
                 else
                 {
-                    raw = destination - agent.transform.position;
+                    raw = destination;
                 }
             }
 

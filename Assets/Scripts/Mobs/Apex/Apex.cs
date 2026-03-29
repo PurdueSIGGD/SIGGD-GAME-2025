@@ -181,7 +181,7 @@ public class Apex : MobBrainBase
     private IEnumerator DelayedEnterInvestigate()
     {
         yield return new WaitForSeconds(0.5f);
-        stateMachine.ChangeState(RoamingState);
+        stateMachine.ChangeState(InvestigateState);
     }
 
     protected override void EvaluateTransitions()
@@ -303,6 +303,10 @@ public class Apex : MobBrainBase
         if (StateMachine != null && StateMachine.CurrentState is ApexRoamingState)
         {
             RoamingState.OnDrawGizmos();
+        }
+        if (StateMachine != null && StateMachine.CurrentState is ApexInvestigateState)
+        {
+            InvestigateState.OnDrawGizmos();
         }
     }
 
