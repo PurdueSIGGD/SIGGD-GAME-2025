@@ -1,5 +1,23 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8893075336939800856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3979e547f77954cf693f3d7adc103c83, type: 3}
+  m_Name: RetroRenderFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    targetWidth: 426
+    targetHeight: 240
+    filterMode: 0
+    passEvent: 500
 --- !u!114 &-5109227172767838686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47,7 +65,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 7833122117494664109}
   - {fileID: -5109227172767838686}
-  m_RendererFeatureMap: ad6b866f10d7b46c224e66caf46018b9
+  - {fileID: -8893075336939800856}
+  m_RendererFeatureMap: ad6b866f10d7b46c224e66caf46018b9e876ea3c19739584
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
