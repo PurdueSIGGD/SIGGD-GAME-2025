@@ -19,6 +19,7 @@ public class PlayerItemActionState : StateMachineBehaviour
         }
 
         playerActionStrategy?.Enter();
+        PlayerID.Instance.playerHUD.TriggerHUDEvent();
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

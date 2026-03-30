@@ -8,13 +8,19 @@ public class PlayerHUD : MonoBehaviour
     [SerializeField] CanvasGroup hudCanvasGroup;
 
     public float hudFadeDuration = 1f;
+    public float hudTimeout = 5f;
+    private float lastTime = 0;
     private bool hudEnabled = false;
+
+    private Coroutine fadeRoutine;
+
 
     void Awake()
     {
         ShowCanvas();
         hudCanvasGroup.alpha = 1f;
-        FadeOut();
+        hudEnabled = true;
+        lastTime = Time.time;
     }
 
     private void Update()
@@ -22,6 +28,12 @@ public class PlayerHUD : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.U)) {
             if (hudEnabled) FadeOut();
             else FadeIn();
+        }
+        if (GameStateManager.Instance.getGameState() != GameStateManager.GameState.PEACEFUL) {
+            TriggerHUDEvent();
+        }
+        if (Time.time - lastTime >= hudTimeout && hudEnabled) {
+            FadeOut();
         }
     }
 
@@ -35,29 +47,48 @@ public class PlayerHUD : MonoBehaviour
         canvas.enabled = false;
     }
 
+    public void TriggerHUDEvent()
+    {
+        lastTime = Time.time;
+        if (!hudEnabled) {
+            FadeIn();
+        }
+    }
+
     public void FadeIn()
     {
-        StartCoroutine(Fade(0f, 1f));
+        StartFade(1f);
         hudEnabled = true;
     }
 
     public void FadeOut()
     {
-        StartCoroutine(Fade(1f, 0f));
+        StartFade(0f);
         hudEnabled = false;
     }
 
-    IEnumerator Fade(float start, float end)
+    void StartFade(float target)
+    {
+        if (fadeRoutine != null)
+        {
+            StopCoroutine(fadeRoutine);
+        }
+
+        fadeRoutine = StartCoroutine(Fade(target));
+    }
+
+    IEnumerator Fade(float target)
     {
         float time = 0f;
+        float start = hudCanvasGroup.alpha;
 
         while (time < hudFadeDuration)
         {
             time += Time.deltaTime;
-            hudCanvasGroup.alpha = Mathf.Lerp(start, end, time / hudFadeDuration);
+            hudCanvasGroup.alpha = Mathf.Lerp(start, target, time / hudFadeDuration);
             yield return null;
         }
 
-        hudCanvasGroup.alpha = end;
+        hudCanvasGroup.alpha = target;
     }
 }
