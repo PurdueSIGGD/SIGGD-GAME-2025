@@ -301,6 +301,8 @@ public class Inventory : Singleton<Inventory>, IInventory
             DeloadHandAnimator();
         }
 
+        PlayerID.Instance.playerHUD.TriggerHUDEvent();
+
         // debugging
         /*if (newIndexIsEmpty)
         {
