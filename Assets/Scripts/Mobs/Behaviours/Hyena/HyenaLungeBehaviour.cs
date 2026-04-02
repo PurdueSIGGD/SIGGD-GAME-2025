@@ -110,7 +110,7 @@ namespace SIGGD.Mobs.Hyena
 
             float t = 0f;
 
-            while (t < 0.85f && !exit)
+            while (t < 2.5f && !exit)
             {
                 t += Time.fixedDeltaTime;
 
@@ -119,10 +119,9 @@ namespace SIGGD.Mobs.Hyena
                 if (to.sqrMagnitude < 0.0001f)
                     break;
 
-                // If within 15 degrees then stop
                 Quaternion targetRot = Quaternion.LookRotation(to.normalized, Vector3.up);
                 float angle = Quaternion.Angle(rb.rotation, targetRot);
-                if (angle <= 15f)
+                if (angle <= 5f)
                     break;
 
                 Quaternion newRot = UnityUtil.DampQuaternion(rb.rotation, targetRot, 3f, Time.fixedDeltaTime);
