@@ -64,10 +64,17 @@ public class AudioLogManager : MonoBehaviour
             if (line.isFromRadio == true)
             {
                 RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 1);
+                // Put the animation call here for when someone is talking over to radio to caroline
             }
             else
             {
                 RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
+            }
+
+            // if the line has a $ caroline is speaking into the radio
+            if (line.isIntoRadio == true)
+            {
+                // Call animation for caroline speaking into the radio here
             }
 
             subtitles.text = line.line;
