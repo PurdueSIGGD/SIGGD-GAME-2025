@@ -3,6 +3,10 @@ using MobCensus;
 using SIGGD.Mobs;
 using UnityEngine;
 using UnityEngine.AI;
+
+/// <summary>
+/// A general centralized interface for spawning mobs.
+/// </summary>
 public class SpawnManager : MonoBehaviour
 {
     MobCensusManager mobCensus;
