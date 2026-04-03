@@ -12,15 +12,17 @@ public class SpawnManager : MonoBehaviour
     MobCensusManager mobCensus;
     MobSpeciesRegistry mobSpeciesRegistry;
 
-    public GameObject boundaryObject;
     [SerializeField]
-    private float spawnPointRadius = 3f;
     void Awake()
     {
         mobCensus = FindFirstObjectByType<MobCensusManager>();
         mobSpeciesRegistry = FindFirstObjectByType<MobSpeciesRegistry>();
     }
 
+    public void Start()
+    {
+        mobCensus.InitializeSpawnRegionsForNewGame();
+    }
 
     public GameObject SpawnMobNew(GameObject mobPrefab, Vector3 spawnPosition, Boundary boundary)
     {

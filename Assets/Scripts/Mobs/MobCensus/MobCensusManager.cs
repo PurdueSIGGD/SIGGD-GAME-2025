@@ -6,7 +6,6 @@ namespace MobCensus
 {
     public class MobCensusManager : MonoBehaviour
     {
-        SpawnManager spawnManager;
         [SerializeField] List<MobRegionData> regions = new List<MobRegionData>();
         [SerializeField] List<MobCitizenData> citizens = new List<MobCitizenData>();
         public List<MobRegionData> GetRegions() { return regions; }
