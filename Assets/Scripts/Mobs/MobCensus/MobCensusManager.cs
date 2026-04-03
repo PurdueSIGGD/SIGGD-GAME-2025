@@ -19,6 +19,8 @@ namespace MobCensus
         const float UPDATE_INTERVAL = 1f; // how often to update the raw data for citizens and spawn regions (in seconds)
         private void Update()
         {
+            // update raw data for citizens and spawn regions periodically for saving purposes
+            
             timer += Time.deltaTime;
             if (timer >= UPDATE_INTERVAL)
             {
@@ -32,12 +34,6 @@ namespace MobCensus
                     region.UpdateRawData();
                 }
             }
-        }
-
-        public void Awake()
-        {
-            spawnManager = FindFirstObjectByType<SpawnManager>();
-            InitializeRegionList();
         }
 
         /// <summary>
@@ -78,42 +74,6 @@ namespace MobCensus
             citizens.Remove(targetCitizen);
         }
 
-        /// <summary>
-        /// Loads mobs from the provided raw data list.
-        /// Assumes that the raw data contains all necessary information to spawn the mob (including prefab reference and mob ID).
-        /// </summary>
-        /// <param name="rawDataList">The list of raw data for mobs.</param>
-        public void LoadRawDataFromSave(List<MobCitizenDataRaw> rawDataList)
-        {
-            foreach (MobCitizenDataRaw rawData in rawDataList)
-            {
-                spawnManager.SpawnMobFromSave(rawData);
-            }
-        }
-
-        /// <summary>
-        /// Loads spawn regions from the provided raw data list.
-        /// Assumes that the order of raw data in the list corresponds to the order of spawn regions in the scene (based on instance ID sorting).
-        /// </summary>
-        /// <param name="rawDataList">The list of raw data for spawn regions.</param>
-        public void InitializeSpawnRegionsFromSave(List<MobRegionDataRaw> rawDataList)
-        {
-            Debug.Log("LOADING SPAWN REIGONS: " + rawDataList.Count);
-
-            InitializeRegionList();
-            Debug.Assert(rawDataList != null && rawDataList.Count == regions.Count);
-            for (int i = 0; i < regions.Count; i++)
-            {
-                MobRegionData regionData = regions[i];
-                MobRegionDataRaw rawData = rawDataList[i];
-
-                print("SPAWN REGION " + i + ": " + regionData.GetInstance().name + " | state: " + rawData.GetSpawnRegionState() + " | cooldown: " + rawData.GetSpawnCooldownTimer());
-
-                regionData.GetRawData().SetSpawnCooldownTimer(rawData.GetSpawnCooldownTimer());
-                regionData.GetRawData().SetSpawnRegionState(rawData.GetSpawnRegionState());
-                regionData.GetInstance().Initialize(regionData);
-            }
-        }
         /// <summary>
         /// Initializes the spawn regions for a new game. Should be called when starting a new game 
         /// to set all spawn regions to their default state (inactive with no cooldown).
