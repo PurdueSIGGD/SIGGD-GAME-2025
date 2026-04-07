@@ -31,30 +31,15 @@ public class SpawnManager : MonoBehaviour
 
         // register mob in census
         mobCensus.RegisterCitizen(mobPrefab, mobObject, mobId, boundary);
+        MobCitizenPassport passport = mobObject.GetComponent<MobCitizenPassport>();
+        if (passport == null)
+        {
+            Debug.LogError($"Mob prefab {mobPrefab.name} is missing a MobCitizenPassport component.");
+            return mobObject;
+        }
+        passport.SetMobCensusReference(mobCensus);
 
         InitializeMobInternalSystems(mobObject, boundary, mobId);
-        return mobObject;
-    }
-
-    public GameObject SpawnMobFromSave(MobCitizenDataRaw rawData)
-    {
-        if (rawData == null)
-        {
-            Debug.LogError($"Trying to spawn mob with missing data");
-            return null;
-        }
-        // pull prefab from registry
-        GameObject mobPrefab = mobSpeciesRegistry.GetMobPrefabById(rawData.GetMobId());
-        GameObject mobObject = Instantiate(mobPrefab, rawData.GetPosition(), Quaternion.identity);
-
-        // populate new mob with saved serialized data
-        MobCitizenPassport passport = mobObject.GetComponent<MobCitizenPassport>();
-        passport.ReadMobCitizenData(rawData);
-
-        // register mob in census
-        mobCensus.RegisterCitizen(mobPrefab, mobObject, rawData.GetMobId(), rawData.GetBoundary());
-
-        InitializeMobInternalSystems(mobObject, rawData.GetBoundary(), rawData.GetMobId());
         return mobObject;
     }
 
@@ -95,7 +80,8 @@ public class SpawnManager : MonoBehaviour
             navFilter = agentData.filter;
         bool success = NavMesh.SamplePosition(mobObject.transform.position, out NavMeshHit hit, 5f, navFilter);
 
-        if (success) {
+        if (success)
+        {
             mobObject.transform.position = hit.position;
             navAgent.Warp(hit.position);
             navAgent.nextPosition = hit.position;
@@ -116,7 +102,8 @@ public class SpawnManager : MonoBehaviour
             }
 
             Debug.Log("success");
-        } else
+        }
+        else
         {
             Debug.Log("failure");
         }

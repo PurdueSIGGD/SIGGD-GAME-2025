@@ -16,9 +16,13 @@ namespace MobCensus
 
         void Start()
         {
-            census = FindFirstObjectByType<MobCensusManager>();
             healthManager = GetComponent<EntityHealthManager>();
             agentData = GetComponent<AgentData>();
+        }
+
+        public void SetMobCensusReference(MobCensusManager census)
+        {
+            this.census = census;
         }
 
         void OnEnable()
@@ -79,7 +83,7 @@ namespace MobCensus
             if (healthManager != null)
             {
                 healthManager.CurrentHealth = rawData.GetHealth();
-            }        
+            }
         }
 
         public void HandleOnDeath(DamageContext context)
