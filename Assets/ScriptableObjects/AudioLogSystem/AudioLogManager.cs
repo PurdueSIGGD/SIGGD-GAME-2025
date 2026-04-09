@@ -66,6 +66,7 @@ public class AudioLogManager : MonoBehaviour
             {
                 RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 1);
                 anim.Play("PlayerHand_Left_Idle");
+                anim.SetBool("LeftVisible", true);
             }
             else
             {
@@ -76,11 +77,13 @@ public class AudioLogManager : MonoBehaviour
             if (line.isIntoRadio == true)
             {
                 anim.Play("PlayerHand_Left_Idle");
+                anim.SetBool("LeftVisible", true);
             }
 
             subtitles.text = line.line;
             yield return new WaitForSeconds(line.seconds);
         }
+        anim.SetBool("LeftVisible", false);
         subtitles.enabled = false;
         lastStarted = null;
         isPlaying = false;
