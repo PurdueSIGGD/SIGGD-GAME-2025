@@ -11,4 +11,5 @@ public class PlayerSaveData
     public float curStamina = -1f;
     public bool staminaDisabled = false;
     public Vector3 RespawnPosition = new(480.5f, 7.2f, -4.1f);
+    public int slimeLevel = 4;
 }
