@@ -12,6 +12,7 @@ public class AudioLogManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI subtitles;
     private Coroutine lastStarted = null;
 
+    [SerializeField] private Animator anim;
     public static AudioLogManager Instance { get; set; }
 
     private EventInstance logSoundEvent;
@@ -64,10 +65,17 @@ public class AudioLogManager : MonoBehaviour
             if (line.isFromRadio == true)
             {
                 RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 1);
+                anim.Play("PlayerHand_Left_Idle");
             }
             else
             {
                 RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
+            }
+
+            // if the line has a $ caroline is speaking into the radio
+            if (line.isIntoRadio == true)
+            {
+                anim.Play("PlayerHand_Left_Idle");
             }
 
             subtitles.text = line.line;
