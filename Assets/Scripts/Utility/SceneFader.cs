@@ -10,9 +10,26 @@ public class SceneFader : Singleton<SceneFader>
 
     private bool isTransitioning;
 
+    override protected void Awake()
+    {
+        base.Awake();
+        DontDestroyOnLoad(gameObject);
+    }
+
     void Start()
     {
         SetAlpha(0f);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            Debug.Log("Pressed K " + isTransitioning);
+            if (!isTransitioning) {
+                StartCoroutine(Fade(1f - fadeImage.color.a));
+            }
+        }
     }
 
     public void FadeToScene(string sceneName)
@@ -26,7 +43,9 @@ public class SceneFader : Singleton<SceneFader>
     {
         isTransitioning = true;
 
-        // Fade OUT (to black)
+        Time.timeScale = 0f; // pause game
+
+        // Fade out
         yield return StartCoroutine(Fade(1f));
 
         // Load scene async
@@ -39,29 +58,40 @@ public class SceneFader : Singleton<SceneFader>
             yield return null;
         }
 
-        // Optional: small pause for polish
-        yield return new WaitForSeconds(0.2f);
-
         // Activate scene
         op.allowSceneActivation = true;
 
-        // Wait one frame so scene swaps cleanly
+        // wait until scene is actually done loading
+        while (!op.isDone)
+            yield return null;
+
+        // extra stabilization frames for UI rebuild
+        yield return null;
         yield return null;
 
-        // Fade IN (from black)
+        // force UI to settle
+        Canvas.ForceUpdateCanvases();
+
+        // lock correct black state
+        SetAlpha(1f);
+
+        // Fade in
         yield return StartCoroutine(Fade(0f));
+
+        Time.timeScale = 1f;
 
         isTransitioning = false;
     }
 
     IEnumerator Fade(float targetAlpha)
     {
-        float startAlpha = fadeImage.canvasRenderer.GetAlpha();
+        Debug.Log("Fading to " + targetAlpha);
+        float startAlpha = fadeImage.color.a;
         float time = 0f;
 
         while (time < fadeDuration)
         {
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
 
             float t = time / fadeDuration;
 
@@ -69,6 +99,7 @@ public class SceneFader : Singleton<SceneFader>
             t = t * t * (3f - 2f * t);
 
             float alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+            Debug.Log(alpha);
             SetAlpha(alpha);
 
             yield return null;
@@ -79,6 +110,8 @@ public class SceneFader : Singleton<SceneFader>
 
     void SetAlpha(float a)
     {
-        fadeImage.canvasRenderer.SetAlpha(a);
+        Color c = fadeImage.color;
+        c.a = a;
+        fadeImage.color = c;
     }
 }
