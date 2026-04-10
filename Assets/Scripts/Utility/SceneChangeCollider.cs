@@ -9,6 +9,7 @@ public class SceneChangeCollider : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            SaveManager.Instance.Save();   
             Debug.Log("Scene change collided");
             SceneFader.Instance.FadeToScene(targetSceneName);
         }
