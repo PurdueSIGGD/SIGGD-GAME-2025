@@ -4,6 +4,7 @@ using UnityEngine;
 public class SceneChangeCollider : MonoBehaviour
 {
     [SerializeField] private string targetSceneName;
+    [SerializeField] private Transform newPosition;
 
     void OnTriggerEnter(Collider other)
     {

@@ -32,14 +32,14 @@ public class SceneFader : Singleton<SceneFader>
         }
     }
 
-    public void FadeToScene(string sceneName)
+    public void FadeToScene(string sceneName, Transform newPosition)
     {
         Debug.Log("Fading to scene " + sceneName);
         if (!isTransitioning)
-            StartCoroutine(TransitionRoutine(sceneName));
+            StartCoroutine(TransitionRoutine(sceneName, newPosition));
     }
 
-    IEnumerator TransitionRoutine(string sceneName)
+    IEnumerator TransitionRoutine(string sceneName, Transform newPosition)
     {
         isTransitioning = true;
 
@@ -74,6 +74,10 @@ public class SceneFader : Singleton<SceneFader>
 
         // lock correct black state
         SetAlpha(1f);
+
+        // Manually set player's transform for start position in new scene
+        PlayerID.Instance.gameObject.transform.position = newPosition.position;
+        PlayerID.Instance.gameObject.transform.rotation = newPosition.rotation;
 
         // Fade in
         yield return StartCoroutine(Fade(0f));
