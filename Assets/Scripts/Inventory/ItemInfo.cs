@@ -32,7 +32,7 @@ public class ItemInfo : ScriptableObject
         Axe,
         Flower,
         Slimeball,
-        BlueMushroom,
+        GreenMushroom,
         PurpleMushroom,
         DarkPurpleMushroom
     };

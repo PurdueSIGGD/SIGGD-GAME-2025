@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal; // Or HighDefinition if using HDRP
 
 public class DarkPurpleMushroomItemAction : IPlayerActionStrategy
 {
@@ -15,25 +16,39 @@ public class DarkPurpleMushroomItemAction : IPlayerActionStrategy
 
     private IEnumerator HealOverTime(GameObject player)
     {
-        GameObject globalVolume = GameObject.Find("Global Volume");
-        Transform volume = globalVolume.GetComponent<Transform>().GetChild(0);
-        volume.gameObject.SetActive(true);
+        GameObject globalVolumeObj = GameObject.Find("Global Volume");
+        Transform volumeTransform = globalVolumeObj.GetComponent<Transform>().GetChild(0);
+        volumeTransform.gameObject.SetActive(true);
+        Volume volume = volumeTransform.GetComponent<Volume>();
+        LensDistortion lensDistortion;
+        DepthOfField depthOfField;
+        ColorAdjustments colorAdjustments;
+        volume.profile.TryGet(out lensDistortion);
+        volume.profile.TryGet(out depthOfField);
+        volume.profile.TryGet(out colorAdjustments);
         int totalHeals = 8;
         float totalDuration = 16f;
         float interval = totalDuration / totalHeals;
-        bool jumpscared = false;
         for (int i = 0; i < totalHeals; i++)
         {
-            globalVolume.GetComponent<Transform>().GetChild(1).gameObject.SetActive(false);
-            if (!jumpscared)
+            if (colorAdjustments != null)
             {
-                int randomInt = Random.Range(0, 5);
-                if (randomInt == 4)
-                {
-                    jumpscared = true;
-                    globalVolume.GetComponent<Transform>().GetChild(1).gameObject.SetActive(true);
-                }
+                Color randomTripColor = Color.HSVToRGB(Random.value, 0.6f, 1f);
+                colorAdjustments.colorFilter.Override(randomTripColor);
+                colorAdjustments.postExposure.Override(Random.Range(-0.2f, 1.0f));
             }
+            if (lensDistortion != null)
+            {
+                lensDistortion.intensity.Override(Random.Range(-1f, 1f));
+                lensDistortion.xMultiplier.Override(Random.Range(0.8f, 1f));
+                lensDistortion.yMultiplier.Override(Random.Range(0.8f, 1f));
+            }
+            if (depthOfField != null)
+            {
+                depthOfField.gaussianStart.Override(Random.Range(-10f, 3f));
+                depthOfField.gaussianStart.Override(Random.Range(5, 10f));
+            }
+            globalVolumeObj.GetComponent<Transform>().GetChild(1).gameObject.SetActive(false);
             DamageContext healContext = new DamageContext();
             healContext.attacker = healContext.victim = player;
             healContext.amount = 20;
@@ -41,6 +56,7 @@ public class DarkPurpleMushroomItemAction : IPlayerActionStrategy
             PlayerID.Instance.GetComponent<PlayerHunger>().UpdateHunger(20);
             yield return new WaitForSeconds(interval);
         }
-        volume.gameObject.SetActive(false);
+        if (lensDistortion != null) lensDistortion.intensity.Override(0);
+        volumeTransform.gameObject.SetActive(false);
     }
 }
