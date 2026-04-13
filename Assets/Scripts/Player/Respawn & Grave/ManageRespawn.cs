@@ -37,6 +37,7 @@ public class ManageRespawn : MonoBehaviour
         Debug.Log("Respawing player");
         Time.timeScale = 1f;
         player.transform.position = respawnPoint;
+        player.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
         health.ResetHealth();
         hunger.ResetHunger();
         stamina.ResetStamina();
