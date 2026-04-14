@@ -12,7 +12,13 @@ public class look_at_player : MonoBehaviour
     void Update() {
         Debug.DrawLine(headBone.position, Player.position, Color.red);
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    void Start() {
+        Animator anim = GetComponent<Animator>();
+        if (anim != NULL) {
+            anim.enabled = false;
+        }
+    }
     void LateUpdate() {
         if (Player == null || !isActive || headBone == null) return;
         Vector3 direction = Player.position - headBone.position;
