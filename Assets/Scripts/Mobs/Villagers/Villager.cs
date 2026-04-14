@@ -59,7 +59,7 @@ public class Villager : MonoBehaviour {
             animator.SetBool("isWalking", true);
             travelTimer += Time.deltaTime;
 
-            // Timeout — destination is probably unreachable
+            // Timeout ï¿½ destination is probably unreachable
             if (travelTimer >= maxTravelTime)
             {
                 PickNewDestination();
