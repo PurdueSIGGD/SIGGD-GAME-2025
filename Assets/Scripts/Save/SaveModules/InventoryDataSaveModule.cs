@@ -26,12 +26,12 @@ public class InventoryDataSaveModule : ISaveModule
             return false;
         }
         inventoryData.inventory = new InventorySaveData.SlotSaveData[Inventory.InventoryLength + Inventory.HotBarLength];
-        UISlot[] inventoryReference = Inventory.Instance.GetInventory();
+        InventorySlot[] inventoryReference = Inventory.Instance.GetInventory();
         inventoryData.selected = Inventory.Instance.GetSelected();
 
         for (int i = 0; i < inventoryData.inventory.Length; i++)
         {
-            UISlot slot = inventoryReference[i];
+            InventorySlot slot = inventoryReference[i];
 
             if (slot == null)
             {
