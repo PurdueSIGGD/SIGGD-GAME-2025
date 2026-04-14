@@ -27,6 +27,9 @@ public class SaveManager : Singleton<SaveManager>
     public InputOverrideSaveModule inputOverrideSaveModule = null;
     public bool saveInputOverrides = true;
 
+    public AudioLevelsSaveModule audioLevelsSaveModule = null;
+    public bool saveAudioLevels = true;
+
 
     private ISaveModule[] modules;
 
@@ -46,6 +49,7 @@ public class SaveManager : Singleton<SaveManager>
         if (saveMobScene) mobSceneDataSaveModule = new MobSceneDataSaveModule(FindFirstObjectByType<MobCensus.MobCensusManager>());
         if (saveGrave) graveModule = new GraveDataSaveModule();
         if (saveInputOverrides) inputOverrideSaveModule = new InputOverrideSaveModule();
+        if (saveAudioLevels) audioLevelsSaveModule = new AudioLevelsSaveModule();
 
         modules = new ISaveModule[] {
             inventoryModule,
@@ -55,7 +59,8 @@ public class SaveManager : Singleton<SaveManager>
             gameProgressModule,
             mobSceneDataSaveModule,
             graveModule,
-            inputOverrideSaveModule
+            inputOverrideSaveModule,
+            audioLevelsSaveModule
         };
 
         Debug.Log("Loading on start");

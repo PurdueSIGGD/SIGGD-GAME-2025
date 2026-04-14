@@ -1,17 +1,46 @@
 using UnityEngine;
 
-public class SettingsMenuManager : MonoBehaviour
+public class SettingsMenu : Singleton<SettingsMenu>
 {
-    public MainMenuManager mainMenuManager;
+    public GameObject previousView = null;
+
     public GameObject initialPanel;
+
+    private GameObject canvas;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        canvas = gameObject;
+        Show(false);
+
         // This is used to load the currently used input overrides
         SaveManager.Instance.Load();
 
         OpenPanel(initialPanel);
+    }
+
+    public void Show(bool enabled)
+    {
+        // Will doing this be too slow?
+        if (!enabled)
+        {
+            SaveManager.Instance.Save();
+        }
+
+        if (previousView)
+        {
+            previousView.SetActive(!enabled);
+        }
+        else if (!enabled)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            PlayerInput.Instance.DebugToggleInput(false);
+        }
+
+        canvas.SetActive(enabled);
     }
 
     public void ResetPlayerInputs()
@@ -23,10 +52,19 @@ public class SettingsMenuManager : MonoBehaviour
         }
     }
 
-    // This goes back to main menu
-    public void GoBack()
+    public void ResetAudioLevels()
     {
-        mainMenuManager.ShowMainMenu();
+        SaveManager.Instance.audioLevelsSaveModule.ResetAudioLevels();
+        foreach (var vcaController in FindObjectsByType<ControllerVca>(FindObjectsSortMode.None))
+        {
+            vcaController.Restart();
+        }
+    }
+
+    // This goes back to main menu
+    public void Close()
+    {
+        Show(false);
     }
 
     public void OpenPanel(GameObject panel)
@@ -49,6 +87,5 @@ public class SettingsMenuManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 }

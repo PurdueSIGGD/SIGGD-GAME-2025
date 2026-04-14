@@ -13,7 +13,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     public const int HotBarLength = 3;
     public const int InventoryLength = 24;
 
-    [Header("Add Slot.cs to these if you like to add an item in edtior")]
+    [Header("Add Slot.cs to these if you like to add an item in editor")]
     [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength]; // hotbar buttons
     [SerializeField] private Button[] inventorySlots = new Button[InventoryLength]; // inventory buttons
 
