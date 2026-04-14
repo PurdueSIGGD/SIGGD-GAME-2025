@@ -32,11 +32,6 @@ namespace SIGGD.Mobs
             this.agent = this.GetComponent<AgentBehaviour>();
             this.navMeshAgent = this.GetComponent<NavMeshAgent>();
             rb = this.GetComponent<Rigidbody>();
-            if (navMeshAgent != null)
-            {
-                navMeshAgent.updatePosition = false;
-                navMeshAgent.updateRotation = false;
-            }
 
         }
 

@@ -39,8 +39,15 @@ public class EntityHealthManager : StatProvider, IHealth
     {
         if (CurrentHealth <= 0) return; // prob a design thing, maybe ability to revive dead creatures in the future?
 
+        if (healContext.amount > 0)
+        {
+            Debug.LogWarning("Healing should be negative damage");
+            return;
+        }
+        float healAmount = healContext.amount * -1; // healing is negative damage
+
         // increase health but not above max, maybe change in future to allow overheal?
-        CurrentHealth = Mathf.Min(CurrentHealth + healContext.amount, maxHealth.value);
+        CurrentHealth = Mathf.Min(CurrentHealth + healAmount, maxHealth.value);
 
         OnHealthChanged?.Invoke(healContext);
     }
@@ -56,14 +63,14 @@ public class EntityHealthManager : StatProvider, IHealth
         {
             // Attempt to change to peaceful if pursuer died
 
-            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
+            if (GameStateManager.Instance) GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
 
             Destroy(gameObject);
         } else
         {
             // Change state of player to peaceful
 
-            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
+            if (GameStateManager.Instance) GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
         }
     }
 

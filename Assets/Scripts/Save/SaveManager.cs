@@ -4,10 +4,9 @@ using UnityEngine.SceneManagement;
 
 public class SaveManager : Singleton<SaveManager>
 {
-
     public InventoryDataSaveModule inventoryModule = null;
     public bool saveInventory = true;
-    
+
     public PlayerDataSaveModule playerModule = null;
     public bool savePlayer = true;
 
@@ -20,6 +19,8 @@ public class SaveManager : Singleton<SaveManager>
     public GameProgressDataSaveModule gameProgressModule = null;
     public bool saveGameProgress = true;
 
+    public MobSceneDataSaveModule mobSceneDataSaveModule = null;
+    public bool saveMobScene = true;
     public GraveDataSaveModule graveModule = null;
     public bool saveGrave = true;
 
@@ -38,16 +39,26 @@ public class SaveManager : Singleton<SaveManager>
         if (saveScreenshot) screenshotModule = new ScreenshotSaveModule();
         if (saveQuests) questModule = new QuestDataSaveModule();
         if (saveGameProgress) gameProgressModule = new GameProgressDataSaveModule();
+        if (saveMobScene) mobSceneDataSaveModule = new MobSceneDataSaveModule(FindFirstObjectByType<MobCensus.MobCensusManager>());
         if (saveGrave) graveModule = new GraveDataSaveModule();
 
-        modules = new ISaveModule[] {inventoryModule, screenshotModule, playerModule,
-                                     questModule, gameProgressModule, graveModule};
+        modules = new ISaveModule[] {
+            inventoryModule,
+            screenshotModule,
+            playerModule,
+            questModule,
+            gameProgressModule,
+            mobSceneDataSaveModule,
+            graveModule
+        };
 
         Debug.Log("Loading on start");
         Load();
-
     }
 
+
+    // TODO: Need to update to not rely on this
+    // Need to update to make sure the SaveModules don't actually have anything to do with setting value in scene
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // Safe to call Load() here because all Awake() methods of scene objects and singletons have run
@@ -72,6 +83,7 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Load()
     {
+        if (modules == null) return false;
         Debug.Log("Loading from save");
         foreach (var module in modules)
         {
@@ -84,8 +96,7 @@ public class SaveManager : Singleton<SaveManager>
     public bool Save()
     {
         // Save if the game state is peaceful
-        Debug.Log($"Trying to save {GameStateManager.Instance.canSaveGame()}");
-        if (!GameStateManager.Instance.canSaveGame())
+        if (!GameStateManager.Instance.canSaveGame() || modules == null)
         {
             Debug.Log("Couldn't save game");
             return false;
@@ -99,5 +110,4 @@ public class SaveManager : Singleton<SaveManager>
         }
         return true;
     }
-
 }

@@ -347,11 +347,11 @@ public class Inventory : Singleton<Inventory>, IInventory
                 Debug.LogWarning("no tool animation found for current tool!");
                 DeloadHandAnimator();
             }
-        }
-        else
-        {
+        } else {
             DeloadHandAnimator();
         }
+
+        PlayerID.Instance.playerHUD.TriggerHUDEvent();
     }
 
     /// <summary>

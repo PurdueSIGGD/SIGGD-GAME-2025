@@ -1,23 +1,30 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using SIGGD.Mobs;
 using SIGGD.Mobs.PackScripts;
-using SIGGD.Goap;
-using UnityEngine.ProBuilder.MeshOperations;
 using Utility;
 
 namespace SIGGD.Mobs.Hyena
 {
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(Movement))]
+    [RequireComponent(typeof(AgentData))]
+    [RequireComponent(typeof(EnemyAnimator))]
     public class HyenaCirclingBehaviour : MonoBehaviour
     {
+        [Tooltip("Speed multiplier of Hyena when circling around target")]
+        [SerializeField] float circlingSpeedMultiplier;
+        [Tooltip("Speed multiplier of Hyena when pacing before lunge")]
+        [SerializeField] float lungePreparationMultiplier;
+
         private Rigidbody rb;
         private NavMeshAgent agent;
         private AgentMoveBehaviour agentMove;
         private PackBehavior packBehavior;
         private Movement move;
         private AgentData agentData;
+        private EnemyAnimator enemyAnimator;
 
         private NavMeshQueryFilter navFilter;
 
@@ -61,12 +68,7 @@ namespace SIGGD.Mobs.Hyena
             packBehavior = GetComponent<PackBehavior>();
             move = GetComponent<Movement>();
             agentData = GetComponent<AgentData>();
-
-            if (agent != null)
-            {
-                agent.updatePosition = false;
-                agent.updateRotation = false;
-            }
+            enemyAnimator = GetComponent<EnemyAnimator>();
 
             rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -89,14 +91,14 @@ namespace SIGGD.Mobs.Hyena
         /// terminate the behavior prematurely. </para></remarks>
         /// <param name="GetTarget">A delegate that provides the current position of the target as a <see cref="Vector3"/>.</param>
         /// <returns>An enumerator that can be used to control the execution of the behavior over multiple frames.</returns>
-        public IEnumerator CircleLoop(Func<Vector3> GetTarget)
+        public IEnumerator CircleLoop(Transform target)
         {
             finished = false;
             exit = false;
-
-            if (Vector3.Distance(GetTarget(), transform.position) < 9f && UnityEngine.Random.value > 0.3f)
+            
+            if (Vector3.Distance(target.position, transform.position) < 9f && UnityEngine.Random.value > 0.3f)
             {
-                yield return StartCoroutine(WalkTowardsTarget(GetTarget));
+                yield return StartCoroutine(WalkTowardsTarget(target));
                 yield return new WaitUntil(() => finishedWalking || exit);
                 if (exit) yield break;
             }
@@ -104,11 +106,11 @@ namespace SIGGD.Mobs.Hyena
             int loopCount = 0;
             do
             {
-                yield return StartCoroutine(Circle(GetTarget));
+                yield return StartCoroutine(Circle(target));
                 yield return new WaitUntil(() => finishedCircling || exit);
                 if (exit) yield break;
 
-                yield return StartCoroutine(WalkTowardsTarget(GetTarget));
+                yield return StartCoroutine(WalkTowardsTarget(target));
                 yield return new WaitUntil(() => finishedWalking || exit);
 
                 if (loopCount > 3) ExitBehaviour();
@@ -117,10 +119,40 @@ namespace SIGGD.Mobs.Hyena
                 loopCount++;
             } while (failedWalking);
 
+            yield return StartCoroutine(TurnTowardsTarget(target));
+
             finished = true;
         }
 
-        private IEnumerator Circle(Func<Vector3> GetTarget)
+        private IEnumerator TurnTowardsTarget(Transform target)
+        {
+            float t = 0f;
+            while (t < 2.5f && !exit)
+            {
+                t += Time.fixedDeltaTime;
+
+                Vector3 targetRaw = target.position;
+                if (targetRaw == Vector3.zero)
+                    break;
+
+                Vector3 to = targetRaw - transform.position;
+                to.y = 0f;
+                if (to.sqrMagnitude < 0.0001f)
+                    break;
+
+                Quaternion targetRot = Quaternion.LookRotation(to.normalized, Vector3.up);
+                float angle = Quaternion.Angle(rb.rotation, targetRot);
+                if (angle <= 10f)
+                    break;
+
+                Quaternion newRot = UnityUtil.DampQuaternion(rb.rotation, targetRot, 10f, Time.fixedDeltaTime);
+                rb.MoveRotation(newRot);
+
+                yield return new WaitForFixedUpdate();
+            }
+        }
+
+        private IEnumerator Circle(Transform target)
         {
             finishedCircling = false;
             escaping = false;
@@ -148,11 +180,11 @@ namespace SIGGD.Mobs.Hyena
             initialRadius = radius;
 
             
-            angleRad = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
-            float sign = UnityEngine.Random.value > 0.5f ? 1f : -1f;
-            angSpeed = sign * UnityEngine.Random.Range(AngularSpeedMin, AngularSpeedMax);
+            angleRad = Random.Range(0f, Mathf.PI * 2f);
+            float sign = Random.value > 0.5f ? 1f : -1f;
+            angSpeed = sign * Random.Range(AngularSpeedMin, AngularSpeedMax);
 
-            float duration = UnityEngine.Random.Range(6f, 10f);
+            float duration = Random.Range(6f, 10f);
             float timeAtBeginning = Time.time;
             float elapsed = 0f;
 
@@ -162,14 +194,12 @@ namespace SIGGD.Mobs.Hyena
             float speedUpdateRate = 0.5f;
             bool nearEndOfLunge = false;
             Vector3 lastPos = rb.position;
-
             try
             {
                 while (elapsed < duration && !exit)
                 {
                     elapsed += Time.fixedDeltaTime;
-
-                    Vector3 targetRaw = GetTarget();
+                    Vector3 targetRaw = target.position;
                     if (targetRaw == Vector3.zero)
                     {
                         ExitBehaviour();
@@ -233,7 +263,16 @@ namespace SIGGD.Mobs.Hyena
                     }
 
 
-                    move.MoveTowards(dir, 1.0f, distToTargetMulti);         
+                    move.MoveTowardsNoRotation(dir, circlingSpeedMultiplier, distToTargetMulti);
+
+                    // Face the movement direction
+                    Vector3 moveDir = dir;
+                    moveDir.y = 0f;
+                    if (moveDir.sqrMagnitude > 0.001f)
+                    {
+                        Quaternion targetRot = Quaternion.LookRotation(moveDir.normalized, Vector3.up);
+                        rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 5f, Time.fixedDeltaTime));
+                    }
 
                     // If movement is negligible for a period of time then it starts an escape sequence
 
@@ -273,7 +312,7 @@ namespace SIGGD.Mobs.Hyena
             }
         }
 
-        private IEnumerator WalkTowardsTarget(Func<Vector3> GetTarget)
+        private IEnumerator WalkTowardsTarget(Transform target)
         {
             finishedWalking = false;
             failedWalking = false;
@@ -288,7 +327,7 @@ namespace SIGGD.Mobs.Hyena
             {
                 elapsed += Time.fixedDeltaTime;
 
-                Vector3 targetRaw = GetTarget();
+                Vector3 targetRaw = target.position;
                 if (targetRaw == Vector3.zero)
                 {
                     ExitBehaviour();
@@ -316,7 +355,17 @@ namespace SIGGD.Mobs.Hyena
                     dir = (-toTarget).normalized;
                 }
                 dir = ApplyEdgeAvoidance(rb.position, dir);
-                move.MoveTowardsNoRotation(dir, 0.3f, 1.0f, false);
+                move.MoveTowardsNoRotation(dir, lungePreparationMultiplier, 1.0f, false);
+
+                Vector3 moveDir = dir;
+                moveDir.y = 0f;
+                if (moveDir.sqrMagnitude > 0.001f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(moveDir.normalized, Vector3.up);
+                    rb.MoveRotation(UnityUtil.DampQuaternion(rb.rotation, targetRot, 5f, Time.fixedDeltaTime));
+                }
+
+
 
                 // Not moving check similar to Circle()
                 bool notMoving = (rb.position - lastPos).sqrMagnitude < MinMoveSqr;
