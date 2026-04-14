@@ -4,9 +4,11 @@ public class VillagerInteract : MonoBehaviour, IInteractable<IInteractor>
 {
     InteractableUI ui;
     [SerializeField] private float lookSpeed = 5f;
+    [SerializeField] private look_at_player headlook;
 
     private bool playerIsLooking = false;
     private Transform playerTransform;
+    headLook.transform = playerTransform;
 
     private void Update()
     {
@@ -29,11 +31,17 @@ public class VillagerInteract : MonoBehaviour, IInteractable<IInteractor>
         {
             playerTransform = PlayerID.Instance.transform;
         }
+        if (headLook != null) {
+            headlook.setActive(true);
+        }
     }
 
     public void OnHoverExit(InteractableUI ui) {
         playerIsLooking = false;
         playerTransform = null;
+        if (headLook != null) {
+            headLook.setActive(false);
+        }
     }
 
     public void OnInteract(IInteractor interactor)
