@@ -4,5 +4,5 @@ using UnityEngine;
 [Serializable]
 public class SceneSaveData
 {
-    public string sceneName;
+    public string sceneName = "";
 }

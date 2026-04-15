@@ -5,7 +5,7 @@ public class SceneSaveManager : Singleton<SceneSaveManager>
     public SceneDataSaveModule sceneModule = null;
     public bool saveScene = true;
 
-    public string sceneName;
+    public string sceneName = "";
 
     protected override void Awake()
     {

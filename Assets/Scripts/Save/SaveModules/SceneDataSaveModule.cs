@@ -9,10 +9,15 @@ public class SceneDataSaveModule : ISaveModule
     private readonly string savePath = $"{FileManager.savesDirectory}/sceneData";
     public bool deserialize()
     {
+        Debug.Log("creating save data");
+        sceneData ??= new SceneSaveData();
+        Debug.Log("deserialize: checking for file path");
         if (!FileManager.Instance.FileExists(savePath)) return false;
+        
         byte[] bytes = FileManager.Instance.ReadFile(savePath);
         sceneData = SerializationUtility.DeserializeValue<SceneSaveData>(bytes, DataFormat.Binary);
         SceneSaveManager.Instance.sceneName = sceneData.sceneName;
+        Debug.Log("Deserialized scene " + sceneData.sceneName);
         return true;
     }
 
