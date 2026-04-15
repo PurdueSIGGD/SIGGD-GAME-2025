@@ -22,6 +22,6 @@ public struct DamageContext
 {
     public GameObject attacker; // who caused the damage
     public GameObject victim;   // who is taking the damage
-    public float amount; // how much damage
+    public float amount; // how much damage (negative damage is healing)
     public string xxtraContext; // any additional context, e.g., "Critical Hit", "Poisoned"
 }

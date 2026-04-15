@@ -25,6 +25,9 @@ public class EnemyAnimator : MonoBehaviour
     [SerializeField]
     private Transform aimTransform;
 
+    [SerializeField]
+    private float maxLookAngle = 90f;
+
     public float targetT = 0f;
     Vector3 vel;
     public float t;
@@ -40,7 +43,20 @@ public class EnemyAnimator : MonoBehaviour
     {
         if (!aimTransform || !forwardTransform) return;
 
-        t = Mathf.MoveTowards(t, targetT, 6f * Time.deltaTime);
+        float currentTargetT = targetT;
+
+        if (lookTargetTransform != null)
+        {
+            Vector3 dirToTarget = (lookTargetTransform.position - transform.position).normalized;
+            float angle = Vector3.Angle(transform.forward, dirToTarget);
+
+            if (angle > maxLookAngle)
+            {
+                currentTargetT = 0f;
+            }
+        }
+
+        t = Mathf.MoveTowards(t, currentTargetT, 6f * Time.deltaTime);
 
         Vector3 forwardPos = forwardTransform.position;
         Vector3 targetPos = (lookTargetTransform != null) ? lookTargetTransform.position : forwardPos;
