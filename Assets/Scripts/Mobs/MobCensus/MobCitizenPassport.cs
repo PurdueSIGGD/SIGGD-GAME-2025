@@ -29,7 +29,7 @@ namespace MobCensus
         {
             EntityHealthManager.OnDeath += HandleOnDeath;
         }
-        void OnDsable()
+        void OnDisable()
         {
             EntityHealthManager.OnDeath -= HandleOnDeath;
         }
