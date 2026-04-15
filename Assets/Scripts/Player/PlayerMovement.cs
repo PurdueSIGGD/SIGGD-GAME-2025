@@ -41,7 +41,6 @@ public class PlayerMovement : MonoBehaviour
         psm = PlayerID.Instance.stateMachine;
 
         FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
-
     }
 
     private void Update()

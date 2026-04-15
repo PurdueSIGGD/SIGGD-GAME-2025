@@ -25,7 +25,7 @@ public class AudioLogManager : MonoBehaviour
     private Dictionary<string, AudioLogObject> audioNameToLogs = new();
     [HideInInspector] public List<string> names = new List<string>();
 
-
+    private float total_time = 0.0f; // to un cumulative the time stamps as we play them
     void Awake()
     {
         if (Instance != null)
@@ -58,6 +58,7 @@ public class AudioLogManager : MonoBehaviour
     private IEnumerator StartSubtitles(AudioLogObject curAudio)
     {
         subtitles.enabled = true;
+        total_time = 0;
 
         foreach (var line in curAudio.subtitles)
         {
@@ -80,8 +81,15 @@ public class AudioLogManager : MonoBehaviour
                 anim.SetBool("LeftVisible", true);
             }
 
+            if (line.isFromRadio == false && line.isIntoRadio == false)
+            {
+                anim.SetBool("LeftVisible", false);
+            }
+
+
             subtitles.text = line.line;
-            yield return new WaitForSeconds(line.seconds);
+            yield return new WaitForSeconds(line.seconds - total_time);
+            total_time = line.seconds;
         }
 
         anim.SetBool("LeftVisible", false);
@@ -190,6 +198,7 @@ public class AudioLogManager : MonoBehaviour
         }
 
         // run all the normal stop stuff including stopping audio
+        anim.SetBool("LeftVisible", false);
         logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         logSoundEvent.release(); // stops the now unused event from floating around not doing anything
         isPlaying = false;
