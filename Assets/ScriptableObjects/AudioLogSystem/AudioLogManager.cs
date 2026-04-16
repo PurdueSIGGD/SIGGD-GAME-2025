@@ -62,30 +62,33 @@ public class AudioLogManager : MonoBehaviour
 
         foreach (var line in curAudio.subtitles)
         {
-            // if the line has a % then it is from a radio so set effects to radio effects
+            if (line.isFromRadio == true || line.isIntoRadio == true)
+            {
+                anim.Play("PlayerHand_Left_Idle");
+                anim.SetBool("LeftVisible", true);
+
+                // uncomment all this stuff when we get a real radio noise and then put the noise into (name goes here)
+                /* delay for .2 seconds while the radio click noise (activate noise (i dunno man)) plays
+                 * RuntimeManager.GetEventDescription(FMODEvents.Instance.soundEvents["(name goes here too)"]).getLength(out int lengthMS);
+                 * float lengthSec = lengthMS / 1000;
+                 * AudioManager.Instance.PlayOneShot("(name needs to go here)");
+                 * yield return new WaitForSeconds(lengthSec);
+                 */
+            }
+            else
+            {
+                anim.SetBool("LeftVisible", false);
+            }
+
             if (line.isFromRadio == true)
             {
                 RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 1);
-                anim.Play("PlayerHand_Left_Idle");
-                anim.SetBool("LeftVisible", true);
+                
             }
             else
             {
                 RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
             }
-
-            // if the line has a $ caroline is speaking into the radio
-            if (line.isIntoRadio == true)
-            {
-                anim.Play("PlayerHand_Left_Idle");
-                anim.SetBool("LeftVisible", true);
-            }
-
-            if (line.isFromRadio == false && line.isIntoRadio == false)
-            {
-                anim.SetBool("LeftVisible", false);
-            }
-
 
             subtitles.text = line.line;
             yield return new WaitForSeconds(line.seconds - total_time);
