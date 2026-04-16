@@ -9,7 +9,8 @@ public class UISlot : MonoBehaviour
     public int count = 0;
     [HideInInspector] public int index;
 
-    private TextMeshProUGUI textDisplay;
+    [SerializeField] TextMeshProUGUI textDisplay;
+    [SerializeField] Image imageDisplay;
     private Button button;
 
     void Awake()
@@ -42,11 +43,23 @@ public class UISlot : MonoBehaviour
     {
         if (itemInfo)
         {
-            if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check
-            textDisplay.text = itemInfo.name + "(" + count + ")";
+            //if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check
+            //textDisplay.text = itemInfo.name + "(" + count + ")";
+            if (textDisplay) textDisplay.text = itemInfo.name + "(" + count + ")";
+            if (imageDisplay)
+            {
+                imageDisplay.sprite = itemInfo.itemImage;
+                imageDisplay.color = Color.white;
+            }
+
         }
         else {
-            textDisplay.text = "empty";
+            if (textDisplay) textDisplay.text = "empty";
+            if (imageDisplay)
+            {
+                imageDisplay.sprite = null;
+                imageDisplay.color = Color.clear;
+            }
         }
     }
 }
