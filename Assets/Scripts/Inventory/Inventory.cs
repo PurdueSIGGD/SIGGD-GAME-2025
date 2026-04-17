@@ -1,39 +1,50 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting;
-using System;
-using System.Collections;
+
 public class Inventory : Singleton<Inventory>, IInventory
 {
-    // reference to the script that control's the player's tool hands.
     private PlayerHands handsScript;
 
     public const int HotBarLength = 3;
     public const int InventoryLength = 24;
 
     [Header("Add Slot.cs to these if you like to add an item in edtior")]
-    [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength]; // hotbar buttons
-    [SerializeField] private Button[] inventorySlots = new Button[InventoryLength]; // inventory buttons
+    [SerializeField] private Button[] hotbarSlots = new Button[HotBarLength];
+    [SerializeField] private Button[] inventorySlots = new Button[InventoryLength];
 
     private List<ItemInfo> lastClickedItems = new();
 
-    private UISlot[] inventory; // array (or 2D-array) for entire inventory; first 9 indices are the hotbar
-    // [SerializeField] public ItemInfo[] itemInfos = new ItemInfo[7]; // array of all of the different types of item infos; used for loading from file
+    // Separate data arrays for hotbar and inventory
+    private InventorySlot[] hotbarData;
+    private InventorySlot[] inventoryData;
+
+    // Unified flat array (indices 0..HotBarLength-1 = hotbar, rest = inventory)
+    // This preserves the original indexing used throughout all methods.
+    private InventorySlot[] allSlots;
+
+    // Parallel UI arrays
+    private UISlot[] hotbarUISlots;
+    private UISlot[] inventoryUISlots;
 
     private Dictionary<string, ItemInfo> itemInfos;
 
     private Canvas inventoryCanvas;
-    private int selected; // index of selected item in hotbar
-    private int swapSelection = -1; // index of select item for swapping
+    private int selected;
+    private int swapSelection = -1;
     private InventoryInputActions inputActions;
+
+    /// <summary>Fired whenever the contents of any hotbar slot change (add, remove, swap, craft etc.).</summary>
+    public static event Action OnHotbarContentsChanged;
+    /// <summary>Fired whenever the selected hotbar index changes. Passes the new index.</summary>
+    public static event Action<int> OnHotbarSelectionChanged;
 
     protected override void Awake()
     {
         base.Awake();
-        inventory = new UISlot[HotBarLength + InventoryLength];
-        
         inventoryCanvas = GetComponentInChildren<Canvas>();
         inventoryCanvas.enabled = false;
 
@@ -44,7 +55,6 @@ public class Inventory : Singleton<Inventory>, IInventory
         {
             itemInfos[entry.Key.ToString()] = entry.Value;
         }
-
     }
 
     void OnEnable()
@@ -66,149 +76,182 @@ public class Inventory : Singleton<Inventory>, IInventory
         if (ObjectPlacer.Instance.InPlacementMode) return;
         float scrollValue = context.ReadValue<float>();
         if (scrollValue == 0) return;
-        int index = (selected + (int)(scrollValue)) % HotBarLength;
-        if (index < 0) {
-            index = HotBarLength - 1;
+
+        // Build a list of occupied hotbar indices so scrolling skips empty slots
+        var occupied = new List<int>();
+        for (int i = 0; i < HotBarLength; i++)
+        {
+            if (allSlots[i] != null && allSlots[i].count > 0 &&
+                allSlots[i].itemInfo != null &&
+                allSlots[i].itemInfo.itemName != ItemInfo.ItemName.Empty)
+                occupied.Add(i);
         }
-        Select(index);
+        if (occupied.Count == 0) return;
+
+        int currentPos = occupied.IndexOf(selected);
+        if (currentPos == -1) currentPos = 0;
+        int dir = scrollValue > 0 ? 1 : -1;
+        int nextPos = (currentPos + dir + occupied.Count) % occupied.Count;
+        int nextIndex = occupied[nextPos];
+
+        selected = nextIndex;
+        OnHotbarSelectionChanged?.Invoke(selected);
+
+        AnimatorOverrideController itemAnimator = GetSlotAnimation(allSlots[selected]);
+        if (itemAnimator != null)
+            LoadHandAnimation(itemAnimator);
+        else
+            DeloadHandAnimator();
     }
 
-    private void OnNumberKeyInput(InputAction.CallbackContext context) {
+    private void OnNumberKeyInput(InputAction.CallbackContext context)
+    {
         if (ObjectPlacer.Instance.InPlacementMode) return;
         float value = context.ReadValue<float>();
         int index = (int)(value) - 1;
-        if (index >= HotBarLength) return; // since hotbar is only length 3 right now
+        if (index >= HotBarLength) return;
         Select(index);
     }
 
     #region Player Hands Helper Functions
     /// <summary>
-    /// loads animator controller into player hands
+    /// Loads an animator controller into player hands.
     /// </summary>
-    private void LoadHandAnimation(AnimatorOverrideController handAnimatorController) {
-        if (handAnimatorController != null) {
+    private void LoadHandAnimation(AnimatorOverrideController handAnimatorController)
+    {
+        if (handAnimatorController != null)
+        {
             handsScript.SetOverrideController(handAnimatorController);
         }
     }
 
     /// <summary>
-    /// deloads animator controller from player hands, reverting to default controller for hands.
+    /// Deloads the animator controller from player hands, reverting to the default.
     /// </summary>
-    private void DeloadHandAnimator() {
+    private void DeloadHandAnimator()
+    {
         handsScript.SetOverrideController();
     }
 
     /// <summary>
-    /// returns the animator override controller of the given ui slot. Returns null if there is none
+    /// Returns the animator override controller for the item in the given slot, or null if there is none.
     /// </summary>
-    private AnimatorOverrideController GetUISlotAnimation(UISlot slot) {
+    private AnimatorOverrideController GetSlotAnimation(InventorySlot slot)
+    {
         ItemInfo itemInfo = slot.itemInfo;
-
-        if (itemInfo != null) {
+        if (itemInfo != null)
+        {
             IPlayerActionStrategy actionStrategy = itemInfo.playerActionStrategy;
-            if (actionStrategy != null) {
+            if (actionStrategy != null)
+            {
                 return actionStrategy.handAnimatorController;
             }
         }
-
         return null;
     }
     #endregion
 
     void Start()
     {
-        // fetches the reference to the player hand's script.
         handsScript = PlayerHands.instance;
 
+        hotbarData = new InventorySlot[HotBarLength];
+        inventoryData = new InventorySlot[InventoryLength];
+        allSlots = new InventorySlot[HotBarLength + InventoryLength];
 
-        // Update inventory to match manually placed items in scene/saved items
-        // get UI slots from scene
+        hotbarUISlots = new UISlot[HotBarLength];
+        inventoryUISlots = new UISlot[InventoryLength];
+
+        // Initialise hotbar data slots and link to UI
         for (int i = 0; i < HotBarLength; i++)
         {
-            // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
+            hotbarData[i] = new InventorySlot(i);
+            allSlots[i] = hotbarData[i];
+
             if (hotbarSlots[i] == null) continue;
 
             if (!hotbarSlots[i].TryGetComponent<UISlot>(out UISlot slot))
             {
                 slot = hotbarSlots[i].AddComponent<UISlot>();
             }
-            inventory[i] = slot;
-            //SetHotbarSlot(slot.index, slot);
+            slot.index = i;
+            hotbarUISlots[i] = slot;
+            hotbarData[i].SetUISlot(slot);
 
             hotbarSlots[i].onClick.AddListener(() => OnSlotSelected(slot));
         }
 
+        // Initialise inventory data slots and link to UI
         for (int i = 0; i < InventoryLength; i++)
         {
-            // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
+            inventoryData[i] = new InventorySlot(HotBarLength + i);
+            allSlots[HotBarLength + i] = inventoryData[i];
+
             if (inventorySlots[i] == null) continue;
 
             if (!inventorySlots[i].TryGetComponent<UISlot>(out UISlot slot))
             {
                 slot = inventorySlots[i].AddComponent<UISlot>();
             }
-            // Check if slot has a non-null slot.iteminfo
-            Debug.Log(slot.GetComponent<UISlot>().itemInfo == null ? "inv slot has null iteminfo!" : "inv slot good");
-            inventory[i + HotBarLength] = slot;
-            //SetInventorySlot(slot.index, slot);
+            slot.index = HotBarLength + i;
+            Debug.Log(slot.itemInfo == null ? "inv slot has null iteminfo!" : "inv slot good");
+            inventoryUISlots[i] = slot;
+            inventoryData[i].SetUISlot(slot);
 
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
 
-        // Load inventory info from save
-        if (InventoryDataSaveModule.inventoryData.inventory != null) // load from save data
+        // Load from save or initialise empty
+        if (InventoryDataSaveModule.inventoryData.inventory != null)
         {
             Debug.Log("Initializing inventory from save");
             selected = InventoryDataSaveModule.inventoryData.selected;
-            string name;
             for (int i = 0; i < InventoryDataSaveModule.inventoryData.inventory.Length; i++)
             {
-                inventory[i].index = i;
-                inventory[i].count = InventoryDataSaveModule.inventoryData.inventory[i].count;
-                name = InventoryDataSaveModule.inventoryData.inventory[i].name;
-                if (inventory[i].count > 0)
+                allSlots[i].index = i;
+                allSlots[i].count = InventoryDataSaveModule.inventoryData.inventory[i].count;
+                string name = InventoryDataSaveModule.inventoryData.inventory[i].name;
+                if (allSlots[i].count > 0)
                 {
-                    inventory[i].itemInfo = itemInfos[name];
-                    Debug.Log($"Name from save ({name}): {inventory[i].itemInfo.itemName}");
+                    allSlots[i].itemInfo = itemInfos[name];
+                    Debug.Log($"Name from save ({name}): {allSlots[i].itemInfo.itemName}");
                 }
                 else
                 {
                     Debug.Log("Inventory slot is empty from save");
-                    inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
-                    // make it an empty iteminfo
-                    // inventory[i].itemInfo = itemInfos[0];
+                    allSlots[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
                 }
-                inventory[i].UpdateSlot();
+                allSlots[i].UpdateSlot();
             }
         }
-        else // initialize empty
+        else
         {
             selected = 0;
             Debug.Log("Initializing empty inventory");
-            for (int i = 0; i < inventory.Length; i++)
+            for (int i = 0; i < allSlots.Length; i++)
             {
-                inventory[i].index = i;
-                inventory[i].count = 0;
-                inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
-                inventory[i].UpdateSlot();
+                allSlots[i].index = i;
+                allSlots[i].count = 0;
+                allSlots[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                allSlots[i].UpdateSlot();
             }
         }
-        
 
         for (int i = 0; i < InventoryLength; i++)
         {
-            // Right now there aren't 9 buttons on the ui menu so we skip everything that's null
             if (inventorySlots[i] == null) continue;
-
             var uiSlot = inventorySlots[i].GetComponent<UISlot>();
-            // Check if slot has a non-null slot.iteminfo
             Debug.Log(uiSlot.itemInfo == null ? "inv slot has null iteminfo!" : "inv slot good");
         }
         PrintInventory();
+
+        // Fire initial HUD update now that all slots are ready
+        OnHotbarContentsChanged?.Invoke();
+        OnHotbarSelectionChanged?.Invoke(selected);
     }
 
     /// <summary>
-    /// Enable the inventory ui, disable player movment, and show cursor
+    /// Enables or disables the inventory UI and toggles player movement/cursor accordingly.
     /// </summary>
     public void ShowInventory(bool enabled)
     {
@@ -226,28 +269,29 @@ public class Inventory : Singleton<Inventory>, IInventory
         }
         if (swapSelection != -1)
         {
-            // Reset the color of buttons if necessary
-            inventory[swapSelection].SetColor(Color.white);
-            if (inventory[swapSelection].itemInfo && inventory[swapSelection].itemInfo.isIngredient)
+            allSlots[swapSelection].SetColor(Color.white);
+            if (allSlots[swapSelection].itemInfo && allSlots[swapSelection].itemInfo.isIngredient)
             {
                 for (int i = 0; i < HotBarLength; i++)
                 {
-                    inventory[i].SetColor(Color.white);
+                    allSlots[i].SetColor(Color.white);
                 }
             }
             swapSelection = -1;
         }
     }
 
-    public bool isEnabled() {
+    public bool isEnabled()
+    {
         return inventoryCanvas.enabled;
     }
-    void OnSlotSelected(UISlot uiUISlot)
+
+    void OnSlotSelected(UISlot uiSlot)
     {
-        Debug.Log("Hotbar slot #" + uiUISlot.index + " clicked");
+        Debug.Log("Hotbar slot #" + uiSlot.index + " clicked");
     }
 
-    // This method shows recipe crafting, but is considered "debug" because it won't work this way in a playable build.
+    // Debug method – shows recipe crafting; won't work this way in a playable build.
     void DebugOnInvSlotSelected(UISlot uiSlot)
     {
         ItemInfo item = uiSlot.itemInfo;
@@ -261,11 +305,10 @@ public class Inventory : Singleton<Inventory>, IInventory
             var recipeInfo = RecipeInfo.Instance;
             Debug.Log(recipeInfo == null ? "null recipeInfo" : "recipeInfo NOT null");
 
-            var a = lastClickedItems[^2].itemName; 
+            var a = lastClickedItems[^2].itemName;
             var b = lastClickedItems[^1].itemName;
 
             var combined = recipeInfo.UseRecipe(lastClickedItems[^2].itemName, lastClickedItems[^1].itemName);
-            // If there is no valid recipe, null is returned.
             if (combined != null)
             {
                 Debug.Log("Combining " + lastClickedItems[^2].itemName + " and " + lastClickedItems[^1].itemName);
@@ -277,23 +320,30 @@ public class Inventory : Singleton<Inventory>, IInventory
     }
 
     /// <summary>
-    /// Switches the selected item (limited to hotbar)
+    /// Switches the selected hotbar slot. Only succeeds if the slot is occupied.
     /// </summary>
-    /// <param name="index">Index to switch to</param>
-    public void Select(int index) {
-        // is true if new index is an empty hotbar index. Is false if not
-        bool newIndexIsEmpty = (!inventory[index]) || (inventory[index].count == 0) || (!inventory[index].itemInfo);
+    /// <param name="index">Hotbar index to switch to.</param>
+    public void Select(int index)
+    {
+        // Number-key presses: only switch if that slot actually has an item
+        bool occupied = allSlots[index] && allSlots[index].count > 0 &&
+                        allSlots[index].itemInfo != null &&
+                        allSlots[index].itemInfo.itemName != ItemInfo.ItemName.Empty;
+        if (!occupied) return;
 
-        // is true if given index points to a new slot of the hotbar
         bool indexIsNew = selected != index;
-
         selected = index;
+        OnHotbarSelectionChanged?.Invoke(selected);
 
-        if (indexIsNew) {
-            AnimatorOverrideController itemAnimator = GetUISlotAnimation(inventory[index]);
-            if (itemAnimator != null) {
+        if (indexIsNew)
+        {
+            AnimatorOverrideController itemAnimator = GetSlotAnimation(allSlots[index]);
+            if (itemAnimator != null)
+            {
                 LoadHandAnimation(itemAnimator);
-            } else {
+            }
+            else
+            {
                 Debug.LogWarning("no tool animation found for current tool!");
                 DeloadHandAnimator();
             }
@@ -301,59 +351,55 @@ public class Inventory : Singleton<Inventory>, IInventory
             DeloadHandAnimator();
         }
 
-        // debugging
-        /*if (newIndexIsEmpty)
-        {
-            Debug.Log("Selected index " + index + ", which is empty");
-        }
-        else
-        {
-            Debug.Log("Selected index " + index + ", containing " + inventory[index].count + " " + inventory[index].itemInfo.itemName + "s");
-        }*/
+        PlayerID.Instance.playerHUD.TriggerHUDEvent();
     }
 
     /// <summary>
-    /// reselects currently selected index. Do this if the tool's animation may change
+    /// Reselects the currently selected slot. Use this when the tool's animation may have changed.
     /// </summary>
-    public void Reselect() { 
-        AnimatorOverrideController itemAnimator = GetUISlotAnimation(inventory[selected]);
-        if (itemAnimator != null) {
+    public void Reselect()
+    {
+        AnimatorOverrideController itemAnimator = GetSlotAnimation(allSlots[selected]);
+        if (itemAnimator != null)
+        {
             LoadHandAnimation(itemAnimator);
-        } else {
+        }
+        else
+        {
             DeloadHandAnimator();
         }
     }
 
-
     /// <summary>
-    /// de increments currently selected tool. Use this when you like eat an apple or something.
+    /// Decrements the count of the currently selected item by one.
     /// </summary>
     public void Decrement()
     {
-        inventory[selected].count--;
-        Debug.Log("Used " + inventory[selected].itemInfo.itemName + ", " + inventory[selected].count + " remaining");
-        if (inventory[selected].count == 0) {
-            // inventory[selected].itemInfo = itemInfos[0];
-            inventory[selected].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+        allSlots[selected].count--;
+        Debug.Log("Used " + allSlots[selected].itemInfo.itemName + ", " + allSlots[selected].count + " remaining");
+        if (allSlots[selected].count == 0)
+        {
+            allSlots[selected].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
         }
-        inventory[selected].UpdateSlot();
-
+        allSlots[selected].UpdateSlot();
+        PackHotbar();
         Reselect();
+        OnHotbarContentsChanged?.Invoke();
     }
 
     /// <summary>
-    /// Determines if the inventory contains a certain number of an item
+    /// Determines whether the inventory contains at least <paramref name="count"/> of the given item.
     /// </summary>
-    /// <param name="itemName">Name of the item</param>
-    /// <parm name="count">The number of items to check that the inventory has</parm>
-    /// <returns>Whether or not the inventory contains enough of the item</returns>
-    public bool Contains(ItemInfo.ItemName itemName, int count) {
+    public bool Contains(ItemInfo.ItemName itemName, int count)
+    {
         int found = 0;
-        for (int i = 0; i < inventory.Length; i++) {
-            if (inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == itemName)
+        for (int i = 0; i < allSlots.Length; i++)
+        {
+            if (allSlots[i]?.count > 0 && allSlots[i].itemInfo.itemName == itemName)
             {
-                found += inventory[i].count;
-                if (found >= count) {
+                found += allSlots[i].count;
+                if (found >= count)
+                {
                     return true;
                 }
             }
@@ -362,221 +408,291 @@ public class Inventory : Singleton<Inventory>, IInventory
     }
 
     /// <summary>
-    /// Crafts an item by removing the ingredients from the inventory
-    /// and adding the crafted item.
+    /// Crafts an item by removing the recipe ingredients and adding the output to the inventory.
     /// </summary>
-    /// <param name="recipe">Recipe to craft</param>
-    public void Craft(Recipe recipe) {
-        // remove the necessary amount of both items from the inventory
+    /// <param name="recipe">Recipe to craft.</param>
+    public void Craft(Recipe recipe)
+    {
         int amountToRemove = 0;
         for (int ingredients = 0; ingredients < recipe.counts.Count; ingredients++)
         {
             amountToRemove = recipe.counts[ingredients];
-            for (int i = 0; i < inventory.Length; i++)
+            for (int i = 0; i < allSlots.Length; i++)
             {
-                if (amountToRemove > 0 && inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == recipe.ingredients[ingredients].itemName)
+                if (amountToRemove > 0 && allSlots[i]?.count > 0 && allSlots[i].itemInfo.itemName == recipe.ingredients[ingredients].itemName)
                 {
-                    if (inventory[i].count <= amountToRemove) // remove entire stack
+                    if (allSlots[i].count <= amountToRemove)
                     {
-                        amountToRemove -= inventory[i].count;
-                        inventory[i].count = 0;
-                        inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
-                        inventory[i].UpdateSlot();
+                        amountToRemove -= allSlots[i].count;
+                        allSlots[i].count = 0;
+                        allSlots[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                        allSlots[i].UpdateSlot();
                     }
                     else
-                    { // remove the rest from this stack
-                        inventory[i].count -= amountToRemove;
+                    {
+                        allSlots[i].count -= amountToRemove;
                         amountToRemove = 0;
-                        inventory[i].UpdateSlot();
+                        allSlots[i].UpdateSlot();
                     }
-                    if (amountToRemove == 0) {
+                    if (amountToRemove == 0)
+                    {
                         break;
                     }
                 }
             }
         }
-        // add crafted item
+        PackHotbar();
+        OnHotbarContentsChanged?.Invoke();
         AddItem(recipe.output, 1);
     }
 
     /// <summary>
-    /// Adds item to inventory
+    /// Adds <paramref name="count"/> of <paramref name="itemInfo"/> to the inventory.
+    /// Hotbar slots are kept gap-free: items are always packed toward index 0, filling
+    /// rightward so the occupied slots stay contiguous.
     /// </summary>
-    /// <param name="itemInfo">Item to add</param>
-    /// <param name="count">Amount of items</param>
-    /// 
-    /// <returns>Number of items that could not be added to the inventory</returns>
-    public int AddItem(ItemInfo itemInfo, int count) { // maybe change input type
-        // first add to existing stacks
-        for (int i = 0; i < inventory.Length; i++) {
-            if (itemInfo.isIngredient && i < HotBarLength) { // ingredients are not allowed in the hotbar
+    /// <returns>The number of items that could not be added.</returns>
+    public int AddItem(ItemInfo itemInfo, int count)
+    {
+        bool hotbarAffected = false;
+
+        // First try to add to existing stacks
+        for (int i = 0; i < allSlots.Length; i++)
+        {
+            if (itemInfo.isIngredient && i < HotBarLength)
+            {
                 continue;
             }
-            if (inventory[i]?.count > 0 && inventory[i].itemInfo.itemName == itemInfo.itemName) // matches item
+            if (allSlots[i]?.count > 0 && allSlots[i].itemInfo.itemName == itemInfo.itemName)
             {
-                if (itemInfo.maxStackCount > inventory[i].count) { // has space for at least one item
-                    if (itemInfo.maxStackCount < inventory[i].count + count) // not enough space for all items in same stack
+                if (itemInfo.maxStackCount > allSlots[i].count)
+                {
+                    if (itemInfo.maxStackCount < allSlots[i].count + count)
                     {
-                        count -= itemInfo.maxStackCount - inventory[i].count;
-                        inventory[i].count = itemInfo.maxStackCount;
-                        inventory[i].UpdateSlot(); // update UI
+                        count -= itemInfo.maxStackCount - allSlots[i].count;
+                        allSlots[i].count = itemInfo.maxStackCount;
+                        allSlots[i].UpdateSlot();
                     }
-                    else { // has enough space for all items in same stack
-                        inventory[i].count += count;
-                        inventory[i].UpdateSlot(); // update UI
+                    else
+                    {
+                        allSlots[i].count += count;
+                        allSlots[i].UpdateSlot();
                         count = 0;
                     }
-
+                    if (i < HotBarLength) hotbarAffected = true;
                     Reselect();
-
-                    Debug.Log("Added " + itemInfo.itemName + " to existing stack at index " + i + ". Current count is " + inventory[i].count);
-                    if (count <= 0) return 0;
+                    Debug.Log("Added " + itemInfo.itemName + " to existing stack at index " + i + ". Current count is " + allSlots[i].count);
+                    if (count <= 0)
+                    {
+                        if (hotbarAffected) PackHotbar();
+                        OnHotbarContentsChanged?.Invoke();
+                        return 0;
+                    }
                 }
-                
             }
         }
-        // otherwise create new stack if possible
-        if (count > 0) {
-            for (int i = 0; i < inventory.Length; i++) {
+
+        // Otherwise create a new stack
+        if (count > 0)
+        {
+            for (int i = 0; i < allSlots.Length; i++)
+            {
                 if (itemInfo.isIngredient && i < HotBarLength)
-                { // ingredients are not allowed in the hotbar
+                {
                     continue;
                 }
-                if (inventory[i]?.count == 0) { // is empty slot
-                    if (count > itemInfo.maxStackCount) // will need to split the items between slots
+                if (allSlots[i]?.count == 0)
+                {
+                    if (count > itemInfo.maxStackCount)
                     {
                         count -= itemInfo.maxStackCount;
-                        inventory[i].itemInfo = itemInfo;
-                        inventory[i].count = itemInfo.maxStackCount;
-                        inventory[i].UpdateSlot(); // update UI
+                        allSlots[i].itemInfo = itemInfo;
+                        allSlots[i].count = itemInfo.maxStackCount;
+                        allSlots[i].UpdateSlot();
                     }
-                    else { // has enough space for all items in same stack
-                        inventory[i].itemInfo = itemInfo;
-                        inventory[i].count += count;
-                        inventory[i].UpdateSlot(); // update UI
+                    else
+                    {
+                        allSlots[i].itemInfo = itemInfo;
+                        allSlots[i].count += count;
+                        allSlots[i].UpdateSlot();
                         count = 0;
                     }
-                    Debug.Log("Added " + itemInfo.itemName + " to new stack at index " + i + ". Current count is " + inventory[i].count);
-
+                    if (i < HotBarLength) hotbarAffected = true;
+                    Debug.Log("Added " + itemInfo.itemName + " to new stack at index " + i + ". Current count is " + allSlots[i].count);
                     Reselect();
-
-                    if (count <= 0) return 0;
+                    if (count <= 0)
+                    {
+                        if (hotbarAffected) PackHotbar();
+                        OnHotbarContentsChanged?.Invoke();
+                        return 0;
+                    }
                 }
             }
         }
 
+        if (hotbarAffected) PackHotbar();
         Reselect();
-
-        return count; // leftover items that could not be added
-        // otherwise replace current selected item
-
+        OnHotbarContentsChanged?.Invoke();
+        return count;
     }
 
-    /**
-     * <summary>
-     * Removes an item from the inventory. Returns true if the item was successfully removed, false otherwise.
-     * </summary>
-     *
-     * <param name="item">The item to remove.</param>
-     * <param name="count">The number of items to remove.</param>
-     *
-     * <returns>True if the item was successfully removed, false otherwise.</returns>
-     */
-    public bool RemoveItem(ItemInfo item, int count)
+    /// <summary>
+    /// Packs hotbar slots so there are no gaps: occupied items are pushed to the right
+    /// (highest indices), mirroring the right-aligned HUD layout.
+    /// </summary>
+    private void PackHotbar()
     {
-        for (int i = 0; i < inventory.Length; i++) { // take into account removing across multiple stacks
-            if (inventory[i].itemInfo.itemName == item.itemName) {
-                if (inventory[i].count >= count)
-                { // has enough in this stack; remove from this stack and stop looping
-                    inventory[i].count -= count;
-                    if (inventory[i].count == 0)
-                    { // check for empty slot
-                        inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
-                    }
-                    inventory[i].UpdateSlot();
-
-                    Reselect();
-                    return true; // done removing
-                }
-                else { // not enough in this stack; remove entire stack and keep looping
-                    count -= inventory[i].count; // reduce the number of items left that need to be removed
-                    inventory[i].count = 0; // make the slot empty
-                    inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
-                    inventory[i].UpdateSlot();
-                }
+        // Gather occupied item data from left to right
+        var items = new List<(ItemInfo info, int count)>();
+        for (int i = 0; i < HotBarLength; i++)
+        {
+            if (allSlots[i] != null && allSlots[i].count > 0 &&
+                allSlots[i].itemInfo != null &&
+                allSlots[i].itemInfo.itemName != ItemInfo.ItemName.Empty)
+            {
+                items.Add((allSlots[i].itemInfo, allSlots[i].count));
             }
         }
 
+        // Write empty into leading slots, then occupied items into trailing slots
+        int emptyCount = HotBarLength - items.Count;
+        for (int i = 0; i < HotBarLength; i++)
+        {
+            if (i < emptyCount)
+            {
+                allSlots[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                allSlots[i].count = 0;
+            }
+            else
+            {
+                allSlots[i].itemInfo = items[i - emptyCount].info;
+                allSlots[i].count = items[i - emptyCount].count;
+            }
+            allSlots[i].UpdateSlot();
+        }
+
+        // Clamp selected to a valid occupied slot
+        if (selected < emptyCount || allSlots[selected].count == 0)
+        {
+            selected = emptyCount < HotBarLength ? emptyCount : 0;
+            OnHotbarSelectionChanged?.Invoke(selected);
+        }
+    }
+
+    /// <summary>
+    /// Removes <paramref name="count"/> of <paramref name="item"/> from the inventory.
+    /// </summary>
+    /// <returns>True if the items were successfully removed.</returns>
+    public bool RemoveItem(ItemInfo item, int count)
+    {
+        bool hotbarAffected = false;
+        for (int i = 0; i < allSlots.Length; i++)
+        {
+            if (allSlots[i].itemInfo.itemName == item.itemName)
+            {
+                if (allSlots[i].count >= count)
+                {
+                    allSlots[i].count -= count;
+                    if (allSlots[i].count == 0)
+                    {
+                        allSlots[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                    }
+                    allSlots[i].UpdateSlot();
+                    if (i < HotBarLength) hotbarAffected = true;
+                    Reselect();
+                    if (hotbarAffected) PackHotbar();
+                    OnHotbarContentsChanged?.Invoke();
+                    return true;
+                }
+                else
+                {
+                    count -= allSlots[i].count;
+                    allSlots[i].count = 0;
+                    allSlots[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+                    allSlots[i].UpdateSlot();
+                    if (i < HotBarLength) hotbarAffected = true;
+                }
+            }
+        }
         Reselect();
+        if (hotbarAffected) PackHotbar();
+        OnHotbarContentsChanged?.Invoke();
         return false;
     }
 
-    public void SwapSelect(int index) {
+    public void SwapSelect(int index)
+    {
         if (swapSelection == -1)
-        { // no item selected for swapping
-            // Don't select empty slots
-            if (inventory[index].count == 0 || inventory[index].itemInfo.itemName == ItemInfo.ItemName.Empty) return;
+        {
+            if (allSlots[index].count == 0 || allSlots[index].itemInfo.itemName == ItemInfo.ItemName.Empty) return;
             swapSelection = index;
-            inventory[swapSelection].SetColor(Color.green);
-            if (inventory[swapSelection].itemInfo && inventory[swapSelection].itemInfo.isIngredient) {
-                // Make hotbar slots red to indicate that player cannot swap ingredient to hotbar
-                for (int i = 0; i < HotBarLength; i++) {
-                    inventory[i].SetColor(Color.red);
+            allSlots[swapSelection].SetColor(Color.green);
+            if (allSlots[swapSelection].itemInfo && allSlots[swapSelection].itemInfo.isIngredient)
+            {
+                for (int i = 0; i < HotBarLength; i++)
+                {
+                    allSlots[i].SetColor(Color.red);
                 }
             }
             Debug.Log("Swap selected " + index);
         }
-        else 
+        else
         {
             if (swapSelection == index)
-            { // deselect
-                inventory[swapSelection].SetColor(Color.white);
+            {
+                allSlots[swapSelection].SetColor(Color.white);
                 swapSelection = -1;
                 Debug.Log("Deselected " + index);
             }
-            else 
+            else
             {
-                if (inventory[swapSelection].itemInfo.isIngredient && index < HotBarLength) {
+                if (allSlots[swapSelection].itemInfo.isIngredient && index < HotBarLength)
+                {
                     Debug.Log("Cannot swap ingredient to hotbar");
-                    return; // cannot swap ingredient into hotbar
+                    return;
                 }
-                if (inventory[index].itemInfo && inventory[swapSelection].itemInfo &&
-                    inventory[index].itemInfo.itemName == inventory[swapSelection].itemInfo.itemName)
-                {   // try to stack on index if they are the same item
-                    if (inventory[index].count + inventory[swapSelection].count <= inventory[index].itemInfo.maxStackCount)
-                    {   // move all from swapSelection into index
-                        inventory[index].count += inventory[swapSelection].count;
-                        inventory[swapSelection].count = 0;
+                if (allSlots[index].itemInfo && allSlots[swapSelection].itemInfo &&
+                    allSlots[index].itemInfo.itemName == allSlots[swapSelection].itemInfo.itemName)
+                {
+                    if (allSlots[index].count + allSlots[swapSelection].count <= allSlots[index].itemInfo.maxStackCount)
+                    {
+                        allSlots[index].count += allSlots[swapSelection].count;
+                        allSlots[swapSelection].count = 0;
                     }
-                    else 
-                    {   // stack as much as possible
-                        int moveAmount = inventory[index].itemInfo.maxStackCount - inventory[index].count;
-                        inventory[index].count += moveAmount;
-                        inventory[swapSelection].count -= moveAmount;
+                    else
+                    {
+                        int moveAmount = allSlots[index].itemInfo.maxStackCount - allSlots[index].count;
+                        allSlots[index].count += moveAmount;
+                        allSlots[swapSelection].count -= moveAmount;
                     }
                     Debug.Log("Stacked " + swapSelection + " onto " + index);
                 }
                 else
-                {   // normal swapping
-                    int tempCount = inventory[index].count;
-                    ItemInfo tempItemInfo = inventory[index].itemInfo;
-                    inventory[index].count = inventory[swapSelection].count;
-                    inventory[index].itemInfo = inventory[swapSelection].itemInfo;
-                    inventory[swapSelection].count = tempCount;
-                    inventory[swapSelection].itemInfo = tempItemInfo;
+                {
+                    int tempCount = allSlots[index].count;
+                    ItemInfo tempItemInfo = allSlots[index].itemInfo;
+                    allSlots[index].count = allSlots[swapSelection].count;
+                    allSlots[index].itemInfo = allSlots[swapSelection].itemInfo;
+                    allSlots[swapSelection].count = tempCount;
+                    allSlots[swapSelection].itemInfo = tempItemInfo;
                     Debug.Log("Swapped " + index + " and " + swapSelection);
                 }
 
-                inventory[index].SetColor(Color.white);
-                inventory[swapSelection].SetColor(Color.white);
-                inventory[index].UpdateSlot();
-                inventory[swapSelection].UpdateSlot();
+                allSlots[index].SetColor(Color.white);
+                allSlots[swapSelection].SetColor(Color.white);
+                allSlots[index].UpdateSlot();
+                allSlots[swapSelection].UpdateSlot();
 
                 for (int i = 0; i < HotBarLength; i++)
                 {
-                    inventory[i].SetColor(Color.white);
+                    allSlots[i].SetColor(Color.white);
                 }
+
+                // Re-pack if either side of the swap was a hotbar slot
+                bool hotbarTouched = index < HotBarLength || swapSelection < HotBarLength;
                 swapSelection = -1;
+                if (hotbarTouched) PackHotbar();
+                OnHotbarContentsChanged?.Invoke();
             }
         }
 
@@ -584,41 +700,35 @@ public class Inventory : Singleton<Inventory>, IInventory
     }
     public void RemoveInventory()
     {
-        //UISlot[] copy = new UISlot[inventory.Length];
-        //Array.Copy(inventory, copy, inventory.Length);
-        for (int i = 0; i < inventory.Length; i++)
+        for (int i = 0; i < allSlots.Length; i++)
         {
-            //copy[i].count = inventory[i].count;
-            //copy[i].itemInfo = inventory[i].itemInfo;
-            inventory[i].count = 0;
-            inventory[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
-            inventory[i].UpdateSlot();
+            allSlots[i].count = 0;
+            allSlots[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+            allSlots[i].UpdateSlot();
         }
-        //return copy;
-
+        selected = 0;
         Reselect();
+        OnHotbarSelectionChanged?.Invoke(selected);
+        OnHotbarContentsChanged?.Invoke();
     }
 
     public void LoadInventory(ItemInfo[] finfo, int[] fcount)
     {
-        Debug.Log(inventory.Length + " length");
-        //Array.Copy(newInv, inventory, newInv.Length);
-        
+        Debug.Log(allSlots.Length + " length");
+
         for (int i = 0; i < finfo.Length; i++)
         {
-            if (inventory[i].count == 0 || inventory[i].itemInfo.itemName == ItemInfo.ItemName.Empty)
-            { // only add item if the current slot is empty
-                inventory[i].count = fcount[i];
-                inventory[i].itemInfo = finfo[i];
-                inventory[i].UpdateSlot();
+            if (allSlots[i].count == 0 || allSlots[i].itemInfo.itemName == ItemInfo.ItemName.Empty)
+            {
+                allSlots[i].count = fcount[i];
+                allSlots[i].itemInfo = finfo[i];
+                allSlots[i].UpdateSlot();
 
-                // Set used items to empty
                 fcount[i] = 0;
                 finfo[i] = itemInfos[ItemInfo.ItemName.Empty.ToString()];
             }
         }
 
-        // Add all unused items
         for (int i = 0; i < finfo.Length; i++)
         {
             if (fcount[i] > 0 && finfo[i].itemName != ItemInfo.ItemName.Empty)
@@ -628,50 +738,56 @@ public class Inventory : Singleton<Inventory>, IInventory
             }
         }
 
-        Debug.Log(inventory.Length + " new length");
-
+        Debug.Log(allSlots.Length + " new length");
+        PackHotbar();
         Reselect();
+        OnHotbarContentsChanged?.Invoke();
     }
 
     /// <summary>
-    /// Drop item at index
+    /// Drops one of the item at the given inventory index.
     /// </summary>
-    /// <param name="index">Index of item to drop</param>
-    /// <returns>Whether or not the drop was successful</returns>
-    public bool Drop(int index) { // maybe create another method for dropping stacks of items
-        // instantiate physical item
-        
-
-        // remove item
-        inventory[index].count--;
-        if (inventory[index].count <= 0) {
-            inventory[index].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+    /// <returns>Whether the drop was successful.</returns>
+    public bool Drop(int index)
+    {
+        allSlots[index].count--;
+        if (allSlots[index].count <= 0)
+        {
+            allSlots[index].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
         }
-        
+        if (index < HotBarLength)
+        {
+            PackHotbar();
+            OnHotbarContentsChanged?.Invoke();
+        }
         return true;
     }
 
     /// <summary>
-    /// Drop selected item
+    /// Drops one of the currently selected item.
     /// </summary>
-    public void Drop() {
+    public void Drop()
+    {
         Drop(selected);
     }
 
     /// <summary>
-    /// Print out a string representation of player's inventory in console
+    /// Prints a string representation of the inventory to the console.
     /// </summary>
-    public void PrintInventory() {
+    public void PrintInventory()
+    {
         string s = "{\n";
-        for (int i = 0; i < HotBarLength; i++) {
-            if (inventory[i] == null) s += "null  ";
-            else if (inventory[i].count > 0 && inventory[i].itemInfo) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
+        for (int i = 0; i < HotBarLength; i++)
+        {
+            if (allSlots[i] == null) s += "null  ";
+            else if (allSlots[i].count > 0 && allSlots[i].itemInfo) s += "[" + allSlots[i].itemInfo.itemName + ", " + allSlots[i].count + "]  ";
             else s += "[empty]  ";
         }
-        for (int i = HotBarLength; i < inventory.Length; i++) {
+        for (int i = HotBarLength; i < allSlots.Length; i++)
+        {
             if ((i - HotBarLength) % 6 == 0) s += "\n";
-            if (inventory[i] == null) s += "null  ";
-            else if (inventory[i].count > 0 && inventory[i].itemInfo) s += "[" + inventory[i].itemInfo.itemName + ", " + inventory[i].count + "]  ";
+            if (allSlots[i] == null) s += "null  ";
+            else if (allSlots[i].count > 0 && allSlots[i].itemInfo) s += "[" + allSlots[i].itemInfo.itemName + ", " + allSlots[i].count + "]  ";
             else s += "[empty]  ";
         }
         s += "\n}";
@@ -679,70 +795,73 @@ public class Inventory : Singleton<Inventory>, IInventory
     }
 
     /// <summary>
-    /// 
+    /// Returns whether the slot at <paramref name="index"/> is empty.
     /// </summary>
-    /// <param name="index">Index to check</param>
-    /// <returns>Whether or not the slot is empty</returns>
-    public bool IsEmpty(int index) {
-        return inventory[index].count == 0;
+    public bool IsEmpty(int index)
+    {
+        return allSlots[index].count == 0;
     }
+
     public bool IsInventoryEmpty()
     {
-        bool isEmpty = true;
-        for (int i = 0; i < inventory.Length; i++)
+        for (int i = 0; i < allSlots.Length; i++)
         {
-            if (!IsEmpty(i))
-            {
-                isEmpty = false;
-            }
+            if (!IsEmpty(i)) return false;
         }
-        return isEmpty;
+        return true;
     }
 
     /// <summary>
-    /// 
+    /// Returns the ItemInfo of the currently selected hotbar slot.
     /// </summary>
-    /// <returns>The selected item</returns>
-    public ItemInfo GetSelectedItem() { // maybe change return type
-        return inventory[selected] ? inventory[selected].itemInfo : null;
+    public ItemInfo GetSelectedItem()
+    {
+        return allSlots[selected] ? allSlots[selected]?.itemInfo : null;
     }
 
     /// <summary>
-    /// 
+    /// Returns the count of the currently selected hotbar slot.
     /// </summary>
-    /// <returns>The selected item's count</returns>
     public int GetSelectedItemCount()
     {
-        return inventory[selected] ? inventory[selected].count : 0;
+        return allSlots[selected] ? allSlots[selected].count : 0;
     }
 
     /// <summary>
-    /// 
+    /// Returns the index of the currently selected hotbar slot.
     /// </summary>
-    /// <returns>The index of the selected item (for saving)</returns>
     public int GetSelected()
     {
         return selected;
     }
 
     /// <summary>
-    /// 
+    /// Returns the ItemInfo at the given flat index.
     /// </summary>
-    /// <param name="index"></param>
-    /// <returns>The </returns>
-    public ItemInfo GetItem(int index) { // maybe change return type;
-        return inventory[index].itemInfo;
+    public ItemInfo GetItem(int index)
+    {
+        return allSlots[index].itemInfo;
     }
 
-    public UISlot[] GetInventory()
+    /// <summary>
+    /// Returns the full flat slot array (hotbar + inventory) for serialisation and external reads.
+    /// </summary>
+    public InventorySlot[] GetInventory()
     {
-        return inventory;
+        return allSlots;
+    }
+
+    /// <summary>
+    /// Returns only the hotbar data slots (indices 0..HotBarLength-1).
+    /// </summary>
+    public InventorySlot[] GetHotbarSlots()
+    {
+        return hotbarData;
     }
 
     public ItemInfo InfoLookup(string itemName)
     {
         return itemInfos[itemName];
     }
-
 
 }
