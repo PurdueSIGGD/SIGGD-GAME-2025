@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using Utility;
 
 // KNOWN JANK HERE:
 /*
@@ -168,26 +170,20 @@ public class ClimbAction : MonoBehaviour
             // hand input for held down hands
             UpdateHeldHands();
 
-            // get climbing target
-            bool handAttached = isHandAttached();
-            if (handAttached == true) {
-                UpdateClimbingMovement();
-            }
-
             // tries to exit climbing mode if allowed
             TryToExitClimbMode();
+        }
+    }
 
-            /*if (Input.GetKeyDown(KeyCode.R))
+    private void FixedUpdate()
+    {
+        if (isClimbing) {
+            // get climbing target
+            bool handAttached = isHandAttached();
+            if (handAttached == true)
             {
-                if (isClimbing)
-                {
-                    ExitClimbMode();
-                }
-                else
-                {
-                    EnterClimbMode();
-                }
-            }*/
+                UpdateClimbingMovement();
+            }
         }
     }
     #endregion
@@ -750,18 +746,76 @@ public class ClimbAction : MonoBehaviour
     // if negative, there is no fatigue. If positive or zero, that is the time the player has "regrabbed" a wall
     private float walljumpFatigueTimer = -5;
 
+    [Header("Vaulting - Detection")]
+    [Tooltip("The vault check ray is offset vertically by this amount for the ray that checks if your walljumping into a wall")]
+    [SerializeField] private float vault_horizontalCheck_VerticalOffset = -0.5f;
+    [Tooltip("If the player walljumps while leaning towards a wall, if their lean direction times this hits the wall, try to vault.")]
+    [SerializeField] private float vault_horizontalDistance = 3f;
+    [Tooltip("If the player is walljumping into a wall, check if there is no wall for THIS number of units above the hit wall position.")]
+    [SerializeField] private float vault_verticalDistance = 0.5f;
+    [Tooltip("When checking if theres no wall where i'm vaulting, this is the distance past where i original hit the wall where i check for no wall")]
+    [SerializeField] private float vault_noWallCheckDistance = 1f;
+
+
+    [Header("Vaulting - Physics")]
+    [Tooltip("Duration of 'rising' phase of vault, this is the vertical gain component and is before the 'rushing' phase")]
+    [Range(0f, 2f)]
+    [SerializeField] private float vault_duration_rising = 1f;
+    [Tooltip("Increase this value to make the vault go more upwards")]
+    [Range(0f, 20f)]
+    [SerializeField] private float vault_verticalFactor_rising = 2f;
+    [Tooltip("Speed the player moves in vault direction for given duration")]
+    [Range(0f, 30f)]
+    [SerializeField] private float vault_speed_rising = 1f;
+
+    [Tooltip("duration of the 'rushing' phase of vault, this is the horizontal gain component to put the player ontop of whatever they're climbing")]
+    [Range(0f, 3f)]
+    [SerializeField] private float vault_duration_rushing = 1f;
+    [Tooltip("Increase this value to make the vault go more upwards")]
+    [Range(0f, 20f)]
+    [SerializeField] private float vault_verticalFactor_rushing = 2f;
+    [Tooltip("Speed the player moves in vault direction for given duration")]
+    [Range(0f, 30f)]
+    [SerializeField] private float vault_speed_rushing = 1f;
+
 
     // launched the player rigidbody away from the wall.
     private void WallJump() { 
         if (isHandAttached()) {
+            Vector3 leanVector = GetLeanVector();
+
+            // check if the player should vault
+            Vector3 vaultCheckDirection = new Vector3(leanVector.x, 0, leanVector.z).normalized;
+
+            RaycastHit vaultWallHit;
+            if (Physics.Raycast(transform.position + Vector3.up * vault_horizontalCheck_VerticalOffset, vaultCheckDirection,
+                                out vaultWallHit, vault_horizontalDistance, climbingLayerMask)) {
+
+                // debug rays. RED = Wall check hit a potentially vaultable wall. BLUE = Checking if there is open space above the hit wall. GREEN = no wall was hit.
+                //Debug.DrawRay(transform.position + Vector3.up * vault_horizontalCheck_VerticalOffset, vaultCheckDirection * vault_horizontalDistance, Color.red, 7f);
+                //Debug.DrawRay(transform.position + Vector3.up * vault_verticalDistance, vaultCheckDirection * (vaultWallHit.distance + vault_noWallCheckDistance), Color.blue, 7f);
+
+                RaycastHit vaultNoWallHit;
+                if (!Physics.Raycast(transform.position + Vector3.up * vault_verticalDistance, vaultCheckDirection,
+                                     out vaultNoWallHit, vaultWallHit.distance + vault_noWallCheckDistance, climbingLayerMask))
+                {
+                    VaultWall();
+                }
+
+                ExitClimb();
+                return;
+            }
+            // debug ray for if a wall was not hit.
+            //Debug.DrawRay(transform.position, vaultCheckDirection * vault_horizontalDistance, Color.green, 5f);
+
+            // If there is no need to vault, then walljump normally.
+
             // get jump direction
             // targetjumpdirection is where the player tries to go
             Vector3 targetJumpDirection = GetClimbingNormalDirection();
 
             // if true, walljump direction will be based on leaning direction
             if (walljumpUsesLeanDirection == true) {
-                Vector3 leanVector = GetLeanVector();
-
                 // if the player is not leaning, then use the wall's normal for jump direction
                 if (leanVector.magnitude > 0f) {
                     targetJumpDirection = leanVector;
@@ -796,6 +850,41 @@ public class ClimbAction : MonoBehaviour
                 playerRigidbody.linearVelocity = Vector3.ClampMagnitude(playerRigidbody.linearVelocity, maxWallJumpVelocity * jumpFatigue);
             }
         }
+    }
+
+    /// <summary>
+    /// forcibly moves the player in their current lean direction from when this is called.
+    /// </summary>
+    private void VaultWall() {
+        Vector3 leanVector = GetLeanVector();
+        Vector3 vaultFlatDirection = new Vector3(leanVector.x, 0, leanVector.z).normalized;
+        StartCoroutine(VaultCoroutine(vaultFlatDirection));
+    }
+
+    /// <summary>
+    /// this couroutine does the movement pattern for moving while vaulting
+    /// </summary>
+    /// <param name="vaultFlatDirection"></param>
+    /// <returns></returns>
+    private IEnumerator VaultCoroutine(Vector3 vaultFlatDirection) {
+        Vector3 vaultRiseDirection = new Vector3(vaultFlatDirection.x, vault_verticalFactor_rising, vaultFlatDirection.z).normalized;
+        Vector3 vaultRushDirection = new Vector3(vaultFlatDirection.x, vault_verticalFactor_rushing, vaultFlatDirection.z).normalized;
+
+        float elapsedTime = 0;
+        while (elapsedTime < vault_duration_rising) {
+            elapsedTime += Time.fixedDeltaTime;
+            playerRigidbody.linearVelocity = vaultRiseDirection * vault_speed_rising;
+            yield return new WaitForFixedUpdate();
+        }
+
+        elapsedTime = 0;
+        while (elapsedTime < vault_duration_rushing) {
+            elapsedTime += Time.fixedDeltaTime;
+            playerRigidbody.linearVelocity = vaultRushDirection * vault_speed_rushing;
+            yield return new WaitForFixedUpdate();
+        }
+
+        playerRigidbody.linearVelocity *= 0.25f;
     }
     #endregion
 }

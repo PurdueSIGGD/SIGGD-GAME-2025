@@ -12,8 +12,8 @@ public class TimerConditionStrategy : IQuestConditionStrategy
 {
     public float duration = 5f;
     public float timeScale = 1f;
-    private float elapsedTime = 0f;
-    public bool IsRunning { get; private set; } = true;
+    protected float elapsedTime = 0f;
+    public bool IsRunning { get; protected set; } = true;
     
     public bool pauseOnComplete = false; // If true, the timer will pause when the condition is met.
     public bool singleUse = false; // If true, the condition will stop checking after being triggered once.

@@ -95,6 +95,8 @@ public class AudioManager : Singleton<AudioManager>
     /// </summary>
     public void PlayOneShot(string name, Vector3 worldPos = default)
     {
+        name = name.ToLower();
+
         StartCoroutine(PlayOneShotCoroutine(name, worldPos));
     }
 
@@ -103,6 +105,8 @@ public class AudioManager : Singleton<AudioManager>
     /// </summary>
     public void PlayOneShotNoAsync(string name, Vector3 worldPos = default)
     {
+        name = name.ToLower();
+
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
         if (!eventRef.IsNull)
         {
@@ -192,11 +196,12 @@ public class AudioManager : Singleton<AudioManager>
             }
             else
             {
-                FMODEvents.Instance.GetEventInstance("LevelMusic", instance => { levelMusic = instance;
+                FMODEvents.Instance.GetEventInstance("LevelMusic", instance => {
+                    levelMusic = instance;
                     musicEventInstances.Add("LevelMusic", levelMusic);
                     levelMusic.start();
                 });
-                
+
             }
         }
         else
@@ -211,10 +216,14 @@ public class AudioManager : Singleton<AudioManager>
     private IEnumerator PlayOneShotCoroutine(string name, Vector3 pos = default)
     {
         yield return new WaitUntil(() => FMODEvents.Instance.Initialized);
+
+        name = name.ToLower();
+
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
         if (!eventRef.IsNull)
         {
-            if (pos != default) { 
+            if (pos != default)
+            {
                 RuntimeManager.PlayOneShot(eventRef, pos);
             }
             else
@@ -229,6 +238,9 @@ public class AudioManager : Singleton<AudioManager>
         // dictioary holding all event instances
         if (crossfading == false)
         {
+            toKey = toKey.ToLower();
+            fromKey = fromKey.ToLower();
+
             EventInstance to = InitalizeMusicNotStart(toKey);
             EventInstance from = InitalizeMusicNotStart(fromKey);
 
@@ -271,6 +283,8 @@ public class AudioManager : Singleton<AudioManager>
     // also checks to see if that music event is already in the dict
     private EventInstance InitalizeMusicNotStart(string key)
     {
+        key = key.ToLower();
+
         if (musicEventInstances.TryGetValue(key, out var eventInstance))
         {
             EventInstance tempInstance = eventInstance;
@@ -297,7 +311,8 @@ class RandomAmbiancePlayer : MonoBehaviour
     Vector2 ambianceSpawnDist;
     float ambianceTimer;
 
-    public void Init(Vector2 interval, Vector2 spawnDist, AudioManager manager) {
+    public void Init(Vector2 interval, Vector2 spawnDist, AudioManager manager)
+    {
         this.manager = manager;
         ambianceInterval = interval;
         ambianceSpawnDist = spawnDist;

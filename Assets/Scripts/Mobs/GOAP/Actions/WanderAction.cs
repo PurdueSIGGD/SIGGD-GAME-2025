@@ -60,7 +60,6 @@ namespace SIGGD.Goap
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
             //return ActionRunState.WaitThenComplete(data.Timer);
-            //Debug.Log("LETS GOOOOO!!!!");
             return ActionRunState.Completed;
         }
 

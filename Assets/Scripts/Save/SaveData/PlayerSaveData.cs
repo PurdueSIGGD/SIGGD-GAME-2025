@@ -8,4 +8,8 @@ public class PlayerSaveData
     public Vector2 Rotation = new(0, 0);
     public float curHealth = -1f;
     public float curHunger = -1f;
+    public float curStamina = -1f;
+    public bool staminaDisabled = false;
+    public bool hasGloves = false;
+    public Vector3 RespawnPosition = new(480.5f, 7.2f, -4.1f);
 }

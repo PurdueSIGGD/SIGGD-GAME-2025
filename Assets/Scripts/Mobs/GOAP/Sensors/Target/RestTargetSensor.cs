@@ -4,6 +4,7 @@ using SIGGD.Goap.Interfaces;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.AI;
+using SIGGD.Mobs;
 
 namespace SIGGD.Goap.Sensors
 {
@@ -16,27 +17,32 @@ namespace SIGGD.Goap.Sensors
 
         public override ITarget Sense(IActionReceiver agent, IComponentReference references, ITarget existingTarget)
         {
-            smell = references.GetCachedComponent<Smell>();
+            var navFilter = references.GetCachedComponent<AgentData>().filter;
+
+            var perceptionManager = references.GetCachedComponent<PerceptionManager>();
+            if (perceptionManager == null) return null;
+
+            var smellPos = perceptionManager.GetSmellPosition();
             float safeDistanceThreshold = 30f;
-            var smellPos = smell.GetSmellPos();
             if (smellPos == Vector3.zero) return null;
+
             float distance = Vector3.Distance(smellPos, agent.Transform.position);
             if (distance > safeDistanceThreshold) return null;
-            //smell.positionTest = predatorPositionSum;
+
             Vector3 dirFromPredator = (smellPos - agent.Transform.position).normalized;
-            dirFromPredator += dirFromPredator * Random.Range(-0.1f, 0.1f);
+            dirFromPredator += dirFromPredator * (1 + Random.Range(-0.1f, 0.1f));
             Vector3 safePosition = agent.Transform.position - dirFromPredator * Mathf.Max(0, safeDistanceThreshold - distance);
             float sampleSphereRadius = 10f;
             Vector3 randomPos;
             int attempts = 10;
+
+            NavMeshPath path = new NavMeshPath();
             for (int i = 0; i < attempts; i++)
             {
                 randomPos = safePosition + Random.insideUnitSphere * sampleSphereRadius;
-                NavMeshHit hit;
-                if (NavMesh.SamplePosition(randomPos, out hit, 5f, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(randomPos, out NavMeshHit hit, 5f, navFilter))
                 {
-                    NavMeshPath path = new NavMeshPath();
-                    if (NavMesh.CalculatePath(agent.Transform.position, hit.position, NavMesh.AllAreas, path) &&
+                    if (NavMesh.CalculatePath(agent.Transform.position, hit.position, navFilter, path) &&
                     path.status == NavMeshPathStatus.PathComplete)
                     {
                         return new PositionTarget(hit.position);
