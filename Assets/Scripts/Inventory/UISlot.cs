@@ -11,6 +11,7 @@ public class UISlot : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI textDisplay;
     [SerializeField] Image imageDisplay;
+    [SerializeField] Sprite emptySprite;
     private Button button;
 
     void Awake()
@@ -47,8 +48,10 @@ public class UISlot : MonoBehaviour
 
     public void UpdateSlot()
     {
-        if (itemInfo)
+        Debug.Log($"Slot {index}: itemInfo={itemInfo}, sprite={itemInfo?.itemImage}, imageDisplay={imageDisplay}");
+        if (itemInfo != null && itemInfo.name != "Empty")
         {
+            Debug.Log("item info");
             //if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check
             //textDisplay.text = itemInfo.name + "(" + count + ")";
             if (textDisplay) textDisplay.text = itemInfo.name + "(" + count + ")";
@@ -57,13 +60,14 @@ public class UISlot : MonoBehaviour
                 imageDisplay.sprite = itemInfo.itemImage;
                 imageDisplay.color = Color.white;
             }
-
         }
-        else {
+        else
+        {
             if (textDisplay) textDisplay.text = "empty";
+            Debug.Log("changing image to empty");
             if (imageDisplay)
             {
-                imageDisplay.sprite = null;
+                imageDisplay.sprite = emptySprite;
                 imageDisplay.color = Color.clear;
             }
         }
