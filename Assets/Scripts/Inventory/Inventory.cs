@@ -103,6 +103,7 @@ public class Inventory : Singleton<Inventory>, IInventory
 
         selected = nextIndex;
         OnHotbarSelectionChanged?.Invoke(selected);
+        PlayerID.Instance.playerHUD.TriggerHUDEvent();
 
         AnimatorOverrideController itemAnimator = GetSlotAnimation(allSlots[selected]);
         if (itemAnimator != null)
@@ -161,6 +162,13 @@ public class Inventory : Singleton<Inventory>, IInventory
     void Start()
     {
         handsScript = PlayerHands.instance;
+
+        hotbarData = new InventorySlot[HotBarLength];
+        inventoryData = new InventorySlot[InventoryLength];
+        allSlots = new InventorySlot[HotBarLength + InventoryLength];
+
+        hotbarUISlots = new UISlot[HotBarLength];
+        inventoryUISlots = new UISlot[InventoryLength];
 
         // Initialise hotbar data slots and link to UI
         for (int i = 0; i < HotBarLength; i++)
