@@ -106,6 +106,7 @@ public class SaveManager : Singleton<SaveManager>
         {
             module?.serialize();
         }
+        SceneSaveManager.Instance.Save();
         return true;
     }
 }
