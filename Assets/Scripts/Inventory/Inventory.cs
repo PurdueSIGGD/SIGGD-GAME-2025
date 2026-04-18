@@ -96,6 +96,7 @@ public class Inventory : Singleton<Inventory>, IInventory
 
         selected = nextIndex;
         OnHotbarSelectionChanged?.Invoke(selected);
+        PlayerID.Instance.playerHUD.TriggerHUDEvent();
 
         AnimatorOverrideController itemAnimator = GetSlotAnimation(allSlots[selected]);
         if (itemAnimator != null)
