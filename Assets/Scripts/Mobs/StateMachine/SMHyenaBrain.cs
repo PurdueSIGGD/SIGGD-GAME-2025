@@ -19,6 +19,9 @@ namespace SIGGD.Mobs.StateMachine
 
         protected override string MobName => "Hyena";
 
+        // Audio name
+        private readonly string onNoticePlayerSound = "HyenaOnNotice";
+
         protected override MobContext BuildContext()
         {
             return new MobContext
@@ -32,7 +35,8 @@ namespace SIGGD.Mobs.StateMachine
                 Pack = GetComponent<PackScripts.PackBehavior>(),
                 Perception = GetComponent<PerceptionManager>(),
                 AttackManager = GetComponent<HyenaAttackManager>(),
-                Smell = GetComponent<Smell>()
+                Smell = GetComponent<Smell>(),
+                type = MobType.Hyena
             };
         }
 
@@ -66,7 +70,10 @@ namespace SIGGD.Mobs.StateMachine
             if (ctx.AttackManager != null && ctx.AttackManager.isLunging)
             {
                 if (!isAttacking)
+                {
+                    AudioManager.Instance.PlayOneShotNoAsync(onNoticePlayerSound, transform.position);
                     stateMachine.ChangeState(attackPlayerState);
+                }
                 return;
             }
 

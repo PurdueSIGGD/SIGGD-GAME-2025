@@ -148,7 +148,8 @@ public class Apex : MobBrainBase
             Movement = GetComponent<Movement>(),
             AgentData = GetComponent<AgentData>(),
             Perception = GetComponent<PerceptionManager>(),
-            Smell = GetComponent<Smell>()
+            Smell = GetComponent<Smell>(),
+            type = MobType.Apex
         };
     }
 
@@ -267,6 +268,9 @@ public class Apex : MobBrainBase
         return false;
     }
 
+    public bool IsMoving() {
+        return ctx.Rigidbody.linearVelocity.magnitude > 0.1f;
+    }
     #endregion
 
     #region Attack Helpers
