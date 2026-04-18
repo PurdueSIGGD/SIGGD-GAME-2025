@@ -143,6 +143,8 @@ public class Apex : MobBrainBase
 
     protected override string MobName => "Apex";
 
+    private readonly string apexOnNoticePlayerSound = "ApexOnNotice";
+
     protected override MobContext BuildContext()
     {
         return new MobContext
@@ -202,6 +204,9 @@ public class Apex : MobBrainBase
                 ApexLog($"EvaluateTransitions — spotted '{lineOfSight.VisibleTarget.gameObject.name}', switching to ChasingState.");
                 chasingState.SetTarget(lineOfSight.VisibleTarget);
                 stateMachine.ChangeState(chasingState);
+
+                // play apex notice player sound
+                AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, transform.position);
             }
         }
     }
