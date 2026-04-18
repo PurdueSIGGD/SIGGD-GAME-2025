@@ -51,7 +51,6 @@ public class UISlot : MonoBehaviour
         Debug.Log($"Slot {index}: itemInfo={itemInfo}, sprite={itemInfo?.itemImage}, imageDisplay={imageDisplay}");
         if (itemInfo != null && itemInfo.name != "Empty")
         {
-            Debug.Log("item info");
             //if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check
             //textDisplay.text = itemInfo.name + "(" + count + ")";
             if (textDisplay) textDisplay.text = itemInfo.name + "(" + count + ")";
