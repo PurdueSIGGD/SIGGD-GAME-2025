@@ -10,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
 
     private EventInstance footsteps;
 
+    private static readonly string jumpSound = "Jump";
+
     [HideInInspector] public Rigidbody rb;
 
     #region Movement Attributes
@@ -153,6 +155,7 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = rb.linearVelocity.SetY(0);
         rb.AddForce(Vector3.up * force, ForceMode.Impulse);
         GetComponent<PlayerStamina>().StaminaJump();  // decrease stamina
+        AudioManager.Instance.PlayOneShotNoAsync(jumpSound, PlayerID.Instance.gameObject.transform.position);
     }
 
     /**
