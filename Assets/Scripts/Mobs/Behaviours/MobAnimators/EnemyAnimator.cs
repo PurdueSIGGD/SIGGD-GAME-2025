@@ -34,6 +34,7 @@ public class EnemyAnimator : MonoBehaviour
 
     private readonly string hyenaDamagedSound = "HyenaOnDamage";
     private readonly string hyenaDamagePlayerSound = "HyenaOnDamagePlayer";
+    private readonly string hyenaDeathSound = "HyenaOnSlain";
 
     private void Start()
     {
@@ -46,11 +47,13 @@ public class EnemyAnimator : MonoBehaviour
     private void OnEnable()
     {
         EntityHealthManager.OnHealthChanged += HandleDamage;
+        EntityHealthManager.OnDeath += HandleDeath;
     }
 
     private void OnDisable()
     {
         EntityHealthManager.OnHealthChanged -= HandleDamage;
+        EntityHealthManager.OnDeath -= HandleDeath;
     }
 
     void LateUpdate()
@@ -97,6 +100,14 @@ public class EnemyAnimator : MonoBehaviour
             Debug.Log("playing player taking damage from hyena sound");
             AudioManager.Instance.PlayOneShotNoAsync(hyenaDamagePlayerSound, PlayerID.Instance.gameObject.transform.position);
 
+        }
+    }
+
+    private void HandleDeath(DamageContext ctx)
+    {
+        if (ctx.victim == gameObject)
+        {
+            AudioManager.Instance.PlayOneShotNoAsync(hyenaDeathSound, transform.position);
         }
     }
 
