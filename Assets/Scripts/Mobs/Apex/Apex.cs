@@ -207,8 +207,7 @@ public class Apex : MobBrainBase
                 stateMachine.ChangeState(chasingState);
 
                 // play apex notice player sound
-                //AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, transform.position);
-                AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, PlayerID.Instance.gameObject.transform.position);
+                AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, transform.position);
             }
         }
     }
