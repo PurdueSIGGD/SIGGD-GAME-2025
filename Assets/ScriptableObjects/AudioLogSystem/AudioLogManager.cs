@@ -25,7 +25,7 @@ public class AudioLogManager : MonoBehaviour
     private Dictionary<string, AudioLogObject> audioNameToLogs = new();
     [HideInInspector] public List<string> names = new List<string>();
 
-    private float total_time = 0.0f; // to un cumulative the time stamps as we play them
+    //private float total_time = 0.0f; // to un cumulative the time stamps as we play them
     void Awake()
     {
         if (Instance != null)
@@ -58,7 +58,7 @@ public class AudioLogManager : MonoBehaviour
     private IEnumerator StartSubtitles(AudioLogObject curAudio)
     {
         subtitles.enabled = true;
-        total_time = 0;
+        //total_time = 0;
 
         foreach (var line in curAudio.subtitles)
         {
@@ -91,8 +91,8 @@ public class AudioLogManager : MonoBehaviour
             }
 
             subtitles.text = line.line;
-            yield return new WaitForSeconds(line.seconds - total_time);
-            total_time = line.seconds;
+            yield return new WaitForSeconds(line.seconds /* - total_time */);
+            //total_time = line.seconds;
         }
 
         anim.SetBool("LeftVisible", false);
