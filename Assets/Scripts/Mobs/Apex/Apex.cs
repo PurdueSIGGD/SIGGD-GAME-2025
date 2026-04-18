@@ -23,7 +23,8 @@ public class Apex : MobBrainBase
     #endregion
 
     #region Sound References
-    private static string apexDamagePlayerSound = "ApexOnDamagePlayer";
+    private readonly static string apexDamagePlayerSound = "ApexOnDamagePlayer";
+    private readonly string apexOnNoticePlayerSound = "ApexOnNotice";
 
     #endregion
 
@@ -143,7 +144,7 @@ public class Apex : MobBrainBase
 
     protected override string MobName => "Apex";
 
-    private readonly string apexOnNoticePlayerSound = "ApexOnNotice";
+    
 
     protected override MobContext BuildContext()
     {
@@ -199,14 +200,15 @@ public class Apex : MobBrainBase
         if (lineOfSight != null && lineOfSight.VisibleTarget != null)
         {
             var current = stateMachine.CurrentState;
-            if (current is not ApexChasingState && current is not ApexAttackingState)
+            if (current is not ApexChasingState && current is not ApexAttackingState && PlayerID.Instance.playerHealth.CurrentHealth > 0)
             {
                 ApexLog($"EvaluateTransitions — spotted '{lineOfSight.VisibleTarget.gameObject.name}', switching to ChasingState.");
                 chasingState.SetTarget(lineOfSight.VisibleTarget);
                 stateMachine.ChangeState(chasingState);
 
                 // play apex notice player sound
-                AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, transform.position);
+                //AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, transform.position);
+                AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, PlayerID.Instance.gameObject.transform.position);
             }
         }
     }
