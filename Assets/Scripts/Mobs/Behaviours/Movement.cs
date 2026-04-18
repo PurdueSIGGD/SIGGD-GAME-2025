@@ -5,6 +5,7 @@ using Sirenix.OdinInspector;
 
 namespace SIGGD.Mobs
 {
+
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(StaminaBehaviour))]
@@ -15,6 +16,8 @@ namespace SIGGD.Mobs
         [SerializeField] private float baseSpeed = 12f;
         [SerializeField] private float rotationSpeed = 25f;
         [SerializeField] private float sprintMultiplier = 1.5f;
+
+        
 
         private StaminaBehaviour sprint;
         public bool sprintAllowed;

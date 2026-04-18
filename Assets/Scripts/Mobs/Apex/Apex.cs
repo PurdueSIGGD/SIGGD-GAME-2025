@@ -267,6 +267,9 @@ public class Apex : MobBrainBase
         return false;
     }
 
+    public bool IsMoving() {
+        return ctx.Rigidbody.linearVelocity.magnitude > 0.1f;
+    }
     #endregion
 
     #region Attack Helpers

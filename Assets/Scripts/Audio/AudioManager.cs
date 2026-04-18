@@ -108,6 +108,7 @@ public class AudioManager : Singleton<AudioManager>
         name = name.ToLower();
 
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
+        Debug.Log($"playing audio {name} {eventRef}");
         if (!eventRef.IsNull)
         {
             RuntimeManager.PlayOneShot(eventRef, worldPos);
@@ -220,6 +221,7 @@ public class AudioManager : Singleton<AudioManager>
         name = name.ToLower();
 
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
+        
         if (!eventRef.IsNull)
         {
             if (pos != default)

@@ -32,6 +32,9 @@ public class EnemyAnimator : MonoBehaviour
     Vector3 vel;
     public float t;
 
+    private static string hyenaDamagedSound = "HyenaOnDamage";
+    private static string hyenaDamagePlayerSound = "HyenaOnDamagePlayer";
+
     private void Start()
     {
         boxHalfExtents = damageCollider.bounds.size * 0.5f;
@@ -39,6 +42,18 @@ public class EnemyAnimator : MonoBehaviour
         if (aimTransform != null || forwardTransform != null)
             aimTransform.position = forwardTransform.position;
     }
+
+    private void OnEnable()
+    {
+        EntityHealthManager.OnHealthChanged += HandleDamage;
+        Debug.Log("added handle damage");
+    }
+
+    private void OnDisable()
+    {
+        EntityHealthManager.OnHealthChanged -= HandleDamage;
+    }
+
     void LateUpdate()
     {
         if (!aimTransform || !forwardTransform) return;
@@ -65,11 +80,32 @@ public class EnemyAnimator : MonoBehaviour
 
         aimTransform.position = Vector3.SmoothDamp(aimTransform.position, desired, ref vel, 0.08f, Mathf.Infinity, Time.deltaTime);
     }
+
+    private void HandleDamage(DamageContext ctx)
+    {
+        Debug.Log($"handling damage... {ctx.attacker == gameObject} {ctx.victim == PlayerID.Instance.gameObject} {ctx.amount}");
+        if (ctx.victim == gameObject && ctx.amount > 0)
+        {
+            Debug.Log("playing hyena damage sound");
+            AudioManager.Instance.PlayOneShotNoAsync(hyenaDamagedSound, transform.position);
+
+        }
+        else if (ctx.attacker == gameObject && ctx.victim == PlayerID.Instance.gameObject && ctx.amount > 0)
+        {
+            Debug.Log("playing player taking damage from hyena sound");
+            AudioManager.Instance.PlayOneShotNoAsync(hyenaDamagePlayerSound, PlayerID.Instance.gameObject.transform.position);
+
+        }
+    }
+
     public void SetLook(bool look)
     {
         targetT = look ? 1f : 0f;
     }
-    public void PlayAttack() => animator.SetBool("Attack", true);
+    public void PlayAttack()
+    {
+        animator.SetBool("Attack", true);
+    }
     public void EndAttack()
     {
         animator.SetBool("Attack", false);
