@@ -22,6 +22,11 @@ public class Apex : MobBrainBase
 
     #endregion
 
+    #region Sound References
+    private static string apexDamagePlayerSound = "ApexOnDamagePlayer";
+
+    #endregion
+
     #region Movement Settings
 
     [Header("Apex Movement")]
@@ -292,6 +297,10 @@ public class Apex : MobBrainBase
             dmgCtx.attacker = gameObject;
             dmgCtx.victim = col.gameObject;
             dmgCtx.amount = health.MaxHealth;
+            if (dmgCtx.victim == PlayerID.Instance.gameObject && dmgCtx.amount > 0 && PlayerID.Instance.playerHealth.CurrentHealth > 0)
+            {
+                AudioManager.Instance.PlayOneShotNoAsync(apexDamagePlayerSound, PlayerID.Instance.gameObject.transform.position);
+            }
             health.TakeDamage(dmgCtx);
             ApexLog($"Attacked {col.gameObject.name} for {dmgCtx.amount} damage.");
         }
