@@ -148,7 +148,8 @@ public class Apex : MobBrainBase
             Movement = GetComponent<Movement>(),
             AgentData = GetComponent<AgentData>(),
             Perception = GetComponent<PerceptionManager>(),
-            Smell = GetComponent<Smell>()
+            Smell = GetComponent<Smell>(),
+            type = MobType.Apex
         };
     }
 

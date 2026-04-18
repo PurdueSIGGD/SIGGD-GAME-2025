@@ -32,8 +32,8 @@ public class EnemyAnimator : MonoBehaviour
     Vector3 vel;
     public float t;
 
-    private static string hyenaDamagedSound = "HyenaOnDamage";
-    private static string hyenaDamagePlayerSound = "HyenaOnDamagePlayer";
+    private readonly string hyenaDamagedSound = "HyenaOnDamage";
+    private readonly string hyenaDamagePlayerSound = "HyenaOnDamagePlayer";
 
     private void Start()
     {
