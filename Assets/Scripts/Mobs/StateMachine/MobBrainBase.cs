@@ -20,6 +20,12 @@ namespace SIGGD.Mobs.StateMachine
 
         protected WanderState wanderState;
         protected FollowPackState followPackState;
+        protected BaitedState baitedState;
+
+        [Header("Bait Response")]
+        [SerializeField] private float baitMoveSpeedMultiplier = 1f;
+        [SerializeField] private float baitTurnResponsiveness = 3f;
+        [SerializeField] private float baitArrivalDistance = 1.5f;
 
         public MobStateMachine StateMachine => stateMachine;
         public MobContext Context => ctx;
@@ -52,8 +58,11 @@ namespace SIGGD.Mobs.StateMachine
         {
             ctx = BuildContext();
 
+            stateMachine = new MobStateMachine();
+
             wanderState = new WanderState(ctx);
             followPackState = new FollowPackState(ctx);
+            baitedState = new BaitedState(ctx, stateMachine, wanderState, baitMoveSpeedMultiplier, baitTurnResponsiveness, baitArrivalDistance);
             InitializeStates();
 
             stateMachine = new MobStateMachine();
@@ -84,6 +93,21 @@ namespace SIGGD.Mobs.StateMachine
             if (pack == null) return false;
             var alpha = pack.GetAlpha();
             return alpha != null && alpha != ctx.Pack;
+        }
+
+        public void EnterBaitedState(GameObject baitObject, Vector3 baitPosition, float duration)
+        {
+            if (baitedState == null) return;
+
+            baitedState.Configure(baitObject, baitPosition, duration);
+
+            if (stateMachine.CurrentState == baitedState)
+            {
+                baitedState.Enter();
+                return;
+            }
+
+            stateMachine.ChangeState(baitedState);
         }
 
         /// <summary>

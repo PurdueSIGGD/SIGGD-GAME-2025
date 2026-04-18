@@ -1,6 +1,6 @@
 using System.Collections;
+using SIGGD.Mobs.StateMachine;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ActivateBait : MonoBehaviour
 {
@@ -36,7 +36,13 @@ public class ActivateBait : MonoBehaviour
 
         if ((mask.value & (1 << other.gameObject.layer)) != 0)
         {
-            // This should call the mob code that tells them to move to this objects location
+            MobBrainBase mobBrain = other.GetComponentInParent<MobBrainBase>();
+            if (mobBrain == null)
+            {
+                return;
+            }
+
+            mobBrain.EnterBaitedState(gameObject, transform.position, duration);
         }
     }
 
