@@ -61,9 +61,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3533324307021661, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a462b8f796d1606449946ee811e8e11d, type: 2}
+    - target: {fileID: 4237408519905819567, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 289301614986012343, guid: 7e6166ceea137a24091a959765a86df0, type: 3}
     - target: {fileID: 4805210256399962709, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
       propertyPath: m_Name
       value: ThrownRock
+      objectReference: {fileID: 0}
+    - target: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -104,6 +124,10 @@ PrefabInstance:
     - target: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 341733643721055213, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
@@ -168,6 +192,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   trigger: {fileID: 3488553111518521158}
+  boxRadius: {x: 5, y: 5, z: 5}
 --- !u!4 &2752206535613316254 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
