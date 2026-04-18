@@ -46,7 +46,6 @@ public class EnemyAnimator : MonoBehaviour
     private void OnEnable()
     {
         EntityHealthManager.OnHealthChanged += HandleDamage;
-        Debug.Log("added handle damage");
     }
 
     private void OnDisable()
@@ -83,7 +82,10 @@ public class EnemyAnimator : MonoBehaviour
 
     private void HandleDamage(DamageContext ctx)
     {
-        Debug.Log($"handling damage... {ctx.attacker == gameObject} {ctx.victim == PlayerID.Instance.gameObject} {ctx.amount}");
+        if (ctx.amount > 0)
+        {
+            Debug.Log($"handling damage... {ctx.attacker} {ctx.attacker == gameObject} {ctx.victim} {ctx.victim == PlayerID.Instance.gameObject} {ctx.amount}");
+        }
         if (ctx.victim == gameObject && ctx.amount > 0)
         {
             Debug.Log("playing hyena damage sound");
@@ -165,6 +167,7 @@ public class EnemyAnimator : MonoBehaviour
         if (hm != null)
         {
             if (other.CompareTag("Predator")) return;
+            damageContext.attacker = gameObject;
             damageContext.victim = hm.gameObject;
             hm.TakeDamage(damageContext);
         }

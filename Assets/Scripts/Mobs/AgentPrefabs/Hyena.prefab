@@ -311,6 +311,8 @@ MonoBehaviour:
   mobLayer:
     serializedVersion: 2
     m_Bits: 512
+  animator: {fileID: 0}
+  damageCollider: {fileID: 0}
   damageContext:
     attacker: {fileID: 4822427246891486894}
     victim: {fileID: 0}
@@ -319,6 +321,7 @@ MonoBehaviour:
   lookTargetTransform: {fileID: 3409753489851347960}
   forwardTransform: {fileID: 8762624527021250164}
   aimTransform: {fileID: 8348630202905825672}
+  maxLookAngle: 90
   targetT: 0
   t: 0
 --- !u!114 &4818079520512631353
@@ -374,12 +377,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fb786032bad20842894043057f7437d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <hunger>k__BackingField: 0
+  <hunger>k__BackingField: 100
   HungerConfig: {fileID: 11400000, guid: c791ccfee0abc86498340017db4d4953, type: 2}
   hungerDamageContext:
     attacker: {fileID: 4822427246891486894}
     victim: {fileID: 4822427246891486894}
-    amount: 0
+    amount: 10
     xxtraContext: 
   HealthManager: {fileID: 5136981766921995599}
 --- !u!114 &5136981766921995599
@@ -394,7 +397,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56299dbcc5bc4f145a4dbbd3ea5bbecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth:
+    value: 100
 --- !u!114 &5040513272939026828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -614,6 +618,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a9f54dea6931694e9f1ee2484635234, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  circlingSpeedMultiplier: 0
+  lungePreparationMultiplier: 0
   finishedWalking: 0
   finishedCircling: 0
   exit: 0
@@ -632,10 +638,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9bab191272c80e42b577728b4262dc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  desperationLevel: 0
-  powerLevel: 0
-  energyLevel: 0
-  aggressionLevel: 0
   boundary: {fileID: 0}
 --- !u!114 &7812564173331032301
 MonoBehaviour:
@@ -650,6 +652,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   preyTargets: []
+  predatorTargets: []
 --- !u!114 &-6871212686035477808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -664,6 +667,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseSpeed: 6
   rotationSpeed: 8
+  sprintMultiplier: 1.5
   sprintAllowed: 0
 --- !u!136 &4042660576636541797
 CapsuleCollider:
