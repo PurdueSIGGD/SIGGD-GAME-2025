@@ -43,7 +43,7 @@ public class PlayerDataSaveModule : ISaveModule
         respawnManager.respawnPoint = playerData.RespawnPosition;
         radiation.SlimeLevel = playerData.slimeLevel;
 
-        Debug.Log("Set stamina " + stamina.CurrentStamina);
+        Debug.Log($"Deserialized stamina {stamina.CurrentStamina} {stamina.StaminaDisabled}");
 
         return true;
     }

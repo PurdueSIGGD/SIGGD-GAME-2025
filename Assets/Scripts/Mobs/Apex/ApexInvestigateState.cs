@@ -1,4 +1,5 @@
 using SIGGD.Mobs.StateMachine;
+using SIGGD.Mobs;
 using UnityEngine;
 
 /// <summary>
@@ -34,12 +35,12 @@ public class ApexInvestigateState : IMobState
     {
         if (!hasTarget)
         {
-            apex.ApexLog("InvestigateState entered without a target — switching to SearchingState.");
+            apex.ApexLog("InvestigateState - entered without a target, switching to SearchingState.");
             apex.StateMachine.ChangeState(apex.SearchingState);
             return;
         }
 
-        apex.ApexLog($"InvestigateState — moving to investigation point {investigatePosition}.");
+        apex.ApexLog($"InvestigateState - moving to investigation point {investigatePosition}.");
     }
 
     public void Update()
@@ -48,7 +49,7 @@ public class ApexInvestigateState : IMobState
 
         if (apex.IsAtPosition(investigatePosition))
         {
-            apex.ApexLog("InvestigateState — arrived at investigate point, switching to SearchingState.");
+            apex.ApexLog("InvestigateState - arrived at investigate point, switching to SearchingState.");
             hasTarget = false;
             apex.StateMachine.ChangeState(apex.SearchingState);
         }
@@ -84,5 +85,12 @@ public class ApexInvestigateState : IMobState
     {
         if (float.IsNaN(d.x) || float.IsNaN(d.y) || float.IsNaN(d.z)) return false;
         return d.sqrMagnitude > 0.0001f;
+    }
+
+    public void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(investigatePosition, 10f);
+        Gizmos.DrawLine(apex.transform.position, investigatePosition);
     }
 }

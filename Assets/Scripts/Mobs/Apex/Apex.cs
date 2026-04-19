@@ -138,6 +138,8 @@ public class Apex : MobBrainBase
 
     protected override string MobName => "Apex";
 
+    private readonly string apexOnNoticePlayerSound = "ApexOnNotice";
+
     protected override MobContext BuildContext()
     {
         return new MobContext
@@ -148,7 +150,8 @@ public class Apex : MobBrainBase
             Movement = GetComponent<Movement>(),
             AgentData = GetComponent<AgentData>(),
             Perception = GetComponent<PerceptionManager>(),
-            Smell = GetComponent<Smell>()
+            Smell = GetComponent<Smell>(),
+            type = MobType.Apex
         };
     }
 
@@ -181,7 +184,7 @@ public class Apex : MobBrainBase
     private IEnumerator DelayedEnterInvestigate()
     {
         yield return new WaitForSeconds(0.5f);
-        stateMachine.ChangeState(RoamingState);
+        stateMachine.ChangeState(InvestigateState);
     }
 
     protected override void EvaluateTransitions()
@@ -196,6 +199,9 @@ public class Apex : MobBrainBase
                 ApexLog($"EvaluateTransitions — spotted '{lineOfSight.VisibleTarget.gameObject.name}', switching to ChasingState.");
                 chasingState.SetTarget(lineOfSight.VisibleTarget);
                 stateMachine.ChangeState(chasingState);
+
+                // play apex notice player sound
+                AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, transform.position);
             }
         }
     }
@@ -267,6 +273,9 @@ public class Apex : MobBrainBase
         return false;
     }
 
+    public bool IsMoving() {
+        return ctx.Rigidbody.linearVelocity.magnitude > 0.1f;
+    }
     #endregion
 
     #region Attack Helpers
@@ -303,6 +312,10 @@ public class Apex : MobBrainBase
         if (StateMachine != null && StateMachine.CurrentState is ApexRoamingState)
         {
             RoamingState.OnDrawGizmos();
+        }
+        if (StateMachine != null && StateMachine.CurrentState is ApexInvestigateState)
+        {
+            InvestigateState.OnDrawGizmos();
         }
     }
 

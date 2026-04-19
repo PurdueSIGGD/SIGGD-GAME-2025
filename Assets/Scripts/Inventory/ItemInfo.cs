@@ -31,7 +31,11 @@ public class ItemInfo : ScriptableObject
         Keycard,
         Axe,
         Flower,
-        Slimeball
+        Slimeball,
+        GreenMushroom,
+        PurpleMushroom,
+        DarkPurpleMushroom,
+        OrangeMushroom
     };
 
     [SerializeField] public ItemType itemType;// type of item
