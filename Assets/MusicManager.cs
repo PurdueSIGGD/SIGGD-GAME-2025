@@ -17,12 +17,14 @@ public class MusicManager : Singleton<MusicManager>
     // the currently playing track
     public EventInstance curTrack;
 
-    public string initMusicKey = "Area1ForestAmbiance";
+    [SerializeField] private string initMusicKey = "ForestAmbianceFirst";
 
     [ShowInInspector, ReadOnly] public Dictionary<string, EventInstance> musicEventInstances = new();
     
     private Coroutine crossFadeRoutine;
     private Coroutine activeFadeRoutine;
+    private Coroutine pauseMusicRoutine;
+    private Coroutine playMusicRoutine;
 
     protected override void Awake()
     {
@@ -52,6 +54,11 @@ public class MusicManager : Singleton<MusicManager>
             {
                 emitter.Stop();
             }
+        }
+        foreach (var instance in musicEventInstances.Values)
+        {
+            instance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            instance.release();
         }
         base.OnDestroy();
     }
@@ -107,6 +114,103 @@ public class MusicManager : Singleton<MusicManager>
     }
 
     /// <summary>
+    /// Fades out the current track
+    /// </summary>
+    public void PauseMusic()
+    {
+        // check if its stopped and return if it is
+        curTrack.getPlaybackState(out PLAYBACK_STATE state);
+        if (state != PLAYBACK_STATE.PLAYING)
+        {
+            return;
+        }
+
+        if (playMusicRoutine != null)
+        {
+            StopCoroutine(playMusicRoutine);
+        }
+        // if we are already pausing the music no need to do it again
+        if (pauseMusicRoutine == null)
+        {
+            pauseMusicRoutine = StartCoroutine(fadeOutMusic());
+        }
+    }
+    private IEnumerator fadeOutMusic()
+    {
+        float curTime = 0f;
+        float duration = 9f;
+
+        while (curTime < duration)
+        {
+            curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
+            float t = curTime / duration;
+
+            float smoothedT = Mathf.SmoothStep(0f, 1f, t);
+
+            // Fade Out: cos(t * pi/2)
+            float fadeOutVol = Mathf.Cos(smoothedT * Mathf.PI * 0.5f);
+
+            curTrack.setVolume(fadeOutVol);
+
+            yield return null; // wait for a frame in between loop runs
+        }
+
+        curTrack.setVolume(0f);
+
+        curTrack.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+
+        pauseMusicRoutine = null;
+    }
+
+    /// <summary>
+    /// Fades in the current track
+    /// </summary>
+    public void PlayMusic()
+    {
+        // check if its playing and return if it is
+        curTrack.getPlaybackState(out PLAYBACK_STATE state);
+        if (state == PLAYBACK_STATE.PLAYING)
+        {
+            return;
+        }
+
+        if (pauseMusicRoutine != null)
+        {
+            StopCoroutine(pauseMusicRoutine);
+        }
+        if (playMusicRoutine == null)
+        {
+            StartCoroutine(fadeInMusic());
+        }
+    }
+    private IEnumerator fadeInMusic()
+    {
+        curTrack.start();
+
+        float curTime = 0f;
+        float duration = 9f;
+
+        while (curTime < duration)
+        {
+            curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
+            float t = curTime / duration;
+
+            float smoothedT = Mathf.SmoothStep(0f, 1f, t);
+
+            // Fade In: sin(t * pi/2)
+            float fadeInVol = Mathf.Sin(smoothedT * Mathf.PI * 0.5f);
+
+            curTrack.setVolume(fadeInVol);
+
+            yield return null; // wait for a frame in between loop runs
+        }
+
+        curTrack.setVolume(1f);
+
+        playMusicRoutine = null;
+    }
+
+    /// <summary>
     /// Crossfades from the curTrack to a track that you give the key of over a given duration
     /// </summary>
     public void CrossFadeMusic(string toKey, float duration)
@@ -137,8 +241,6 @@ public class MusicManager : Singleton<MusicManager>
             to.start();
         }
 
-        // resetting vals to make sure it transfers right
-        from.setVolume(1f);
         to.setVolume(0f);
 
         while (curTime < duration)
@@ -166,6 +268,8 @@ public class MusicManager : Singleton<MusicManager>
         curTrack = to;
 
         from.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+
+        crossFadeRoutine = null;
     }
 
     // also checks to see if that music event is already in the dict
@@ -201,19 +305,7 @@ public class MusicManager : Singleton<MusicManager>
             }
             else
             {
-                FMODEvents.Instance.GetEventInstance(initMusicKey, instance => {
-                    curTrack = instance;
-                    musicEventInstances.Add(initMusicKey, curTrack);
-                    curTrack.start();
-                });
-
-            }
-        }
-        else
-        {
-            if (curTrack.isValid())
-            {
-                curTrack.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+                Debug.LogError("Initiliazed Track Doesnt Exist");
             }
         }
     }
