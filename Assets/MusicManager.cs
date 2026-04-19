@@ -128,6 +128,7 @@ public class MusicManager : Singleton<MusicManager>
         if (playMusicRoutine != null)
         {
             StopCoroutine(playMusicRoutine);
+            playMusicRoutine = null;
         }
         // if we are already pausing the music no need to do it again
         if (pauseMusicRoutine == null)
@@ -177,6 +178,7 @@ public class MusicManager : Singleton<MusicManager>
         if (pauseMusicRoutine != null)
         {
             StopCoroutine(pauseMusicRoutine);
+            pauseMusicRoutine = null;
         }
         if (playMusicRoutine == null)
         {
