@@ -113,6 +113,7 @@ namespace SIGGD.Mobs.StateMachine
         {
             if (!hasBaitTarget || hasArrived || eating)
             {
+                ctx.Rigidbody.linearVelocity = Vector3.zero;
                 return;
             }
 
@@ -120,7 +121,7 @@ namespace SIGGD.Mobs.StateMachine
             try
             {
                 dir = NavSteering.GetSteeringDirection(ctx.NavAgent, ctx.Rigidbody.position,
-                    baitObject?.transform.position ?? ctx.Rigidbody.position, 0.1f);
+                    baitObject?.transform.position ?? ctx.Rigidbody.position, 0.01f);
 
             }
             catch (Exception e)
