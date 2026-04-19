@@ -219,6 +219,9 @@ public class MusicManager : Singleton<MusicManager>
         }
     }
 
+    /// <summary>
+    /// Fades in/out the combat part of the curTrack
+    /// </summary>
     public IEnumerator ToggleCombatVolume()
     {
         if (changingCombatTrackVol == false)
@@ -230,7 +233,7 @@ public class MusicManager : Singleton<MusicManager>
             RuntimeManager.StudioSystem.getParameterByName("Combat Track Volume", out float vol);
 
             // go from noncombat to combat
-            if (vol == 0)
+            if (vol <= 0.01f)
             {
                 float duration = 0.5f;
 
@@ -253,7 +256,7 @@ public class MusicManager : Singleton<MusicManager>
                 RuntimeManager.StudioSystem.setParameterByName("Combat Track Volume", 1);
             }
             // go from combat to noncombat
-            else if (vol == 1)
+            else if (vol <= 0.99f)
             {
                 float duration = 1.5f;
 
