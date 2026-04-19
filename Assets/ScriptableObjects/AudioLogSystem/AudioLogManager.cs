@@ -67,13 +67,22 @@ public class AudioLogManager : MonoBehaviour
                 anim.Play("PlayerHand_Left_Idle");
                 anim.SetBool("LeftVisible", true);
 
-                // uncomment all this stuff when we get a real radio noise and then put the noise into (name goes here)
-                /* delay for .2 seconds while the radio click noise (activate noise (i dunno man)) plays
-                 * RuntimeManager.GetEventDescription(FMODEvents.Instance.soundEvents["(name goes here too)"]).getLength(out int lengthMS);
-                 * float lengthSec = lengthMS / 1000;
-                 * AudioManager.Instance.PlayOneShot("(name needs to go here)");
-                 * yield return new WaitForSeconds(lengthSec);
-                 */
+                int lengthSec = 0;
+
+                if (line.isFromRadio == true)
+                {
+                    RuntimeManager.GetEventDescription(FMODEvents.Instance.GetEventReferenceNoAsync("radionosie")).getLength(out int lengthMS);
+                    lengthSec = lengthMS / 1000;
+                    AudioManager.Instance.PlayOneShot("radioNosie");
+                }
+                else if (line.isIntoRadio == true)
+                {
+                    RuntimeManager.GetEventDescription(FMODEvents.Instance.GetEventReferenceNoAsync("radionoiselong")).getLength(out int lengthMS);
+                    lengthSec = lengthMS / 1000;
+                    AudioManager.Instance.PlayOneShot("radionoiselong");
+                }
+
+                yield return new WaitForSeconds(lengthSec);
             }
             else
             {
