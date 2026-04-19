@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{051743ee-8dde-40ac-bcdd-273b6489a4e5}">
 		<property name="name">
-			<value>Area1ForestAmbiance</value>
+			<value>ForestAmbianceAfterFirstApex</value>
 		</property>
 		<property name="outputFormat">
 			<value>1</value>
@@ -70,6 +70,7 @@
 	<object class="GroupTrack" id="{088016d9-b0ec-4b1c-9adb-e51f29c07a84}">
 		<relationship name="modules">
 			<destination>{6ba3a530-f9e9-4526-80f6-ac9c297f2b79}</destination>
+			<destination>{16a63331-1d8d-487d-b2cb-dc30e317871c}</destination>
 		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{03faf37e-dcca-4891-96e0-03996d5dc224}</destination>
@@ -79,6 +80,7 @@
 		<relationship name="modules">
 			<destination>{0fa02804-2b92-4413-97b9-798e214f4d5a}</destination>
 			<destination>{6ba3a530-f9e9-4526-80f6-ac9c297f2b79}</destination>
+			<destination>{16a63331-1d8d-487d-b2cb-dc30e317871c}</destination>
 		</relationship>
 		<relationship name="markers">
 			<destination>{0f9c5409-41e1-42a7-a7a5-176e5f446ecb}</destination>
@@ -129,13 +131,24 @@
 	</object>
 	<object class="SingleSound" id="{6ba3a530-f9e9-4526-80f6-ac9c297f2b79}">
 		<property name="start">
-			<value>1.5</value>
+			<value>32.350000000000001</value>
 		</property>
 		<property name="length">
-			<value>592.96857142857129</value>
+			<value>562.11857142857127</value>
 		</property>
 		<property name="timelockedOffset">
-			<value>1.5</value>
+			<value>32.350000000000001</value>
+		</property>
+		<relationship name="audioFile">
+			<destination>{87ff153d-fe14-4a1d-9e3b-63e3fd66ef8b}</destination>
+		</relationship>
+	</object>
+	<object class="SingleSound" id="{16a63331-1d8d-487d-b2cb-dc30e317871c}">
+		<property name="length">
+			<value>32.350000000000001</value>
+		</property>
+		<property name="timelockedOffset">
+			<value>32.350000000000001</value>
 		</property>
 		<relationship name="audioFile">
 			<destination>{87ff153d-fe14-4a1d-9e3b-63e3fd66ef8b}</destination>

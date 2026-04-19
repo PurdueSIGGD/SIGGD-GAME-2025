@@ -19,6 +19,7 @@ public class PlayerID : Singleton<PlayerID>
     [HideInInspector] public EntityHealthManager playerHealth;
     [HideInInspector] public PlayerHunger playerHunger;
     [HideInInspector] public PlayerStamina playerStamina;
+    [HideInInspector] public PlayerRadiation playerRadiation;
     [HideInInspector] public PlayerHUD playerHUD;
     public Inventory Inventory => Inventory.Instance;
     [HideInInspector] public PlayerInteractor playerInteractor;
