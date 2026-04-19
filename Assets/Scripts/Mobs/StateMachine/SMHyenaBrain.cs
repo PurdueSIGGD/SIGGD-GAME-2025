@@ -62,6 +62,12 @@ namespace SIGGD.Mobs.StateMachine
             var current = stateMachine.CurrentState;
             bool isAttacking = current == attackPlayerState || current == attackPreyState;
 
+            if (current == baitedState)
+            {
+                // do not interrupt while baited
+                return;
+            }
+
             // While lunging, do not interrupt the attack
             if (ctx.AttackManager != null && ctx.AttackManager.isLunging)
             {

@@ -23,9 +23,9 @@ namespace SIGGD.Mobs.StateMachine
         protected BaitedState baitedState;
 
         [Header("Bait Response")]
-        [SerializeField] private float baitMoveSpeedMultiplier = 1f;
-        [SerializeField] private float baitTurnResponsiveness = 3f;
-        [SerializeField] private float baitArrivalDistance = 1.5f;
+        [SerializeField] protected float baitMoveSpeedMultiplier = 1f;
+        [SerializeField] protected float baitTurnResponsiveness = 3f;
+        [SerializeField] protected float baitArrivalDistance = 1.5f;
 
         public MobStateMachine StateMachine => stateMachine;
         public MobContext Context => ctx;
@@ -95,7 +95,7 @@ namespace SIGGD.Mobs.StateMachine
             return alpha != null && alpha != ctx.Pack;
         }
 
-        public void EnterBaitedState(GameObject baitObject, Vector3 baitPosition, float duration)
+        public virtual void EnterBaitedState(GameObject baitObject, Vector3 baitPosition, float duration)
         {
             if (baitedState == null) return;
 

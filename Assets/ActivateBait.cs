@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using SIGGD.Mobs.StateMachine;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine;
 public class ActivateBait : MonoBehaviour
 {
     // Radius and Duration both set on each bait types item info prefab
+    public bool actOnApex = true;
     public float radius = 10f;
     public float duration = 10f;
 
@@ -31,10 +33,11 @@ public class ActivateBait : MonoBehaviour
         StartCoroutine(DestroyAfterDuration());
     }
 
-    void OnTriggerEnter(Collider other)
+    public void OnBaitTriggerEnter(Collider other)
     {
+        if (!actOnApex && other.CompareTag("Apex")) return;
 
-        if ((mask.value & (1 << other.gameObject.layer)) != 0)
+        if ((mask.value & (1 << other.gameObject.layer)) != 0 || (actOnApex && other.CompareTag("Apex")))
         {
             MobBrainBase mobBrain = other.GetComponentInParent<MobBrainBase>();
             if (mobBrain == null)
