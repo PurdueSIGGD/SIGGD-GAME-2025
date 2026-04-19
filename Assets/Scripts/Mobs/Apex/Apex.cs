@@ -190,7 +190,14 @@ public class Apex : MobBrainBase
 
     protected override void EvaluateTransitions()
     {
-        if (stateMachine.CurrentState == baitedState) return;
+        if (stateMachine.CurrentState == baitedState)
+        {
+            if (baitedState.returnToSender)
+            {
+                stateMachine.ChangeState(wanderState);
+            }
+            return;
+        }
         
         // Global LOS transition — if a target is spotted while not already chasing or attacking,
         // immediately switch to chasing.

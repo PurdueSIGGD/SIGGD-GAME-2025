@@ -22,10 +22,9 @@ namespace SIGGD.Mobs.StateMachine
         protected FollowPackState followPackState;
         protected BaitedState baitedState;
 
-        [Header("Bait Response")]
-        [SerializeField] protected float baitMoveSpeedMultiplier = 1f;
-        [SerializeField] protected float baitTurnResponsiveness = 3f;
-        [SerializeField] protected float baitArrivalDistance = 1.5f;
+        protected float baitMoveSpeedMultiplier = 1f;
+        protected float baitTurnResponsiveness = 3f;
+        protected float baitArrivalDistance = 1.5f;
 
         public MobStateMachine StateMachine => stateMachine;
         public MobContext Context => ctx;
@@ -95,17 +94,19 @@ namespace SIGGD.Mobs.StateMachine
             return alpha != null && alpha != ctx.Pack;
         }
 
-        public virtual void EnterBaitedState(GameObject baitObject, Vector3 baitPosition, float duration)
+        public void EnterBaitedState(GameObject baitObject, float duration)
         {
+            Debug.Log("[MobBrainBase] Attempting to enter baited state with bait: " + baitObject.name + " and duration: " + duration);
             if (baitedState == null) return;
-
-            baitedState.Configure(baitObject, baitPosition, duration);
-
+            
             if (stateMachine.CurrentState == baitedState)
             {
-                baitedState.Enter();
                 return;
             }
+            
+            Debug.Log("[MobBrainBase] Entering baited state: " + baitedState.GetType().Name);
+
+            baitedState.Configure(baitObject, duration);
 
             stateMachine.ChangeState(baitedState);
         }

@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace SIGGD.Mobs.StateMachine
 {
@@ -16,11 +18,12 @@ namespace SIGGD.Mobs.StateMachine
         private readonly float arrivalDistance;
         private GameObject baitObject;
 
-        private Vector3 baitPosition;
         private float holdDuration;
         private float holdTimer;
         private bool hasBaitTarget;
         private bool hasArrived;
+        private bool eating;
+        public bool returnToSender;
 
         /// <summary>
         /// Creates a bait reaction state that always returns to the provided fallback state.
@@ -39,20 +42,24 @@ namespace SIGGD.Mobs.StateMachine
         /// <summary>
         /// Updates the bait destination and the amount of time the mob should remain there.
         /// </summary>
-        public void Configure(GameObject baitObject, Vector3 position, float duration)
+        public void Configure(GameObject baitObject, float duration)
         {
             this.baitObject = baitObject;
-            baitPosition = position;
             holdDuration = Mathf.Max(0f, duration);
             hasBaitTarget = true;
             hasArrived = false;
+            returnToSender = false;
+            eating = false;
         }
 
         public void Enter()
         {
+            Debug.Log("[BaitedState] Entering state: " + stateMachine.GetType().Name);
             ctx.Movement.DisableSprint();
             holdTimer = holdDuration;
             hasArrived = false;
+            returnToSender = false;
+            eating = false;
         }
 
         public void Update()
@@ -78,38 +85,59 @@ namespace SIGGD.Mobs.StateMachine
                 return;
             }
 
+            eating = true;
+            
+            Debug.Log("[BaitedState] Holding at bait: " + baitObject.name + " with " + holdTimer + " seconds remaining.");
+
             holdTimer -= Time.deltaTime;
             if (holdTimer <= 0f)
             {
+                Object.Destroy(baitObject);
                 ReturnToWander();
             }
         }
 
         public void FixedUpdate()
         {
-            if (!hasBaitTarget || hasArrived)
+            if (!hasBaitTarget || hasArrived || eating)
             {
                 return;
             }
 
-            Vector3 dir = NavSteering.GetSteeringDirection(ctx.NavAgent, ctx.Rigidbody.position, baitPosition, 0.1f);
+            Vector3 dir;
+            try
+            {
+                dir = NavSteering.GetSteeringDirection(ctx.NavAgent, ctx.Rigidbody.position,
+                    baitObject?.transform.position ?? ctx.Rigidbody.position, 0.1f);
+
+            }
+            catch (Exception e)
+            {
+                return;
+            }
+            
             if (dir.sqrMagnitude <= 0.0001f)
             {
                 return;
             }
 
-            ctx.Movement.MoveTowards(dir, moveSpeedMultiplier, turnResponsiveness, false);
+            ctx.Movement.MoveTowards(dir, moveSpeedMultiplier, turnResponsiveness, true);
         }
 
         public void Exit()
         {
+            Debug.Log("[BaitedState] Exiting state: " + stateMachine.GetType().Name);
             hasBaitTarget = false;
             hasArrived = false;
+            returnToSender = false;
+            eating = false;
         }
 
         private bool IsAtBait()
         {
-            return Vector3.Distance(ctx.Rigidbody.position, baitPosition) <= arrivalDistance;
+            if (baitObject == null) return false;
+            Debug.Log("[BaitedState] Checking arrival at bait: " + baitObject.name + " with distance: " + Vector3.Distance(ctx.Rigidbody.position, baitObject.transform.position) + " and threshold: " + arrivalDistance);
+            return Vector3.Distance(ctx.Rigidbody.position, baitObject.transform.position) <= arrivalDistance;
         }
 
         private void ReturnToWander()
@@ -117,10 +145,8 @@ namespace SIGGD.Mobs.StateMachine
             hasBaitTarget = false;
             hasArrived = false;
 
-            if (returnState != null)
-            {
-                stateMachine.ChangeState(returnState);
-            }
+            Debug.Log("[BaitedState] Returning to wander state: " + returnState.GetType().Name);
+            returnToSender = true;
         }
     }
 }

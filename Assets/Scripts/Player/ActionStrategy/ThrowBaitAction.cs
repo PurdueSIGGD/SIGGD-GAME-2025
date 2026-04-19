@@ -10,9 +10,12 @@ public class ThrowBaitAction : IPlayerActionStrategy
     public float radius = 10f;
     [Tooltip("Duration of the bait's effect in seconds")]
     public float duration = 5f;
+
+    [Tooltip("Duration of the bait's destroy time in seconds")]
+    public float baitDuration = 3f;
     protected override void OnEnter()
     {
-        ThrowItem.Instance.ThrowBait(projectile, throwForce, radius, duration);
+        ThrowItem.Instance.ThrowBait(projectile, throwForce, radius, duration, baitDuration);
         base.OnEnter();
         PlayHandAction(); // plays animation
         Inventory.Instance.Decrement();

@@ -9,15 +9,17 @@ public class ActivateBait : MonoBehaviour
     public bool actOnApex = true;
     public float radius = 10f;
     public float duration = 10f;
+    public float baitDuration = 3f;
 
     [Tooltip("The layer mask that determines which objects are considered mobs")]
     public LayerMask mask;
 
     // After bait is thrown initializes the radius and duration.
-    public void Initialize(float radius, float duration)
+    public void Initialize(float radius, float duration, float baitDuration)
     {
         this.radius = radius;
         this.duration = duration;
+        this.baitDuration = baitDuration;
     }
 
     // Triggers when the bait hits the ground. Creates trigger sphere that checks for mobs within the radius
@@ -35,17 +37,21 @@ public class ActivateBait : MonoBehaviour
 
     public void OnBaitTriggerEnter(Collider other)
     {
+        Debug.Log("[MobBrainBase] OnBaitTriggerEnter");
         if (!actOnApex && other.CompareTag("Apex")) return;
+        
+        Debug.Log("[MobBrainBase] Entering baited state with bait: " + other.name);
 
-        if ((mask.value & (1 << other.gameObject.layer)) != 0 || (actOnApex && other.CompareTag("Apex")))
+        if (other.CompareTag("Predator") || (actOnApex && other.CompareTag("Apex")))
         {
+            Debug.Log("[ActivateBait] Detected mob within radius: " + other.gameObject.name);
             MobBrainBase mobBrain = other.GetComponentInParent<MobBrainBase>();
             if (mobBrain == null)
             {
                 return;
             }
 
-            mobBrain.EnterBaitedState(gameObject, transform.position, duration);
+            mobBrain.EnterBaitedState(gameObject, baitDuration);
         }
     }
 

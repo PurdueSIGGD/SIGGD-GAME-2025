@@ -93,7 +93,10 @@ namespace SIGGD.Mobs.StateMachine
 
             if (current == baitedState)
             {
-                // do not interrupt while baited
+                if (baitedState.returnToSender)
+                {
+                    stateMachine.ChangeState(wanderState);
+                }
                 return;
             }
 
