@@ -30,7 +30,12 @@ public class PlayerRadiation : MonoBehaviour
         set => radiationZone = value;
     }
 
-    private int slimeLevel => SaveManager.Instance.playerModule.playerData.slimeLevel;
+    private int slimeLevel = SaveManager.Instance.playerModule.playerData.slimeLevel;
+    public int SlimeLevel
+    {
+        get => slimeLevel;
+        set => slimeLevel = value;
+    }
 
     private float currentRadiation = 0f;
     private float radiationDamageTimer;     // tracks time since last radiation tick
