@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8069824702596753185}
   - component: {fileID: 3488553111518521158}
+  - component: {fileID: 7717971590506146077}
   m_Layer: 0
   m_Name: Trigger
   m_TagString: Untagged
@@ -53,6 +54,19 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 10
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7717971590506146077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066710950830749251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06cb34b909344a9f809a9d7941f2986c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bait: {fileID: 2783690250539575087}
 --- !u!1001 &5633856723290193016
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -61,29 +75,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3533324307021661, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: a462b8f796d1606449946ee811e8e11d, type: 2}
-    - target: {fileID: 4237408519905819567, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 289301614986012343, guid: 7e6166ceea137a24091a959765a86df0, type: 3}
     - target: {fileID: 4805210256399962709, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
       propertyPath: m_Name
       value: ThrownRock
-      objectReference: {fileID: 0}
-    - target: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -125,10 +119,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 341733643721055213, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
     m_RemovedGameObjects: []
@@ -143,6 +133,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4805210256399962709, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 517312424836302471}
+    - targetCorrespondingSourceObject: {fileID: 4805210256399962709, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2783690250539575087}
   m_SourcePrefab: {fileID: 100100000, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}
 --- !u!1 &900987741395807789 stripped
 GameObject:
@@ -175,7 +168,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &517312424836302471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,8 +184,25 @@ MonoBehaviour:
   mask:
     serializedVersion: 2
     m_Bits: 512
-  trigger: {fileID: 3488553111518521158}
-  boxRadius: {x: 5, y: 5, z: 5}
+  radius: 10
+--- !u!114 &2783690250539575087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900987741395807789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9953b01dae375d4694442e003059201, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actOnApex: 0
+  radius: 10
+  duration: 10
+  mask:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!4 &2752206535613316254 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7502635875605741798, guid: edc6c86533d37b649b2d848d08a1f1b3, type: 3}

@@ -4,6 +4,7 @@ using SIGGD.Mobs;
 using SIGGD.Mobs.StateMachine;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEditor;
 
 /// <summary>
 /// Brain for the Apex predator, built on <see cref="MobBrainBase"/>.
@@ -12,6 +13,7 @@ using UnityEngine.AI;
 /// </summary>
 public class Apex : MobBrainBase
 {
+    private static readonly int WalkingHash = Animator.StringToHash("Walking");
     #region Apex References
 
     [Header("Apex References")]
@@ -19,6 +21,7 @@ public class Apex : MobBrainBase
     [SerializeField] private Transform headBone;
     [Tooltip("Standalone LOS component that mirrors the head bone each frame.")]
     [SerializeField] private ApexLineOfSight lineOfSight;
+    [SerializeField] private Animator animator;
 
     #endregion
 
@@ -151,7 +154,8 @@ public class Apex : MobBrainBase
             AgentData = GetComponent<AgentData>(),
             Perception = GetComponent<PerceptionManager>(),
             Smell = GetComponent<Smell>(),
-            type = MobType.Apex
+            Type = MobType.Apex,
+            Animator = animator
         };
     }
 
@@ -163,6 +167,7 @@ public class Apex : MobBrainBase
         chasingState = new ApexChasingState(this);
         attackingState = new ApexAttackingState(this);
         investigateState = new ApexInvestigateState(this);
+        baitedState = new BaitedState(ctx, stateMachine, investigateState, baitMoveSpeedMultiplier, baitTurnResponsiveness, baitArrivalDistance);
     }
 
     protected override void Start()
@@ -189,6 +194,15 @@ public class Apex : MobBrainBase
 
     protected override void EvaluateTransitions()
     {
+        if (stateMachine.CurrentState == baitedState)
+        {
+            if (baitedState.returnToSender)
+            {
+                stateMachine.ChangeState(wanderState);
+            }
+            return;
+        }
+        
         // Global LOS transition — if a target is spotted while not already chasing or attacking,
         // immediately switch to chasing.
         if (lineOfSight != null && lineOfSight.VisibleTarget != null)
@@ -276,6 +290,12 @@ public class Apex : MobBrainBase
     public bool IsMoving() {
         return ctx.Rigidbody.linearVelocity.magnitude > 0.1f;
     }
+
+    public void UpdateAnimParam()
+    {
+        animator.SetBool(WalkingHash, IsMoving());
+    }
+
     #endregion
 
     #region Attack Helpers
@@ -323,6 +343,16 @@ public class Apex : MobBrainBase
     {
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+
+    #endregion
+
+    #region MonoBehaviour Callbacks
+
+    protected override void Update()
+    {
+        base.Update();
+        UpdateAnimParam();
     }
 
     #endregion

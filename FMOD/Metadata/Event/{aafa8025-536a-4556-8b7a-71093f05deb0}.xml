@@ -57,7 +57,7 @@
 			<destination>{37380590-c4f1-4510-bf3d-305ec4c3519a}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{f6befc4d-34d1-4cef-9e33-cee132e5a557}</destination>
+			<destination>{fe325465-7c3f-4fe7-928f-822ababa6d28}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{19279dea-6ff4-4755-9f41-90d212a172fa}" />
@@ -82,6 +82,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{52988a9a-6590-46ca-b242-d0c8027e29e4}">
+		<relationship name="automators">
+			<destination>{5eeeb544-c96a-489e-9711-99bc229e897e}</destination>
+		</relationship>
 		<relationship name="effectChain">
 			<destination>{084b4ed6-84f6-4efe-9c4c-9c87fa7056cb}</destination>
 		</relationship>
@@ -179,6 +182,11 @@
 		<relationship name="destination">
 			<destination>{e322bbf3-7826-4332-9ee5-4c1c042830f6}</destination>
 		</relationship>
+	</object>
+	<object class="Automator" id="{5eeeb544-c96a-489e-9711-99bc229e897e}">
+		<property name="nameOfPropertyBeingAutomated">
+			<value>volume</value>
+		</property>
 	</object>
 	<object class="MixerBusEffectChain" id="{084b4ed6-84f6-4efe-9c4c-9c87fa7056cb}">
 		<relationship name="effects">
