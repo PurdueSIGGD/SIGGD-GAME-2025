@@ -10,7 +10,6 @@ using Debug = UnityEngine.Debug;
 public class MusicSceneLink : MonoBehaviour
 {
     // this class is what music you want playing as soon as the scene boots up
-
     public string sceneMusicKey = "";
     void Start()
     {
