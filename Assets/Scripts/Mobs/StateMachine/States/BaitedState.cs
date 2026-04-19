@@ -24,6 +24,7 @@ namespace SIGGD.Mobs.StateMachine
         private bool hasArrived;
         private bool eating;
         public bool returnToSender;
+        private bool idle;
 
         /// <summary>
         /// Creates a bait reaction state that always returns to the provided fallback state.
@@ -50,6 +51,7 @@ namespace SIGGD.Mobs.StateMachine
             hasArrived = false;
             returnToSender = false;
             eating = false;
+            idle = false;
         }
 
         public void Enter()
@@ -60,6 +62,7 @@ namespace SIGGD.Mobs.StateMachine
             hasArrived = false;
             returnToSender = false;
             eating = false;
+            idle = false;
         }
 
         public void Update()
@@ -86,6 +89,15 @@ namespace SIGGD.Mobs.StateMachine
             }
 
             eating = true;
+            
+            ctx.Rigidbody.linearVelocity = Vector3.zero;
+            
+
+            if (idle == false)
+            {
+                idle = true;
+                ctx.Animator.SetTrigger(Animator.StringToHash("Return To Idle"));
+            }
             
             Debug.Log("[BaitedState] Holding at bait: " + baitObject.name + " with " + holdTimer + " seconds remaining.");
 
@@ -131,6 +143,7 @@ namespace SIGGD.Mobs.StateMachine
             hasArrived = false;
             returnToSender = false;
             eating = false;
+            idle = false;
         }
 
         private bool IsAtBait()
