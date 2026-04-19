@@ -16,7 +16,10 @@ public class RockSound : MonoBehaviour
         {
             foreach (Collider hit in hits)
             {
-                Debug.Log("Mob Detected");
+                if (hit.gameObject.CompareTag("Predator"))
+                {
+                    Debug.Log("Mob Detected");
+                }
                 //This should call the mob code that tells them to move to this objects location
             }
         }

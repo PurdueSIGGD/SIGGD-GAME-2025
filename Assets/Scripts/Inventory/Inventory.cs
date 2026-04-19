@@ -50,6 +50,13 @@ public class Inventory : Singleton<Inventory>, IInventory
 
         inputActions = new InventoryInputActions();
 
+        hotbarData = new InventorySlot[HotBarLength];
+        inventoryData = new InventorySlot[InventoryLength];
+        allSlots = new InventorySlot[HotBarLength + InventoryLength];
+
+        hotbarUISlots = new UISlot[HotBarLength];
+        inventoryUISlots = new UISlot[InventoryLength];
+
         itemInfos = new();
         foreach (var entry in RecipeInfo.Instance.NamesToItemInfos)
         {
@@ -96,6 +103,7 @@ public class Inventory : Singleton<Inventory>, IInventory
 
         selected = nextIndex;
         OnHotbarSelectionChanged?.Invoke(selected);
+        PlayerID.Instance.playerHUD.TriggerHUDEvent();
 
         AnimatorOverrideController itemAnimator = GetSlotAnimation(allSlots[selected]);
         if (itemAnimator != null)

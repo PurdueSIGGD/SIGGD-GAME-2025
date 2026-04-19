@@ -20,7 +20,8 @@ namespace SIGGD.Mobs.StateMachine
                 AgentData = GetComponent<AgentData>(),
                 Pack = GetComponent<PackScripts.PackBehavior>(),
                 Perception = GetComponent<PerceptionManager>(),
-                Smell = GetComponent<Smell>()
+                Smell = GetComponent<Smell>(),
+                type = MobType.Prey
             };
         }
 

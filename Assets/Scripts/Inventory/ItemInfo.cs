@@ -33,9 +33,10 @@ public class ItemInfo : ScriptableObject
         Axe,
         Flower,
         Slimeball,
-        Bait,
-        LongLastingBait,
-        LongRangeBait
+        GreenMushroom,
+        PurpleMushroom,
+        DarkPurpleMushroom,
+        OrangeMushroom
     };
 
     [SerializeField] public ItemType itemType;// type of item
