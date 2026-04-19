@@ -21,10 +21,12 @@ public class EscapeMenu : MonoBehaviour
         {
             ShowCraftingMenu(true);
         });
+        /*
         viewAudioLogsButton.onClick.AddListener(() =>
         {
             ShowAudioLogMenu(true);
         });
+        */
         canvas.enabled = false;
     }
 
