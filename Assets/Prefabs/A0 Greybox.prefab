@@ -6461,6 +6461,7 @@ GameObject:
   - component: {fileID: 365474148388380339}
   - component: {fileID: 6573577844655876541}
   - component: {fileID: 4068171817272618893}
+  - component: {fileID: 1146629876496236091}
   m_Layer: 0
   m_Name: Recievers
   m_TagString: Untagged
@@ -6498,13 +6499,14 @@ MonoBehaviour:
   receiverType: 0
   questOutcome: {fileID: 11400000, guid: 43cfe336355c8d34bb8e00c1ef6e87a8, type: 2}
   executionStrategy:
-    rid: 1249133614970175600
+    rid: 1249133614970175617
   references:
     version: 2
     RefIds:
-    - rid: 1249133614970175600
-      type: {class: TestExecutionStrategy, ns: , asm: Assembly-CSharp}
-      data: 
+    - rid: 1249133614970175617
+      type: {class: AudioLogExecutionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        audioObject: {fileID: 0}
 --- !u!114 &6573577844655876541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6542,6 +6544,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   receiverType: 0
   questOutcome: {fileID: 11400000, guid: ced04f07e2c296a43acb220f199f9a49, type: 2}
+  executionStrategy:
+    rid: 1249133614970175598
+  references:
+    version: 2
+    RefIds:
+    - rid: 1249133614970175598
+      type: {class: AudioLogExecutionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        audioObject: {fileID: 0}
+--- !u!114 &1146629876496236091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2386917858268372827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56f95ac11603413f81dd0374fa57c154, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  receiverType: 0
+  questOutcome: {fileID: 11400000, guid: 2a683e1f971b763409e1410bdec9c8cd, type: 2}
   executionStrategy:
     rid: 1249133614970175598
   references:
@@ -19760,9 +19785,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4165139105681601550}
-  - component: {fileID: 717503133031292945}
   - component: {fileID: 2038125985644968522}
-  - component: {fileID: 3756656060385928117}
   m_Layer: 0
   m_Name: SeePlants
   m_TagString: Untagged
@@ -19785,27 +19808,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 9133676130349876319}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &717503133031292945
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7426864986330965549}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 4, y: 4, z: 4}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2038125985644968522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19831,18 +19833,6 @@ MonoBehaviour:
         ignoreMask:
           serializedVersion: 2
           m_Bits: 0
---- !u!114 &3756656060385928117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7426864986330965549}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fadc1ba187c54cf8a0cf573df9cbe287, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &7505507240149508089
 GameObject:
   m_ObjectHideFlags: 0
