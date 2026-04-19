@@ -35,7 +35,8 @@ public class ItemInfo : ScriptableObject
         GreenMushroom,
         PurpleMushroom,
         DarkPurpleMushroom,
-        OrangeMushroom
+        OrangeMushroom,
+        MusicBox
     };
 
     [SerializeField] public ItemType itemType;// type of item
