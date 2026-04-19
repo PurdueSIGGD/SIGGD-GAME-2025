@@ -18,6 +18,7 @@ namespace SIGGD.Mobs.StateMachine
         private AttackPreyState attackPreyState;
 
         [SerializeField] private float hungerThreshold = 50f;
+        [SerializeField] private Animator animator;
 
         protected override string MobName => "Hyena";
 
@@ -40,7 +41,8 @@ namespace SIGGD.Mobs.StateMachine
                 Perception = GetComponent<PerceptionManager>(),
                 AttackManager = GetComponent<HyenaAttackManager>(),
                 Smell = GetComponent<Smell>(),
-                type = MobType.Hyena
+                Type = MobType.Hyena,
+                Animator = animator
             };
         }
 
