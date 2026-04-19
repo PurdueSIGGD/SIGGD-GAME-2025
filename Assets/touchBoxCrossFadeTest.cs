@@ -7,11 +7,11 @@ public class touchBoxCrossFadeTest : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("crossfading music");
-        StartCoroutine(MusicManager.Instance.MusicCrossFade(musicYouAreCrossfadingTo, lengthOfCrossFade));
+        MusicManager.Instance.CrossFadeMusic(musicYouAreCrossfadingTo, lengthOfCrossFade);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        StartCoroutine(MusicManager.Instance.MusicCrossFade("LevelMusic", lengthOfCrossFade));
+        MusicManager.Instance.CrossFadeMusic("LevelMusic", lengthOfCrossFade);
     }
 }

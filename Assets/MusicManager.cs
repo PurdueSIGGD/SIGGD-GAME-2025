@@ -18,8 +18,9 @@ public class MusicManager : Singleton<MusicManager>
     public EventInstance curTrack;
 
     [ShowInInspector, ReadOnly] public Dictionary<string, EventInstance> musicEventInstances = new();
-    private bool crossfading = false;
-    private bool changingCombatTrackVol = false;
+    
+    private Coroutine crossFadeRoutine;
+    private Coroutine activeFadeRoutine;
 
     protected override void Awake()
     {
@@ -39,14 +40,6 @@ public class MusicManager : Singleton<MusicManager>
     private void Start()
     {
         InitMusicOnStart();
-    }
-
-    private void Update()
-    {
-        if (!curTrack.isValid() && FMODEvents.Instance.Initialized == true)
-        {
-            Debug.LogError("cur track isnt valid");
-        }
     }
 
     protected override void OnDestroy()
@@ -114,59 +107,63 @@ public class MusicManager : Singleton<MusicManager>
     /// <summary>
     /// Crossfades from the curTrack to a track that you give the key of over a given duration
     /// </summary>
-    public IEnumerator MusicCrossFade(string toKey, float duration)
+    public void CrossFadeMusic(string toKey, float duration)
     {
-        // dictioary holding all event instances
-        if (crossfading == false)
+        if (crossFadeRoutine != null)
         {
-            toKey = toKey.ToLower();
-
-            EventInstance to = InitalizeMusicNotStart(toKey);
-
-            // we are always crossfading from the current track to something
-            EventInstance from = curTrack;
-
-            crossfading = true;
-            float curTime = 0f;
-
-            // if to isnt already playing play it
-            to.getPlaybackState(out PLAYBACK_STATE state);
-            if (state != PLAYBACK_STATE.PLAYING)
-            {
-                to.start();
-            }
-
-            // resetting vals to make sure it transfers right
-            from.setVolume(1f);
-            to.setVolume(0f);
-
-            while (curTime < duration)
-            {
-                curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
-                float t = curTime / duration;
-
-                float smoothedT = Mathf.SmoothStep(0f, 1f, t);
-
-                // 3. Equal Power Crossfade Math
-                // Fade In: sin(t * pi/2)
-                // Fade Out: cos(t * pi/2)
-                float fadeInVol = Mathf.Sin(smoothedT * Mathf.PI * 0.5f);
-                float fadeOutVol = Mathf.Cos(smoothedT * Mathf.PI * 0.5f);
-
-                to.setVolume(fadeInVol);
-                from.setVolume(fadeOutVol);
-
-                yield return null; // wait for a frame in between loop runs
-            }
-
-            from.setVolume(0f);
-            to.setVolume(1f);
-
-            curTrack = to;
-
-            from.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-            crossfading = false;
+            StopCoroutine(crossFadeRoutine);
         }
+
+        crossFadeRoutine = StartCoroutine(MusicCrossFade(toKey, duration));
+    }
+
+    private IEnumerator MusicCrossFade(string toKey, float duration)
+    {
+        toKey = toKey.ToLower();
+
+        EventInstance to = InitalizeMusicNotStart(toKey);
+
+        // we are always crossfading from the current track to something
+        EventInstance from = curTrack;
+
+        float curTime = 0f;
+
+        // if to isnt already playing play it
+        to.getPlaybackState(out PLAYBACK_STATE state);
+        if (state != PLAYBACK_STATE.PLAYING)
+        {
+            to.start();
+        }
+
+        // resetting vals to make sure it transfers right
+        from.setVolume(1f);
+        to.setVolume(0f);
+
+        while (curTime < duration)
+        {
+            curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
+            float t = curTime / duration;
+
+            float smoothedT = Mathf.SmoothStep(0f, 1f, t);
+
+            // 3. Equal Power Crossfade Math
+            // Fade In: sin(t * pi/2)
+            // Fade Out: cos(t * pi/2)
+            float fadeInVol = Mathf.Sin(smoothedT * Mathf.PI * 0.5f);
+            float fadeOutVol = Mathf.Cos(smoothedT * Mathf.PI * 0.5f);
+
+            to.setVolume(fadeInVol);
+            from.setVolume(fadeOutVol);
+
+            yield return null; // wait for a frame in between loop runs
+        }
+
+        from.setVolume(0f);
+        to.setVolume(1f);
+
+        curTrack = to;
+
+        from.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
     }
 
     // also checks to see if that music event is already in the dict
@@ -222,65 +219,64 @@ public class MusicManager : Singleton<MusicManager>
     /// <summary>
     /// Fades in/out the combat part of the curTrack
     /// </summary>
-    public IEnumerator ToggleCombatVolume()
+    public void ToggleComabatVolume()
     {
-        if (changingCombatTrackVol == false)
+        if (activeFadeRoutine != null)
         {
-            changingCombatTrackVol = true;
-            float curTime = 0f;
-
-            // RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
-            RuntimeManager.StudioSystem.getParameterByName("Combat Track Volume", out float vol);
-
-            // go from noncombat to combat
-            if (vol <= 0.01f)
-            {
-                float duration = 0.5f;
-
-                while (curTime < duration)
-                {
-                    curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
-                    float t = curTime / duration;
-
-                    float smoothedT = Mathf.SmoothStep(0f, 1f, t);
-
-                    // 3. Equal Power Crossfade Math
-                    // Fade In: sin(t * pi/2)
-                    float fadeInVol = Mathf.Sin(smoothedT * Mathf.PI * 0.5f);
-
-                    RuntimeManager.StudioSystem.setParameterByName("Combat Track Volume", fadeInVol);
-
-                    yield return null; // wait for a frame in between loop runs
-                }
-
-                RuntimeManager.StudioSystem.setParameterByName("Combat Track Volume", 1);
-            }
-            // go from combat to noncombat
-            else if (vol <= 0.99f)
-            {
-                float duration = 1.5f;
-
-                while (curTime < duration)
-                {
-                    curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
-                    float t = curTime / duration;
-
-                    float smoothedT = Mathf.SmoothStep(0f, 1f, t);
-
-                    // 3. Equal Power Crossfade Math
-                    // Fade Out: cos(t * pi/2)
-                    float fadeOutVol = Mathf.Cos(smoothedT * Mathf.PI * 0.5f);
-
-                    RuntimeManager.StudioSystem.setParameterByName("Combat Track Volume", fadeOutVol);
-
-                    yield return null; // wait for a frame in between loop runs
-                }
-
-                RuntimeManager.StudioSystem.setParameterByName("Combat Track Volume", 0);
-            }
-
-            changingCombatTrackVol = false;
+            StopCoroutine(activeFadeRoutine);
         }
+
+        activeFadeRoutine = StartCoroutine(FadeCombatVolume());
+    }
+
+    private IEnumerator FadeCombatVolume()
+    {
+        RuntimeManager.StudioSystem.getParameterByName("Combat Track Volume", out float vol);
+
+        if (vol < 0.5f)
+        {
+            float duration = 0.5f;
+
+            float currentT = Mathf.Asin(vol) / (Mathf.PI * 0.5f);
+            float curTime = currentT * duration;
+
+            while (curTime < duration)
+            {
+                curTime += Time.deltaTime;
+                float t = Mathf.Clamp01(curTime / duration);
+                float smoothedT = Mathf.SmoothStep(0f, 1f, t);
+
+                float fadeInVol = Mathf.Sin(smoothedT * Mathf.PI * 0.5f);
+                RuntimeManager.StudioSystem.setParameterByName("Combat Track Volume", fadeInVol);
+
+                yield return null;
+            }
+
+            RuntimeManager.StudioSystem.setParameterByName("Combat Track Volume", 1);
+        }
+        else
+        {
+            float duration = 1.5f;
+
+            float currentT = Mathf.Acos(vol) / (Mathf.PI * 0.5f);
+            float curTime = currentT * duration;
+
+            while (curTime < duration)
+            {
+                curTime += Time.deltaTime;
+                float t = Mathf.Clamp01(curTime / duration);
+                float smoothedT = Mathf.SmoothStep(0f, 1f, t);
+
+                float fadeOutVol = Mathf.Cos(smoothedT * Mathf.PI * 0.5f);
+                RuntimeManager.StudioSystem.setParameterByName("Combat Track Volume", fadeOutVol);
+
+                yield return null;
+            }
+
+            RuntimeManager.StudioSystem.setParameterByName("Combat Track Volume", 0);
+        }
+
+        activeFadeRoutine = null;
     }
 
     #endregion
