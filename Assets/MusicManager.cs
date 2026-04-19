@@ -10,7 +10,7 @@ using Debug = UnityEngine.Debug;
 
 public class MusicManager : Singleton<MusicManager>
 {
-    [Header("If we should keep level music on player entering this scene")]
+    [Header("If you want the initialized music method to run (should only be true in the first scene that opens in the game)")]
     [SerializeField] bool initLevelMusic;
 
     private List<StudioEventEmitter> eventEmitters;
@@ -18,7 +18,8 @@ public class MusicManager : Singleton<MusicManager>
     // the currently playing track
     public EventInstance curTrack;
 
-    [SerializeField] private string initMusicKey = "ForestAmbianceFirst";
+    [Header("This is the music you want playing when the game starts not when this scene is loaded")]
+    [SerializeField] private string initMusicKey;
 
     [ShowInInspector, ReadOnly] public Dictionary<string, EventInstance> musicEventInstances = new();
     
@@ -50,6 +51,15 @@ public class MusicManager : Singleton<MusicManager>
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Stop the current track so we don't have overlapping music
+        if (curTrack.isValid())
+        {
+            curTrack.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        }
     }
 
     private void Start()
@@ -125,14 +135,28 @@ public class MusicManager : Singleton<MusicManager>
     }
 
     /// <summary>
-    /// Fades out the current track
+    /// Overrides curTrack with the key you passed in
     /// </summary>
-    public void PauseMusic()
+    public void SetCurTrack(string key)
+    {
+        curTrack = InitalizeMusicNotStart(key);
+    }
+
+    /// <summary>
+    /// Fades out the current track if allowFade is true, immediatly stops it if allowFade is false
+    /// </summary>
+    public void PauseMusic(bool allowFade)
     {
         // check if its stopped and return if it is
         curTrack.getPlaybackState(out PLAYBACK_STATE state);
         if (state != PLAYBACK_STATE.PLAYING)
         {
+            return;
+        }
+
+        if (allowFade == false)
+        {
+            curTrack.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
             return;
         }
 
@@ -149,7 +173,9 @@ public class MusicManager : Singleton<MusicManager>
     }
     private IEnumerator fadeOutMusic()
     {
-        float curTime = 0f;
+        curTrack.getVolume(out float vol);
+
+        float curTime = Mathf.Acos(vol) / (Mathf.PI * 0.5f);
         float duration = 9f;
 
         while (curTime < duration)
@@ -175,14 +201,20 @@ public class MusicManager : Singleton<MusicManager>
     }
 
     /// <summary>
-    /// Fades in the current track
+    /// Fades in the current track if allowFade is true, starts it immediatly if allowFade is false
     /// </summary>
-    public void PlayMusic()
+    public void PlayMusic(bool allowFade)
     {
         // check if its playing and return if it is
         curTrack.getPlaybackState(out PLAYBACK_STATE state);
         if (state == PLAYBACK_STATE.PLAYING)
         {
+            return;
+        }
+
+        if (allowFade == false)
+        {
+            curTrack.start();
             return;
         }
 
@@ -200,7 +232,9 @@ public class MusicManager : Singleton<MusicManager>
     {
         curTrack.start();
 
-        float curTime = 0f;
+        curTrack.getVolume(out float vol);
+
+        float curTime = Mathf.Asin(vol) / (Mathf.PI * 0.5f);
         float duration = 9f;
 
         while (curTime < duration)
