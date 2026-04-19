@@ -16,7 +16,7 @@ public class AudioManager : Singleton<AudioManager>
     private List<StudioEventEmitter> eventEmitters;
 
     [Header("Random Ambiance Settings")]
-    [SerializeField, MinMaxSlider(1, 20)] private Vector2 ambianceInterval = new(1, 20);
+    [SerializeField, MinMaxSlider(1, 60)] private Vector2 ambianceInterval = new(1, 20);
     [SerializeField, MinMaxSlider(0, 30)] private Vector2 ambianceSpawnDist = new(0, 30);
     private RandomAmbiancePlayer ambiancePlayer;
 
@@ -72,11 +72,15 @@ public class AudioManager : Singleton<AudioManager>
     /// <summary>
     /// Play one shot track. Suited for tracks that are better voided rather than delayed, like sfx
     /// </summary>
-    public void PlayOneShotNoAsync(string name, Vector3 worldPos = default)
+    /// <param name="chance">Chance between 0 and 1 for the sound to play. Useful for sounds that are played frequently, like mob sfx</param>
+    public void PlayOneShotNoAsync(string name, Vector3 worldPos = default, float chance = 1f)
     {
+        if (Random.value > chance) return;
+
         name = name.ToLower();
 
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
+        Debug.Log($"playing audio {name} {eventRef}");
         if (!eventRef.IsNull)
         {
             RuntimeManager.PlayOneShot(eventRef, worldPos);
@@ -155,6 +159,7 @@ public class AudioManager : Singleton<AudioManager>
         name = name.ToLower();
 
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
+        
         if (!eventRef.IsNull)
         {
             if (pos != default)

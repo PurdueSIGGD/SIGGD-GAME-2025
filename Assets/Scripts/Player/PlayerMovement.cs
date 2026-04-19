@@ -16,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
     private bool IsMoving => PlayerID.Instance.stateMachine.IsMoving;
     public bool IsClimbing => PlayerID.Instance.stateMachine.IsClimbing;
 
+    public float speedMultiplier;
+
     #endregion
 
     #region Check Attributes
@@ -39,6 +41,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>(); 
         rb = GetComponent<Rigidbody>();
         psm = PlayerID.Instance.stateMachine;
+        speedMultiplier = 1f;
 
         FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
     }
@@ -61,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
             Vector2 moveInput = PlayerInput.Instance.movementInput;
 
             float speed = (isSprinting && !isFalling) ? moveData.sprintSpeed : moveData.walkSpeed;
+            speed *= speedMultiplier;
             if (isCrouching == true) {
                 speed = moveData.crouchSpeed;
             }
