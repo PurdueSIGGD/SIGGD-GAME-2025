@@ -30,12 +30,8 @@ public class PlayerRadiation : MonoBehaviour
         set => radiationZone = value;
     }
 
-    private int slimeLevel = SaveManager.Instance.playerModule.playerData.slimeLevel;
-    public int SlimeLevel
-    {
-        get => slimeLevel;
-        set => slimeLevel = value;
-    }
+    public int SlimeLevel => SaveManager.Instance.playerModule.playerData.slimeLevel;
+
 
     private float currentRadiation = 0f;
     private float radiationDamageTimer;     // tracks time since last radiation tick
@@ -45,6 +41,7 @@ public class PlayerRadiation : MonoBehaviour
     {
         if (currentRadiation < 0) currentRadiation = 0f;
         playerHealth = GetComponent<EntityHealthManager>();
+
     }
 
     void Update()
@@ -52,13 +49,13 @@ public class PlayerRadiation : MonoBehaviour
         //when not in a radiation area, decay the radiation to 0
         //when in a radiation area, buildup the radiation
         //  if the radiation gets to the threshold, start taking damage
-        Debug.Log("current slime: " + slimeLevel);
+        Debug.Log("current slime: " + SlimeLevel);
         Debug.Log("current radiation: " + currentRadiation);
         if (!inRadiation)
         {
             if (currentRadiation > 0)
             {
-                currentRadiation = Mathf.Max(currentRadiation - radiationDecayRate[radiationZone] * (2 - slimePercent[slimeLevel]) * Time.deltaTime, 0); // decay the radiation, but not below 0
+                currentRadiation = Mathf.Max(currentRadiation - radiationDecayRate[radiationZone] * (2 - slimePercent[SlimeLevel]) * Time.deltaTime, 0); // decay the radiation, but not below 0
             }
             else
             {
@@ -72,7 +69,7 @@ public class PlayerRadiation : MonoBehaviour
             if (currentRadiation < radiationThreshold) // radiation isn't at the threshold
             {
                 // buildup
-                currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate[radiationZone] * slimePercent[slimeLevel] * Time.deltaTime, radiationThreshold); // don't go over threshold
+                currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate[radiationZone] * slimePercent[SlimeLevel] * Time.deltaTime, radiationThreshold); // don't go over threshold
             }
             else // radiation is at the threshold -> take rad damage
             { 
@@ -99,5 +96,13 @@ public class PlayerRadiation : MonoBehaviour
     public void ResetRadiation()
     {
         currentRadiation = 0f;
+    }
+
+    public void IncrementSlimeLevel()
+    {
+        if (SaveManager.Instance.playerModule.playerData.slimeLevel < 4)
+        {
+            SaveManager.Instance.playerModule.playerData.slimeLevel++;
+        }
     }
 }
