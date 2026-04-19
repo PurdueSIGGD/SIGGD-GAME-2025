@@ -17,6 +17,8 @@ public class MusicManager : Singleton<MusicManager>
     // the currently playing track
     public EventInstance curTrack;
 
+    public string initMusicKey = "Area1ForestAmbiance";
+
     [ShowInInspector, ReadOnly] public Dictionary<string, EventInstance> musicEventInstances = new();
     
     private Coroutine crossFadeRoutine;
@@ -192,16 +194,16 @@ public class MusicManager : Singleton<MusicManager>
 
         if (initLevelMusic)
         {
-            if (musicEventInstances.TryGetValue("levelmusic", out var eventInstance))
+            if (musicEventInstances.TryGetValue(initMusicKey, out var eventInstance))
             {
                 curTrack = eventInstance;
                 curTrack.start();
             }
             else
             {
-                FMODEvents.Instance.GetEventInstance("levelmusic", instance => {
+                FMODEvents.Instance.GetEventInstance(initMusicKey, instance => {
                     curTrack = instance;
-                    musicEventInstances.Add("levelmusic", curTrack);
+                    musicEventInstances.Add(initMusicKey, curTrack);
                     curTrack.start();
                 });
 
@@ -233,9 +235,11 @@ public class MusicManager : Singleton<MusicManager>
     {
         RuntimeManager.StudioSystem.getParameterByName("Combat Track Volume", out float vol);
 
+        Debug.Log("vol is: " + vol);
+
         if (vol < 0.5f)
         {
-            float duration = 0.5f;
+            float duration = 2f;
 
             float currentT = Mathf.Asin(vol) / (Mathf.PI * 0.5f);
             float curTime = currentT * duration;
@@ -256,7 +260,7 @@ public class MusicManager : Singleton<MusicManager>
         }
         else
         {
-            float duration = 1.5f;
+            float duration = 9f;
 
             float currentT = Mathf.Acos(vol) / (Mathf.PI * 0.5f);
             float curTime = currentT * duration;
