@@ -154,7 +154,8 @@ public class Apex : MobBrainBase
             AgentData = GetComponent<AgentData>(),
             Perception = GetComponent<PerceptionManager>(),
             Smell = GetComponent<Smell>(),
-            type = MobType.Apex
+            Type = MobType.Apex,
+            Animator = animator
         };
     }
 
@@ -166,6 +167,7 @@ public class Apex : MobBrainBase
         chasingState = new ApexChasingState(this);
         attackingState = new ApexAttackingState(this);
         investigateState = new ApexInvestigateState(this);
+        baitedState = new BaitedState(ctx, stateMachine, investigateState, baitMoveSpeedMultiplier, baitTurnResponsiveness, baitArrivalDistance);
     }
 
     protected override void Start()
@@ -192,6 +194,15 @@ public class Apex : MobBrainBase
 
     protected override void EvaluateTransitions()
     {
+        if (stateMachine.CurrentState == baitedState)
+        {
+            if (baitedState.returnToSender)
+            {
+                stateMachine.ChangeState(wanderState);
+            }
+            return;
+        }
+        
         // Global LOS transition — if a target is spotted while not already chasing or attacking,
         // immediately switch to chasing.
         if (lineOfSight != null && lineOfSight.VisibleTarget != null)
