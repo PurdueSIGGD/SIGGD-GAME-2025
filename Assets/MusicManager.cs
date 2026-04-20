@@ -156,7 +156,7 @@ public class MusicManager : Singleton<MusicManager>
 
         if (allowFade == false)
         {
-            curTrack.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            curTrack.setPaused(true);
             return;
         }
 
@@ -188,14 +188,14 @@ public class MusicManager : Singleton<MusicManager>
             // Fade Out: cos(t * pi/2)
             float fadeOutVol = Mathf.Cos(smoothedT * Mathf.PI * 0.5f);
 
-            curTrack.setVolume(fadeOutVol);
+            curTrack.setVolume(fadeOutVol); 
 
             yield return null; // wait for a frame in between loop runs
         }
 
         curTrack.setVolume(0f);
 
-        curTrack.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        curTrack.setPaused(true);
 
         pauseMusicRoutine = null;
     }
@@ -214,7 +214,7 @@ public class MusicManager : Singleton<MusicManager>
 
         if (allowFade == false)
         {
-            curTrack.start();
+            curTrack.setPaused(false);
             return;
         }
 
@@ -230,7 +230,7 @@ public class MusicManager : Singleton<MusicManager>
     }
     private IEnumerator fadeInMusic()
     {
-        curTrack.start();
+        curTrack.setPaused(false);
 
         curTrack.getVolume(out float vol);
 
@@ -315,6 +315,7 @@ public class MusicManager : Singleton<MusicManager>
         curTrack = to;
 
         from.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        from.release();
 
         crossFadeRoutine = null;
     }

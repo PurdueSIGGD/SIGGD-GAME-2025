@@ -24,5 +24,10 @@ public class testCombatDrumShift : MonoBehaviour
             Debug.Log("Unpausing Music");
             MusicManager.Instance.PlayMusic(true);
         }
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            Debug.Log("playing radio noise");
+            AudioManager.Instance.PlayOneShot("radionoise");
+        }
     }
 }
