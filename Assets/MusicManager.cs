@@ -43,6 +43,7 @@ public class MusicManager : Singleton<MusicManager>
         }
     }
 
+    #region Scene Management
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -61,6 +62,7 @@ public class MusicManager : Singleton<MusicManager>
             curTrack.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         }
     }
+    #endregion
 
     private void Start()
     {
@@ -84,7 +86,7 @@ public class MusicManager : Singleton<MusicManager>
         base.OnDestroy();
     }
 
-    #region Methods
+    #region Public Methods
 
     /// <summary>
     /// Change level music to a different region's
@@ -422,6 +424,14 @@ public class MusicManager : Singleton<MusicManager>
 
         activeFadeRoutine = null;
     }
+
+    #endregion
+
+    #region Music Fades During Gameplay
+
+
+
+
 
     #endregion
 }
