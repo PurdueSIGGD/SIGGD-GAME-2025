@@ -4,12 +4,14 @@ using UnityEngine.UI;
 
 public class UISlot : MonoBehaviour
 {
-    public ItemInfo itemInfo = null;
+    public ItemInfo itemInfo { get; private set; }
     
     public int count = 0;
     [HideInInspector] public int index;
 
-    private TextMeshProUGUI textDisplay;
+    [SerializeField] TextMeshProUGUI textDisplay;
+    [SerializeField] Image imageDisplay;
+    [SerializeField] Sprite emptySprite;
     private Button button;
 
     void Awake()
@@ -21,12 +23,17 @@ public class UISlot : MonoBehaviour
 
     void Start()
     {
-        // Inventory will handle all of the initialization for UISlots to avoid overwriting slots with Empty
+        // Inventory handles all initialisation for UISlots to avoid overwriting slots with Empty
+    }
 
-        //Debug.Log(RecipeInfo.Instance == null ? "recipeinfo null" : "recipeinfo not null");
-        //Debug.Log((itemInfo == null ? "iteminfo is before" : "ItemInfo is not null before") + " " + index);
-        //itemInfo = RecipeInfo.Instance.NamesToItemInfos[ItemInfo.ItemName.Empty];
-        //Debug.Log(itemInfo == null ? "iteminfo is null" : "ItemInfo is not null now");
+    /// <summary>
+    /// Writes item data into this UI slot so UpdateSlot can display it correctly.
+    /// Called by the linked InventorySlot before UpdateSlot.
+    /// </summary>
+    public void SetData(ItemInfo info, int itemCount)
+    {
+        itemInfo = info;
+        count = itemCount;
     }
 
     public void Clicked() {
@@ -38,15 +45,30 @@ public class UISlot : MonoBehaviour
         button.GetComponent<Image>().color = color;
     }
 
+
     public void UpdateSlot()
     {
-        if (itemInfo)
+        Debug.Log($"Slot {index}: itemInfo={itemInfo}, sprite={itemInfo?.itemImage}, imageDisplay={imageDisplay}");
+        if (itemInfo != null && itemInfo.name != "Empty")
         {
-            if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check
-            textDisplay.text = itemInfo.name + "(" + count + ")";
+            //if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check
+            //textDisplay.text = itemInfo.name + "(" + count + ")";
+            if (textDisplay) textDisplay.text = itemInfo.name + "(" + count + ")";
+            if (imageDisplay)
+            {
+                imageDisplay.sprite = itemInfo.itemImage;
+                imageDisplay.color = Color.white;
+            }
         }
-        else {
-            textDisplay.text = "empty";
+        else
+        {
+            if (textDisplay) textDisplay.text = "empty";
+            Debug.Log("changing image to empty");
+            if (imageDisplay)
+            {
+                imageDisplay.sprite = emptySprite;
+                imageDisplay.color = Color.clear;
+            }
         }
     }
 }
