@@ -134,7 +134,7 @@ public class AudioLogManager : MonoBehaviour
         StopCurrentAudio();
     }
 
-    public void PlayAudioLog(string audioName, GameObject player, bool subtitles) // using a full game object because we need access to the rigidbody on the player
+    public void PlayAudioLog(string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
     {
         // the most recently called audio log will take priority over the ones called before it 
         if (lastStarted != null)
