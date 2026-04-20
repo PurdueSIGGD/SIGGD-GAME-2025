@@ -16,6 +16,10 @@ public class ApexChasingState : IMobState
     private ApexTarget target;
     private Vector3 lastKnownPosition;
 
+    private bool chasingPlayer;
+
+    private static readonly string apexLosePlayerSound = "ApexOnLosePlayer";
+
     public ApexChasingState(Apex apex)
     {
         this.apex = apex;
@@ -26,6 +30,10 @@ public class ApexChasingState : IMobState
     public void SetTarget(ApexTarget apexTarget)
     {
         target = apexTarget;
+        if (apexTarget.gameObject == PlayerID.Instance.gameObject) {
+            chasingPlayer = true;
+            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PURSUED_BY_APEX, apex.gameObject);
+        }
     }
 
     public void Enter()
@@ -46,6 +54,10 @@ public class ApexChasingState : IMobState
         if (target == null)
         {
             apex.ApexLog($"ChasingState — target lost/destroyed, switching to RoamingState around {lastKnownPosition}.");
+            if (chasingPlayer) {
+                chasingPlayer = false;
+                AudioManager.Instance.PlayOneShotNoAsync(apexLosePlayerSound, PlayerID.Instance.gameObject.transform.position);
+            }
             apex.RoamingState.SetGuardPosition(lastKnownPosition);
             apex.StateMachine.ChangeState(apex.RoamingState);
             return;
@@ -63,7 +75,11 @@ public class ApexChasingState : IMobState
 
     public void FixedUpdate()
     {
-        if (target == null) return;
+        if (target == null)
+        {
+            chasingPlayer = false;
+            return;
+        }
 
         Vector3 dir = apex.GetSteeringTo(lastKnownPosition);
         ctx.Movement.MoveTowards(dir, apex.ChaseSpeedMulti, 3f, false);
@@ -72,5 +88,6 @@ public class ApexChasingState : IMobState
     public void Exit()
     {
         apex.ApexLog("Exiting ChasingState.");
+        GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, apex.gameObject);
     }
 }

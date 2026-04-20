@@ -119,6 +119,29 @@ public class AudioManager : Singleton<AudioManager>
     }
 
     /// <summary>
+    /// Play one shot track that can be stopped midway through. Suited for tracks that are better voided rather than delayed, like sfx
+    /// </summary>
+    public EventInstance PlayOneShotStoppableNoAsync(string name, Vector3 worldPos = default)
+    {
+        name = name.ToLower();
+
+        EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
+        if (eventRef.IsNull) return default;
+
+        EventInstance instance = RuntimeManager.CreateInstance(eventRef);
+
+        if (worldPos != default)
+        {
+            instance.set3DAttributes(RuntimeUtils.To3DAttributes(worldPos));
+        }
+
+        Debug.Log($"playing stoppable audio {name} {eventRef}");
+        instance.start();
+
+        return instance;
+    }
+
+    /// <summary>
     /// When you want a sound to play continuously until it's told to stop
     /// IMPORTANT: EventInstances must be freed via eventInstance.release after it has finished playing
     /// </summary>

@@ -148,7 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56299dbcc5bc4f145a4dbbd3ea5bbecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1
+  maxHealth:
+    value: 100
 --- !u!114 &935154526049956516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,6 +367,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseSpeed: 4
   rotationSpeed: 25
+  sprintMultiplier: 1.5
   sprintAllowed: 0
 --- !u!114 &-7209202306563369649
 MonoBehaviour:
@@ -380,6 +382,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   preyTargets: []
+  predatorTargets: []
+  mobType: 2
 --- !u!114 &6471975599104645498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -393,6 +397,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewRadius: 0
+  crouchRangeMultiplier: 0.5
+  sprintRangeMultiplier: 1.5
   playerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -416,10 +422,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9bab191272c80e42b577728b4262dc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  desperationLevel: 0
-  powerLevel: 0
-  energyLevel: 0
-  aggressionLevel: 0
   boundary: {fileID: 0}
 --- !u!136 &7852721096110810017
 CapsuleCollider:
@@ -468,6 +470,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c80caa5219e89cf49ab24ab329a03a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  navAgent: {fileID: 0}
+  animator: {fileID: 0}
 --- !u!1001 &7135641614424817716
 PrefabInstance:
   m_ObjectHideFlags: 0
