@@ -29,6 +29,7 @@ public class ApexAttackingState : IMobState
     public void Enter()
     {
         hasAttacked = false;
+        GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PURSUED_BY_APEX, apex.gameObject);
         apex.ApexLog($"Entering AttackingState — target '{(target != null ? target.gameObject.name : "null")}' at {killPosition}.");
     }
 
@@ -49,6 +50,7 @@ public class ApexAttackingState : IMobState
 
     public void Exit()
     {
+        GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, apex.gameObject);
         apex.ApexLog("Exiting AttackingState.");
     }
 }
