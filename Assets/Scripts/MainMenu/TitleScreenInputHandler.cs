@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class TitleScreenInputHandler : MonoBehaviour
 {
-    public string mainSceneName;
+    public string defaultSceneName;
     public GameObject loadingPanel;
     [SerializeField] OverrideStartMusic titleMusic;
 
@@ -29,7 +29,17 @@ public class TitleScreenInputHandler : MonoBehaviour
         // await loadScene; // Make sure we've actually loaded the scene at this point
         loadingPanel.SetActive(true);
         titleMusic.StopActiveMusic();
-        SceneManager.LoadScene(mainSceneName, LoadSceneMode.Single);
+        string sceneName = SceneSaveManager.Instance.sceneName;
+        if (sceneName.Length == 0)
+        {
+            Debug.Log("Scene save manager has no saved scene. Loading default scene: " + defaultSceneName);
+            SceneManager.LoadScene(defaultSceneName, LoadSceneMode.Single);
+        }
+        else {
+            Debug.Log("Loading " + sceneName + " from scene save");
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+        }
+        
         //Debug.Log("Loading save on start");
         //SaveManager.Instance.Load();
         // not awaiting this because we don't need to
