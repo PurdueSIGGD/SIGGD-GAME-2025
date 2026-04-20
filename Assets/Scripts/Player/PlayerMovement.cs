@@ -2,6 +2,7 @@ using UnityEngine;
 using FMOD.Studio;
 using FMOD;
 using Utility;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -45,7 +46,8 @@ public class PlayerMovement : MonoBehaviour
         psm = PlayerID.Instance.stateMachine;
         speedMultiplier = 1f;
 
-        FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
+       if (SceneManager.GetActiveScene().name == "ShipScene") FMODEvents.Instance.GetEventInstance("LabFootsteps", instance => { footsteps = instance; });
+        else FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
     }
 
     private void Update()
