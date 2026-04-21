@@ -29,6 +29,7 @@ public class SpawnRegion : MonoBehaviour
     float spawnRegionCheckIntervalSec = 1; // how often to check if player is in region when player is not currently in region (either inactive or on cooldown)
     float spawnRegionCheckTimer = 0;
     [SerializeField] Transform centerPosition;
+    [SerializeField] private float spawnRadius;
     float spawnCooldownTimer;
     Boundary boundary;
     bool initialized = false;
@@ -155,7 +156,7 @@ public class SpawnRegion : MonoBehaviour
     public bool IsPlayerInRegion()
     {
         LayerMask myLayers = LayerMask.GetMask("Player");
-        Collider[] results = Physics.OverlapSphere(centerPosition.position, regionStats.Radius, myLayers);
+        Collider[] results = Physics.OverlapSphere(centerPosition.position, spawnRadius, myLayers);
         foreach (Collider c in results)
         {
             if (c.gameObject == PlayerID.Instance.gameObject)
@@ -169,7 +170,7 @@ public class SpawnRegion : MonoBehaviour
     public void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(centerPosition.position, regionStats.Radius);
+        Gizmos.DrawWireSphere(centerPosition.position, spawnRadius);
     }
     /// <summary>
     /// Selects a random proportion of spawnpoints in the pool to spawn a random mob at (unless there's an override)
