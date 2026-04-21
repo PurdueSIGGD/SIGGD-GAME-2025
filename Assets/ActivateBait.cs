@@ -29,7 +29,7 @@ public class ActivateBait : MonoBehaviour
         {
             return; // Ignore collisions with the player
         }
-        transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0); // Rotate the bait to lay flat on the ground
+        transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 90f); // Rotate the bait to lay flat on the ground
         Destroy(GetComponent<Rigidbody>()); // Remove the Rigidbody to stop the bait from moving after it hits the ground
         Destroy(GetComponent<BoxCollider>());
         StartCoroutine(DestroyAfterDuration());
