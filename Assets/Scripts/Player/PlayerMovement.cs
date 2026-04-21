@@ -47,7 +47,7 @@ public class PlayerMovement : MonoBehaviour
         speedMultiplier = 1f;
 
        if (SceneManager.GetActiveScene().name == "ShipScene") FMODEvents.Instance.GetEventInstance("LabFootsteps", instance => { footsteps = instance; });
-        else FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
+       else FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
     }
 
     private void Update()
