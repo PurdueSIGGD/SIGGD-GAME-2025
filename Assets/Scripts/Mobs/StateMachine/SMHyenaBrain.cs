@@ -12,7 +12,7 @@ namespace SIGGD.Mobs.StateMachine
     public class SMHyenaBrain : MobBrainBase
     {
         public ChasePlayerState ChasePlayer => chasePlayerState;
-        public WanderState Wander => wanderState;
+        public ChasePreyState ChasePrey => chasePreyState;
 
         private SeekFoodState seekFoodState;
         private ChasePlayerState chasePlayerState;

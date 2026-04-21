@@ -28,6 +28,7 @@ namespace SIGGD.Mobs.StateMachine
 
         public MobStateMachine StateMachine => stateMachine;
         public MobContext Context => ctx;
+        public WanderState WanderState => wanderState;
 
         /// <summary>
         /// Display name used in debug logs (e.g. "Hyena", "Prey").
@@ -165,7 +166,7 @@ namespace SIGGD.Mobs.StateMachine
         protected virtual void OnDrawGizmos()
         {
 #if UNITY_EDITOR
-            if (stateMachine == null) return;
+            if (stateMachine == null || stateMachine.CurrentState == null) return;
 
             Handles.Label(
                 transform.position + Vector3.up * 2f,

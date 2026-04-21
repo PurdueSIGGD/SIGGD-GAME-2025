@@ -2,34 +2,36 @@ using SIGGD.Mobs.StateMachine;
 using OneOf;
 using UnityEngine;
 using UnityEngine.AI;
+using SIGGD.Mobs.StateMachine.States;
 
 public class MoggingState : IMobState
 {
-    private readonly OneOf<Apex, SMHyenaBrain> mob;
+    private readonly MobBrainBase mob;
     private readonly MobContext ctx;
     private readonly float waitTime;
-    private Transform pursueTarget;
+    private IMobState fallbackState;
+    private OneOf<Transform, Vector3> possibleTarget;
 
     private float timeWaited = 0f;
     private NavMeshPath path;
 
-    public MoggingState(Apex mob, float waitTime)
+    public MoggingState(MobBrainBase mob, float waitTime)
     {
         this.mob = mob;
         this.ctx = mob.Context;
         this.waitTime = waitTime;
     }
 
-    public MoggingState(SMHyenaBrain mob, float waitTime)
+    public void Configure(IMobState fallbackState, Transform target)
     {
-        this.mob = mob;
-        this.ctx = mob.Context;
-        this.waitTime = waitTime;
+        this.fallbackState = fallbackState;
+        this.possibleTarget = target;
     }
 
-    public void SetMogTarget(Transform target)
+    public void Configure(IMobState fallbackState, Vector3 target)
     {
-        pursueTarget = target;
+        this.fallbackState = fallbackState;
+        this.possibleTarget = target;
     }
 
     public void Enter()
@@ -41,72 +43,40 @@ public class MoggingState : IMobState
     
     public void Update()
     {
-        // continuously check if path is avaliable to target, if so, return to previous state
+        // continuously check if path is available to target, if so, return to previous state
         if (timeWaited < waitTime)
         {
             timeWaited += waitTime;
 
             // recalculate path
-            if (pursueTarget != null)
+            if (possibleTarget.IsT0)
             {
-                NavMesh.CalculatePath(ctx.Transform.position, pursueTarget.position, NavMesh.AllAreas, path);
+                NavMesh.CalculatePath(ctx.Transform.position, possibleTarget.AsT0.position, NavMesh.AllAreas, path);
                 if (path != null && path.status == NavMeshPathStatus.PathComplete)
                 {
-                    if (IsApex())
-                    {
-                        Apex apex = mob.AsT0;
-                        apex.ChasingState.SetTarget(pursueTarget.GetComponent<ApexTarget>());
-                        apex.StateMachine.ChangeState(apex.ChasingState);
-                    }
-                    else if (IsHyena())
-                    {
-                        SMHyenaBrain hyena = mob.AsT1;
-                        hyena.StateMachine.ChangeState(hyena.ChasePlayer);
-                    }
-                    else
-                    {
-                        Debug.LogError("Mob should only be apex or hyena, tf is this? " + mob);
-                    }
+                    HandleFallback();
+                }
+            }
+            else if (possibleTarget.IsT1)
+            {
+                NavMesh.CalculatePath(ctx.Transform.position, possibleTarget.AsT1, NavMesh.AllAreas, path);
+                if (path != null && path.status == NavMeshPathStatus.PathComplete)
+                {
+                    HandleFallback();
                 }
             }
         }
         else
         {
-            if (IsApex())
+            if (mob is Apex apex)
             {
-                Apex apex = mob.AsT0;
+                apex = mob as Apex;
                 apex.StateMachine.ChangeState(apex.RoamingState);
-            }
-            else if (IsHyena())
-            {
-                SMHyenaBrain hyena = mob.AsT1;
-                hyena.StateMachine.ChangeState(hyena.Wander);
             }
             else
             {
-                Debug.LogError("Mob should only be apex or hyena, tf is this? " + mob);
+                mob.StateMachine.ChangeState(mob.WanderState);
             }
-
-            //if (IsApex())
-            //{
-            //    var apex = mob.AsT0;
-            //    pursueTarget = apex.LastKnownTarget;
-            //    if (apex.CanPursue(pursueTarget))
-            //    {
-            //        apex.ChasingState.SetTarget(pursueTarget.GetComponent<ApexTarget>());
-            //        apex.StateMachine.ChangeState(apex.ChasingState);
-            //    }
-            //}
-            //else if (IsHyena())
-            //{
-            //    var hyena = mob.AsT1;
-            //    pursueTarget = hyena.LastKnownTarget;
-            //    if (hyena.CanPursue(pursueTarget))
-            //    {
-            //        hyena.ChasingState.SetTarget(pursueTarget.GetComponent<HyenaTarget>());
-            //        hyena.StateMachine.ChangeState(hyena.ChasingState);
-            //    }
-            //}
         }
     }
 
@@ -122,15 +92,56 @@ public class MoggingState : IMobState
 
     #region Helper Methods
 
-    private bool IsApex()
+    private void HandleFallback()
     {
-        return mob.IsT0;
-    }
+        Apex apex;
+        SMHyenaBrain hyena;
 
-    private bool IsHyena()
-    {
-        return mob.IsT1;
-    }
+        if (fallbackState != null)
+        {
+            if (fallbackState is ApexChasingState)
+            {
+                apex = mob as Apex;
+                if (possibleTarget.IsT0)
+                {
+                    apex.ChasingState.SetTarget(possibleTarget.AsT0.GetComponent<ApexTarget>());
+                }
+                else
+                {
+                    apex.ChasingState.SetTarget(null);
+                }
+                apex.StateMachine.ChangeState(apex.ChasingState);
+                return;
+            }
+            if (fallbackState is ChasePlayerState || fallbackState is AttackPlayerState)
+            {
+                hyena = mob as SMHyenaBrain;
+                hyena.StateMachine.ChangeState(hyena.ChasePlayer);
+                return;
+            }
+            if (fallbackState is ChasePreyState || fallbackState is AttackPreyState)
+            {
+                hyena = mob as SMHyenaBrain;
+                hyena.StateMachine.ChangeState(hyena.ChasePrey);
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("MoggingState has no fallback state set!");
+        }
 
+        Debug.LogError($"Fell through when transitioning out of MoggingState. {mob} entered mog from {fallbackState}");
+
+        if (mob is Apex)
+        {
+            apex = mob as Apex;
+            apex.StateMachine.ChangeState(apex.RoamingState);
+        }
+        else
+        {
+            mob.StateMachine.ChangeState(mob.WanderState);
+        }
+    }
     #endregion
 }

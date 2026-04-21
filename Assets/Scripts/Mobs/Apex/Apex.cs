@@ -5,6 +5,7 @@ using SIGGD.Mobs.StateMachine;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEditor;
+using Sirenix.OdinInspector;
 
 /// <summary>
 /// Brain for the Apex predator, built on <see cref="MobBrainBase"/>.
@@ -43,7 +44,7 @@ public class Apex : MobBrainBase
 
     [Header("Apex Roam")]
     [Tooltip("Radius around the current guard position in which roam targets are picked.")]
-    [SerializeField] private float roamRadius = 12f;
+    [SerializeField, MinMaxSlider(0f, 100f)] private Vector2 roamRadius = new Vector2(10f, 90f);
     [Tooltip("How long the Apex stays at a roam point before picking a new one.")]
     [SerializeField] private float roamPauseDuration = 2f;
     [Tooltip("How long the Apex roams before switching back to searching.")]
@@ -98,7 +99,7 @@ public class Apex : MobBrainBase
     public float ApproachSpeedMulti => approachSpeedMulti;
     public float RoamSpeedMulti => roamSpeedMulti;
     public float ChaseSpeedMulti => chaseSpeedMulti;
-    public float RoamRadius => roamRadius;
+    public Vector2 RoamRadius => roamRadius;
     public float RoamPauseDuration => roamPauseDuration;
     public float RoamDuration => roamDuration;
     public float HeadSweepAngle => headSweepAngle;
@@ -123,7 +124,7 @@ public class Apex : MobBrainBase
 
     #region Apex States
 
-    private ApexApproachingState approachingState;
+    //private ApexApproachingState approachingState;
     private ApexSearchingState searchingState;
     private ApexRoamingState roamingState;
     private ApexChasingState chasingState;
@@ -131,7 +132,7 @@ public class Apex : MobBrainBase
     private ApexInvestigateState investigateState;
     private MoggingState moggingState;
 
-    public ApexApproachingState ApproachingState => approachingState;
+    //public ApexApproachingState ApproachingState => approachingState;
     public ApexSearchingState SearchingState => searchingState;
     public ApexRoamingState RoamingState => roamingState;
     public ApexChasingState ChasingState => chasingState;
@@ -165,7 +166,7 @@ public class Apex : MobBrainBase
 
     protected override void InitializeStates()
     {
-        approachingState = new ApexApproachingState(this);
+        //approachingState = new ApexApproachingState(this);
         searchingState = new ApexSearchingState(this);
         roamingState = new ApexRoamingState(this);
         chasingState = new ApexChasingState(this);
@@ -268,7 +269,7 @@ public class Apex : MobBrainBase
     /// <summary>
     /// Gets the NavSteering direction toward <paramref name="target"/>.
     /// </summary>
-    public Vector3 GetSteeringTo(Vector3 target)
+    public (Vector3 dir, NavMeshPathStatus status, float pathLength) GetSteeringTo(Vector3 target)
     {
         return NavSteering.GetSteeringDirection(ctx.NavAgent, ctx.Rigidbody.position, target, 0.01f);
     }

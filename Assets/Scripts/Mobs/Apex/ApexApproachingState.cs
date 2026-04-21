@@ -34,7 +34,7 @@ public class ApexApproachingState : IMobState
 
     public void FixedUpdate()
     {
-        Vector3 dir = apex.GetSteeringTo(apex.TargetPosition);
+        Vector3 dir = apex.GetSteeringTo(apex.TargetPosition).dir;
         ctx.Movement.MoveTowards(dir, apex.ApproachSpeedMulti, 3f, false);
     }
 

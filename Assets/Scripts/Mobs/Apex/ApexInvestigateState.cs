@@ -59,16 +59,14 @@ public class ApexInvestigateState : IMobState
     {
         if (!hasTarget) return;
 
-        Vector3 dir = apex.GetSteeringTo(investigatePosition);
+        var (dir, status, pathLength) = apex.GetSteeringTo(investigatePosition);
 
-        // Defensive: avoid commanding movement on invalid/near-zero directions
-        if (!IsValidDirection(dir))
+        // if status is partial and near the end of path, switch to roaming state
+        if (status == UnityEngine.AI.NavMeshPathStatus.PathPartial && pathLength < 5f)
         {
-            if (!loggedZeroDir)
-            {
-                apex.ApexLog($"InvestigateState.FixedUpdate: invalid steering dir toward {investigatePosition}. Skipping movement this frame.");
-                loggedZeroDir = true;
-            }
+            apex.ApexLog("InvestigateState - path to investigate point is partial and near, switching to RoamingState.");
+            hasTarget = false;
+            apex.StateMachine.ChangeState(apex.RoamingState);
             return;
         }
 

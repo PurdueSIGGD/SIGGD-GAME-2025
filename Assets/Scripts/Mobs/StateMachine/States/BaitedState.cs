@@ -121,7 +121,7 @@ namespace SIGGD.Mobs.StateMachine
             try
             {
                 dir = NavSteering.GetSteeringDirection(ctx.NavAgent, ctx.Rigidbody.position,
-                    baitObject?.transform.position ?? ctx.Rigidbody.position, 0.01f);
+                    baitObject?.transform.position ?? ctx.Rigidbody.position, 0.01f).dir;
 
             }
             catch (Exception e)

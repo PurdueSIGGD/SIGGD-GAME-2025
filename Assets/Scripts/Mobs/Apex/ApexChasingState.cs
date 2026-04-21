@@ -65,8 +65,16 @@ public class ApexChasingState : IMobState
     {
         if (target == null) return;
 
-        Vector3 dir = apex.GetSteeringTo(lastKnownPosition);
+        var (dir, status, pathLength) = apex.GetSteeringTo(lastKnownPosition);
         ctx.Movement.MoveTowards(dir, apex.ChaseSpeedMulti, 3f, false);
+
+        // if near the end of partial path, switching to mogging state
+        if (status == UnityEngine.AI.NavMeshPathStatus.PathPartial && pathLength <= 5f)
+        {
+            apex.ApexLog($"ChasingState — near end of partial path to '{target.gameObject.name}', switching to MoggingState.");
+            apex.MoggingState.Configure(this, target.transform);
+            apex.StateMachine.ChangeState(apex.MoggingState);
+        }
     }
 
     public void Exit()

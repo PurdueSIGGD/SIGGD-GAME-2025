@@ -178,7 +178,7 @@ CapsuleCollider:
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.26, z: 0}
 --- !u!114 &1298024596188453325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,6 +214,7 @@ MonoBehaviour:
     victim: {fileID: 0}
     amount: 0
     xxtraContext: 
+  findPathBuffer: 5
   debugLogs: 1
 --- !u!195 &3654695270874870991
 NavMeshAgent:
@@ -224,7 +225,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 6906967935226233989}
   m_Enabled: 1
   m_AgentTypeID: 1479372276
-  m_Radius: 1.08
+  m_Radius: 0.3
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -234,7 +235,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 1.79
-  m_BaseOffset: 0.96
+  m_BaseOffset: 0.67
   m_WalkableMask: 5
   m_ObstacleAvoidanceType: 4
 --- !u!54 &5860744705928299663
@@ -260,7 +261,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
@@ -524,6 +525,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: a84527f139a3c46958edb53e5e2b8f61, type: 3}
       propertyPath: m_Name
       value: apex
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a84527f139a3c46958edb53e5e2b8f61, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -967,6 +972,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 106b7a52eab53e341ad36e8309478aad, type: 3}
       propertyPath: m_Name
       value: Apex Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 106b7a52eab53e341ad36e8309478aad, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 961302788560781384, guid: 106b7a52eab53e341ad36e8309478aad, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

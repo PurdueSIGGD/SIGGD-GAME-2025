@@ -43,7 +43,7 @@ public class ApexRoamingState : IMobState
         loggedZeroDir = false;
 
         // Pick a single roam target on enter. If none found, immediately go back to searching.
-        if (apex.TryGetRoamPoint(guardPosition, apex.RoamRadius, out Vector3 point))
+        if (apex.TryGetRoamPoint(guardPosition, Random.Range(apex.RoamRadius.x, apex.RoamRadius.y), out Vector3 point))
         {
             targetPosition = point;
             hasTarget = true;
@@ -74,7 +74,7 @@ public class ApexRoamingState : IMobState
     {
         if (!hasTarget) return;
 
-        Vector3 dir = apex.GetSteeringTo(targetPosition);
+        Vector3 dir = apex.GetSteeringTo(targetPosition).dir;
 
         // Guard: avoid commanding movement/rotation on an invalid or near-zero direction.
         if (!IsValidDirection(dir))
@@ -135,7 +135,8 @@ public class ApexRoamingState : IMobState
         if (ctx != null && ctx.NavAgent != null)
         {
             Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(guardPosition, apex.RoamRadius);
+            Gizmos.DrawWireSphere(guardPosition, apex.RoamRadius.x);
+            Gizmos.DrawWireSphere(guardPosition, apex.RoamRadius.y);
             if (hasTarget)
             {
                 Gizmos.color = Color.blue;

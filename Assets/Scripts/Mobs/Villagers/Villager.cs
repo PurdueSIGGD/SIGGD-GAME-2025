@@ -28,8 +28,6 @@ public class Villager : MonoBehaviour {
         if (damageContext.victim != gameObject) return;// ignore self-inflicted damage
         // Spawn corpse at current position and rotation
         Instantiate(corpse, transform.position, transform.rotation);
-        // Destroy the villager game object
-        Destroy(gameObject);
     }
     private void Awake()
     {
@@ -41,7 +39,16 @@ public class Villager : MonoBehaviour {
     private void Start()
     {
         PickNewDestination();
+    }
+
+    void OnEnable()
+    {
         EntityHealthManager.OnDeath += OnSlugDeath;
+    }
+
+    private void OnDisable()
+    {
+        EntityHealthManager.OnDeath -= OnSlugDeath;
     }
 
     private void Update()
