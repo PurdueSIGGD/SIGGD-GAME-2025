@@ -78,8 +78,7 @@ public class PlayerDataSaveModule : ISaveModule
         playerData.curStamina = stamina.CurrentStamina;
         playerData.staminaDisabled = stamina.StaminaDisabled;
         playerData.RespawnPosition = respawnManager.respawnPoint;
-        Debug.Log($"Serialized stamina {playerData.curStamina} {playerData.staminaDisabled}");
-        
+
         byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);
         FileManager.Instance.WriteFile(savePath, bytes);
 

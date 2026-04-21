@@ -13,6 +13,7 @@ public class AudioLogObject : ScriptableObject
         public string line;
         public float seconds;
         public bool isFromRadio;
+        public bool isIntoRadio;
     }
     public lineInfo[] subtitles;
     public string audioName;

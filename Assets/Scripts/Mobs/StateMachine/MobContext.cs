@@ -14,7 +14,8 @@ namespace SIGGD.Mobs.StateMachine
         public AgentData AgentData;
         public HungerBehaviour Hunger;
         public PackBehavior Pack;
-        public MobType type;
+        public MobType Type;
+        public Animator Animator;
 
         // Optional — set only on mobs that have these components
         public PerceptionManager Perception;
