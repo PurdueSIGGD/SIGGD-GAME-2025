@@ -17,7 +17,8 @@ public class ItemInfo : ScriptableObject
         Trap,
         Empty, 
         Keycard,
-        Utility
+        Utility,
+        AudioLog
     };
 
     public enum ItemName { // All possible names of items
@@ -36,7 +37,8 @@ public class ItemInfo : ScriptableObject
         GreenMushroom,
         PurpleMushroom,
         DarkPurpleMushroom,
-        OrangeMushroom
+        OrangeMushroom,
+        AudioLogPlayer
     };
 
     [SerializeField] public ItemType itemType;// type of item

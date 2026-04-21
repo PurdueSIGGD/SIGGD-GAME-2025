@@ -10,24 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0921de3c6c2e29140a0459e282f3c744, type: 3}
-  m_Name: Empty
+  m_Name: AudioLogPlayer
   m_EditorClassIdentifier: 
-  itemType: 4
-  itemName: 6
+  itemType: 7
+  itemName: 16
   itemImage: {fileID: 0}
   isIngredient: 0
-  maxStackCount: 0
-  description: 
+  maxStackCount: 1
+  description: Audio Log Player
   playerActionStrategy:
-    rid: 2861061675289673817
+    rid: 2861061675289673819
   itemPrefab: {fileID: 0}
   itemPlacementPrefab: {fileID: 0}
   references:
     version: 2
     RefIds:
-    - rid: 2861061675289673817
-      type: {class: EmptyItemAction, ns: , asm: Assembly-CSharp}
+    - rid: 2861061675289673819
+      type: {class: AudioLogPlayerStrategy, ns: , asm: Assembly-CSharp}
       data:
         handAnimatorController: {fileID: 0}
         animationClip: {fileID: 0}
-        specifiedActionDuration: -1
+        specifiedActionDuration: 5
+        audioObject: {fileID: 11400000, guid: cc64e9cc00a7f8d47aab15d7a7e4a800, type: 2}
