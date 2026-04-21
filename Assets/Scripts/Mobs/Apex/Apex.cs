@@ -71,6 +71,7 @@ public class Apex : MobBrainBase
     [SerializeField] private float attackRange = 2.5f;
     [SerializeField] private LayerMask attackLayerMask;
     [SerializeField] private DamageContext attackContext;
+    [SerializeField] private float lungeRange = 20.0f;
 
     #endregion
 
@@ -101,6 +102,7 @@ public class Apex : MobBrainBase
     public float RoamDuration => roamDuration;
     public float HeadSweepAngle => headSweepAngle;
     public float HeadSweepDuration => headSweepDuration;
+    public float LungeRange => lungeRange;
     public int SweepsBeforeRoam => sweepsBeforeRoam;
     public HeadSweepAxis HeadSweepAxis => headSweepAxis;
     public float AttackRange => attackRange;
@@ -126,6 +128,7 @@ public class Apex : MobBrainBase
     private ApexRoamingState roamingState;
     private ApexChasingState chasingState;
     private ApexAttackingState attackingState;
+    private ApexLungingState lungingState;
     private ApexInvestigateState investigateState;
 
     public ApexApproachingState ApproachingState => approachingState;
@@ -133,6 +136,7 @@ public class Apex : MobBrainBase
     public ApexRoamingState RoamingState => roamingState;
     public ApexChasingState ChasingState => chasingState;
     public ApexAttackingState AttackingState => attackingState;
+    public ApexLungingState LungingState => lungingState;
     public ApexInvestigateState InvestigateState => investigateState;
 
     #endregion
@@ -166,6 +170,7 @@ public class Apex : MobBrainBase
         roamingState = new ApexRoamingState(this);
         chasingState = new ApexChasingState(this);
         attackingState = new ApexAttackingState(this);
+        lungingState = new ApexLungingState(this);
         investigateState = new ApexInvestigateState(this);
         baitedState = new BaitedState(ctx, stateMachine, investigateState, baitMoveSpeedMultiplier, baitTurnResponsiveness, baitArrivalDistance);
     }
@@ -208,7 +213,7 @@ public class Apex : MobBrainBase
         if (lineOfSight != null && lineOfSight.VisibleTarget != null)
         {
             var current = stateMachine.CurrentState;
-            if (current is not ApexChasingState && current is not ApexAttackingState)
+            if (current is not ApexChasingState && current is not ApexAttackingState && current is not ApexLungingState)
             {
                 ApexLog($"EvaluateTransitions — spotted '{lineOfSight.VisibleTarget.gameObject.name}', switching to ChasingState.");
                 chasingState.SetTarget(lineOfSight.VisibleTarget);
