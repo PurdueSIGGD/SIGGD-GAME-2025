@@ -71,6 +71,8 @@ public class Apex : MobBrainBase
     [SerializeField] private float attackRange = 2.5f;
     [SerializeField] private LayerMask attackLayerMask;
     [SerializeField] private DamageContext attackContext;
+    [Tooltip("Time to wait and mog at target before giving up attack, if attack cannot reach")]
+    [SerializeField] private float findPathBuffer = 5f;
 
     #endregion
 
@@ -127,6 +129,7 @@ public class Apex : MobBrainBase
     private ApexChasingState chasingState;
     private ApexAttackingState attackingState;
     private ApexInvestigateState investigateState;
+    private MoggingState moggingState;
 
     public ApexApproachingState ApproachingState => approachingState;
     public ApexSearchingState SearchingState => searchingState;
@@ -134,6 +137,7 @@ public class Apex : MobBrainBase
     public ApexChasingState ChasingState => chasingState;
     public ApexAttackingState AttackingState => attackingState;
     public ApexInvestigateState InvestigateState => investigateState;
+    public MoggingState MoggingState => moggingState;
 
     #endregion
 
@@ -167,6 +171,7 @@ public class Apex : MobBrainBase
         chasingState = new ApexChasingState(this);
         attackingState = new ApexAttackingState(this);
         investigateState = new ApexInvestigateState(this);
+        moggingState = new MoggingState(this, findPathBuffer);
     }
 
     protected override void Start()
@@ -255,7 +260,7 @@ public class Apex : MobBrainBase
     /// </summary>
     public Vector3 GetSteeringTo(Vector3 target)
     {
-        return NavSteering.GetSteeringDirection(ctx.NavAgent, ctx.Rigidbody.position, target, 0.1f);
+        return NavSteering.GetSteeringDirection(ctx.NavAgent, ctx.Rigidbody.position, target, 0.01f);
     }
 
     /// <summary>

@@ -11,6 +11,9 @@ namespace SIGGD.Mobs.StateMachine
     [RequireComponent(typeof(HyenaAttackManager))]
     public class SMHyenaBrain : MobBrainBase
     {
+        public ChasePlayerState ChasePlayer => chasePlayerState;
+        public WanderState Wander => wanderState;
+
         private SeekFoodState seekFoodState;
         private ChasePlayerState chasePlayerState;
         private AttackPlayerState attackPlayerState;
