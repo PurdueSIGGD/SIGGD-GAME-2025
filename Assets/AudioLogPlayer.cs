@@ -3,10 +3,7 @@ using UnityEngine;
 
 public class AudioLogPlayer : MonoBehaviour, IInteractable<IInteractor>
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public Action<ItemInfo, IInteractor> OnItemInteract;
-
-    public ItemInfo itemInfo;
+    public AudioLogObject audioLog;
     public bool destroyAfterPickup;
 
     private bool interactable = true;
@@ -18,7 +15,6 @@ public class AudioLogPlayer : MonoBehaviour, IInteractable<IInteractor>
         {
             ui.ActivateUI(this);
             currentUi = ui;
-            Debug.Log($"Hovering over item: {itemInfo.itemName}");
         }
     }
 
@@ -26,21 +22,16 @@ public class AudioLogPlayer : MonoBehaviour, IInteractable<IInteractor>
     {
         ui.DeactivateUI();
         currentUi = null;
-        Debug.Log($"Stopped hovering over item: {itemInfo.itemName}");
     }
 
     public void OnInteract(IInteractor interactor)
     {
         if (interactable)
         {
-            Debug.Log($"Item {itemInfo.itemName} interacted by interactor.");
-
-            Debug.Log($"Audio Strategy: {interactor}");
-
-            Debug.Log(OnItemInteract == null ? "No AUDIO listeners" : "AUDIO Listeners found");
-            OnItemInteract?.Invoke(itemInfo, interactor);
+            AudioLogManager.Instance.PlayAudioLog(audioLog.name, PlayerID.Instance?.gameObject);
 
             interactable = false;
+
             if (currentUi) currentUi.DeactivateUI();
             if (destroyAfterPickup) Destroy(this.gameObject); // Remove the item from the scene
         }
