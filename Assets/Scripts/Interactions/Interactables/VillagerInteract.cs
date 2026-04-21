@@ -29,9 +29,11 @@ public class VillagerInteract : MonoBehaviour, IInteractable<IInteractor>
         {
             playerTransform = PlayerID.Instance.transform;
         }
+        ui.ActivateUI(this);
     }
 
     public void OnHoverExit(InteractableUI ui) {
+        ui.DeactivateUI();
         playerIsLooking = false;
         playerTransform = null;
     }

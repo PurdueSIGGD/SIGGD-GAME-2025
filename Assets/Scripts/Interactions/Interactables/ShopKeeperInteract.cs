@@ -29,17 +29,12 @@ public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
 
     public void OnHoverEnter(InteractableUI ui)
     {
-        playerIsLooking = true;
-        if (PlayerID.Instance != null)
-        {
-            playerTransform = PlayerID.Instance.transform;
-        }
+        ui.ActivateUI(this);
     }                         
 
     public void OnHoverExit(InteractableUI ui)
     {
-        playerIsLooking = false;
-        playerTransform = null;
+        ui.DeactivateUI();
     }
 
     public void OnInteract(IInteractor interactor)
