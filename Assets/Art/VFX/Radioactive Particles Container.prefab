@@ -44,7 +44,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3389010081154716998}
   - component: {fileID: 4290504279226619564}
-  - component: {fileID: 3210947713128181}
   - component: {fileID: 7585193209740120955}
   m_Layer: 0
   m_Name: Radioactive Particles Camera
@@ -62,7 +61,7 @@ Transform:
   m_GameObject: {fileID: 217977775594918029}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.1118927, y: 13.015714, z: 3.6307793}
+  m_LocalPosition: {x: 734.96185, y: 410, z: 3.6307793}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -102,12 +101,12 @@ Camera:
   near clip plane: 0.3
   far clip plane: 100
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1026
+    m_Bits: 1024
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: a6126df2f6fd0cc4588cc219b82575a3, type: 2}
   m_TargetDisplay: 0
@@ -119,14 +118,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &3210947713128181
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 217977775594918029}
-  m_Enabled: 0
 --- !u!114 &7585193209740120955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -356,7 +347,7 @@ GameObject:
   - component: {fileID: 4741250007970165486}
   - component: {fileID: 284890064644400360}
   - component: {fileID: 4371606121757057954}
-  m_Layer: 1
+  m_Layer: 10
   m_Name: Radioactive Particles VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -372,7 +363,7 @@ Transform:
   m_GameObject: {fileID: 4595088835245153427}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.6628063, y: 13.015714, z: 15.006297}
+  m_LocalPosition: {x: 735, y: 410, z: 15.006297}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -390,16 +381,22 @@ VisualEffect:
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
-  m_ResetSeedOnPlay: 1
+  m_ResetSeedOnPlay: 0
   m_AllowInstancing: 1
   m_ResourceVersion: 1
   m_PropertySheet:
     m_Float:
-      m_Array: []
+      m_Array:
+      - m_Value: 111.02
+        m_Name: Spawn Rate
+        m_Overridden: 0
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 20, y: 12, z: 1}
+        m_Name: Bounding Box Size
+        m_Overridden: 1
     m_Vector4f:
       m_Array: []
     m_Uint:
