@@ -6,6 +6,7 @@ public class ChangeFootstepSound : MonoBehaviour
     {
         if (other.gameObject == PlayerID.Instance.gameObject) {
             PlayerID.Instance.playerMovement.SwitchFootstepSound();
+            Destroy(gameObject);
         }
     }
 }
