@@ -154,7 +154,7 @@ public class Smell : SerializedMonoBehaviour
             }
 
             // Check if it's Food
-            if (col.TryGetComponent<FoodBehaviour>(out _))
+            if (col.TryGetComponent<PickUpBait>(out _))
             {
                 if (dist < closestFoodDist)
                 {

@@ -44,7 +44,6 @@ public class PlayerMovement : MonoBehaviour
         speedMultiplier = 1f;
 
         FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
-
     }
 
     private void Update()
