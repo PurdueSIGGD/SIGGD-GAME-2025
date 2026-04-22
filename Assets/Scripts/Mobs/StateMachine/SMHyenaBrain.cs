@@ -11,11 +11,15 @@ namespace SIGGD.Mobs.StateMachine
     [RequireComponent(typeof(HyenaAttackManager))]
     public class SMHyenaBrain : MobBrainBase
     {
+        private float knockbackDuration = 2f;
+        private float knockbackForce = 20f;
+        
         private SeekFoodState seekFoodState;
         private ChasePlayerState chasePlayerState;
         private AttackPlayerState attackPlayerState;
         private ChasePreyState chasePreyState;
         private AttackPreyState attackPreyState;
+        private ParriedState parriedState;
 
         [SerializeField] private float hungerThreshold = 50f;
         [SerializeField] private Animator animator;
@@ -53,6 +57,7 @@ namespace SIGGD.Mobs.StateMachine
             attackPlayerState = new AttackPlayerState(ctx);
             chasePreyState = new ChasePreyState(ctx);
             attackPreyState = new AttackPreyState(ctx);
+            parriedState = new ParriedState(ctx, knockbackForce, knockbackDuration);
         }
 
         private void OnEnable()
@@ -87,11 +92,34 @@ namespace SIGGD.Mobs.StateMachine
                 passivePantEvent.start();
             }
         }
+        
+        public void TryParry()
+        {
+            if (stateMachine.CurrentState == attackPlayerState && !attackPlayerState.IsAttackFinished)
+            {
+                parriedState.SetDirection(ctx.Transform.forward);
+                stateMachine.ChangeState(parriedState);
+            }
+        }
 
         protected override void EvaluateTransitions()
         {
             var current = stateMachine.CurrentState;
             bool isAttacking = current == attackPlayerState || current == attackPreyState;
+
+            if (current == parriedState)
+            {
+                if (parriedState.finished)
+                {
+                    if (PlayerVisible())
+                        stateMachine.ChangeState(chasePlayerState);
+                    else if (PreyVisible())
+                        stateMachine.ChangeState(chasePreyState);
+                    else
+                        stateMachine.ChangeState(wanderState);
+                }                
+                return;
+            }
 
             if (current == baitedState)
             {
