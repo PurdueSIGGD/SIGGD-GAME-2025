@@ -1,16 +1,43 @@
+using Sirenix.OdinInspector;
+using System.ComponentModel.Design;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class VFXManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    //[SerializeField]
+    public GameObject VFXGameObject;
+
+
+    // Whether the particle is playing
+    [ShowInInspector]
+    private bool isActive = false;
+
+    private VisualEffect particlesVFX;
+
+    public void Awake()
     {
-        
+        particlesVFX = VFXGameObject.GetComponent<VisualEffect>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Update()
     {
-        
+        if (!isActive && particlesVFX.HasAnySystemAwake())
+        {
+            SetInactive();
+        } else if (isActive && !particlesVFX.HasAnySystemAwake())
+        {
+            SetActive();
+        }
+    }
+
+
+    public void SetActive() {
+        particlesVFX.Play();
+    }
+
+    public void SetInactive()
+    {
+        particlesVFX.Stop();
     }
 }
