@@ -17,7 +17,7 @@ public class ItemInfo : ScriptableObject
         Trap,
         Empty, 
         Keycard,
-        Utility,
+        Utility
     };
 
     public enum ItemName { // All possible names of items
