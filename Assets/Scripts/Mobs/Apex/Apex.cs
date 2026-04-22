@@ -68,10 +68,13 @@ public class Apex : MobBrainBase
     #region Attack Settings
 
     [Header("Apex Attack")]
-    [SerializeField] private float attackRange = 2.5f;
+    [SerializeField] private float attackRange = 15.0f;
+    [SerializeField] private float maxLungeSpeed = 22f;
+    [SerializeField] private float arcHeight = 2f;
+    [SerializeField] private float minFlightTime = 0.30f;
+    [SerializeField] private float windupTime = 0.15f;
     [SerializeField] private LayerMask attackLayerMask;
     [SerializeField] private DamageContext attackContext;
-    [SerializeField] private float lungeRange = 20.0f;
 
     #endregion
 
@@ -102,10 +105,13 @@ public class Apex : MobBrainBase
     public float RoamDuration => roamDuration;
     public float HeadSweepAngle => headSweepAngle;
     public float HeadSweepDuration => headSweepDuration;
-    public float LungeRange => lungeRange;
     public int SweepsBeforeRoam => sweepsBeforeRoam;
     public HeadSweepAxis HeadSweepAxis => headSweepAxis;
     public float AttackRange => attackRange;
+    public float MaxLungeSpeed => maxLungeSpeed; 
+    public float ArcHeight => arcHeight;
+    public float MinFlightTime => minFlightTime;
+    public float WindupTime => windupTime;
     public LayerMask AttackLayerMask => attackLayerMask;
     public DamageContext AttackContext => attackContext;
 
@@ -128,7 +134,6 @@ public class Apex : MobBrainBase
     private ApexRoamingState roamingState;
     private ApexChasingState chasingState;
     private ApexAttackingState attackingState;
-    private ApexLungingState lungingState;
     private ApexInvestigateState investigateState;
 
     public ApexApproachingState ApproachingState => approachingState;
@@ -136,7 +141,6 @@ public class Apex : MobBrainBase
     public ApexRoamingState RoamingState => roamingState;
     public ApexChasingState ChasingState => chasingState;
     public ApexAttackingState AttackingState => attackingState;
-    public ApexLungingState LungingState => lungingState;
     public ApexInvestigateState InvestigateState => investigateState;
 
     #endregion
@@ -170,7 +174,6 @@ public class Apex : MobBrainBase
         roamingState = new ApexRoamingState(this);
         chasingState = new ApexChasingState(this);
         attackingState = new ApexAttackingState(this);
-        lungingState = new ApexLungingState(this);
         investigateState = new ApexInvestigateState(this);
         baitedState = new BaitedState(ctx, stateMachine, investigateState, baitMoveSpeedMultiplier, baitTurnResponsiveness, baitArrivalDistance);
     }
@@ -213,7 +216,7 @@ public class Apex : MobBrainBase
         if (lineOfSight != null && lineOfSight.VisibleTarget != null)
         {
             var current = stateMachine.CurrentState;
-            if (current is not ApexChasingState && current is not ApexAttackingState && current is not ApexLungingState)
+            if (current is not ApexChasingState && current is not ApexAttackingState)
             {
                 ApexLog($"EvaluateTransitions — spotted '{lineOfSight.VisibleTarget.gameObject.name}', switching to ChasingState.");
                 chasingState.SetTarget(lineOfSight.VisibleTarget);

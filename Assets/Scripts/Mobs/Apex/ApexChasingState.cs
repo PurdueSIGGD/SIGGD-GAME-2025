@@ -59,11 +59,6 @@ public class ApexChasingState : IMobState
             apex.ApexLog($"ChasingState — target '{target.gameObject.name}' in attack range, switching to AttackingState.");
             apex.AttackingState.SetTarget(target, lastKnownPosition);
             apex.StateMachine.ChangeState(apex.AttackingState);
-        } else if (dist <= apex.LungeRange)
-        {
-            apex.ApexLog($"ChasingState — target '{target.gameObject.name}' in lunge range, switching to LungingState.");
-            apex.LungingState.SetTarget(target, lastKnownPosition);
-            apex.StateMachine.ChangeState(apex.LungingState);
         }
     }
 
