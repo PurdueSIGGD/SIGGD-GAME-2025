@@ -206,7 +206,7 @@ namespace SIGGD.Mobs
         {
             yield return new WaitUntil(() => ctx != null);
 
-            switch (ctx.type)
+            switch (ctx.Type)
             {
                 case MobType.Hyena:
                     FMODEvents.Instance.GetEventInstance("HyenaFootstep", instance => { footsteps = instance; });

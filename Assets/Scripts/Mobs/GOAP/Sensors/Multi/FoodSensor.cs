@@ -9,7 +9,7 @@ namespace SIGGD.Goap.Sensors
 {
     public class FoodSensor : MultiSensorBase
     {
-        private FoodBehaviour[] food;
+        private PickUpBait[] food;
 
         public FoodSensor() {
             this.AddLocalWorldSensor<FoodCount>((agent, references) =>
@@ -52,7 +52,7 @@ namespace SIGGD.Goap.Sensors
 
         public override void Update()
         {
-            this.food = Object.FindObjectsByType<FoodBehaviour>(FindObjectsSortMode.None);
+            this.food = Object.FindObjectsByType<PickUpBait>(FindObjectsSortMode.None);
 
         }
     }
