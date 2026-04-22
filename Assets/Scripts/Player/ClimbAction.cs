@@ -407,6 +407,8 @@ public class ClimbAction : MonoBehaviour
         }
     }
     private void AttachHand(Hand handToAttach, Vector3 handPosition, Quaternion handRotation) {
+        Debug.Log("Attaching hand");
+        // TODO: Add climbing sound
         int handIndex = (int)handToAttach;
         int otherHandIndex = 1 - handIndex;
 
@@ -656,6 +658,7 @@ public class ClimbAction : MonoBehaviour
         // Calculate and apply force to correct the velocity
         Vector3 climbForce = Vector3.ClampMagnitude(forceGain * velocityDifference, maxClimbingForce) * forcePenalty;
         playerRigidbody.AddForce(climbForce);
+        Debug.Log("Applied force while climbing");
     }
     #endregion
 

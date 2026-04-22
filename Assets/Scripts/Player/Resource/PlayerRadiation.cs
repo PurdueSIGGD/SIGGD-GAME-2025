@@ -85,6 +85,7 @@ public class PlayerRadiation : MonoBehaviour
             float radiationPercent = CurrentRadiation / RadiationThreshold;
             float targetStrength = (1 - radiationPercent) * 1.5f;
             radiationVignette?.SetStrength(targetStrength);
+            // TODO: Play player radiation audio
         }
     }
 
