@@ -3,10 +3,12 @@ using System.Collections;
 
 public class PurpleMushroomItemAction : IPlayerActionStrategy
 {
+    private static readonly string eatSound = "ConsumeSound";
     protected override void OnEnter()
     {
         base.OnEnter();
         Inventory.Instance.Decrement();
+        AudioManager.Instance.PlayOneShotNoAsync(eatSound, PlayerID.Instance.gameObject.transform.position);
         GameObject player = PlayerID.Instance.gameObject;
         player.GetComponent<MonoBehaviour>().StartCoroutine(HealOverTime(player));
         Debug.Log("player ate purple mushroom");

@@ -11,6 +11,9 @@ public class PlayerRadiation : MonoBehaviour
     [SerializeField] GenericLingeringVignette radiationVignette;
     [SerializeField] float[] slimePercent = { .9f, .7f, .5f, .3f, .1f}; // multiplies the builduprate so it's slower
     public float RadiationThreshold => radiationThreshold;
+
+    private static readonly string radiationDamageSound = "RadiationDamage";
+    private static readonly string radiationNoDamageSound = "RadiationButNoDamage";
     public float CurrentRadiation
     {
         get => currentRadiation;
@@ -70,6 +73,7 @@ public class PlayerRadiation : MonoBehaviour
             {
                 // buildup
                 currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate[radiationZone] * slimePercent[SlimeLevel] * Time.deltaTime, radiationThreshold); // don't go over threshold
+                AudioManager.Instance.PlayOneShotNoAsync(radiationNoDamageSound, PlayerID.Instance.gameObject.transform.position);
             }
             else // radiation is at the threshold -> take rad damage
             { 
@@ -81,6 +85,8 @@ public class PlayerRadiation : MonoBehaviour
                     playerHealth.TakeDamage(radiationDamageContext);
                     //Debug.Log("Radiation - Took damage");
                 }
+                AudioManager.Instance.PlayOneShotNoAsync(radiationDamageSound, PlayerID.Instance.gameObject.transform.position);
+
             }
             float radiationPercent = CurrentRadiation / RadiationThreshold;
             float targetStrength = (1 - radiationPercent) * 1.5f;

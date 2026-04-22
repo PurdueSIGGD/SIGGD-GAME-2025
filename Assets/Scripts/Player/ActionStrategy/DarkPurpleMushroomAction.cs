@@ -5,10 +5,12 @@ using UnityEngine.Rendering.Universal; // Or HighDefinition if using HDRP
 
 public class DarkPurpleMushroomItemAction : IPlayerActionStrategy
 {
+    private static readonly string eatSound = "ConsumeSound";
     protected override void OnEnter()
     {
         base.OnEnter();
         Inventory.Instance.Decrement();
+        AudioManager.Instance.PlayOneShotNoAsync(eatSound, PlayerID.Instance.gameObject.transform.position);
         GameObject player = PlayerID.Instance.gameObject;
         player.GetComponent<MonoBehaviour>().StartCoroutine(HealOverTime(player));
         Debug.Log("player ate dark purple mushroom");
