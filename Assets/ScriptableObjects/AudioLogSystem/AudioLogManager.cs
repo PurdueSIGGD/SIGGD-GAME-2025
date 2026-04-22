@@ -150,6 +150,9 @@ public class AudioLogManager : MonoBehaviour
 
         if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
         {
+
+            // SIMON PLEASE
+            // WHYYYY
             curPlayer = player;
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
@@ -165,10 +168,14 @@ public class AudioLogManager : MonoBehaviour
             logSoundEvent.start();
 
             lastStarted = StartCoroutine(StartSubtitles(foundAudio));
+
+            // DEBUG
+            UnityEngine.Debug.Log("Audio Played");
+
         }
         else
         {
-            UnityEngine.Debug.LogWarning("Audio name not in dictionarty: " + audioName);
+            UnityEngine.Debug.LogWarning("Audio name not in dictionary: " + audioName);
         }
     }
 
