@@ -108,8 +108,15 @@ namespace SIGGD.Mobs
             if (Time.time >= nextUpdate[id])
             {
                 nextUpdate[id] = Time.time + updateRate;
-                if (agent.isOnNavMesh) // guard against agents not on the navmesh
+                if (agent.isOnNavMesh && !agent.pathPending)
+                {  // guard against agents not on the navmesh
                     agent.SetDestination(destination);
+                }
+            }
+
+            if (agent.path.status == NavMeshPathStatus.PathComplete)
+            {
+                Debug.Log("w");
             }
 
             Vector3 raw = Vector3.zero;
