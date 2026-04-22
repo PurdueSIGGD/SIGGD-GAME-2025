@@ -55,6 +55,7 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
         if (context.performed && Interactable != null)
         {
             Interact(Interactable);
+            // TODO: Play Interact sound
         }
     }
 

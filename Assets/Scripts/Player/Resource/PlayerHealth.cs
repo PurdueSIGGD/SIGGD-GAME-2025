@@ -19,7 +19,12 @@ public class PlayerHealth : MonoBehaviour
     private void TriggerOnDamagePulse(DamageContext context)
     {
         if (context.victim != PlayerID.Instance.gameObject) return;
-        if (context.amount <= 0) return;
+        if (context.amount == 0) return;
+        if (context.amount < 0)
+        {
+            // TODO: Play heal sound
+            return;
+        }
         SpecialEffects.VignetteEffect(damagePulseIntensity, duration);
         PlayerID.Instance.playerHUD.TriggerHUDEvent();
     }
