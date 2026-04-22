@@ -73,6 +73,11 @@ namespace SIGGD.Mobs.StateMachine
         protected override void Awake()
         {
             base.Awake();
+        }
+
+        protected override void Start()
+        {
+            base.Start();
             FMODEvents.Instance.GetEventInstance(passivePantSound, instance => { passivePantEvent = instance; });
         }
 

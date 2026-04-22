@@ -62,7 +62,7 @@ public class ApexInvestigateState : IMobState
         var (dir, status, pathLength) = apex.GetSteeringTo(investigatePosition);
 
         // if status is partial and near the end of path, switch to roaming state
-        if (status == UnityEngine.AI.NavMeshPathStatus.PathPartial && pathLength < 5f)
+        if (status != UnityEngine.AI.NavMeshPathStatus.PathComplete && pathLength < 5f)
         {
             apex.ApexLog("InvestigateState - path to investigate point is partial and near, switching to RoamingState.");
             hasTarget = false;
@@ -90,5 +90,12 @@ public class ApexInvestigateState : IMobState
         Gizmos.color = Color.yellow;
         Gizmos.DrawSphere(investigatePosition, 10f);
         Gizmos.DrawLine(apex.transform.position, investigatePosition);
+
+        var (dir, path) = NavSteering.GetSteeringDirection(ctx.NavAgent, apex.transform.position, investigatePosition, 0.01f, true);
+        for (int i = 0; i < path.corners.Length - 1; i++)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(path.corners[i], path.corners[i + 1]);
+        }
     }
 }

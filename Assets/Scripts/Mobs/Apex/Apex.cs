@@ -119,6 +119,7 @@ public class Apex : MobBrainBase
 
     private Action onDespawn;
     private bool initialized;
+    private NavMeshPath cachedPath;
 
     #endregion
 
@@ -195,7 +196,7 @@ public class Apex : MobBrainBase
     private IEnumerator DelayedEnterInvestigate()
     {
         yield return new WaitForSeconds(0.5f);
-        stateMachine.ChangeState(InvestigateState);
+        stateMachine.ChangeState(RoamingState);
     }
 
     protected override void EvaluateTransitions()
@@ -239,6 +240,7 @@ public class Apex : MobBrainBase
     {
         TargetPosition = targetPosition;
         onDespawn = despawnCallback;
+        cachedPath = new();
         initialized = true;
 
         if (lineOfSight == null)
@@ -286,7 +288,12 @@ public class Apex : MobBrainBase
             if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, radius * 0.5f, NavMesh.AllAreas))
             {
                 result = hit.position;
-                return true;
+                NavMesh.CalculatePath(ctx.Rigidbody.position, result, NavMesh.AllAreas, cachedPath);
+                if (cachedPath.status == NavMeshPathStatus.PathComplete && Vector3.Distance(ctx.Rigidbody.position, result) > 5f)
+                {
+                    return true;
+                }
+                continue;
             }
         }
         result = origin;

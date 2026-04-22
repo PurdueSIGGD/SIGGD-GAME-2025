@@ -1,6 +1,7 @@
 using SIGGD.Mobs.StateMachine;
 using SIGGD.Mobs;
 using UnityEngine;
+using UnityEditor;
 
 /// <summary>
 /// The Apex moves to a single random roam point (once) around a guard position.
@@ -145,6 +146,7 @@ public class ApexRoamingState : IMobState
 
             Gizmos.DrawLine(apex.transform.position, targetPosition);
         }
+        Handles.Label(targetPosition, "Apex Roam Target");
 #endif
     }
 }
