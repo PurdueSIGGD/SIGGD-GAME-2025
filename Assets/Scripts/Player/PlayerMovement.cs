@@ -28,6 +28,8 @@ public class PlayerMovement : MonoBehaviour
 
     public float speedMultiplier;
 
+    private PlayerFallDamage fallDamage;
+
     #endregion
 
     #region Check Attributes
@@ -51,6 +53,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>(); 
         rb = GetComponent<Rigidbody>();
         psm = PlayerID.Instance.stateMachine;
+        fallDamage = PlayerID.Instance.GetComponent<PlayerFallDamage>();
         speedMultiplier = 1f;
 
         // Set footstep sound to LabFootsteps if it is one of the prologue scenes
@@ -225,7 +228,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateFootstepSound()
     {
-        if ((rb.linearVelocity.magnitude >= 1) && (isGrounded))
+        if ((rb.linearVelocity.magnitude >= 1) && (isGrounded) && (!fallDamage.checkWasFalling()))
         {
             // NOTE: 3d attributes need to be set in order to play instances in 3d
             //ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, rb.transform.up);
@@ -237,6 +240,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (playbackState.Equals(PLAYBACK_STATE.STOPPED))
             {
+                UnityEngine.Debug.Log("Playing footstep");
                 footsteps.start();
             }
         }

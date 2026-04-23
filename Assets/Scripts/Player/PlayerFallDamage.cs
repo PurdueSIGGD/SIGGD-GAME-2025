@@ -160,4 +160,8 @@ public class PlayerFallDamage : MonoBehaviour
             lastVerticalVelocity = Mathf.Abs(Mathf.Min(rb.linearVelocity.y, 0));
         }
     }
+
+    public bool checkWasFalling() {
+        return wasFalling;
+    }
 }
