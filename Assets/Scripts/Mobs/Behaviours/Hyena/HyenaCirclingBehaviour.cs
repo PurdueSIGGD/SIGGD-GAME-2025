@@ -203,6 +203,12 @@ namespace SIGGD.Mobs.Hyena
             {
                 while (elapsed < duration && !exit)
                 {
+                    if (target == null)
+                    {
+                        ExitBehaviour();
+                        yield break;
+                    }
+
                     elapsed += Time.fixedDeltaTime;
                     Vector3 targetRaw = target.position;
                     if (targetRaw == Vector3.zero)

@@ -8,6 +8,8 @@ public class InteractDoor : MonoBehaviour, IInteractable<IInteractor>
     private InteractableUI currentUi;
     private Animator animator;
     private MeshCollider[] colliders;
+
+    private static readonly string openDoorSound = "SpaceDoor";
     
     public void Start()
     {
@@ -35,6 +37,7 @@ public class InteractDoor : MonoBehaviour, IInteractable<IInteractor>
         if (interactable)
         {
             animator.SetTrigger("door_open");
+            AudioManager.Instance.PlayOneShotNoAsync(openDoorSound, transform.position);
             interactable = false;
             if (currentUi) currentUi.DeactivateUI();
             
@@ -43,6 +46,11 @@ public class InteractDoor : MonoBehaviour, IInteractable<IInteractor>
             {
                 colliders[i].enabled = !colliders[i].enabled;
             }
+        }
+        else
+        {
+            if (currentUi) currentUi.DeactivateUI();
+            currentUi = null;
         }
     }
 }

@@ -15,6 +15,7 @@ public class PerceptionManager : MonoBehaviour
     public event Action<Transform> OnPlayerDetected;
     public Transform PlayerTarget { get; private set; }
     public bool CanSeePlayer { get; private set; }
+
     void Start()
     {
         smell = GetComponent<Smell>();
