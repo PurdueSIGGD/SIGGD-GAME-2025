@@ -17,12 +17,17 @@ public class testCombatDrumShift : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             Debug.Log("Pausing Music");
-            MusicManager.Instance.PauseMusic();
+            MusicManager.Instance.PauseMusic(true);
         }
         if (Input.GetKeyDown(KeyCode.Alpha6))
         {
             Debug.Log("Unpausing Music");
-            MusicManager.Instance.PlayMusic();
+            MusicManager.Instance.PlayMusic(true);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            Debug.Log("playing radio noise");
+            AudioManager.Instance.PlayOneShot("radionoise");
         }
     }
 }
