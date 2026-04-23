@@ -60,6 +60,9 @@ namespace SIGGD.Mobs.Hyena
         private Vector3 escapeGoal;
         private float escapeTimer;
 
+        // Audio ref
+        private readonly string passiveCirclingSound = "HyenaPassiveCircling";
+
         private void Awake()
         {
             rb = GetComponent<Rigidbody>();
@@ -194,16 +197,31 @@ namespace SIGGD.Mobs.Hyena
             float speedUpdateRate = 0.5f;
             bool nearEndOfLunge = false;
             Vector3 lastPos = rb.position;
+
+            bool hasTriedPlayingSFX = false;
             try
             {
                 while (elapsed < duration && !exit)
                 {
+                    if (target == null)
+                    {
+                        ExitBehaviour();
+                        yield break;
+                    }
+
                     elapsed += Time.fixedDeltaTime;
                     Vector3 targetRaw = target.position;
                     if (targetRaw == Vector3.zero)
                     {
                         ExitBehaviour();
                         yield break;
+                    }
+
+                    // randomly play audio
+                    if (!hasTriedPlayingSFX && elapsed > (duration / 2))
+                    {
+                        hasTriedPlayingSFX = true;
+                        AudioManager.Instance.PlayOneShotNoAsync(passiveCirclingSound, transform.position, 0.5f);
                     }
 
                     Vector3 targetPos = SampleToNavMesh(targetRaw, 6f);

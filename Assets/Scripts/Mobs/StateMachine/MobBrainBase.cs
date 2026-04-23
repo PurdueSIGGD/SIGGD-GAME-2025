@@ -20,9 +20,15 @@ namespace SIGGD.Mobs.StateMachine
 
         protected WanderState wanderState;
         protected FollowPackState followPackState;
+        protected BaitedState baitedState;
+
+        protected float baitMoveSpeedMultiplier = 1f;
+        protected float baitTurnResponsiveness = 3f;
+        protected float baitArrivalDistance = 1.5f;
 
         public MobStateMachine StateMachine => stateMachine;
         public MobContext Context => ctx;
+        public WanderState WanderState => wanderState;
 
         /// <summary>
         /// Display name used in debug logs (e.g. "Hyena", "Prey").
@@ -52,8 +58,11 @@ namespace SIGGD.Mobs.StateMachine
         {
             ctx = BuildContext();
 
+            stateMachine = new MobStateMachine();
+
             wanderState = new WanderState(ctx);
             followPackState = new FollowPackState(ctx);
+            baitedState = new BaitedState(ctx, stateMachine, wanderState, baitMoveSpeedMultiplier, baitTurnResponsiveness, baitArrivalDistance);
             InitializeStates();
 
             stateMachine = new MobStateMachine();
@@ -86,6 +95,23 @@ namespace SIGGD.Mobs.StateMachine
             return alpha != null && alpha != ctx.Pack;
         }
 
+        public void EnterBaitedState(GameObject baitObject, float duration)
+        {
+            Debug.Log("[MobBrainBase] Attempting to enter baited state with bait: " + baitObject.name + " and duration: " + duration);
+            if (baitedState == null) return;
+            
+            if (stateMachine.CurrentState == baitedState)
+            {
+                return;
+            }
+            
+            Debug.Log("[MobBrainBase] Entering baited state: " + baitedState.GetType().Name);
+
+            baitedState.Configure(baitObject, duration);
+
+            stateMachine.ChangeState(baitedState);
+        }
+
         /// <summary>
         /// Shared NavMesh + Rigidbody bootstrap.
         /// </summary>
@@ -95,52 +121,52 @@ namespace SIGGD.Mobs.StateMachine
             navAgent.updatePosition = false;
             navAgent.updateRotation = false;
 
-            //NavMeshQueryFilter navFilter = new NavMeshQueryFilter
-            //{
-            //    agentTypeID = ctx.NavAgent.agentTypeID,
-            //    areaMask = NavMesh.AllAreas
-            //};
-            //if (ctx.AgentData != null && ctx.AgentData.filter.areaMask != 0)
-            //    navFilter = ctx.AgentData.filter;
+            NavMeshQueryFilter navFilter = new NavMeshQueryFilter
+            {
+                agentTypeID = ctx.NavAgent.agentTypeID,
+                areaMask = NavMesh.AllAreas
+            };
+            if (ctx.AgentData != null && ctx.AgentData.filter.areaMask != 0)
+                navFilter = ctx.AgentData.filter;
 
-            //bool success = NavMesh.SamplePosition(
-            //    gameObject.transform.position, out NavMeshHit hit, 5f, navFilter);
+            bool success = NavMesh.SamplePosition(
+                gameObject.transform.position, out NavMeshHit hit, 5f, navFilter);
 
-            //if (success)
-            //{
-            //    transform.position = hit.position;
-            //    navAgent.Warp(hit.position);
-            //    navAgent.nextPosition = hit.position;
-            //    navAgent.ResetPath();
-            //    navAgent.isStopped = false;
+            if (success)
+            {
+                transform.position = hit.position;
+                navAgent.Warp(hit.position);
+                navAgent.nextPosition = hit.position;
+                navAgent.ResetPath();
+                navAgent.isStopped = false;
 
-            //    Rigidbody rb = ctx.Rigidbody;
-            //    if (rb != null)
-            //    {
-            //        if (!rb.isKinematic)
-            //        {
-            //            rb.linearVelocity = Vector3.zero;
-            //            rb.angularVelocity = Vector3.zero;
-            //        }
+                Rigidbody rb = ctx.Rigidbody;
+                if (rb != null)
+                {
+                    if (!rb.isKinematic)
+                    {
+                        rb.linearVelocity = Vector3.zero;
+                        rb.angularVelocity = Vector3.zero;
+                    }
 
-            //        rb.isKinematic = true;
-            //        rb.useGravity = false;
-            //        rb.position = hit.position;
-            //    }
+                    rb.isKinematic = true;
+                    rb.useGravity = false;
+                    rb.position = hit.position;
+                }
 
-            //    Debug.Log($"Successfully initialized a {MobName}");
-            //}
-            //else
-            //{
-            //    Debug.Log($"Failed to initialize a {MobName}");
-            //    Destroy(gameObject);
-            //}
+                Debug.Log($"Successfully initialized a {MobName}");
+            }
+            else
+            {
+                Debug.Log($"Failed to initialize a {MobName}");
+                Destroy(gameObject);
+            }
         }
 
         protected virtual void OnDrawGizmos()
         {
 #if UNITY_EDITOR
-            if (stateMachine == null) return;
+            if (stateMachine == null || stateMachine.CurrentState == null) return;
 
             Handles.Label(
                 transform.position + Vector3.up * 2f,

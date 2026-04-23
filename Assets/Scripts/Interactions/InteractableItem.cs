@@ -35,6 +35,10 @@ public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
         else
         {
             Debug.Log($"Item {itemInfo.itemName} picked up by interactor.");
+
+            // DEBUG
+            Debug.Log(OnItemPickUp == null ? "No APPLE listeners" : "APPLE Listeners found");
+
             OnItemPickUp?.Invoke(itemInfo, interactor);
             Destroy(this.gameObject); // Remove the item from the scene
         }

@@ -1,4 +1,5 @@
 using SIGGD.Mobs.StateMachine;
+using SIGGD.Mobs;
 using UnityEngine;
 
 /// <summary>
@@ -27,13 +28,15 @@ public class ApexApproachingState : IMobState
         if (apex.IsAtPosition(apex.TargetPosition))
         {
             apex.ApexLog("ApproachingState — reached alert position, switching to SearchingState.");
-            apex.StateMachine.ChangeState(apex.SearchingState);
+            //apex.StateMachine.ChangeState(apex.SearchingState);
+            apex.RoamingState.SetGuardPosition(apex.TargetPosition);
+            apex.StateMachine.ChangeState(apex.RoamingState);
         }
     }
 
     public void FixedUpdate()
     {
-        Vector3 dir = apex.GetSteeringTo(apex.TargetPosition);
+        Vector3 dir = apex.GetSteeringTo(apex.TargetPosition).dir;
         ctx.Movement.MoveTowards(dir, apex.ApproachSpeedMulti, 3f, false);
     }
 

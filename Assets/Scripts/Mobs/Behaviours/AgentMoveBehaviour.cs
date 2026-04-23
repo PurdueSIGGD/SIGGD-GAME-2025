@@ -87,7 +87,7 @@ namespace SIGGD.Mobs
             if (this.currentTarget == null)
                 return;
 
-            Vector3 desiredDirection = NavSteering.GetSteeringDirection(navMeshAgent, rb.position, currentTarget.Position, 0.1f);
+            Vector3 desiredDirection = NavSteering.GetSteeringDirection(navMeshAgent, rb.position, currentTarget.Position, 0.1f).dir;
             move.MoveTowards(desiredDirection, 1.0f, 3f);
 
         }

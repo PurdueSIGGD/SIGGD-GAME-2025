@@ -166,7 +166,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   navMeshAgent: {fileID: 2539169000592425732}
-  speed: 0
+  groundCheckPoint: {fileID: 0}
+  groundCheckSize: {x: 0.49, y: 0.3, z: 0.49}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &5879672453355403147
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,8 +196,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <hunger>k__BackingField: 40
-  foodCount: 0
   HungerConfig: {fileID: 11400000, guid: 1c2a12c7ad63f074d86a890f7c6116e6, type: 2}
+  hungerDamageContext:
+    attacker: {fileID: 0}
+    victim: {fileID: 0}
+    amount: 0
+    xxtraContext: 
   HealthManager: {fileID: 3961905274383774964}
 --- !u!114 &3961905274383774964
 MonoBehaviour:
@@ -207,8 +215,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56299dbcc5bc4f145a4dbbd3ea5bbecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 30
-  <CurrentHealth>k__BackingField: 0
+  maxHealth:
+    value: 100
 --- !u!95 &2486343355560632045
 Animator:
   serializedVersion: 7
@@ -249,7 +257,19 @@ MonoBehaviour:
   mobLayer:
     serializedVersion: 2
     m_Bits: 0
-  draw: 0
+  animator: {fileID: 0}
+  damageCollider: {fileID: 0}
+  damageContext:
+    attacker: {fileID: 0}
+    victim: {fileID: 0}
+    amount: 0
+    xxtraContext: 
+  lookTargetTransform: {fileID: 0}
+  forwardTransform: {fileID: 0}
+  aimTransform: {fileID: 0}
+  maxLookAngle: 90
+  targetT: 0
+  t: 0
 --- !u!114 &7202118053845586846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,7 +283,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <stamina>k__BackingField: 0
-  statConfig: {fileID: 11400000, guid: 1c2a12c7ad63f074d86a890f7c6116e6, type: 2}
+  stats: {fileID: 0}
+  energyLevel: 1
 --- !u!195 &2539169000592425732
 NavMeshAgent:
   m_ObjectHideFlags: 0
