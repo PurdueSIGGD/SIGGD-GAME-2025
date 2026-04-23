@@ -28,18 +28,12 @@ public class MusicManager : Singleton<MusicManager>
     private Coroutine pauseMusicRoutine;
     private Coroutine playMusicRoutine;
 
-    public enum MusicCycleState { Playing, FadingOut, FadingIn, NotPlaying, Combat}
+    public enum MusicCycleState { Playing, FadingOut, FadingIn, NotPlaying, Combat, Stopped}
 
-    [Header("Music Cycling System Variables")]
-    [SerializeField] private MusicCycleState currentState = MusicCycleState.Playing;
-    // the durations are in seconds
-    [SerializeField] private float playDuration = 180f;
-    [SerializeField] private float notPlayDuration = 60f;
-    [SerializeField] private float fadeDuration = 60f;
+    [SerializeField] private MusicCycleState curMusicState = MusicCycleState.NotPlaying;
 
     // set this to true whenever the player gets into combat
     private bool inCombat = false;
-    private Coroutine cycleStateRoutine;
 
 
     protected override void Awake()
@@ -95,6 +89,7 @@ public class MusicManager : Singleton<MusicManager>
         if (curTrack.isValid())
         {
             curTrack.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            curMusicState = MusicCycleState.Stopped;
         }
     }
 
@@ -139,17 +134,10 @@ public class MusicManager : Singleton<MusicManager>
     /// </summary>
     public void PauseMusic(bool allowFade)
     {
-        // check if its stopped and return if it is
-        /*
-        curTrack.getPlaybackState(out PLAYBACK_STATE state);
-        if (state != PLAYBACK_STATE.PLAYING)
-        {
-            return;
-        }*/
-
         curTrack.getPaused(out bool paused);
         if (paused == true)
         {
+            curMusicState = MusicCycleState.NotPlaying;
             return;
         }
 
@@ -158,6 +146,7 @@ public class MusicManager : Singleton<MusicManager>
         if (allowFade == false)
         {
             curTrack.setPaused(true);
+            curMusicState = MusicCycleState.NotPlaying;
             return;
         }
 
@@ -169,7 +158,7 @@ public class MusicManager : Singleton<MusicManager>
         // if we are already pausing the music no need to do it again
         if (pauseMusicRoutine == null)
         {
-            pauseMusicRoutine = StartCoroutine(fadeOutMusic());
+            pauseMusicRoutine = StartCoroutine(fadeOutMusic(5f));
         }
     }
 
@@ -184,6 +173,7 @@ public class MusicManager : Singleton<MusicManager>
         {
             Debug.Log("start cuz stopped");
             curTrack.start();
+            curMusicState = MusicCycleState.Playing;
         }
         else
         {
@@ -200,6 +190,7 @@ public class MusicManager : Singleton<MusicManager>
         if (allowFade == false)
         {
             curTrack.setPaused(false);
+            curMusicState = MusicCycleState.Playing;
             return;
         }
 
@@ -210,7 +201,7 @@ public class MusicManager : Singleton<MusicManager>
         }
         if (playMusicRoutine == null)
         {
-            StartCoroutine(fadeInMusic());
+            StartCoroutine(fadeInMusic(5f));
         }
     }
     /// <summary>
@@ -271,15 +262,17 @@ public class MusicManager : Singleton<MusicManager>
 
     private IEnumerator FadeCombatVolume()
     {
-        RuntimeManager.StudioSystem.getParameterByName("Combat Track Volume", out float vol);
+        RuntimeManager.StudioSystem.getParameterByName("Combat Track Volume", out float combatVol);
 
-        Debug.Log("vol is: " + vol);
-
-        if (vol < 0.5f)
+        if (combatVol < 0.5f)
         {
+            curMusicState = MusicCycleState.Combat;
+            // fade regular track volume to full volume when fading combat volume on
+            curTrack.getVolume(out float vol);
+            
             float duration = 2f;
 
-            float currentT = Mathf.Asin(vol) / (Mathf.PI * 0.5f);
+            float currentT = Mathf.Asin(combatVol) / (Mathf.PI * 0.5f);
             float curTime = currentT * duration;
 
             while (curTime < duration)
@@ -298,9 +291,10 @@ public class MusicManager : Singleton<MusicManager>
         }
         else
         {
+            curMusicState = MusicCycleState.Playing;
             float duration = 9f;
 
-            float currentT = Mathf.Acos(vol) / (Mathf.PI * 0.5f);
+            float currentT = Mathf.Acos(combatVol) / (Mathf.PI * 0.5f);
             float curTime = currentT * duration;
 
             while (curTime < duration)
@@ -375,6 +369,8 @@ public class MusicManager : Singleton<MusicManager>
     {
         key = key.ToLower();
 
+        curMusicState = MusicCycleState.NotPlaying;
+
         if (musicEventInstances.TryGetValue(key, out var eventInstance))
         {
             EventInstance tempInstance = eventInstance;
@@ -401,6 +397,7 @@ public class MusicManager : Singleton<MusicManager>
             {
                 curTrack = eventInstance;
                 curTrack.start();
+                curMusicState = MusicCycleState.Playing;
                 Debug.Log("cur track playing");
             }
             else
@@ -409,17 +406,17 @@ public class MusicManager : Singleton<MusicManager>
             }
         }
     }
-    private IEnumerator fadeInMusic()
+    private IEnumerator fadeInMusic(float duration)
     {
         curTrack.setPaused(false);
 
         curTrack.getVolume(out float vol);
 
         float curTime = Mathf.Asin(vol) / (Mathf.PI * 0.5f);
-        float duration = 9f;
 
         while (curTime < duration)
         {
+            curMusicState = MusicCycleState.FadingIn;
             curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
             float t = curTime / duration;
 
@@ -436,16 +433,18 @@ public class MusicManager : Singleton<MusicManager>
         curTrack.setVolume(1f);
 
         playMusicRoutine = null;
+
+        curMusicState = MusicCycleState.Playing;
     }
-    private IEnumerator fadeOutMusic()
+    private IEnumerator fadeOutMusic(float duration)
     {
         curTrack.getVolume(out float vol);
 
         float curTime = Mathf.Acos(vol) / (Mathf.PI * 0.5f);
-        float duration = 9f;
 
         while (curTime < duration)
         {
+            curMusicState = MusicCycleState.FadingOut;
             curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
             float t = curTime / duration;
 
@@ -464,6 +463,8 @@ public class MusicManager : Singleton<MusicManager>
         curTrack.setPaused(true);
 
         pauseMusicRoutine = null;
+
+        curMusicState = MusicCycleState.NotPlaying;
     }
 
     /// <summary>
@@ -497,9 +498,31 @@ public class MusicManager : Singleton<MusicManager>
     #endregion
 
     #region Music Fades During Gameplay
+    // this makes sure we can catch whenever the state is changing from combat to non combat and vice versa
     public void GameStateChanged()
     {
+        GameStateManager.GameState gameState = GameStateManager.Instance.getGameState();
 
+        RuntimeManager.StudioSystem.getParameterByName("Combat Track Volume", out float combatVol);
+
+        // check game state to see if we are changing to peaceful or combat or apex combat
+        if (gameState == GameStateManager.GameState.PEACEFUL)
+        {
+            // state changed and now its peaceful
+            ToggleComabatVolume();
+            curMusicState = MusicCycleState.Playing;
+        }
+        else if (gameState == GameStateManager.GameState.PURSUED)
+        {
+            ToggleComabatVolume();
+            curMusicState = MusicCycleState.Combat;
+        }
+        else if (gameState == GameStateManager.GameState.PURSUED_BY_APEX)
+        {
+            // toggle combat volume if its not on already
+            curMusicState = MusicCycleState.Combat;
+            // turn on apex music depending on which encounter it is????
+        }
     }
     #endregion
 }

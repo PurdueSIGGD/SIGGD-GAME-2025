@@ -97,18 +97,7 @@ public class GameStateManager : Singleton<GameStateManager>
 
         if (currentState != prevState)
         {
-            if (currentState == GameState.PEACEFUL)
-            {
-                MusicManager.Instance.GameStateChanged();
-            }
-            else if (currentState == GameState.PURSUED)
-            {
-                MusicManager.Instance.GameStateChanged();
-            }
-            else if (currentState == GameState.PURSUED_BY_APEX)
-            {
-                MusicManager.Instance.GameStateChanged();
-            }
+            MusicManager.Instance.GameStateChanged();
         }
 
         return true;
