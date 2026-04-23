@@ -22,6 +22,10 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector] public Rigidbody rb;
 
+    private int footstepWaitCount = 5;
+    private int footstepSprintWaitCount;
+    private int footstepDelayCount = 0;
+
     #region Movement Attributes
     private bool IsMoving => PlayerID.Instance.stateMachine.IsMoving;
     public bool IsClimbing => PlayerID.Instance.stateMachine.IsClimbing;
@@ -56,6 +60,7 @@ public class PlayerMovement : MonoBehaviour
         psm = PlayerID.Instance.stateMachine;
         speedMultiplier = 1f;
 
+        footstepSprintWaitCount = 0;// use default footstep sound timing for sprinting
         // Set footstep sound to LabFootsteps if it is one of the prologue scenes
         foreach (string scene in labScenes) {
             if (SceneManager.GetActiveScene().name == scene) {
@@ -63,6 +68,8 @@ public class PlayerMovement : MonoBehaviour
                 jumpSound = "LabJump";
                 playerLandSound = "LabLandFromJump";
                 playerHeavyLandSound = "LabLandFromJump";
+                footstepWaitCount *= 2; // double wait count for lab footsteps since they are shorter
+                footstepSprintWaitCount = footstepWaitCount / 2;
                 return;
             }
         }
@@ -233,12 +240,10 @@ public class PlayerMovement : MonoBehaviour
         {
             // Don't play footsteps if player jumps or lands for 5 times
             if (wasFalling > 0) {
-                UnityEngine.Debug.Log("blocked footstep sound from falling");
                 wasFalling--;
                 return;
             }
             if (justJumped > 0) {
-                UnityEngine.Debug.Log("blocked footstep sound from jumping");
                 justJumped--;
                 return;
             }
@@ -249,11 +254,24 @@ public class PlayerMovement : MonoBehaviour
 
             PLAYBACK_STATE playbackState;
             footsteps.getPlaybackState(out playbackState);
-
             if (playbackState.Equals(PLAYBACK_STATE.STOPPED))
             {
-                UnityEngine.Debug.Log("Playing footstep");
-                footsteps.start();
+                if (footstepDelayCount > 0)
+                {
+                    footstepDelayCount--;
+                }
+                else {
+                    footsteps.start();
+                    if (isSprinting)
+                    {
+                        footstepDelayCount = footstepSprintWaitCount;
+                    }
+                    else
+                    {
+                        footstepDelayCount = footstepWaitCount;
+                    }
+                }
+                
             }
         }
         else
@@ -263,11 +281,9 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void SetWasFalling() {
-        UnityEngine.Debug.Log("Setting was falling");
         wasFalling = 5;
     }
     public void SetJustJumped() {
-        UnityEngine.Debug.Log("Setting just jumped");
         justJumped = 5;
     }
 
@@ -282,7 +298,9 @@ public class PlayerMovement : MonoBehaviour
         jumpSound = "PlayerJump";
         playerLandSound = "PlayerLand";
         playerHeavyLandSound = "PlayerLandHeavy";
-}
+        footstepWaitCount /= 2; // divide by 2 to reset
+        footstepSprintWaitCount = 0;
+    }
 
     #endregion
 }

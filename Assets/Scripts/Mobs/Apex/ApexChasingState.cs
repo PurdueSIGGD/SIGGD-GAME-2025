@@ -30,7 +30,7 @@ public class ApexChasingState : IMobState
     public void SetTarget(ApexTarget apexTarget)
     {
         target = apexTarget;
-        if (apexTarget.gameObject == PlayerID.Instance.gameObject) {
+        if (apexTarget.gameObject == PlayerID.Instance.gameObject && PlayerID.Instance.IsAlive) {
             chasingPlayer = true;
             GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PURSUED_BY_APEX, apex.gameObject);
         }
@@ -51,7 +51,7 @@ public class ApexChasingState : IMobState
 
     public void Update()
     {
-        if (target == null)
+        if (target == null || (chasingPlayer && !PlayerID.Instance.IsAlive))
         {
             apex.ApexLog($"ChasingState — target lost/destroyed, switching to RoamingState around {lastKnownPosition}.");
             if (chasingPlayer) {
