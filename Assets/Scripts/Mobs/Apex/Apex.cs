@@ -26,12 +26,6 @@ public class Apex : MobBrainBase
 
     #endregion
 
-    #region Sound References
-    private readonly static string apexDamagePlayerSound = "ApexOnDamagePlayer";
-    private readonly string apexOnNoticePlayerSound = "ApexOnNotice";
-
-    #endregion
-
     #region Movement Settings
 
     [Header("Apex Movement")]
@@ -52,7 +46,7 @@ public class Apex : MobBrainBase
     [Tooltip("Radius around the current guard position in which roam targets are picked.")]
     [SerializeField, MinMaxSlider(0f, 100f)] private Vector2 roamRadius = new Vector2(10f, 90f);
     [Tooltip("How long the Apex stays at a roam point before picking a new one.")]
-    [SerializeField] private float roamPauseDuration = 2f;
+    [SerializeField, MinMaxSlider(0, 20)] private Vector2 roamPauseDuration = new(2, 6);
     [Tooltip("How long the Apex roams before switching back to searching.")]
     [SerializeField] private float roamDuration = 8f;
 
@@ -106,7 +100,7 @@ public class Apex : MobBrainBase
     public float RoamSpeedMulti => roamSpeedMulti;
     public float ChaseSpeedMulti => chaseSpeedMulti;
     public Vector2 RoamRadius => roamRadius;
-    public float RoamPauseDuration => roamPauseDuration;
+    public Vector2 RoamPauseDuration => roamPauseDuration;
     public float RoamDuration => roamDuration;
     public float HeadSweepAngle => headSweepAngle;
     public float HeadSweepDuration => headSweepDuration;
@@ -132,7 +126,7 @@ public class Apex : MobBrainBase
     #region Apex States
 
     //private ApexApproachingState approachingState;
-    private ApexSearchingState searchingState;
+    //private ApexSearchingState searchingState;
     private ApexRoamingState roamingState;
     private ApexChasingState chasingState;
     private ApexAttackingState attackingState;
@@ -140,7 +134,7 @@ public class Apex : MobBrainBase
     private MoggingState moggingState;
 
     //public ApexApproachingState ApproachingState => approachingState;
-    public ApexSearchingState SearchingState => searchingState;
+    //public ApexSearchingState SearchingState => searchingState;
     public ApexRoamingState RoamingState => roamingState;
     public ApexChasingState ChasingState => chasingState;
     public ApexAttackingState AttackingState => attackingState;
@@ -153,7 +147,8 @@ public class Apex : MobBrainBase
 
     protected override string MobName => "Apex";
 
-    
+    private readonly string apexOnNoticePlayerSound = "ApexOnNotice";
+    private static readonly string apexLosePlayerSound = "ApexOnLosePlayer";
 
     protected override MobContext BuildContext()
     {
@@ -174,7 +169,7 @@ public class Apex : MobBrainBase
     protected override void InitializeStates()
     {
         //approachingState = new ApexApproachingState(this);
-        searchingState = new ApexSearchingState(this);
+        //searchingState = new ApexSearchingState(this);
         roamingState = new ApexRoamingState(this);
         chasingState = new ApexChasingState(this);
         attackingState = new ApexAttackingState(this);
@@ -221,7 +216,7 @@ public class Apex : MobBrainBase
         if (lineOfSight != null && lineOfSight.VisibleTarget != null)
         {
             var current = stateMachine.CurrentState;
-            if (current is not ApexChasingState && current is not ApexAttackingState && PlayerID.Instance.playerHealth.CurrentHealth > 0)
+            if (current is not ApexChasingState && current is not ApexAttackingState)
             {
                 ApexLog($"EvaluateTransitions — spotted '{lineOfSight.VisibleTarget.gameObject.name}', switching to ChasingState.");
                 chasingState.SetTarget(lineOfSight.VisibleTarget);
@@ -336,12 +331,28 @@ public class Apex : MobBrainBase
             dmgCtx.attacker = gameObject;
             dmgCtx.victim = col.gameObject;
             dmgCtx.amount = health.MaxHealth;
-            if (dmgCtx.victim == PlayerID.Instance.gameObject && dmgCtx.amount > 0 && PlayerID.Instance.playerHealth.CurrentHealth > 0)
-            {
-                AudioManager.Instance.PlayOneShotNoAsync(apexDamagePlayerSound, PlayerID.Instance.gameObject.transform.position);
-            }
             health.TakeDamage(dmgCtx);
             ApexLog($"Attacked {col.gameObject.name} for {dmgCtx.amount} damage.");
+        }
+    }
+
+    public void OnDeathLoseAggro(DamageContext context)
+    {
+        if (context.victim == PlayerID.Instance.gameObject && context.attacker == gameObject)
+        {
+            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, PlayerID.Instance.gameObject);
+            if (stateMachine.CurrentState is ApexChasingState)
+            {
+                ChasingState.SetTarget(null);
+                ChasingState.chasingPlayer = false;
+                RoamingState.SetGuardPosition(transform.position);
+                stateMachine.ChangeState(RoamingState);
+            }
+            if (stateMachine.CurrentState is ApexAttackingState)
+            {
+                RoamingState.SetGuardPosition(transform.position);
+                stateMachine.ChangeState(RoamingState);
+            }
         }
     }
 
@@ -376,6 +387,16 @@ public class Apex : MobBrainBase
     {
         base.Update();
         UpdateAnimParam();
+    }
+
+    private void OnEnable()
+    {
+        EntityHealthManager.OnDeath += OnDeathLoseAggro;
+    }
+
+    private void OnDisable()
+    {
+        EntityHealthManager.OnDeath -= OnDeathLoseAggro;
     }
 
     #endregion

@@ -36,7 +36,9 @@ public class ApexInvestigateState : IMobState
         if (!hasTarget)
         {
             apex.ApexLog("InvestigateState - entered without a target, switching to SearchingState.");
-            apex.StateMachine.ChangeState(apex.SearchingState);
+            //apex.StateMachine.ChangeState(apex.SearchingState);
+            apex.RoamingState.SetGuardPosition(apex.transform.position);
+            apex.StateMachine.ChangeState(apex.RoamingState);
             return;
         }
 
@@ -51,7 +53,8 @@ public class ApexInvestigateState : IMobState
         {
             apex.ApexLog("InvestigateState - arrived at investigate point, switching to SearchingState.");
             hasTarget = false;
-            apex.StateMachine.ChangeState(apex.SearchingState);
+            apex.RoamingState.SetGuardPosition(apex.transform.position);
+            apex.StateMachine.ChangeState(apex.RoamingState);
         }
     }
 

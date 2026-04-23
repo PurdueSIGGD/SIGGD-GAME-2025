@@ -16,7 +16,7 @@ public class ApexChasingState : IMobState
     private ApexTarget target;
     private Vector3 lastKnownPosition;
 
-    private bool chasingPlayer;
+    public bool chasingPlayer;
 
     private static readonly string apexLosePlayerSound = "ApexOnLosePlayer";
 

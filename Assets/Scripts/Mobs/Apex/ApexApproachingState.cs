@@ -28,7 +28,9 @@ public class ApexApproachingState : IMobState
         if (apex.IsAtPosition(apex.TargetPosition))
         {
             apex.ApexLog("ApproachingState — reached alert position, switching to SearchingState.");
-            apex.StateMachine.ChangeState(apex.SearchingState);
+            //apex.StateMachine.ChangeState(apex.SearchingState);
+            apex.RoamingState.SetGuardPosition(apex.TargetPosition);
+            apex.StateMachine.ChangeState(apex.RoamingState);
         }
     }
 
