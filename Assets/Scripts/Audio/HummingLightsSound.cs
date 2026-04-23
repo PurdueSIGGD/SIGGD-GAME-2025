@@ -1,18 +1,41 @@
+using FMOD;
 using FMOD.Studio;
 using FMODUnity;
+using System.Collections;
 using UnityEngine;
 
 public class HummingLightsSound : MonoBehaviour
 {
     private static readonly string hummingLightSound = "HummingLights";
     EventInstance lightSound;
-    void Start()
+    IEnumerator Start()
     {
+        while (!FMODEvents.Instance.Initialized)
+        {
+            yield return null;
+        }
         var eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(hummingLightSound);
-
+        if (eventRef.IsNull)
+        {
+            UnityEngine.Debug.LogError("FMOD event is null: " + hummingLightSound);
+            yield break;
+        }
         lightSound = RuntimeManager.CreateInstance(eventRef);
-        Debug.Log("Playing light sound");
+        lightSound.set3DAttributes(
+            RuntimeUtils.To3DAttributes(PlayerID.Instance.transform)
+        );
+        RuntimeManager.AttachInstanceToGameObject(
+            lightSound,
+            PlayerID.Instance.transform,
+            PlayerID.Instance.GetComponent<Rigidbody>()
+        );
+        UnityEngine.Debug.Log("Playing light sound");
         lightSound.start();
+    }
+
+    private void Update()
+    {
+        
     }
 
     void OnDestroy()

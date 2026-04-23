@@ -110,18 +110,6 @@ public class AudioManager : Singleton<AudioManager>
         return instance;
     }
 
-    public EventInstance PlayLoop(string name)
-    {
-        name = name.ToLower();
-
-        EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
-        if (eventRef.IsNull) return default;
-
-        EventInstance instance = RuntimeManager.CreateInstance(eventRef);
-        instance.start();
-        return instance;
-    }
-
     /// <summary>
     /// When you want a sound to play continuously until it's told to stop
     /// IMPORTANT: EventInstances must be freed via eventInstance.release after it has finished playing

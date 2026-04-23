@@ -153,15 +153,12 @@ public class PlayerFallDamage : MonoBehaviour
             if (wasFalling == false && rb.linearVelocity.y < 0)
             {
                 wasFalling = true;
+                PlayerID.Instance.playerMovement.SetWasFalling();
                 timeFalling = 0;
                 lastVerticalVelocity = 0;
             }
             timeFalling += Time.deltaTime;
             lastVerticalVelocity = Mathf.Abs(Mathf.Min(rb.linearVelocity.y, 0));
         }
-    }
-
-    public bool checkWasFalling() {
-        return wasFalling;
     }
 }

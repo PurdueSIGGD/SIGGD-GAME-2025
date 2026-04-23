@@ -28,8 +28,6 @@ public class PlayerMovement : MonoBehaviour
 
     public float speedMultiplier;
 
-    private PlayerFallDamage fallDamage;
-
     #endregion
 
     #region Check Attributes
@@ -46,6 +44,9 @@ public class PlayerMovement : MonoBehaviour
     private bool isFalling;
     public bool canMove = true;
 
+    private int wasFalling;
+    private int justJumped;
+
     #endregion
 
     private void Start()
@@ -53,7 +54,6 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>(); 
         rb = GetComponent<Rigidbody>();
         psm = PlayerID.Instance.stateMachine;
-        fallDamage = PlayerID.Instance.GetComponent<PlayerFallDamage>();
         speedMultiplier = 1f;
 
         // Set footstep sound to LabFootsteps if it is one of the prologue scenes
@@ -181,6 +181,7 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = rb.linearVelocity.SetY(0);
         rb.AddForce(Vector3.up * force, ForceMode.Impulse);
         GetComponent<PlayerStamina>().StaminaJump();  // decrease stamina
+        SetJustJumped();
         AudioManager.Instance.PlayOneShotNoAsync(jumpSound, PlayerID.Instance.gameObject.transform.position);
     }
 
@@ -228,8 +229,19 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateFootstepSound()
     {
-        if ((rb.linearVelocity.magnitude >= 1) && (isGrounded) && (!fallDamage.checkWasFalling()))
+        if ((rb.linearVelocity.magnitude >= 1) && (isGrounded))
         {
+            // Don't play footsteps if player jumps or lands for 5 times
+            if (wasFalling > 0) {
+                UnityEngine.Debug.Log("blocked footstep sound from falling");
+                wasFalling--;
+                return;
+            }
+            if (justJumped > 0) {
+                UnityEngine.Debug.Log("blocked footstep sound from jumping");
+                justJumped--;
+                return;
+            }
             // NOTE: 3d attributes need to be set in order to play instances in 3d
             //ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, rb.transform.up);
             ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(rb.position, rb.linearVelocity, transform.forward, Vector3.up);
@@ -248,6 +260,15 @@ public class PlayerMovement : MonoBehaviour
         {
             footsteps.stop(STOP_MODE.ALLOWFADEOUT);
         }
+    }
+
+    public void SetWasFalling() {
+        UnityEngine.Debug.Log("Setting was falling");
+        wasFalling = 5;
+    }
+    public void SetJustJumped() {
+        UnityEngine.Debug.Log("Setting just jumped");
+        justJumped = 5;
     }
 
     /**

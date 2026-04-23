@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.ProBuilder.Shapes;
 public class InteractDoor : MonoBehaviour, IInteractable<IInteractor>
 {
     public Action<ItemInfo, IInteractor> OnItemInteract;
@@ -9,7 +10,7 @@ public class InteractDoor : MonoBehaviour, IInteractable<IInteractor>
     private Animator animator;
     private MeshCollider[] colliders;
 
-    private static readonly string openDoorSound = "SpaceDoor";
+    private static readonly string openDoorSound = "HeavySpaceDoorOpen";
     
     public void Start()
     {
