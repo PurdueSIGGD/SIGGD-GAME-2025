@@ -28,8 +28,19 @@ public class MusicManager : Singleton<MusicManager>
     private Coroutine pauseMusicRoutine;
     private Coroutine playMusicRoutine;
 
+    public enum MusicCycleState { Playing, FadingOut, FadingIn, NotPlaying, Combat}
+
+    [Header("Music Cycling System Variables")]
+    [SerializeField] private MusicCycleState currentState = MusicCycleState.Playing;
+    // the durations are in seconds
+    [SerializeField] private float playDuration = 180f;
+    [SerializeField] private float notPlayDuration = 60f;
+    [SerializeField] private float fadeDuration = 60f;
+
     // set this to true whenever the player gets into combat
-    public bool inCombat = false;
+    private bool inCombat = false;
+    private Coroutine cycleStateRoutine;
+
 
     protected override void Awake()
     {
@@ -67,7 +78,7 @@ public class MusicManager : Singleton<MusicManager>
         base.OnDestroy();
     }
 
-    #region Scene Management
+    #region Scene Management and Game State Management
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -77,7 +88,7 @@ public class MusicManager : Singleton<MusicManager>
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-
+           
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // Stop the current track so we don't have overlapping music
@@ -86,6 +97,7 @@ public class MusicManager : Singleton<MusicManager>
             curTrack.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         }
     }
+
     #endregion
 
     #region Public Methods
@@ -454,6 +466,9 @@ public class MusicManager : Singleton<MusicManager>
         pauseMusicRoutine = null;
     }
 
+    /// <summary>
+    /// This corutine smoothly changes track volume over a given amount of seconds
+    /// </summary>
     private IEnumerator FadeTrackVolume(float targetVolume, float duration)
     {
         curTrack.getVolume(out float startVol);
@@ -482,10 +497,9 @@ public class MusicManager : Singleton<MusicManager>
     #endregion
 
     #region Music Fades During Gameplay
+    public void GameStateChanged()
+    {
 
-
-
-
-
+    }
     #endregion
 }

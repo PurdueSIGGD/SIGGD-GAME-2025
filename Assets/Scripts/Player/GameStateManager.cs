@@ -43,6 +43,7 @@ public class GameStateManager : Singleton<GameStateManager>
     /// <returns></returns>
     public bool attemptSetState(GameState state, GameObject initiator)
     {
+        GameState prevState = currentState;
         // A way to keep track of all the pursuers
 
         switch (state)
@@ -92,6 +93,22 @@ public class GameStateManager : Singleton<GameStateManager>
 #endif
                 }
                 break;
+        }
+
+        if (currentState != prevState)
+        {
+            if (currentState == GameState.PEACEFUL)
+            {
+                MusicManager.Instance.GameStateChanged();
+            }
+            else if (currentState == GameState.PURSUED)
+            {
+                MusicManager.Instance.GameStateChanged();
+            }
+            else if (currentState == GameState.PURSUED_BY_APEX)
+            {
+                MusicManager.Instance.GameStateChanged();
+            }
         }
 
         return true;
