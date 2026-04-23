@@ -78,10 +78,10 @@ public class MusicManager : Singleton<MusicManager>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // Stop the current track so we don't have overlapping music
-        /*if (curTrack.isValid())
+        if (curTrack.isValid())
         {
             curTrack.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        }*/
+        }
     }
     #endregion
 
@@ -115,6 +115,7 @@ public class MusicManager : Singleton<MusicManager>
     /// </summary>
     public void SetCurTrack(string key)
     {
+        Debug.Log("Cur Track is " + key);
         curTrack = InitalizeMusicNotStart(key);
     }
 
@@ -124,8 +125,15 @@ public class MusicManager : Singleton<MusicManager>
     public void PauseMusic(bool allowFade)
     {
         // check if its stopped and return if it is
+        /*
         curTrack.getPlaybackState(out PLAYBACK_STATE state);
         if (state != PLAYBACK_STATE.PLAYING)
+        {
+            return;
+        }*/
+
+        curTrack.getPaused(out bool paused);
+        if (paused == true)
         {
             return;
         }
@@ -155,11 +163,21 @@ public class MusicManager : Singleton<MusicManager>
     /// </summary>
     public void PlayMusic(bool allowFade)
     {
-        // check if its playing and return if it is
+        Debug.Log("in play music");
         curTrack.getPlaybackState(out PLAYBACK_STATE state);
-        if (state == PLAYBACK_STATE.PLAYING)
+        if (state != PLAYBACK_STATE.PLAYING)
         {
-            return;
+            Debug.Log("start cuz stopped");
+            curTrack.start();
+        }
+        else
+        {
+            curTrack.getPaused(out bool paused);
+            if (paused == false)
+            {
+                Debug.Log("return cuz not paused");
+                return;
+            }
         }
 
         Debug.Log("PlayMusic");
