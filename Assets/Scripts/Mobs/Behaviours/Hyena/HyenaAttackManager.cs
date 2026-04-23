@@ -19,6 +19,9 @@ namespace SIGGD.Mobs.Hyena
         private TransformTarget currentTarget;
         private Coroutine attackRoutine;
 
+        private readonly string windUpFMODName = "HyenaOnWindUp";
+        private readonly string attackFMODName = "HyenaOnAttack";
+
 
         private void Awake()
         {
@@ -73,10 +76,13 @@ namespace SIGGD.Mobs.Hyena
             if (hyenaCirclingBehaviour == null || hyenaLungeBehaviour == null || animatorController == null)
                 yield break;
             StartCoroutine(hyenaCirclingBehaviour.CircleLoop(target));
+            AudioManager.Instance.PlayOneShotNoAsync(windUpFMODName, transform.position);
             yield return new WaitUntil(() => hyenaCirclingBehaviour.finished || hyenaCirclingBehaviour.exit);
             if (hyenaCirclingBehaviour.exit) yield break; // stop sequence
             StartCoroutine(hyenaLungeBehaviour.Lunge(target));
             animatorController.SetLungeModel(); // set hyena model
+            Debug.Log("Playing hyena attack sound");
+            AudioManager.Instance.PlayOneShotNoAsync(attackFMODName, transform.position);
             yield return new WaitUntil(() => hyenaLungeBehaviour.lungeArriving || hyenaLungeBehaviour.exit);
             if (hyenaLungeBehaviour.exit) yield break; // stop sequence
             Debug.Log($"{gameObject.name} has begun attack animation");

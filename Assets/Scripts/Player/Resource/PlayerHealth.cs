@@ -21,5 +21,6 @@ public class PlayerHealth : MonoBehaviour
         if (context.victim != PlayerID.Instance.gameObject) return;
         if (context.amount <= 0) return;
         SpecialEffects.VignetteEffect(damagePulseIntensity, duration);
+        PlayerID.Instance.playerHUD.TriggerHUDEvent();
     }
 }

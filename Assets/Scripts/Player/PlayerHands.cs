@@ -82,11 +82,11 @@ public class PlayerHands : MonoBehaviour
 
     void Start()
     {
-        SetOverrideController();
-
         // retrieve essential objects
         UpdateClimbScript();
         UpdateHandAnimator();
+
+        SetOverrideController();
 
         // show the hands
         ToggleLeftArm(CONFIG_ShowLeftHand);

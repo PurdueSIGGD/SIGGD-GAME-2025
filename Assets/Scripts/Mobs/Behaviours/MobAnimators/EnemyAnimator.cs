@@ -25,9 +25,16 @@ public class EnemyAnimator : MonoBehaviour
     [SerializeField]
     private Transform aimTransform;
 
+    [SerializeField]
+    private float maxLookAngle = 90f;
+
     public float targetT = 0f;
     Vector3 vel;
     public float t;
+
+    private readonly string hyenaDamagedSound = "HyenaOnDamage";
+    private readonly string hyenaDamagePlayerSound = "HyenaOnDamagePlayer";
+    private readonly string hyenaDeathSound = "HyenaOnSlain";
 
     private void Start()
     {
@@ -36,11 +43,37 @@ public class EnemyAnimator : MonoBehaviour
         if (aimTransform != null || forwardTransform != null)
             aimTransform.position = forwardTransform.position;
     }
+
+    private void OnEnable()
+    {
+        EntityHealthManager.OnHealthChanged += HandleDamage;
+        EntityHealthManager.OnDeath += HandleDeath;
+    }
+
+    private void OnDisable()
+    {
+        EntityHealthManager.OnHealthChanged -= HandleDamage;
+        EntityHealthManager.OnDeath -= HandleDeath;
+    }
+
     void LateUpdate()
     {
         if (!aimTransform || !forwardTransform) return;
 
-        t = Mathf.MoveTowards(t, targetT, 6f * Time.deltaTime);
+        float currentTargetT = targetT;
+
+        if (lookTargetTransform != null)
+        {
+            Vector3 dirToTarget = (lookTargetTransform.position - transform.position).normalized;
+            float angle = Vector3.Angle(transform.forward, dirToTarget);
+
+            if (angle > maxLookAngle)
+            {
+                currentTargetT = 0f;
+            }
+        }
+
+        t = Mathf.MoveTowards(t, currentTargetT, 6f * Time.deltaTime);
 
         Vector3 forwardPos = forwardTransform.position;
         Vector3 targetPos = (lookTargetTransform != null) ? lookTargetTransform.position : forwardPos;
@@ -49,11 +82,43 @@ public class EnemyAnimator : MonoBehaviour
 
         aimTransform.position = Vector3.SmoothDamp(aimTransform.position, desired, ref vel, 0.08f, Mathf.Infinity, Time.deltaTime);
     }
+
+    private void HandleDamage(DamageContext ctx)
+    {
+        if (ctx.amount > 0)
+        {
+            Debug.Log($"handling damage... {ctx.attacker} {ctx.attacker == gameObject} {ctx.victim} {ctx.victim == PlayerID.Instance.gameObject} {ctx.amount}");
+        }
+        if (ctx.victim == gameObject && ctx.amount > 0)
+        {
+            Debug.Log("playing hyena damage sound");
+            AudioManager.Instance.PlayOneShotNoAsync(hyenaDamagedSound, transform.position);
+
+        }
+        else if (ctx.attacker == gameObject && ctx.victim == PlayerID.Instance.gameObject && ctx.amount > 0)
+        {
+            Debug.Log("playing player taking damage from hyena sound");
+            AudioManager.Instance.PlayOneShotNoAsync(hyenaDamagePlayerSound, PlayerID.Instance.gameObject.transform.position);
+
+        }
+    }
+
+    private void HandleDeath(DamageContext ctx)
+    {
+        if (ctx.victim == gameObject)
+        {
+            AudioManager.Instance.PlayOneShotNoAsync(hyenaDeathSound, transform.position);
+        }
+    }
+
     public void SetLook(bool look)
     {
         targetT = look ? 1f : 0f;
     }
-    public void PlayAttack() => animator.SetBool("Attack", true);
+    public void PlayAttack()
+    {
+        animator.SetBool("Attack", true);
+    }
     public void EndAttack()
     {
         animator.SetBool("Attack", false);
@@ -113,6 +178,7 @@ public class EnemyAnimator : MonoBehaviour
         if (hm != null)
         {
             if (other.CompareTag("Predator")) return;
+            damageContext.attacker = gameObject;
             damageContext.victim = hm.gameObject;
             hm.TakeDamage(damageContext);
         }

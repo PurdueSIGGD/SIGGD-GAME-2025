@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using FMODUnity;
 using FMOD.Studio;
 using FMOD;
+using Debug = UnityEngine.Debug;
 
 public class AudioLogManager : MonoBehaviour
 {
@@ -12,6 +14,7 @@ public class AudioLogManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI subtitles;
     private Coroutine lastStarted = null;
 
+    [SerializeField] private Animator anim;
     public static AudioLogManager Instance { get; set; }
 
     private EventInstance logSoundEvent;
@@ -24,7 +27,7 @@ public class AudioLogManager : MonoBehaviour
     private Dictionary<string, AudioLogObject> audioNameToLogs = new();
     [HideInInspector] public List<string> names = new List<string>();
 
-
+    //private float total_time = 0.0f; // to un cumulative the time stamps as we play them
     void Awake()
     {
         if (Instance != null)
@@ -35,7 +38,24 @@ public class AudioLogManager : MonoBehaviour
         Instance = this;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (isPlaying)
+        {
+            StopCurrentAudio();
+        }
+    }
+
     void Start()
     {
         foreach (var log in logs)
@@ -56,65 +76,77 @@ public class AudioLogManager : MonoBehaviour
 
     private IEnumerator StartSubtitles(AudioLogObject curAudio)
     {
+        if (logSoundEvent.isValid())
+        {
+            logSoundEvent.start();
+        }
+
+        float lastTime = 0;
+
         subtitles.enabled = true;
+        bool prevWasFromRadio = false;
+        bool prevWasIntoRadio = false;
 
         foreach (var line in curAudio.subtitles)
         {
-            // if the line has a % then it is from a radio so set effects to radio effects
-            if (line.isFromRadio == true)
+            // plays the activate noise for the radio based on if the prev is different from the cur and if its to or from
+            if (line.isFromRadio && !prevWasFromRadio)
             {
-                RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 1);
+                logSoundEvent.setPaused(true);
+                subtitles.enabled = false;
+                AudioManager.Instance.PlayOneShot("radioactivatelong", curPlayer.transform.position);
+                yield return new WaitForSeconds(2.0f);
+                logSoundEvent.setPaused(false);
+                subtitles.enabled = true;
             }
-            else
+            else if (line.isIntoRadio && !prevWasIntoRadio)
             {
-                RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
+                logSoundEvent.setPaused(true);
+                subtitles.enabled = false;
+                AudioManager.Instance.PlayOneShot("radioactivate", curPlayer.transform.position);
+                yield return new WaitForSeconds(0.6f);
+                logSoundEvent.setPaused(false);
+                subtitles.enabled = true;
             }
+
+            // put away radio and play deactivate noise logic
+            if ((prevWasFromRadio || prevWasIntoRadio) && (!line.isFromRadio && !line.isIntoRadio))
+            {
+                logSoundEvent.setPaused(true);
+                subtitles.enabled = false;
+                AudioManager.Instance.PlayOneShot("radiodeactivate", curPlayer.transform.position);
+                yield return new WaitForSeconds(0.75f);
+                logSoundEvent.setPaused(false);
+                subtitles.enabled = true;
+            }
+
+            anim.SetBool("LeftVisible", line.isFromRadio || line.isIntoRadio);
+            if (line.isFromRadio || line.isIntoRadio)
+            {
+                anim.Play("PlayerHand_Left_Idle");
+            }
+
+            RuntimeManager.StudioSystem.setParameterByName("RadioVoice", line.isFromRadio ? 1 : 0);
 
             subtitles.text = line.line;
-            yield return new WaitForSeconds(line.seconds);
-        }
-        subtitles.enabled = false;
-        lastStarted = null;
-        isPlaying = false;
-        curPlayer = null;
 
-        logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        logSoundEvent.release();
+            prevWasFromRadio = line.isFromRadio;
+            prevWasIntoRadio = line.isIntoRadio;
+
+            yield return new WaitForSeconds(line.seconds - lastTime);
+            lastTime = line.seconds;
+        }
+
+        if (prevWasIntoRadio || prevWasFromRadio)
+        {
+            AudioManager.Instance.PlayOneShot("radiodeactivate", curPlayer.transform.position);
+            subtitles.enabled = false;
+            yield return new WaitForSeconds(0.75f);
+            subtitles.enabled = true;
+        }
+
+        StopCurrentAudio();
     }
-
-    /*
-    // deprecated use the other PlayAudioLog
-    public void PlayAudioLog(string audioName) // using a full game object because we need access to the rigidbody on the player
-    {
-        GameObject player = PlayerID.Instance.gameObject;
-        // the most recently called audio log will take priority over the ones called before it 
-        if (lastStarted != null)
-        {
-            StopCoroutine(lastStarted);
-            StopCurrentAudio();
-        }
-
-        if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
-        {
-            UnityEngine.Debug.Log("Playing audio log: " + audioName);
-
-            curPlayer = player;
-            isPlaying = true;
-            playerRb = curPlayer.GetComponent<Rigidbody>();
-
-            // now that isPlaying is true and logSoundEvent exists the 3d attributes will be getting updated and we can start the event
-            AudioManager.Instance.PlayOneShot(audioName);
-
-            lastStarted = StartCoroutine(StartSubtitles(foundAudio));
-
-            //StartCoroutine(endAudioWhenDone());
-        }
-        else
-        {
-            UnityEngine.Debug.Log("Audio name not in dictionarty: " + audioName);
-        }
-    }
-    */
 
     public void PlayAudioLog(string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
     {
@@ -127,6 +159,8 @@ public class AudioLogManager : MonoBehaviour
 
         if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
         {
+            // SIMON PLEASE
+            // WHYYYY
             curPlayer = player;
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
@@ -139,34 +173,17 @@ public class AudioLogManager : MonoBehaviour
                 logSoundEvent = RuntimeManager.CreateInstance(eventRef);
             }
 
-            logSoundEvent.start();
-
             lastStarted = StartCoroutine(StartSubtitles(foundAudio));
+
+            // DEBUG
+            UnityEngine.Debug.Log("Audio Played");
+
         }
         else
         {
-            UnityEngine.Debug.LogWarning("Audio name not in dictionarty: " + audioName);
+            Debug.LogWarning("Audio name not in dictionarty: " + audioName);
         }
     }
-
-    /*
-    // this will end the audio naturally once the clip is done playing if its not interrupted
-    private IEnumerator endAudioWhenDone()
-    {
-        PLAYBACK_STATE state;
-
-        // for out current testing this wont work because footsteps doesnt end it just loops but this should work for more real events that we'll implement
-        logSoundEvent.getPlaybackState(out state);
-        while (state != PLAYBACK_STATE.STOPPED)
-        {
-            yield return null;
-        }
-
-        isPlaying = false;
-        curPlayer = null;
-        logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-       logSoundEvent.release();
-    }*/
 
     // this can be used for interruptting the current voice line (monster attack, etc.)
     public void StopCurrentAudio()
@@ -177,7 +194,12 @@ public class AudioLogManager : MonoBehaviour
             return;
         }
 
+        StopCoroutine(lastStarted);
+
+        RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
+
         // run all the normal stop stuff including stopping audio
+        anim.SetBool("LeftVisible", false);
         logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         logSoundEvent.release(); // stops the now unused event from floating around not doing anything
         isPlaying = false;

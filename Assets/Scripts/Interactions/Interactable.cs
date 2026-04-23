@@ -16,7 +16,7 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
         {
             ui.ActivateUI(this);
             currentUi = ui;
-            //Debug.Log($"Hovering over item: {itemInfo.itemName}");
+            Debug.Log($"Hovering over item: {itemInfo.itemName}");
         }
     }
 
@@ -24,7 +24,7 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
     {
         ui.DeactivateUI();
         currentUi = null;
-        //Debug.Log($"Stopped hovering over item: {itemInfo.itemName}");
+        Debug.Log($"Stopped hovering over item: {itemInfo.itemName}");
     }
 
     public void OnInteract(IInteractor interactor)
