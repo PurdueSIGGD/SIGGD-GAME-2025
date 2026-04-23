@@ -1,6 +1,6 @@
 using SIGGD.Mobs.StateMachine;
+using SIGGD.Mobs;
 using UnityEngine;
-using UnityEngine.AI;
 
 /// <summary>
 /// The Apex moves to a single random roam point (once) around a guard position.

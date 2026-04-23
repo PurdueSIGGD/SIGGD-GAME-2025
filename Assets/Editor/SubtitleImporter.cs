@@ -65,8 +65,10 @@ public class SubtitleImporter : EditorWindow
 
             List<AudioLogObject.lineInfo> parsedLines = new List<AudioLogObject.lineInfo>();
 
-            // --- STATE TRACKING ---
-            bool currentIsRadio = false;
+            // tracks if audio is coming in from radio
+            bool fromRadio = false;
+            // tracks if audio is being spoken into the radio
+            bool intoRadio = false;
 
             string[] lines = block.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -96,10 +98,10 @@ public class SubtitleImporter : EditorWindow
                     string timeText = match.Groups[5].Value;
 
                     // Update the radio state ONLY if a new ID or Flag is provided
-                    // This allows Mark's line 2 and 3 to inherit the "%" from line 1
                     if (!string.IsNullOrEmpty(idStr) || !string.IsNullOrEmpty(flag))
                     {
-                        currentIsRadio = (flag == "%");
+                        fromRadio = (flag == "%");
+                        intoRadio = (flag == "$");
                     }
 
                     if (TimeSpan.TryParseExact(timeText, @"mm\:ss\.fff", null, out TimeSpan ts))
@@ -108,7 +110,8 @@ public class SubtitleImporter : EditorWindow
                         {
                             line = dialogue,
                             seconds = (float)ts.TotalSeconds,
-                            isFromRadio = currentIsRadio
+                            isFromRadio = fromRadio,
+                            isIntoRadio = intoRadio
                         });
                     }
                 }

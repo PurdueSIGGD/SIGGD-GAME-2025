@@ -5,6 +5,8 @@ namespace SIGGD.Mobs.StateMachine
 {
     public class SMPreyBrain : MobBrainBase
     {
+        [SerializeField] private Animator animator;
+
         private FleeState fleeState;
 
         protected override string MobName => "Prey";
@@ -20,7 +22,9 @@ namespace SIGGD.Mobs.StateMachine
                 AgentData = GetComponent<AgentData>(),
                 Pack = GetComponent<PackScripts.PackBehavior>(),
                 Perception = GetComponent<PerceptionManager>(),
-                Smell = GetComponent<Smell>()
+                Smell = GetComponent<Smell>(),
+                Type = MobType.Prey,
+                Animator = animator
             };
         }
 
