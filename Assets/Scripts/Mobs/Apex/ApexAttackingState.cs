@@ -75,6 +75,7 @@ public class ApexAttackingState : IMobState
         }
         if (!launched)
         {
+            apex.SetAttacking(true);
             timer += Time.deltaTime;
 
             if (flatDelta.sqrMagnitude > 0.001f)
@@ -132,6 +133,7 @@ public class ApexAttackingState : IMobState
             agent.isStopped = false;
         rb.isKinematic = true;
         rb.useGravity = false;
+        apex.SetAttacking(false);
         apex.ApexLog("Exiting AttackingState.");
 
     }

@@ -14,6 +14,7 @@ using UnityEditor;
 public class Apex : MobBrainBase
 {
     private static readonly int WalkingHash = Animator.StringToHash("Walking");
+    private static readonly int AttackingHash = Animator.StringToHash("Attacking");
     #region Apex References
 
     [Header("Apex References")]
@@ -297,6 +298,10 @@ public class Apex : MobBrainBase
 
     public bool IsMoving() {
         return ctx.Rigidbody.linearVelocity.magnitude > 0.1f;
+    }
+
+    public void SetAttacking(bool isAttacking) {
+        animator.SetBool(AttackingHash, isAttacking);
     }
 
     public void UpdateAnimParam()
