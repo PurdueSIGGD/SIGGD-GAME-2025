@@ -115,6 +115,15 @@ public class Inventory : Singleton<Inventory>, IInventory
     }
     #endregion
 
+    /// <summary>
+    /// this update function is literally only to fix the bug where items don't have an animation
+    /// only when entering a scene with a weapon equip.
+    /// </summary>
+    void Update()
+    {
+        Reselect();
+    }
+
     void Start()
     {
         // fetches the reference to the player hand's script.
@@ -315,7 +324,7 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <summary>
     /// reselects currently selected index. Do this if the tool's animation may change
     /// </summary>
-    public void Reselect() { 
+    public void Reselect() {
         AnimatorOverrideController itemAnimator = GetUISlotAnimation(inventory[selected]);
         if (itemAnimator != null) {
             LoadHandAnimation(itemAnimator);
