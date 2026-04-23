@@ -18,6 +18,7 @@ namespace SIGGD.Mobs.StateMachine.States
 
         public void Enter()
         {
+            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PURSUED, ctx.AgentData.gameObject);
             ctx.Movement.EnableSprint();
             lostSightTimer = 0f;
         }
@@ -55,6 +56,7 @@ namespace SIGGD.Mobs.StateMachine.States
 
         public void Exit()
         {
+            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, ctx.AgentData.gameObject);
             ctx.Movement.DisableSprint();
         }
 
