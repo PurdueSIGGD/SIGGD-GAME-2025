@@ -35,7 +35,11 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
             OnItemInteract?.Invoke(itemInfo, interactor);
             interactable = false;
             if (currentUi) currentUi.DeactivateUI();
-            if (destroyAfterPickup) Destroy(this.gameObject); // Remove the item from the scene
+            if (destroyAfterPickup)
+            {
+                AudioManager.Instance.PlayOneShotNoAsync(InteractableItem.itemPickupSound, PlayerID.Instance.gameObject.transform.position);
+                Destroy(this.gameObject); // Remove the item from the scene
+            }
         }
     }
 }

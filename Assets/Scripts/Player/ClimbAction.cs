@@ -1,3 +1,5 @@
+using FMOD.Studio;
+using FMODUnity;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -127,10 +129,20 @@ public class ClimbAction : MonoBehaviour
     private Vector3 leaningReachingDirection;
     #endregion
 
+    #region Sound references
+    private static readonly string climbGrabSound = "PlayerClimbGrab";
+    private static readonly string climbGrabUpgradedSound = "PlayerClimbGrabUpgraded";
+    private static readonly string climbReleaseSound = "PlayerClimbRelease";
+    private static readonly string climbReleaseUpgradedSound = "PlayerClimbReleaseUpgraded";
+    private static readonly string climbSound = "PlayerClimbing";
+    private EventReference climbSoundRef = default;
+    private EventInstance climbSoundInstance;
+
+    #endregion
 
 
     #region start, awake, and update methods
-    private void Start() {
+    private IEnumerator Start() {
         climbingLayerMask = LayerMask.GetMask(climbingLayerMaskName);
 
         PlayerID playerID = FindFirstObjectByType<PlayerID>();
@@ -140,6 +152,12 @@ public class ClimbAction : MonoBehaviour
         stateMachine = playerID.stateMachine;
         playerInput = playerObject.GetComponent<PlayerInput>();
         stamina = playerObject.GetComponent<PlayerStamina>();
+
+        while (!FMODEvents.Instance.Initialized)
+        {
+            yield return null;
+        }
+        climbSoundRef = FMODEvents.Instance.GetEventReferenceNoAsync(climbSound);
     }
 
     private void Awake() {
@@ -289,6 +307,18 @@ public class ClimbAction : MonoBehaviour
         if (isHandAttached() && stamina.HasStamina) {
             isClimbing = true;
             stateMachine.ToggleCrouch(false);
+            if (climbSoundInstance.isValid())
+            {
+                climbSoundInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                climbSoundInstance.release();
+            }
+            climbSoundInstance = AudioManager.Instance.CreateEventInstance(climbSoundRef);
+            RuntimeManager.AttachInstanceToGameObject(
+                climbSoundInstance,
+                PlayerID.Instance.transform,
+                PlayerID.Instance.GetComponent<Rigidbody>()
+            );
+            climbSoundInstance.start();
         } else {
             ExitClimb(); // removes held down hands
         }
@@ -407,8 +437,6 @@ public class ClimbAction : MonoBehaviour
         }
     }
     private void AttachHand(Hand handToAttach, Vector3 handPosition, Quaternion handRotation) {
-        Debug.Log("Attaching hand");
-        // TODO: Add climbing sound
         int handIndex = (int)handToAttach;
         int otherHandIndex = 1 - handIndex;
 
@@ -432,8 +460,18 @@ public class ClimbAction : MonoBehaviour
     // detaches given hand
     private void DetachHand(Hand handToDetach) {
         int handIndex = (int)handToDetach;
+        if (attachedHands[handIndex]) {
+            if (SaveManager.Instance.playerModule.playerData.hasGloves) AudioManager.Instance.PlayOneShotNoAsync(climbReleaseUpgradedSound, PlayerID.Instance.gameObject.transform.position);
+            else AudioManager.Instance.PlayOneShotNoAsync(climbReleaseSound, PlayerID.Instance.gameObject.transform.position);
+        }
         attachedHands[handIndex] = false;
         handTransforms[handIndex].position = Vector3.zero;
+        
+        if (!attachedHands[0] && !attachedHands[1] && climbSoundInstance.isValid())
+        {
+            climbSoundInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            climbSoundInstance.release();
+        }
     }
 
     // detaches both hands
@@ -525,6 +563,8 @@ public class ClimbAction : MonoBehaviour
                     Vector3 hitOrientation = hit.normal;
                     Quaternion hitRotation = Quaternion.LookRotation(hitOrientation);
                     AttachHand(handToFire, hitPosition, hitRotation);
+                    if (SaveManager.Instance.playerModule.playerData.hasGloves) AudioManager.Instance.PlayOneShotNoAsync(climbGrabUpgradedSound, hitPosition);
+                    else AudioManager.Instance.PlayOneShotNoAsync(climbGrabSound, hitPosition);
                 } else { 
                     // player is trying to climb on something not climbable
                 }
@@ -658,7 +698,6 @@ public class ClimbAction : MonoBehaviour
         // Calculate and apply force to correct the velocity
         Vector3 climbForce = Vector3.ClampMagnitude(forceGain * velocityDifference, maxClimbingForce) * forcePenalty;
         playerRigidbody.AddForce(climbForce);
-        Debug.Log("Applied force while climbing");
     }
     #endregion
 

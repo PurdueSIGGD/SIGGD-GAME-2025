@@ -9,7 +9,7 @@ public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
 
     InteractableUI ui;
 
-    private static readonly string itemPickupSound = "ItemPickup";
+    public static readonly string itemPickupSound = "ItemPickup";
 
 
     public void OnHoverEnter(InteractableUI ui)
