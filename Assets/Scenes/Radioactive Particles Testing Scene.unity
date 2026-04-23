@@ -251,6 +251,7 @@ GameObject:
   - component: {fileID: 1708803514}
   - component: {fileID: 1708803513}
   - component: {fileID: 1708803512}
+  - component: {fileID: 1708803515}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -319,6 +320,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1708803515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1708803511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7d58e7f4b9a2c74c96fca6a66af6d30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  container: {fileID: 7891064439151519124}
+  spawnLocation: {x: 0, y: 0, z: 0}
+  renderTexture: {fileID: 8400000, guid: a6126df2f6fd0cc4588cc219b82575a3, type: 2}
+  VFXGameObject: {fileID: 7891064439151519123}
 --- !u!1 &1732700202
 GameObject:
   m_ObjectHideFlags: 0
@@ -468,6 +485,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Radioactive Particles Container
       objectReference: {fileID: 0}
+    - target: {fileID: 3294751941135662154, guid: 3ada444eb260d184cb990e6d0363fc4d, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3745674391393163163, guid: 3ada444eb260d184cb990e6d0363fc4d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -513,6 +534,16 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ada444eb260d184cb990e6d0363fc4d, type: 3}
+--- !u!1 &7891064439151519123 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4595088835245153427, guid: 3ada444eb260d184cb990e6d0363fc4d, type: 3}
+  m_PrefabInstance: {fileID: 7891064439151519122}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7891064439151519124 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 146745324227764223, guid: 3ada444eb260d184cb990e6d0363fc4d, type: 3}
+  m_PrefabInstance: {fileID: 7891064439151519122}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
