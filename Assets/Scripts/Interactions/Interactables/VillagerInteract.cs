@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class VillagerInteract : MonoBehaviour, IInteractable<IInteractor>
 {
-    InteractableUI ui;
+    InteractableUI curUI;
     [SerializeField] private float lookSpeed = 5f;
 
     private bool playerIsLooking = false;
@@ -29,11 +29,16 @@ public class VillagerInteract : MonoBehaviour, IInteractable<IInteractor>
         {
             playerTransform = PlayerID.Instance.transform;
         }
-        ui.ActivateUI(this);
+        if (PlayerIsHoldingFlower())
+        {
+            ui.ActivateUI(this);
+            curUI = ui;
+        }
     }
 
     public void OnHoverExit(InteractableUI ui) {
         ui.DeactivateUI();
+        curUI = null;
         playerIsLooking = false;
         playerTransform = null;
     }
@@ -46,6 +51,8 @@ public class VillagerInteract : MonoBehaviour, IInteractable<IInteractor>
             Inventory.Instance.Decrement();
             ItemInfo slimeball = RecipeInfo.Instance.NamesToItemInfos[ItemInfo.ItemName.Slimeball];
             Inventory.Instance.AddItem(slimeball, 1);
+            curUI.DeactivateUI();
+            curUI = null;
         }
     }
     private bool PlayerIsHoldingFlower()
