@@ -61,6 +61,7 @@ GameObject:
   - component: {fileID: 4171266031325082136}
   - component: {fileID: 3558872390078823171}
   - component: {fileID: 1124192817399324371}
+  - component: {fileID: 3457258978888343840}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -210,6 +211,7 @@ MonoBehaviour:
   playerHealth: {fileID: 0}
   playerHunger: {fileID: 0}
   playerStamina: {fileID: 0}
+  playerRadiation: {fileID: 0}
   playerHUD: {fileID: 0}
   playerInteractor: {fileID: 0}
 --- !u!114 &1067857772922756551
@@ -395,7 +397,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveData: {fileID: 11400000, guid: c44b423fe1edd40eb9acc6075047a3e1, type: 2}
+  playerLandSound: PlayerLand
+  playerHeavyLandSound: PlayerLandHeavy
   rb: {fileID: 0}
+  speedMultiplier: 0
   canMove: 1
 --- !u!114 &5638831800853894958
 MonoBehaviour:
@@ -570,6 +575,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d61b7a0980126c8448ae5dec0ded0911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3457258978888343840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696392301619895344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 893b2a3c589aa2b46b096468785a005c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radiationThreshold: 100
+  radiationDecayRate:
+  - 9
+  - 8
+  - 7
+  - 6
+  - 5
+  radiationBuildRate:
+  - 5
+  - 7
+  - 9
+  - 11
+  - 13
+  radiationDamageInterval:
+  - 5
+  - 4.5
+  - 4
+  - 3.5
+  - 3
+  radiationDamageContext:
+    attacker: {fileID: 0}
+    victim: {fileID: 0}
+    amount: 0
+    xxtraContext: 
+  radiationVignette: {fileID: 0}
+  slimePercent:
+  - 0.9
+  - 0.75
+  - 0.6
+  - 0.45
+  - 0.3
 --- !u!1 &4791394868699375998
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,6 +768,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 373763985802475753}
     m_Modifications:
+    - target: {fileID: 972474800224315520, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 972474800224315520, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1592827477168014328, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -808,6 +864,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3814734546611343683, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4327298389109877069, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -820,9 +880,13 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4356208540946410801, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4568006538744203930, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000022739987
+      value: -0.0005047204
       objectReference: {fileID: 0}
     - target: {fileID: 5398268831641293570, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_AnchorMax.x
