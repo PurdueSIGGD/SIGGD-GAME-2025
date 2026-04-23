@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PurpleMushroomItemAction : IPlayerActionStrategy
 {
-    private static readonly string eatSound = "ConsumeSound";
+    private static readonly string eatSound = "PlayerConsume";
     protected override void OnEnter()
     {
         base.OnEnter();

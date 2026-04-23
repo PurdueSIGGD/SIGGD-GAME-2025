@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
 
     private EventInstance footsteps;
 
-    private static string jumpSound = "Jump";
+    private static string jumpSound = "PlayerJump";
     private static readonly string[] labScenes = {
         "ShipScene",
         "NathanA0Scene"
@@ -279,7 +279,7 @@ public class PlayerMovement : MonoBehaviour
     public void SwitchFootstepSound() {
         UnityEngine.Debug.Log("Switching footstep and jump sound");
         FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
-        jumpSound = "Jump";
+        jumpSound = "PlayerJump";
         playerLandSound = "PlayerLand";
         playerHeavyLandSound = "PlayerLandHeavy";
 }

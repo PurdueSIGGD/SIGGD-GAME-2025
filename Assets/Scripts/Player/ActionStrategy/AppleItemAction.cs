@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AppleItem : IPlayerActionStrategy
 {
-    private static readonly string eatSound = "ConsumeSound";
+    private static readonly string eatSound = "PlayerConsume";
     protected override void OnEnter()
     {
         base.OnEnter();

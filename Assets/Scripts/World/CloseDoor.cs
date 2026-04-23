@@ -16,7 +16,7 @@ public class CloseDoor : MonoBehaviour
             otherSide.SetActive(true);
         if (homeBase != null)
             homeBase.SetActive(true);
-        AudioManager.Instance.PlayOneShotNoAsync(closeDoorSound, transform.position);
+        AudioManager.Instance.PlayOneShotNoAsync(closeDoorSound, blocker.transform.position);
         //}
     }
 }

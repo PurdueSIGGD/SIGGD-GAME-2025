@@ -5,7 +5,7 @@ public class OrangeMushroomItemAction : IPlayerActionStrategy
 {
     [SerializeField] private float speedMultiplier = 5f;
 
-    private static readonly string eatSound = "ConsumeSound";
+    private static readonly string eatSound = "PlayerConsume";
     protected override void OnEnter()
     {
         base.OnEnter();

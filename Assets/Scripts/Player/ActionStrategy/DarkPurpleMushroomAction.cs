@@ -5,7 +5,7 @@ using UnityEngine.Rendering.Universal; // Or HighDefinition if using HDRP
 
 public class DarkPurpleMushroomItemAction : IPlayerActionStrategy
 {
-    private static readonly string eatSound = "ConsumeSound";
+    private static readonly string eatSound = "PlayerConsume";
     protected override void OnEnter()
     {
         base.OnEnter();
