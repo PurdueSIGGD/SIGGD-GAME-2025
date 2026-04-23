@@ -23,6 +23,8 @@ public class Apex : MobBrainBase
     [Tooltip("Standalone LOS component that mirrors the head bone each frame.")]
     [SerializeField] private ApexLineOfSight lineOfSight;
     [SerializeField] private Animator animator;
+    [SerializeField] private PerceptionManager perceptionManager;
+    [SerializeField] private Smell smell;
 
     #endregion
 
@@ -213,19 +215,70 @@ public class Apex : MobBrainBase
         
         // Global LOS transition — if a target is spotted while not already chasing or attacking,
         // immediately switch to chasing.
-        if (lineOfSight != null && lineOfSight.VisibleTarget != null)
+        ApexTarget target = HasVisibleTarget();
+        if (target != null)
         {
             var current = stateMachine.CurrentState;
             if (current is not ApexChasingState && current is not ApexAttackingState)
             {
-                ApexLog($"EvaluateTransitions — spotted '{lineOfSight.VisibleTarget.gameObject.name}', switching to ChasingState.");
-                chasingState.SetTarget(lineOfSight.VisibleTarget);
+                ApexLog($"EvaluateTransitions — spotted '{target.gameObject.name}', switching to ChasingState.");
+                chasingState.SetTarget(target);
                 stateMachine.ChangeState(chasingState);
 
                 // play apex notice player sound
-                AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, transform.position);
+                if (target.gameObject == PlayerID.Instance.gameObject)
+                {
+                    AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, transform.position);
+                }
             }
         }
+    }
+
+    private ApexTarget HasVisibleTarget()
+    {
+        if (perceptionManager != null)
+        {
+            if (perceptionManager.CanSeePlayer && perceptionManager.PlayerTarget != null)
+            {
+                ApexTarget target = perceptionManager.PlayerTarget.GetComponent<ApexTarget>();
+                if (target != null)
+                {
+                    return target;
+                }
+                else
+                {
+                    Debug.LogError("Missing ApexTarget component on player target. Likely lost to merge again, please add");
+                    return null;
+                }
+            }
+
+            if (perceptionManager.preyTargets != null && perceptionManager.preyTargets.Count > 0)
+            {
+                return perceptionManager.preyTargets[0].GetComponent<ApexTarget>();
+            }
+        }
+        if (smell != null)
+        {
+            if (smell.PlayerTarget != null)
+            {
+                ApexTarget target = smell.PlayerTarget.GetComponent<ApexTarget>();
+                if (target != null)
+                {
+                    return target;
+                }
+                else
+                {
+                    Debug.LogError("Missing ApexTarget component on player target. Likely lost to merge again, please add");
+                    return null;
+                }
+            }
+
+            if (smell.ClosestPrey != null)
+            {
+                return smell.ClosestPrey.GetComponent<ApexTarget>();
+            }
+        }
+        return null;
     }
 
     #endregion

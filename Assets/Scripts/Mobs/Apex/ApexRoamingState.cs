@@ -125,7 +125,7 @@ public class ApexRoamingState : IMobState
             lastPosition = currentPos;
             stuckElapsedSec = 0f;
         }
-        else
+        else if (!idling)
         {
             stuckElapsedSec += Time.fixedDeltaTime;
             if (stuckElapsedSec >= stuckTimeoutSec)
