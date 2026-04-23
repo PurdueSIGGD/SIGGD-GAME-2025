@@ -11,11 +11,14 @@ public class PlayerMovement : MonoBehaviour
 
     private EventInstance footsteps;
 
-    private static readonly string jumpSound = "Jump";
-    private static readonly string[] labFootstepScenes = {
+    private static string jumpSound = "Jump";
+    private static readonly string[] labScenes = {
         "ShipScene",
         "NathanA0Scene"
     };
+
+    public string playerLandSound = "PlayerLand";
+    public string playerHeavyLandSound = "PlayerLandHeavy";
 
     [HideInInspector] public Rigidbody rb;
 
@@ -51,9 +54,12 @@ public class PlayerMovement : MonoBehaviour
         speedMultiplier = 1f;
 
         // Set footstep sound to LabFootsteps if it is one of the prologue scenes
-        foreach (string scene in labFootstepScenes) {
+        foreach (string scene in labScenes) {
             if (SceneManager.GetActiveScene().name == scene) {
                 FMODEvents.Instance.GetEventInstance("LabFootsteps", instance => { footsteps = instance; });
+                jumpSound = "LabJump";
+                playerLandSound = "LabLandFromJump";
+                playerHeavyLandSound = "LabLandFromJump";
                 return;
             }
         }
@@ -246,9 +252,12 @@ public class PlayerMovement : MonoBehaviour
      * </summary>
      */
     public void SwitchFootstepSound() {
-        UnityEngine.Debug.Log("Switching footstep sound");
+        UnityEngine.Debug.Log("Switching footstep and jump sound");
         FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
-    }
+        jumpSound = "Jump";
+        playerLandSound = "PlayerLand";
+        playerHeavyLandSound = "PlayerLandHeavy";
+}
 
     #endregion
 }

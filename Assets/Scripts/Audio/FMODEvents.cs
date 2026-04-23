@@ -119,8 +119,11 @@ public class FMODEvents : Singleton<FMODEvents>
 
                     EventReference eventRef = RuntimeManager.PathToEventReference(eventPath);
 
-                    soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1).ToLower(), eventRef); // the replace just makes the names a little nicer
-                    if (logAudioNameOnLoad) Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
+                    if (!soundEvents.ContainsKey(eventPath.Substring(eventPath.LastIndexOf("/") + 1).ToLower()))
+                    {
+                        soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1).ToLower(), eventRef); // the replace just makes the names a little nicer
+                        if (logAudioNameOnLoad) Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
+                    }
                 }
             }
         }

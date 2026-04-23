@@ -106,9 +106,17 @@ public class PlayerFallDamage : MonoBehaviour
 
                         damageRecieved = (maxFallDamage - minFallDamage) * fallspeedPrecentage + minFallDamage;
                     }
-                } else if (config_debugMode) {
-                    print("DEBUG: haven't been falling long enough to check for fall damage");
+                    AudioManager.Instance.PlayOneShotNoAsync(PlayerID.Instance.playerMovement.playerHeavyLandSound, PlayerID.Instance.gameObject.transform.position);
                 }
+                else {
+                    AudioManager.Instance.PlayOneShotNoAsync(PlayerID.Instance.playerMovement.playerLandSound, PlayerID.Instance.gameObject.transform.position);
+                    if (config_debugMode)
+                    {
+
+                        print("DEBUG: haven't been falling long enough to check for fall damage");
+                    }
+                }
+                
 
                 // if damage if negative, 
                 if (damageRecieved < 0f)
