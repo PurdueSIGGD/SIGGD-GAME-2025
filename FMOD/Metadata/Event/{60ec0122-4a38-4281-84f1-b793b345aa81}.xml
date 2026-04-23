@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{60ec0122-4a38-4281-84f1-b793b345aa81}">
 		<property name="name">
-			<value>SpaceDoor</value>
+			<value>HeavySpaceDoorOpen</value>
 		</property>
 		<property name="outputFormat">
 			<value>2</value>
@@ -30,6 +30,10 @@
 		</relationship>
 		<relationship name="parameters">
 			<destination>{bbdc4987-d85b-4f89-ad60-bab2513d6b7c}</destination>
+		</relationship>
+		<relationship name="banks">
+			<destination>{b15523a5-dfb6-4b2a-817d-9d6c177d7691}</destination>
+			<destination>{1ec6bc42-ebbf-41a9-baca-8c32e0cba4b9}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixer" id="{13e5abb5-41c7-4ae4-90d5-45da8cec5249}">
@@ -69,6 +73,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{810b955b-d108-486f-9163-6369e41477bc}">
+		<property name="volume">
+			<value>-2</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{929e276d-df57-4a7f-8a3f-175ae7b9937d}</destination>
 		</relationship>
@@ -81,7 +88,7 @@
 	</object>
 	<object class="MultiSound" id="{691e52b1-e3b1-412d-a381-b08e359b9b8f}">
 		<relationship name="sounds">
-			<destination>{d56b790a-a4bd-4767-be11-480bbb2330d9}</destination>
+			<destination>{67a15a2b-af69-4c35-ac14-f5d5ed6bc70c}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusEffectChain" id="{2b6afe6f-0cc1-4450-a603-21e460d32245}">
@@ -94,15 +101,21 @@
 		<relationship name="effects">
 			<destination>{abbe5620-f3c0-4236-840b-0228b1a110b3}</destination>
 			<destination>{27f8e1c0-8084-487e-a0d3-aaaa610302e7}</destination>
+			<destination>{49e653c9-ae49-47a3-9d26-807038d4a58a}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{cf48c692-987b-41cc-a2e6-59b90b34fbd4}" />
-	<object class="SingleSound" id="{d56b790a-a4bd-4767-be11-480bbb2330d9}">
+	<object class="SingleSound" id="{67a15a2b-af69-4c35-ac14-f5d5ed6bc70c}">
 		<relationship name="audioFile">
-			<destination>{60c30a43-a5b3-4247-b8fe-ec0cda027fb6}</destination>
+			<destination>{cdaf48c6-0f7e-4179-8e14-758475da36c3}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusFader" id="{81fd993c-720a-472e-bc15-e454ee6b0a8f}" />
 	<object class="MixerBusFader" id="{abbe5620-f3c0-4236-840b-0228b1a110b3}" />
 	<object class="SpatialiserEffect" id="{27f8e1c0-8084-487e-a0d3-aaaa610302e7}" />
+	<object class="ThreeEQEffect" id="{49e653c9-ae49-47a3-9d26-807038d4a58a}">
+		<property name="lowGain">
+			<value>-14</value>
+		</property>
+	</object>
 </objects>

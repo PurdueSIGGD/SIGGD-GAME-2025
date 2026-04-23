@@ -21,6 +21,7 @@ namespace SIGGD.Mobs.StateMachine.States
         public WanderState(MobContext context)
         {
             ctx = context;
+            ctx.Movement.InitializeMobContext(ctx);
         }
 
         public void Enter()

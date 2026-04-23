@@ -1,3 +1,5 @@
+using FMOD;
+using FMOD.Studio;
 using SIGGD.Mobs.Hyena;
 using SIGGD.Mobs.StateMachine.States;
 using UnityEngine;
@@ -16,8 +18,14 @@ namespace SIGGD.Mobs.StateMachine
         private AttackPreyState attackPreyState;
 
         [SerializeField] private float hungerThreshold = 50f;
+        [SerializeField] private Animator animator;
 
         protected override string MobName => "Hyena";
+
+        // Audio name
+        private readonly string onNoticePlayerSound = "HyenaOnNotice";
+        private readonly string passivePantSound = "HyenaPassivePant";
+        private EventInstance passivePantEvent;
 
         protected override MobContext BuildContext()
         {
@@ -32,7 +40,9 @@ namespace SIGGD.Mobs.StateMachine
                 Pack = GetComponent<PackScripts.PackBehavior>(),
                 Perception = GetComponent<PerceptionManager>(),
                 AttackManager = GetComponent<HyenaAttackManager>(),
-                Smell = GetComponent<Smell>()
+                Smell = GetComponent<Smell>(),
+                Type = MobType.Hyena,
+                Animator = animator
             };
         }
 
@@ -57,16 +67,49 @@ namespace SIGGD.Mobs.StateMachine
                 ctx.Perception.OnPlayerDetected -= OnPlayerDetected;
         }
 
+        protected override void Awake()
+        {
+            base.Awake();
+            FMODEvents.Instance.GetEventInstance(passivePantSound, instance => { passivePantEvent = instance; });
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+            ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(transform.position, ctx.Rigidbody.linearVelocity, transform.forward, Vector3.up);
+            passivePantEvent.set3DAttributes(attr);
+
+            PLAYBACK_STATE playbackState;
+            passivePantEvent.getPlaybackState(out playbackState);
+
+            if (playbackState.Equals(PLAYBACK_STATE.STOPPED))
+            {
+                passivePantEvent.start();
+            }
+        }
+
         protected override void EvaluateTransitions()
         {
             var current = stateMachine.CurrentState;
             bool isAttacking = current == attackPlayerState || current == attackPreyState;
 
+            if (current == baitedState)
+            {
+                if (baitedState.returnToSender)
+                {
+                    stateMachine.ChangeState(wanderState);
+                }
+                return;
+            }
+
             // While lunging, do not interrupt the attack
             if (ctx.AttackManager != null && ctx.AttackManager.isLunging)
             {
                 if (!isAttacking)
+                {
+                    AudioManager.Instance.PlayOneShotNoAsync(onNoticePlayerSound, transform.position);
                     stateMachine.ChangeState(attackPlayerState);
+                }
                 return;
             }
 

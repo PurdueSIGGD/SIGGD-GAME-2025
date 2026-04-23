@@ -12,6 +12,7 @@ public class AudioLogManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI subtitles;
     private Coroutine lastStarted = null;
 
+    [SerializeField] private Animator anim;
     public static AudioLogManager Instance { get; set; }
 
     private EventInstance logSoundEvent;
@@ -24,7 +25,7 @@ public class AudioLogManager : MonoBehaviour
     private Dictionary<string, AudioLogObject> audioNameToLogs = new();
     [HideInInspector] public List<string> names = new List<string>();
 
-
+    //private float total_time = 0.0f; // to un cumulative the time stamps as we play them
     void Awake()
     {
         if (Instance != null)
@@ -35,7 +36,7 @@ public class AudioLogManager : MonoBehaviour
         Instance = this;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         foreach (var log in logs)
@@ -57,13 +58,32 @@ public class AudioLogManager : MonoBehaviour
     private IEnumerator StartSubtitles(AudioLogObject curAudio)
     {
         subtitles.enabled = true;
+        //total_time = 0;
 
         foreach (var line in curAudio.subtitles)
         {
-            // if the line has a % then it is from a radio so set effects to radio effects
+            if (line.isFromRadio == true || line.isIntoRadio == true)
+            {
+                anim.Play("PlayerHand_Left_Idle");
+                anim.SetBool("LeftVisible", true);
+
+                // uncomment all this stuff when we get a real radio noise and then put the noise into (name goes here)
+                /* delay for .2 seconds while the radio click noise (activate noise (i dunno man)) plays
+                 * RuntimeManager.GetEventDescription(FMODEvents.Instance.soundEvents["(name goes here too)"]).getLength(out int lengthMS);
+                 * float lengthSec = lengthMS / 1000;
+                 * AudioManager.Instance.PlayOneShot("(name needs to go here)");
+                 * yield return new WaitForSeconds(lengthSec);
+                 */
+            }
+            else
+            {
+                anim.SetBool("LeftVisible", false);
+            }
+
             if (line.isFromRadio == true)
             {
                 RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 1);
+                
             }
             else
             {
@@ -71,8 +91,11 @@ public class AudioLogManager : MonoBehaviour
             }
 
             subtitles.text = line.line;
-            yield return new WaitForSeconds(line.seconds);
+            yield return new WaitForSeconds(line.seconds /* - total_time */);
+            //total_time = line.seconds;
         }
+
+        anim.SetBool("LeftVisible", false);
         subtitles.enabled = false;
         lastStarted = null;
         isPlaying = false;
@@ -127,6 +150,9 @@ public class AudioLogManager : MonoBehaviour
 
         if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
         {
+
+            // SIMON PLEASE
+            // WHYYYY
             curPlayer = player;
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
@@ -142,10 +168,14 @@ public class AudioLogManager : MonoBehaviour
             logSoundEvent.start();
 
             lastStarted = StartCoroutine(StartSubtitles(foundAudio));
+
+            // DEBUG
+            UnityEngine.Debug.Log("Audio Played");
+
         }
         else
         {
-            UnityEngine.Debug.LogWarning("Audio name not in dictionarty: " + audioName);
+            UnityEngine.Debug.LogWarning("Audio name not in dictionary: " + audioName);
         }
     }
 
@@ -178,6 +208,7 @@ public class AudioLogManager : MonoBehaviour
         }
 
         // run all the normal stop stuff including stopping audio
+        anim.SetBool("LeftVisible", false);
         logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         logSoundEvent.release(); // stops the now unused event from floating around not doing anything
         isPlaying = false;
