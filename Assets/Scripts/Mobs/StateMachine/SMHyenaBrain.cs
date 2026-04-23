@@ -1,3 +1,4 @@
+using System;
 using FMOD;
 using FMOD.Studio;
 using SIGGD.Mobs.Hyena;
@@ -23,6 +24,8 @@ namespace SIGGD.Mobs.StateMachine
 
         [SerializeField] private float hungerThreshold = 50f;
         [SerializeField] private Animator animator;
+
+        [SerializeField] private GameObject deathModel;
 
         protected override string MobName => "Hyena";
 
@@ -62,12 +65,16 @@ namespace SIGGD.Mobs.StateMachine
 
         private void OnEnable()
         {
+            EntityHealthManager.OnDeath += HyenaDeath;
+            
             if (ctx.Perception != null)
                 ctx.Perception.OnPlayerDetected += OnPlayerDetected;
         }
 
         private void OnDisable()
         {
+            EntityHealthManager.OnDeath -= HyenaDeath;
+            
             if (ctx.Perception != null)
                 ctx.Perception.OnPlayerDetected -= OnPlayerDetected;
         }
@@ -272,6 +279,13 @@ namespace SIGGD.Mobs.StateMachine
                           ctx.Perception.preyTargets.Count > 0;
             bool canSmell = ctx.Smell != null && ctx.Smell.ClosestPrey != null;
             return canSee || canSmell;
+        }
+
+        private void HyenaDeath(DamageContext context)
+        {
+            if (context.victim != gameObject) return;
+            
+            Instantiate(deathModel, transform.position, transform.rotation);
         }
     }
 }
