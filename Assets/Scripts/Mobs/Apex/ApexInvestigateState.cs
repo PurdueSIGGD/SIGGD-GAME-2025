@@ -70,6 +70,16 @@ public class ApexInvestigateState : IMobState
             return;
         }
 
+        float shortestDist = Vector3.Distance(apex.transform.position, investigatePosition);
+
+        if (pathLength - shortestDist < -1f) // if the path length is significantly shorter than the straight line distance, navmesh is tripping
+        {
+            apex.ApexLog("InvestigateState - most likely no complete path to target, abandoning path");
+            hasTarget = false;
+            apex.StateMachine.ChangeState(apex.RoamingState);
+            return;
+        }
+
         ctx.Movement.MoveTowards(dir, apex.ApproachSpeedMulti, 0.1f, false);
     }
 
