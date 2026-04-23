@@ -25,6 +25,13 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
             var interactable = hit.collider.GetComponentInParent<IInteractable<IInteractor>>();
             if (interactable != null)
             {
+                if (interactable is MonoBehaviour mb && mb.enabled == false) // added check to avoid interacting with disabled interactables
+                {
+                    Interactable?.OnHoverExit(interactableUI);
+                    Interactable = null;
+                    return;
+                }
+
                 if ((Interactable == null || !Interactable.Equals(interactable)) && !ObjectPlacer.Instance.InPlacementMode &&
                     PlayerID.Instance.IsAlive)
                 {
