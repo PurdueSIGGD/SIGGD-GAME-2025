@@ -156,6 +156,9 @@ public class AudioLogManager : MonoBehaviour
 
         if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
         {
+
+            // SIMON PLEASE
+            // WHYYYY
             curPlayer = player;
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
@@ -169,6 +172,10 @@ public class AudioLogManager : MonoBehaviour
             }
 
             lastStarted = StartCoroutine(StartSubtitles(foundAudio));
+
+            // DEBUG
+            UnityEngine.Debug.Log("Audio Played");
+
         }
         else
         {
