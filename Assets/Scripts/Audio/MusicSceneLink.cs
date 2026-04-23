@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
-public class MusicSceneLink : MonoBehaviour
+public class MusicSceneLink : Singleton<MusicSceneLink>
 {
     // DO NOT PUT THE OBJECT THIS SCRIPT IS ON INTO A DONT DESTROY ON LOAD THIS NEEDS TO BE ITS OWN THING AND ONLY 1 PER SCENE
     // this class is what music you want playing as soon as the scene boots up

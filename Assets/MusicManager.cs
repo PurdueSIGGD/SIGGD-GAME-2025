@@ -28,6 +28,9 @@ public class MusicManager : Singleton<MusicManager>
     private Coroutine pauseMusicRoutine;
     private Coroutine playMusicRoutine;
 
+    // set this to true whenever the player gets into combat
+    public bool inCombat = false;
+
     protected override void Awake()
     {
         if (_instance == null)
@@ -253,34 +256,7 @@ public class MusicManager : Singleton<MusicManager>
             }
         }
     }
-    private IEnumerator fadeOutMusic()
-    {
-        curTrack.getVolume(out float vol);
 
-        float curTime = Mathf.Acos(vol) / (Mathf.PI * 0.5f);
-        float duration = 9f;
-
-        while (curTime < duration)
-        {
-            curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
-            float t = curTime / duration;
-
-            float smoothedT = Mathf.SmoothStep(0f, 1f, t);
-
-            // Fade Out: cos(t * pi/2)
-            float fadeOutVol = Mathf.Cos(smoothedT * Mathf.PI * 0.5f);
-
-            curTrack.setVolume(fadeOutVol);
-
-            yield return null; // wait for a frame in between loop runs
-        }
-
-        curTrack.setVolume(0f);
-
-        curTrack.setPaused(true);
-
-        pauseMusicRoutine = null;
-    }
     private IEnumerator FadeCombatVolume()
     {
         RuntimeManager.StudioSystem.getParameterByName("Combat Track Volume", out float vol);
@@ -448,6 +424,60 @@ public class MusicManager : Singleton<MusicManager>
         curTrack.setVolume(1f);
 
         playMusicRoutine = null;
+    }
+    private IEnumerator fadeOutMusic()
+    {
+        curTrack.getVolume(out float vol);
+
+        float curTime = Mathf.Acos(vol) / (Mathf.PI * 0.5f);
+        float duration = 9f;
+
+        while (curTime < duration)
+        {
+            curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
+            float t = curTime / duration;
+
+            float smoothedT = Mathf.SmoothStep(0f, 1f, t);
+
+            // Fade Out: cos(t * pi/2)
+            float fadeOutVol = Mathf.Cos(smoothedT * Mathf.PI * 0.5f);
+
+            curTrack.setVolume(fadeOutVol);
+
+            yield return null; // wait for a frame in between loop runs
+        }
+
+        curTrack.setVolume(0f);
+
+        curTrack.setPaused(true);
+
+        pauseMusicRoutine = null;
+    }
+
+    private IEnumerator FadeTrackVolume(float targetVolume, float duration)
+    {
+        curTrack.getVolume(out float startVol);
+        float curTime = 0;
+
+        while (curTime < duration)
+        {
+            // If combat starts mid-fade, abort this coroutine immediately
+            if (inCombat)
+            {
+                yield break;
+            }
+
+            curTime += Time.deltaTime;
+            float t = curTime / duration;
+            float smoothedT = Mathf.SmoothStep(0f, 1f, t);
+
+            // Simple Lerp for the master volume fade
+            float currentVol = Mathf.Lerp(startVol, targetVolume, smoothedT);
+            curTrack.setVolume(currentVol);
+
+            yield return null;
+        }
+        curTrack.setVolume(targetVolume);
     }
     #endregion
 
