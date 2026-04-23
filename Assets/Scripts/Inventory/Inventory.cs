@@ -375,14 +375,14 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// Reselects the currently selected slot. Use this when the tool's animation may have changed.
     /// </summary>
     public void Reselect() {
-        AnimatorOverrideController itemAnimator = GetUISlotAnimation(inventory[selected]);
+        /*AnimatorOverrideController itemAnimator = GetUISlotAnimation(inventory[selected]);
         if (itemAnimator != null) {
             LoadHandAnimation(itemAnimator);
         }
         else
         {
             DeloadHandAnimator();
-        }
+        }*/
     }
 
     /// <summary>

@@ -28,7 +28,7 @@ public class MusicManager : Singleton<MusicManager>
     private Coroutine pauseMusicRoutine;
     private Coroutine playMusicRoutine;
 
-    public enum MusicCycleState { Playing, FadingOut, FadingIn, NotPlaying, Combat, Stopped}
+    public enum MusicCycleState { Playing, FadingOut, FadingIn, NotPlaying, Combat, Stopped, ApexLurk}
 
     [SerializeField] private MusicCycleState curMusicState = MusicCycleState.NotPlaying;
 
@@ -519,9 +519,11 @@ public class MusicManager : Singleton<MusicManager>
         }
         else if (gameState == GameStateManager.GameState.PURSUED_BY_APEX)
         {
-            // toggle combat volume if its not on already
-            curMusicState = MusicCycleState.Combat;
-            // turn on apex music depending on which encounter it is????
+            if (curMusicState != MusicCycleState.ApexLurk)
+            {
+                curMusicState = MusicCycleState.ApexLurk;
+                CrossFadeMusic("ApexLurk", 9f);
+            }
         }
     }
     #endregion

@@ -78,6 +78,7 @@ GameObject:
   - component: {fileID: 5951891855327937426}
   - component: {fileID: 7720021577077407300}
   - component: {fileID: 5976809616658123427}
+  - component: {fileID: 7053063548443081216}
   m_Layer: 0
   m_Name: Apex
   m_TagString: Apex
@@ -194,14 +195,12 @@ MonoBehaviour:
   headBone: {fileID: 2461357152135337901}
   lineOfSight: {fileID: 4054441306856076960}
   animator: {fileID: 2770785788879187800}
-  perceptionManager: {fileID: 5976809616658123427}
-  smell: {fileID: 5951891855327937426}
   approachSpeedMulti: 1
   roamSpeedMulti: 0.6
   chaseSpeedMulti: 1.3
   arrivalDistance: 10
-  roamRadius: {x: 50.56434, y: 90}
-  roamPauseDuration: {x: 2, y: 6}
+  roamRadius: 12
+  roamPauseDuration: 2
   roamDuration: 8
   headSweepAngle: 90
   headSweepDuration: 3
@@ -216,7 +215,6 @@ MonoBehaviour:
     victim: {fileID: 0}
     amount: 0
     xxtraContext: 
-  findPathBuffer: 5
   debugLogs: 1
 --- !u!195 &3654695270874870991
 NavMeshAgent:
@@ -464,6 +462,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   preyTargets: []
   predatorTargets: []
+--- !u!135 &7053063548443081216
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6906967935226233989}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 50
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1136442347371796373
 PrefabInstance:
   m_ObjectHideFlags: 0
