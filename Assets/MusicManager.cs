@@ -78,10 +78,10 @@ public class MusicManager : Singleton<MusicManager>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // Stop the current track so we don't have overlapping music
-        if (curTrack.isValid())
+        /*if (curTrack.isValid())
         {
             curTrack.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        }
+        }*/
     }
     #endregion
 
@@ -130,6 +130,8 @@ public class MusicManager : Singleton<MusicManager>
             return;
         }
 
+        Debug.Log("Pause Music");
+
         if (allowFade == false)
         {
             curTrack.setPaused(true);
@@ -160,6 +162,8 @@ public class MusicManager : Singleton<MusicManager>
             return;
         }
 
+        Debug.Log("PlayMusic");
+
         if (allowFade == false)
         {
             curTrack.setPaused(false);
@@ -181,6 +185,7 @@ public class MusicManager : Singleton<MusicManager>
     /// </summary>
     public void CrossFadeMusic(string toKey, float duration)
     {
+        Debug.Log("crossfading music");
         if (crossFadeRoutine != null)
         {
             StopCoroutine(crossFadeRoutine);
@@ -194,6 +199,7 @@ public class MusicManager : Singleton<MusicManager>
     /// </summary>
     public void ToggleComabatVolume()
     {
+        Debug.Log("Combat volume toggled");
         if (activeFadeRoutine != null)
         {
             StopCoroutine(activeFadeRoutine);
@@ -381,6 +387,7 @@ public class MusicManager : Singleton<MusicManager>
     private IEnumerator InitMusicOnStartCoroutine()
     {
         yield return new WaitUntil(() => FMODEvents.Instance.Initialized);
+        yield return null;
 
         if (initLevelMusic)
         {
@@ -388,6 +395,7 @@ public class MusicManager : Singleton<MusicManager>
             {
                 curTrack = eventInstance;
                 curTrack.start();
+                Debug.Log("cur track playing");
             }
             else
             {

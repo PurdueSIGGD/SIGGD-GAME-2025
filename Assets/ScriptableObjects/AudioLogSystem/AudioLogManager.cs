@@ -76,7 +76,10 @@ public class AudioLogManager : MonoBehaviour
 
     private IEnumerator StartSubtitles(AudioLogObject curAudio)
     {
-        logSoundEvent.start();
+        if (logSoundEvent.isValid())
+        {
+            logSoundEvent.start();
+        }
 
         float lastTime = 0;
 
@@ -91,7 +94,7 @@ public class AudioLogManager : MonoBehaviour
             {
                 logSoundEvent.setPaused(true);
                 subtitles.enabled = false;
-                AudioManager.Instance.PlayOneShot("radionoiselong", curPlayer.transform.position);
+                AudioManager.Instance.PlayOneShot("radioactivatelong", curPlayer.transform.position);
                 yield return new WaitForSeconds(2.0f);
                 logSoundEvent.setPaused(false);
                 subtitles.enabled = true;
@@ -100,7 +103,7 @@ public class AudioLogManager : MonoBehaviour
             {
                 logSoundEvent.setPaused(true);
                 subtitles.enabled = false;
-                AudioManager.Instance.PlayOneShot("radionoise", curPlayer.transform.position);
+                AudioManager.Instance.PlayOneShot("radioactivate", curPlayer.transform.position);
                 yield return new WaitForSeconds(0.6f);
                 logSoundEvent.setPaused(false);
                 subtitles.enabled = true;
@@ -111,7 +114,7 @@ public class AudioLogManager : MonoBehaviour
             {
                 logSoundEvent.setPaused(true);
                 subtitles.enabled = false;
-                AudioManager.Instance.PlayOneShot("radiodeactivatenoise", curPlayer.transform.position);
+                AudioManager.Instance.PlayOneShot("radiodeactivate", curPlayer.transform.position);
                 yield return new WaitForSeconds(0.75f);
                 logSoundEvent.setPaused(false);
                 subtitles.enabled = true;
@@ -136,7 +139,7 @@ public class AudioLogManager : MonoBehaviour
 
         if (prevWasIntoRadio || prevWasFromRadio)
         {
-            AudioManager.Instance.PlayOneShot("radiodeactivatenoise", curPlayer.transform.position);
+            AudioManager.Instance.PlayOneShot("radiodeactivate", curPlayer.transform.position);
             subtitles.enabled = false;
             yield return new WaitForSeconds(0.75f);
             subtitles.enabled = true;
@@ -156,7 +159,6 @@ public class AudioLogManager : MonoBehaviour
 
         if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
         {
-
             // SIMON PLEASE
             // WHYYYY
             curPlayer = player;
