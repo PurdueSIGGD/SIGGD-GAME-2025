@@ -13,4 +13,5 @@ public class PlayerSaveData
     public bool hasGloves = false;
     public Vector3 RespawnPosition = new(480.5f, 7.2f, -4.1f);
     public int slimeLevel = 4;
+    public float radiationLevel = 0f;
 }

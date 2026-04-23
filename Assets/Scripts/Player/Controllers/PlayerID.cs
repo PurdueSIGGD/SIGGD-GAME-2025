@@ -46,6 +46,7 @@ public class PlayerID : Singleton<PlayerID>
         playerHunger = GetComponent<PlayerHunger>();
         playerStamina = GetComponent<PlayerStamina>();
         playerHUD = GetComponent<PlayerHUD>();
+        playerRadiation = GetComponent<PlayerRadiation>();
 
         rb = GetComponent<Rigidbody>();
 
