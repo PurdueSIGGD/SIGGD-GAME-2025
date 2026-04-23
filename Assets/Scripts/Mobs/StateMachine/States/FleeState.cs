@@ -51,7 +51,7 @@ namespace SIGGD.Mobs.StateMachine.States
         public void FixedUpdate()
         {
             Vector3 dir = NavSteering.GetSteeringDirection(
-                ctx.NavAgent, ctx.Rigidbody.position, fleeTarget, 0.1f);
+                ctx.NavAgent, ctx.Rigidbody.position, fleeTarget, 0.1f).dir;
             ctx.Movement.MoveTowards(dir, 1.0f, 3f, true);
         }
 

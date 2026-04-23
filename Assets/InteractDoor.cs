@@ -48,5 +48,10 @@ public class InteractDoor : MonoBehaviour, IInteractable<IInteractor>
                 colliders[i].enabled = !colliders[i].enabled;
             }
         }
+        else
+        {
+            if (currentUi) currentUi.DeactivateUI();
+            currentUi = null;
+        }
     }
 }

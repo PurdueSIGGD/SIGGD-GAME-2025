@@ -125,4 +125,12 @@ public class FieldOfView : MonoBehaviour
     }
     public GameObject PlayerTarget { get; private set; }
     public List<GameObject> GetSeenTargets() => seenTargets;
+
+    //private void OnDrawGizmosSelected()
+    //{
+    //    Gizmos.color = Color.yellow;
+    //    Gizmos.DrawWireSphere(transform.position, viewRadius);
+    //    Gizmos.DrawWireSphere(transform.position, viewRadius * 0.5f);
+    //    Gizmos.DrawWireSphere(transform.position, viewRadius * 1.5f);
+    //}
 }

@@ -12,6 +12,9 @@ namespace SIGGD.Mobs.StateMachine
     [RequireComponent(typeof(HyenaAttackManager))]
     public class SMHyenaBrain : MobBrainBase
     {
+        public ChasePlayerState ChasePlayer => chasePlayerState;
+        public ChasePreyState ChasePrey => chasePreyState;
+
         private float knockbackDuration = 2f;
         private float knockbackForce = 20f;
         
@@ -82,6 +85,11 @@ namespace SIGGD.Mobs.StateMachine
         protected override void Awake()
         {
             base.Awake();
+        }
+
+        protected override void Start()
+        {
+            base.Start();
             FMODEvents.Instance.GetEventInstance(passivePantSound, instance => { passivePantEvent = instance; });
         }
 

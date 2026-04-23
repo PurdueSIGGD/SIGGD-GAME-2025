@@ -5,6 +5,7 @@ using SIGGD.Mobs.StateMachine;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEditor;
+using Sirenix.OdinInspector;
 
 /// <summary>
 /// Brain for the Apex predator, built on <see cref="MobBrainBase"/>.
@@ -22,12 +23,8 @@ public class Apex : MobBrainBase
     [Tooltip("Standalone LOS component that mirrors the head bone each frame.")]
     [SerializeField] private ApexLineOfSight lineOfSight;
     [SerializeField] private Animator animator;
-
-    #endregion
-
-    #region Sound References
-    private readonly static string apexDamagePlayerSound = "ApexOnDamagePlayer";
-    private readonly string apexOnNoticePlayerSound = "ApexOnNotice";
+    [SerializeField] private PerceptionManager perceptionManager;
+    [SerializeField] private Smell smell;
 
     #endregion
 
@@ -49,9 +46,9 @@ public class Apex : MobBrainBase
 
     [Header("Apex Roam")]
     [Tooltip("Radius around the current guard position in which roam targets are picked.")]
-    [SerializeField] private float roamRadius = 12f;
+    [SerializeField, MinMaxSlider(0f, 100f)] private Vector2 roamRadius = new Vector2(10f, 90f);
     [Tooltip("How long the Apex stays at a roam point before picking a new one.")]
-    [SerializeField] private float roamPauseDuration = 2f;
+    [SerializeField, MinMaxSlider(0, 20)] private Vector2 roamPauseDuration = new(2, 6);
     [Tooltip("How long the Apex roams before switching back to searching.")]
     [SerializeField] private float roamDuration = 8f;
 
@@ -77,6 +74,8 @@ public class Apex : MobBrainBase
     [SerializeField] private float attackRange = 2.5f;
     [SerializeField] private LayerMask attackLayerMask;
     [SerializeField] private DamageContext attackContext;
+    [Tooltip("Time to wait and mog at target before giving up attack, if attack cannot reach")]
+    [SerializeField] private float findPathBuffer = 5f;
 
     #endregion
 
@@ -102,8 +101,8 @@ public class Apex : MobBrainBase
     public float ApproachSpeedMulti => approachSpeedMulti;
     public float RoamSpeedMulti => roamSpeedMulti;
     public float ChaseSpeedMulti => chaseSpeedMulti;
-    public float RoamRadius => roamRadius;
-    public float RoamPauseDuration => roamPauseDuration;
+    public Vector2 RoamRadius => roamRadius;
+    public Vector2 RoamPauseDuration => roamPauseDuration;
     public float RoamDuration => roamDuration;
     public float HeadSweepAngle => headSweepAngle;
     public float HeadSweepDuration => headSweepDuration;
@@ -122,24 +121,27 @@ public class Apex : MobBrainBase
 
     private Action onDespawn;
     private bool initialized;
+    private NavMeshPath cachedPath;
 
     #endregion
 
     #region Apex States
 
-    private ApexApproachingState approachingState;
-    private ApexSearchingState searchingState;
+    //private ApexApproachingState approachingState;
+    //private ApexSearchingState searchingState;
     private ApexRoamingState roamingState;
     private ApexChasingState chasingState;
     private ApexAttackingState attackingState;
     private ApexInvestigateState investigateState;
+    private MoggingState moggingState;
 
-    public ApexApproachingState ApproachingState => approachingState;
-    public ApexSearchingState SearchingState => searchingState;
+    //public ApexApproachingState ApproachingState => approachingState;
+    //public ApexSearchingState SearchingState => searchingState;
     public ApexRoamingState RoamingState => roamingState;
     public ApexChasingState ChasingState => chasingState;
     public ApexAttackingState AttackingState => attackingState;
     public ApexInvestigateState InvestigateState => investigateState;
+    public MoggingState MoggingState => moggingState;
 
     #endregion
 
@@ -147,7 +149,8 @@ public class Apex : MobBrainBase
 
     protected override string MobName => "Apex";
 
-    
+    private readonly string apexOnNoticePlayerSound = "ApexOnNotice";
+    private static readonly string apexLosePlayerSound = "ApexOnLosePlayer";
 
     protected override MobContext BuildContext()
     {
@@ -167,12 +170,13 @@ public class Apex : MobBrainBase
 
     protected override void InitializeStates()
     {
-        approachingState = new ApexApproachingState(this);
-        searchingState = new ApexSearchingState(this);
+        //approachingState = new ApexApproachingState(this);
+        //searchingState = new ApexSearchingState(this);
         roamingState = new ApexRoamingState(this);
         chasingState = new ApexChasingState(this);
         attackingState = new ApexAttackingState(this);
         investigateState = new ApexInvestigateState(this);
+        moggingState = new MoggingState(this, findPathBuffer);
         baitedState = new BaitedState(ctx, stateMachine, investigateState, baitMoveSpeedMultiplier, baitTurnResponsiveness, baitArrivalDistance);
     }
 
@@ -211,19 +215,70 @@ public class Apex : MobBrainBase
         
         // Global LOS transition — if a target is spotted while not already chasing or attacking,
         // immediately switch to chasing.
-        if (lineOfSight != null && lineOfSight.VisibleTarget != null)
+        ApexTarget target = HasVisibleTarget();
+        if (target != null)
         {
             var current = stateMachine.CurrentState;
-            if (current is not ApexChasingState && current is not ApexAttackingState && PlayerID.Instance.playerHealth.CurrentHealth > 0)
+            if (current is not ApexChasingState && current is not ApexAttackingState)
             {
-                ApexLog($"EvaluateTransitions — spotted '{lineOfSight.VisibleTarget.gameObject.name}', switching to ChasingState.");
-                chasingState.SetTarget(lineOfSight.VisibleTarget);
+                ApexLog($"EvaluateTransitions — spotted '{target.gameObject.name}', switching to ChasingState.");
+                chasingState.SetTarget(target);
                 stateMachine.ChangeState(chasingState);
 
                 // play apex notice player sound
-                AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, transform.position);
+                if (target.gameObject == PlayerID.Instance.gameObject)
+                {
+                    AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, transform.position);
+                }
             }
         }
+    }
+
+    private ApexTarget HasVisibleTarget()
+    {
+        if (perceptionManager != null)
+        {
+            if (perceptionManager.CanSeePlayer && perceptionManager.PlayerTarget != null)
+            {
+                ApexTarget target = perceptionManager.PlayerTarget.GetComponent<ApexTarget>();
+                if (target != null)
+                {
+                    return target;
+                }
+                else
+                {
+                    Debug.LogError("Missing ApexTarget component on player target. Likely lost to merge again, please add");
+                    return null;
+                }
+            }
+
+            if (perceptionManager.preyTargets != null && perceptionManager.preyTargets.Count > 0)
+            {
+                return perceptionManager.preyTargets[0].GetComponent<ApexTarget>();
+            }
+        }
+        if (smell != null)
+        {
+            if (smell.PlayerTarget != null)
+            {
+                ApexTarget target = smell.PlayerTarget.GetComponent<ApexTarget>();
+                if (target != null)
+                {
+                    return target;
+                }
+                else
+                {
+                    Debug.LogError("Missing ApexTarget component on player target. Likely lost to merge again, please add");
+                    return null;
+                }
+            }
+
+            if (smell.ClosestPrey != null)
+            {
+                return smell.ClosestPrey.GetComponent<ApexTarget>();
+            }
+        }
+        return null;
     }
 
     #endregion
@@ -239,6 +294,7 @@ public class Apex : MobBrainBase
     {
         TargetPosition = targetPosition;
         onDespawn = despawnCallback;
+        cachedPath = new();
         initialized = true;
 
         if (lineOfSight == null)
@@ -269,9 +325,9 @@ public class Apex : MobBrainBase
     /// <summary>
     /// Gets the NavSteering direction toward <paramref name="target"/>.
     /// </summary>
-    public Vector3 GetSteeringTo(Vector3 target)
+    public (Vector3 dir, NavMeshPathStatus status, float pathLength) GetSteeringTo(Vector3 target)
     {
-        return NavSteering.GetSteeringDirection(ctx.NavAgent, ctx.Rigidbody.position, target, 0.1f);
+        return NavSteering.GetSteeringDirection(ctx.NavAgent, ctx.Rigidbody.position, target, 0.01f);
     }
 
     /// <summary>
@@ -286,7 +342,12 @@ public class Apex : MobBrainBase
             if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, radius * 0.5f, NavMesh.AllAreas))
             {
                 result = hit.position;
-                return true;
+                NavMesh.CalculatePath(ctx.Rigidbody.position, result, NavMesh.AllAreas, cachedPath);
+                if (cachedPath.status == NavMeshPathStatus.PathComplete && Vector3.Distance(ctx.Rigidbody.position, result) > 5f)
+                {
+                    return true;
+                }
+                continue;
             }
         }
         result = origin;
@@ -323,12 +384,28 @@ public class Apex : MobBrainBase
             dmgCtx.attacker = gameObject;
             dmgCtx.victim = col.gameObject;
             dmgCtx.amount = health.MaxHealth;
-            if (dmgCtx.victim == PlayerID.Instance.gameObject && dmgCtx.amount > 0 && PlayerID.Instance.playerHealth.CurrentHealth > 0)
-            {
-                AudioManager.Instance.PlayOneShotNoAsync(apexDamagePlayerSound, PlayerID.Instance.gameObject.transform.position);
-            }
             health.TakeDamage(dmgCtx);
             ApexLog($"Attacked {col.gameObject.name} for {dmgCtx.amount} damage.");
+        }
+    }
+
+    public void OnDeathLoseAggro(DamageContext context)
+    {
+        if (context.victim == PlayerID.Instance.gameObject && context.attacker == gameObject)
+        {
+            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, PlayerID.Instance.gameObject);
+            if (stateMachine.CurrentState is ApexChasingState)
+            {
+                ChasingState.SetTarget(null);
+                ChasingState.chasingPlayer = false;
+                RoamingState.SetGuardPosition(transform.position);
+                stateMachine.ChangeState(RoamingState);
+            }
+            if (stateMachine.CurrentState is ApexAttackingState)
+            {
+                RoamingState.SetGuardPosition(transform.position);
+                stateMachine.ChangeState(RoamingState);
+            }
         }
     }
 
@@ -363,6 +440,16 @@ public class Apex : MobBrainBase
     {
         base.Update();
         UpdateAnimParam();
+    }
+
+    private void OnEnable()
+    {
+        EntityHealthManager.OnDeath += OnDeathLoseAggro;
+    }
+
+    private void OnDisable()
+    {
+        EntityHealthManager.OnDeath -= OnDeathLoseAggro;
     }
 
     #endregion
