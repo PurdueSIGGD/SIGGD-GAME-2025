@@ -28,7 +28,7 @@ public class MusicManager : Singleton<MusicManager>
     private Coroutine pauseMusicRoutine;
     private Coroutine playMusicRoutine;
 
-    public enum MusicCycleState { Playing, FadingOut, FadingIn, NotPlaying, Combat, Stopped, ApexLurk}
+    public enum MusicCycleState { Playing, FadingOut, FadingIn, NotPlaying, Combat, Stopped}
 
     [SerializeField] private MusicCycleState curMusicState = MusicCycleState.NotPlaying;
 
@@ -212,7 +212,9 @@ public class MusicManager : Singleton<MusicManager>
         Debug.Log("crossfading music");
         if (crossFadeRoutine != null)
         {
-            StopCoroutine(crossFadeRoutine);
+            // to avoid crossfades overriding each other we just return if one is already happening
+            return;
+            //StopCoroutine(crossFadeRoutine);
         }
 
         crossFadeRoutine = StartCoroutine(MusicCrossFade(toKey, duration));
@@ -519,11 +521,7 @@ public class MusicManager : Singleton<MusicManager>
         }
         else if (gameState == GameStateManager.GameState.PURSUED_BY_APEX)
         {
-            if (curMusicState != MusicCycleState.ApexLurk)
-            {
-                curMusicState = MusicCycleState.ApexLurk;
-                CrossFadeMusic("ApexLurk", 9f);
-            }
+            // play apex fight music?
         }
     }
     #endregion

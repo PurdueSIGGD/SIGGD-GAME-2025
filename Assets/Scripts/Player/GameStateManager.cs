@@ -97,6 +97,7 @@ public class GameStateManager : Singleton<GameStateManager>
 
         if (currentState != prevState)
         {
+            Debug.Log("game states are changing???");
             MusicManager.Instance.GameStateChanged();
         }
 
