@@ -39,8 +39,9 @@ public class SceneFader : Singleton<SceneFader>
             StartCoroutine(TransitionRoutine(sceneName, newPosition));
     }
 
-    IEnumerator TransitionRoutine(string sceneName, Transform newPosition)
-    {
+    IEnumerator TransitionRoutine(string sceneName, Transform newPosition) {
+        Vector3 position = newPosition.position;
+        Quaternion rotation = newPosition.rotation;
         isTransitioning = true;
 
         Time.timeScale = 0f; // pause game
@@ -60,11 +61,19 @@ public class SceneFader : Singleton<SceneFader>
 
         // Activate scene
         op.allowSceneActivation = true;
+        
+        PlayerID.isReset = false;
 
         // wait until scene is actually done loading
         while (!op.isDone)
             yield return null;
 
+        // Wait until Player is loaded
+        while (!PlayerID.isReset)
+        {
+            yield return null;
+        }
+        
         // extra stabilization frames for UI rebuild
         yield return null;
         yield return null;
@@ -76,8 +85,8 @@ public class SceneFader : Singleton<SceneFader>
         SetAlpha(1f);
 
         // Manually set player's transform for start position in new scene
-        PlayerID.Instance.gameObject.transform.position = newPosition.position;
-        PlayerID.Instance.gameObject.transform.rotation = newPosition.rotation;
+        PlayerID.Instance.gameObject.transform.position = position;
+        PlayerID.Instance.gameObject.transform.rotation = rotation;
 
         // Fade in
         yield return StartCoroutine(Fade(0f));
