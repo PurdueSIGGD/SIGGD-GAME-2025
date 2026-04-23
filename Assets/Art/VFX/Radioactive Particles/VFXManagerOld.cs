@@ -5,19 +5,23 @@ using UnityEngine.VFX;
 
 public class VFXManager : MonoBehaviour
 {
-    //[SerializeField]
-    public GameObject VFXGameObject;
+    [SerializeField]
+    public GameObject VFXContainerPrefab;
 
+    [SerializeField]
+    public RenderTexture renderTexture;
 
     // Whether the particle is playing
     [ShowInInspector]
     private bool isActive = false;
 
     private VisualEffect particlesVFX;
+    private GameObject instantiatedPrefab = null;
 
     public void Awake()
     {
-        particlesVFX = VFXGameObject.GetComponent<VisualEffect>();
+        SetInactive();
+
     }
 
     public void Update()
@@ -33,7 +37,9 @@ public class VFXManager : MonoBehaviour
 
 
     public void SetActive() {
+        
         particlesVFX.Play();
+
     }
 
     public void SetInactive()
