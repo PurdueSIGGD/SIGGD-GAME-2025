@@ -53,7 +53,7 @@ public class UISlot : MonoBehaviour
         {
             //if (!textDisplay) textDisplay = GetComponentInChildren<TextMeshProUGUI>(); // double check
             //textDisplay.text = itemInfo.name + "(" + count + ")";
-            if (textDisplay) textDisplay.text = itemInfo.name + "(" + count + ")";
+            if (textDisplay) textDisplay.text = count.ToString();
             if (imageDisplay)
             {
                 imageDisplay.sprite = itemInfo.itemImage;
@@ -62,7 +62,7 @@ public class UISlot : MonoBehaviour
         }
         else
         {
-            if (textDisplay) textDisplay.text = "empty";
+            if (textDisplay) textDisplay.text = "";
             Debug.Log("changing image to empty");
             if (imageDisplay)
             {

@@ -65,7 +65,8 @@ public class ApexChasingState : IMobState
 
         lastKnownPosition = target.transform.position;
 
-        if (Vector3.Distance(ctx.Rigidbody.position, lastKnownPosition) <= apex.AttackRange)
+        float dist = Vector3.Distance(ctx.Rigidbody.position, lastKnownPosition);
+        if (dist <= apex.AttackRange)
         {
             apex.ApexLog($"ChasingState — target '{target.gameObject.name}' in attack range, switching to AttackingState.");
             apex.AttackingState.SetTarget(target, lastKnownPosition);

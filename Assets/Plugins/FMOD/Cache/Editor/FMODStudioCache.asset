@@ -372,33 +372,6 @@ MonoBehaviour:
   IsGlobal: 1
   Labels: []
   Exists: 1
---- !u!114 &-7390544270271480802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/SFX/Limacids/SlugWalk
-  m_EditorClassIdentifier: 
-  Path: event:/SFX/Limacids/SlugWalk
-  Guid:
-    Data1: 442774875
-    Data2: 1104880673
-    Data3: -767378769
-    Data4: 1827826060
-  Banks:
-  - {fileID: -597702993067043555}
-  IsStream: 0
-  Is3D: 1
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 0
 --- !u!114 &-7320556482421281562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,6 +480,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 7392
+--- !u!114 &-6965492895233897738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/AlienSlugs/SlugWalk
+  m_EditorClassIdentifier: 
+  Path: event:/SFX/AlienSlugs/SlugWalk
+  Guid:
+    Data1: 442774875
+    Data2: 1104880673
+    Data3: -767378769
+    Data4: 1827826060
+  Banks:
+  - {fileID: -597702993067043555}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &-6888873483865160108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -969,7 +969,7 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639124921759921989
+  lastModified: 639125520241761992
   FileSizes:
   - Name: Desktop
     Value: 43156032
@@ -1694,10 +1694,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639124921760011926
+  lastModified: 639125520245548192
   FileSizes:
   - Name: Desktop
-    Value: 2669472
+    Value: 2669600
   Exists: 1
 --- !u!114 &-576261886126746661
 MonoBehaviour:
@@ -1867,7 +1867,6 @@ MonoBehaviour:
   - {fileID: 1178423821019701194}
   - {fileID: 4831944251381178477}
   - {fileID: 8875074359830628032}
-  - {fileID: -7390544270271480802}
   - {fileID: 2529479920195694449}
   - {fileID: 8612666591498473445}
   - {fileID: 3502289390771198508}
@@ -1942,6 +1941,7 @@ MonoBehaviour:
   - {fileID: 6684709102145206082}
   - {fileID: 1899165815619321885}
   - {fileID: -4428171304709142537}
+  - {fileID: -6965492895233897738}
   EditorParameters:
   - {fileID: 515280112161896408}
   - {fileID: 6822246190699957210}
@@ -1949,7 +1949,7 @@ MonoBehaviour:
   - {fileID: 3311945391348741204}
   StringsBanks:
   - {fileID: 8350624701242053860}
-  cacheTime: 639124921760089258
+  cacheTime: 639125520246653963
   cacheVersion: 131633
 --- !u!114 &118729461664434391
 MonoBehaviour:
@@ -2179,7 +2179,7 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/VoiceLines.bank
   Name: VoiceLines
   StudioPath: bank:/VoiceLines
-  lastModified: 639124921760089258
+  lastModified: 639125520246653963
   FileSizes:
   - Name: Desktop
     Value: 2316480
@@ -2464,7 +2464,7 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639124854797998064
+  lastModified: 639125520239732923
   FileSizes:
   - Name: Desktop
     Value: 4298
@@ -3664,10 +3664,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639124921758524393
+  lastModified: 639125520239742930
   FileSizes:
   - Name: Desktop
-    Value: 7186
+    Value: 7198
   Exists: 1
 --- !u!114 &8415007163700645510
 MonoBehaviour:
@@ -3766,7 +3766,7 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Ambience.bank
   Name: Ambience
   StudioPath: bank:/Ambience
-  lastModified: 639124921758523283
+  lastModified: 639125520239627600
   FileSizes:
   - Name: Desktop
     Value: 3329664
