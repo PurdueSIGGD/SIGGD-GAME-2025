@@ -18,7 +18,7 @@ public class HummingSound : ExternalEventTriggerer
     {
         Debug.Log("Triggered Music Time");
         //MusicManager.Instance.CrossFadeMusic("forestambiencefirst", 0.1f);
-        PlayerID.Instance.GetComponent<PlayerHummingSound>().StopHumming();
+        //PlayerID.Instance.GetComponent<PlayerHummingSound>().StopHumming();
         PlayerID.Instance.GetComponent<PlayerMovement>().MakeFootstepsNormal();
     }
 }

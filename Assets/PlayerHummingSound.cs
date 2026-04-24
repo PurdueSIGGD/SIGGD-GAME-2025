@@ -15,7 +15,7 @@ public class PlayerHummingSound : MonoBehaviour
         //ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(GetComponent<Rigidbody>().position, GetComponent<Rigidbody>().linearVelocity, transform.forward, Vector3.up);
         //sfx.set3DAttributes(attr);
         //sfx.start();
-        StartCoroutine(LateStart());
+        //StartCoroutine(LateStart());
     }
 
     private IEnumerator LateStart()
