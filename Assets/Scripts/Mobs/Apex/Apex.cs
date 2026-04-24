@@ -16,6 +16,7 @@ using CrashKonijn.Goap.Runtime;
 public class Apex : MobBrainBase
 {
     private static readonly int WalkingHash = Animator.StringToHash("Walking");
+    private static readonly int AttackingHash = Animator.StringToHash("Attacking");
     #region Apex References
 
     [Header("Apex References")]
@@ -26,6 +27,8 @@ public class Apex : MobBrainBase
     [SerializeField] private Animator animator;
     [SerializeField] private PerceptionManager perceptionManager;
     [SerializeField] private Smell smell;
+
+    [SerializeField] private GameObject lungeModel;
 
     #endregion
 
@@ -72,7 +75,11 @@ public class Apex : MobBrainBase
     #region Attack Settings
 
     [Header("Apex Attack")]
-    [SerializeField] private float attackRange = 2.5f;
+    [SerializeField] private float attackRange = 15.0f;
+    [SerializeField] private float maxLungeSpeed = 22f;
+    [SerializeField] private float arcHeight = 2f;
+    [SerializeField] private float minFlightTime = 0.30f;
+    [SerializeField] private float windupTime = 0.15f;
     [SerializeField] private LayerMask attackLayerMask;
     [SerializeField] private DamageContext attackContext;
     [Tooltip("Time to wait and mog at target before giving up attack, if attack cannot reach")]
@@ -110,6 +117,10 @@ public class Apex : MobBrainBase
     public int SweepsBeforeRoam => sweepsBeforeRoam;
     public HeadSweepAxis HeadSweepAxis => headSweepAxis;
     public float AttackRange => attackRange;
+    public float MaxLungeSpeed => maxLungeSpeed; 
+    public float ArcHeight => arcHeight;
+    public float MinFlightTime => minFlightTime;
+    public float WindupTime => windupTime;
     public LayerMask AttackLayerMask => attackLayerMask;
     public DamageContext AttackContext => attackContext;
 
@@ -184,6 +195,8 @@ public class Apex : MobBrainBase
 
     protected override void Start()
     {
+        lungeModel.SetActive(false);
+        
         // Don't call base — the Apex doesn't start in WanderState.
         // Initial state is set by InitializeApex(), called by ApexSpawnSystem
         // between Awake() and Start().
@@ -363,6 +376,11 @@ public class Apex : MobBrainBase
 
     public bool IsMoving() {
         return ctx.Rigidbody.linearVelocity.magnitude > 0.1f;
+    }
+
+    public void SetAttacking(bool isAttacking) {
+        lungeModel.SetActive(isAttacking);
+        animator.gameObject.SetActive(!isAttacking);
     }
 
     public void UpdateAnimParam()

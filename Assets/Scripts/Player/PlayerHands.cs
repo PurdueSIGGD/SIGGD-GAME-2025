@@ -148,6 +148,10 @@ public class PlayerHands : MonoBehaviour
     private AnimatorOverrideController mostRecentlySetController;
     // switching the override controller too much causes frame drops. So instead, it is delayed
     public void SetOverrideController(AnimatorOverrideController newController) {
+        if (mostRecentlySetController == newController) {
+            return;
+        }
+
         mostRecentlySetController = newController;
 
         if (delayedOverrideSet == true) {
