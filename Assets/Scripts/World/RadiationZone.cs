@@ -4,13 +4,36 @@ public class RadiationZone : MonoBehaviour
 {
     [SerializeField] int zoneLevel = 0; // 0 is least dangerous, 4 is most
 
+    [HideInInspector]
+    public RadioactiveVFXManager radioactiveVFXManager;
+
+    private void Start()
+    {
+        radioactiveVFXManager = RadioactiveVFXManager.Instance;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            other.gameObject.GetComponent<PlayerRadiation>().InRadiation = true;
-            other.gameObject.GetComponent<PlayerRadiation>().RadiationZone = zoneLevel;
+            PlayerRadiation playerRadiation = (PlayerRadiation) other.gameObject.GetComponent<PlayerRadiation>();
+            playerRadiation.InRadiation = true;
+            playerRadiation.RadiationZoneLevel = zoneLevel;
+
             Debug.Log("player entered radiation zone");
+
+
+            // If Radiation VFX container active and if the timer to deactivate the container is running, cancel
+            if (radioactiveVFXManager.disableVFXCoroutine != null)
+            {
+                radioactiveVFXManager.CancelStop();
+            } else
+            {
+                // Initialize VFX for the first time
+                radioactiveVFXManager.Init();
+            }
+
+
         }
     }
 

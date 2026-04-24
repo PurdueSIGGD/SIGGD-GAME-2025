@@ -20,6 +20,7 @@ public class PlayerRadiation : MonoBehaviour
     private static readonly string radiationNoDamageSound = "RadiationButNoDamage";
     private EventReference radiationDamageRef = default;
     private EventReference radiationNoDamageRef = default;
+
     public float CurrentRadiation
     {
         get => currentRadiation;
@@ -28,15 +29,15 @@ public class PlayerRadiation : MonoBehaviour
 
     //these are updated from the radiation zone object
     private bool inRadiation = false;
-    private int radiationZone = 0; // indicates what level the radiation zone is; use as the index for the arrays
+    private int radiationZoneLevel = 0; // indicates what level the radiation zone is; use as the index for the arrays
     public bool InRadiation {
         get => inRadiation;
         set => inRadiation = value;
     }
-    public int RadiationZone
+    public int RadiationZoneLevel
     {
-        get => radiationZone;
-        set => radiationZone = value;
+        get => radiationZoneLevel;
+        set => radiationZoneLevel = value;
     }
 
     private bool inRadiationNoDamage = false;
@@ -67,13 +68,12 @@ public class PlayerRadiation : MonoBehaviour
         //when not in a radiation area, decay the radiation to 0
         //when in a radiation area, buildup the radiation
         //  if the radiation gets to the threshold, start taking damage
-        UnityEngine.Debug.Log("current slime: " + SlimeLevel);
-        UnityEngine.Debug.Log("current radiation: " + currentRadiation);
+
         if (!inRadiation)
         {
             if (currentRadiation > 0)
             {
-                currentRadiation = Mathf.Max(currentRadiation - radiationDecayRate[radiationZone] * (2 - slimePercent[SlimeLevel]) * Time.deltaTime, 0); // decay the radiation, but not below 0
+                currentRadiation = Mathf.Max(currentRadiation - radiationDecayRate[radiationZoneLevel] * (2 - slimePercent[SlimeLevel]) * Time.deltaTime, 0); // decay the radiation, but not below 0
             }
             else
             {
@@ -96,9 +96,10 @@ public class PlayerRadiation : MonoBehaviour
             if (currentRadiation < radiationThreshold) // radiation isn't at the threshold
             {
                 // buildup
-                currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate[radiationZone] * slimePercent[SlimeLevel] * Time.deltaTime, radiationThreshold); // don't go over threshold
+                currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate[radiationZoneLevel] * slimePercent[SlimeLevel] * Time.deltaTime, radiationThreshold); // don't go over threshold
                 inRadiationDamage = false;
-                if (!inRadiationNoDamage) {    
+                if (!inRadiationNoDamage) 
+                {    
                     if (!radiationNoDamageRef.IsNull)
                     {
                         inRadiationNoDamage = true;
@@ -127,7 +128,7 @@ public class PlayerRadiation : MonoBehaviour
             { 
                 radiationDamageTimer += Time.deltaTime;
 
-                if (radiationDamageTimer >= radiationDamageInterval[radiationZone])
+                if (radiationDamageTimer >= radiationDamageInterval[radiationZoneLevel])
                 {
                     radiationDamageTimer = 0f; // Reset timer
                     playerHealth.TakeDamage(radiationDamageContext);
@@ -158,10 +159,32 @@ public class PlayerRadiation : MonoBehaviour
                 }
 
             }
-            float radiationPercent = CurrentRadiation / RadiationThreshold;
+            float radiationPercent = GetRadiationPercent();
             float targetStrength = (1 - radiationPercent) * 1.5f;
             radiationVignette?.SetStrength(targetStrength);
+
         }
+
+        // Update texture opacity
+        if (RadioactiveVFXManager.Instance != null)
+        {
+            float radiationPercentage = GetRadiationPercent();
+            if (radiationPercentage > 0f)
+            {
+                RadioactiveVFXManager.Instance.UpdateOpacity(radiationPercentage);
+            }
+            else
+            {
+                // Set a timer to deactivate the radiation VFX container object after the player has left for some time
+                RadioactiveVFXManager.Instance.StopAfterDelay();
+            }
+        }
+        
+    }
+
+    public float GetRadiationPercent()
+    {
+        return CurrentRadiation / RadiationThreshold;
     }
 
     public void UpdateRadiation(float amount)
@@ -172,6 +195,7 @@ public class PlayerRadiation : MonoBehaviour
     public void ResetRadiation()
     {
         currentRadiation = 0f;
+
     }
 
     public void IncrementSlimeLevel()
