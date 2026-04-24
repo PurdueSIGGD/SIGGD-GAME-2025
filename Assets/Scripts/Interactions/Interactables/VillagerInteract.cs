@@ -1,4 +1,8 @@
 using UnityEngine;
+using FMOD;
+using FMODUnity;
+using FMOD.Studio;
+using Debug = UnityEngine.Debug;
 
 public class VillagerInteract : MonoBehaviour, IInteractable<IInteractor>
 {
@@ -45,6 +49,9 @@ public class VillagerInteract : MonoBehaviour, IInteractable<IInteractor>
 
     public void OnInteract(IInteractor interactor)
     {
+        // when interact with slug play slug noise
+        RuntimeManager.PlayOneShot(FMODEvents.Instance.GetEventReferenceNoAsync("AilenTalk"), transform.position); // play sound for axe
+
         // Check player has a flower selected
         if (Inventory.Instance.GetSelectedItem()?.itemName == ItemInfo.ItemName.Flower)
         {
