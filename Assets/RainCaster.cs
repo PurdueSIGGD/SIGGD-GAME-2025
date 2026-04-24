@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class RainCaster : MonoBehaviour
 {
+    [SerializeField] bool shouldPlay = true;
     [SerializeField] ParticleSystem rainParticles;
     [SerializeField, MinMaxSlider(0, 1000)] Vector2 rainInterval;
     [SerializeField, MinMaxSlider(0, 1000)] Vector2 rainDuration;
@@ -15,6 +16,8 @@ public class RainCaster : MonoBehaviour
 
     void Start()
     {
+        if (!shouldPlay) return;
+
         rainParticles = Instantiate(rainParticles, transform.position, Quaternion.identity);
         if (Random.value < rainChanceOnStart && currentRain == null)
         {
@@ -32,6 +35,7 @@ public class RainCaster : MonoBehaviour
 
     private IEnumerator PlayRain()
     {
+        if (!shouldPlay) yield break;
         if (currentWait != null)
         {
             StopCoroutine(currentWait);
@@ -51,6 +55,7 @@ public class RainCaster : MonoBehaviour
 
     private IEnumerator WaitForRain()
     {
+        if (!shouldPlay) yield break;
         if (rainParticles.isPlaying || currentRain != null)
         {
             yield break;
