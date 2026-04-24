@@ -133,6 +133,7 @@ public class CraftingMenu : Singleton<CraftingMenu>
             {
                 TextMeshProUGUI plus = Instantiate(plusTemplate, ingredientPanel);
                 pluses.Add(plus);
+                
             }
         }
         Debug.Log("Selected " + selected.output.itemName);
