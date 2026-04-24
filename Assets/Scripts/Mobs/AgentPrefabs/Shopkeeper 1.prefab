@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4484092087943719875
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1967485545290656197}
+  m_Layer: 0
+  m_Name: SlimeStart
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1967485545290656197
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4484092087943719875}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.174, z: 0.481}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2206499522888678721}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &8672485797067779767
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -67,12 +98,20 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: -7009624356607075600, guid: 25eee84fa3632cf4b9e13107d6c3bf5c, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 7405558542599541750, guid: 25eee84fa3632cf4b9e13107d6c3bf5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1967485545290656197}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6485720109066793403, guid: 25eee84fa3632cf4b9e13107d6c3bf5c, type: 3}
       insertIndex: 1
       addedObject: {fileID: -1104447910156658974}
   m_SourcePrefab: {fileID: 100100000, guid: 25eee84fa3632cf4b9e13107d6c3bf5c, type: 3}
+--- !u!4 &2206499522888678721 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7405558542599541750, guid: 25eee84fa3632cf4b9e13107d6c3bf5c, type: 3}
+  m_PrefabInstance: {fileID: 8672485797067779767}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2475629533442662156 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6485720109066793403, guid: 25eee84fa3632cf4b9e13107d6c3bf5c, type: 3}
@@ -91,3 +130,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lookSpeed: 5
+  slimeObject: {fileID: 6844832148773862877, guid: 2494c81c30ffb4d5ea826e190a6f58a2, type: 3}
+  startPoint: {fileID: 1967485545290656197}
