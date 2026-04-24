@@ -26,8 +26,10 @@ public class AudioLogPlayer : MonoBehaviour, IInteractable<IInteractor>
 
     public void OnInteract(IInteractor interactor)
     {
+        Debug.Log("on interact happened");
         if (interactable)
         {
+            Debug.Log("log should be playing");
             AudioLogManager.Instance.PlayAudioLog(audioLog.name, PlayerID.Instance?.gameObject);
 
             interactable = false;
