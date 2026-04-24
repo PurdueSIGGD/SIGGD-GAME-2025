@@ -23,6 +23,7 @@ public class ClimbingGlovesInteract : MonoBehaviour, IInteractable<IInteractor>
     {
         Debug.Log("Picked up climbing gloves");
         SaveManager.Instance.playerModule.playerData.hasGloves = true;
+        AudioManager.Instance.PlayOneShotNoAsync(InteractableItem.itemPickupSound, PlayerID.Instance.gameObject.transform.position);
         Destroy(this.gameObject);
     }
 }

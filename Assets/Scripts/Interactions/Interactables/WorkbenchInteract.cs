@@ -22,6 +22,7 @@ public class WorkbenchInteract : MonoBehaviour, IInteractable<IInteractor>
         ui.DeactivateUI();
         if (CraftingMenu.Instance)
         {
+            AudioManager.Instance.PlayOneShotNoAsync(Interactable.interactSound, PlayerID.Instance.gameObject.transform.position);
             CraftingMenu.Instance.ShowCraftingMenu(true);
         }
         else
