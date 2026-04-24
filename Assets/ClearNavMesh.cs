@@ -4,6 +4,7 @@ using UnityEngine.AI;
 
 public class ClearNavMesh : MonoBehaviour
 {
+#if UNITY_EDITOR
     [MenuItem("Tools/Force Cleanup NavMesh")]
     public static void ForceCleanupNavMesh()
     {
@@ -12,7 +13,7 @@ public class ClearNavMesh : MonoBehaviour
 
         NavMesh.RemoveAllNavMeshData();
     }
-
+#endif
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
