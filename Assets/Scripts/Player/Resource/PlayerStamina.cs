@@ -12,10 +12,10 @@ public class PlayerStamina : MonoBehaviour
     [SerializeField] float jumpCost = 15f;  // when changing jumpcost, remember to update the number in the animator as well
                                             // (prevents jumping below a certain amount of stamina)
     [SerializeField] float climbingGlovesReduction = 0.5f;
-    
+
     [SerializeField] Slider staminaSlider;
     [SerializeField] Image staminaSliderBar;
-    
+
     private float currentStamina = -1f;
     private bool staminaDisabled = false;
 
@@ -47,7 +47,7 @@ public class PlayerStamina : MonoBehaviour
     void Start()
     {
         if (currentStamina == -1f) currentStamina = maxStamina;
-        
+
         psm = PlayerID.Instance.stateMachine;
         anim = PlayerID.Instance.GetComponent<Animator>();
 
@@ -91,7 +91,7 @@ public class PlayerStamina : MonoBehaviour
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
         }
-        else if (isClimbing && !SaveManager.Instance.playerModule.playerData.hasGloves)
+        else if (isClimbing && (SaveManager.Instance.playerModule == null || !SaveManager.Instance.playerModule.playerData.hasGloves))
         {
             currentStamina -= climbingStaminaDecayRate * Time.deltaTime;
         }
