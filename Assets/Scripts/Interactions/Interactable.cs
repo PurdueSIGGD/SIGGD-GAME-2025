@@ -10,6 +10,8 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
     private bool interactable = true;
     private InteractableUI currentUi;
 
+    public static readonly string interactSound = "PlayerExamine";
+
     public void OnHoverEnter(InteractableUI ui)
     {
         if (interactable)
@@ -32,10 +34,26 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
         if (interactable)
         {
             Debug.Log($"Item {itemInfo.itemName} interacted up by interactor.");
-            OnItemInteract?.Invoke(itemInfo, interactor);
+            //OnItemInteract?.Invoke(itemInfo, interactor);
+            try
+            {
+                OnItemInteract?.Invoke(itemInfo, interactor);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error during OnItemInteract: {e}");
+            }
             interactable = false;
             if (currentUi) currentUi.DeactivateUI();
-            if (destroyAfterPickup) Destroy(this.gameObject); // Remove the item from the scene
+            if (destroyAfterPickup)
+            {
+                AudioManager.Instance.PlayOneShotNoAsync(InteractableItem.itemPickupSound, PlayerID.Instance.gameObject.transform.position);
+                Destroy(this.gameObject); // Remove the item from the scene
+            }
+            else
+            {
+                AudioManager.Instance.PlayOneShotNoAsync(interactSound, PlayerID.Instance.gameObject.transform.position);
+            }
         }
     }
 }

@@ -55,6 +55,7 @@ public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
         
         if (CraftingMenu.Instance)
         {
+            AudioManager.Instance.PlayOneShotNoAsync(Interactable.interactSound, PlayerID.Instance.gameObject.transform.position);
             CraftingMenu.Instance.ShowCraftingMenu(true);
         }
         else
