@@ -13,6 +13,8 @@ public class EntityHealthManager : StatProvider, IHealth
     public static Action<DamageContext> OnHealthChanged;
     public static Action<DamageContext> OnDeath;
 
+    private static string playerDeathSound = "maledeath";
+
     void Start()
     {
         if (CurrentHealth == 0) CurrentHealth = maxHealth.Value; // start at full health
@@ -71,6 +73,7 @@ public class EntityHealthManager : StatProvider, IHealth
             // Change state of player to peaceful
 
             if (GameStateManager.Instance) GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
+            AudioManager.Instance.PlayOneShotNoAsync(playerDeathSound, PlayerID.Instance.gameObject.transform.position);
         }
     }
 

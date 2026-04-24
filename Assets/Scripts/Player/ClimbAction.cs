@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Utility;
 
 // KNOWN JANK HERE:
@@ -220,7 +221,8 @@ public class ClimbAction : MonoBehaviour
     /// <param name="handInputted"></param>
     public void InputHand(bool pressedDown, Hand handInputted) {
         // if the hand will not hit anything, do not enter climbing mode
-        if (!isClimbing && !IsFacingClimbingWall()) {
+        // prevent climbing in ship scene specifically
+        if ((!isClimbing && !IsFacingClimbingWall()) || (SceneManager.GetActiveScene().name == "ShipScene")) {
             return;
         }
 
