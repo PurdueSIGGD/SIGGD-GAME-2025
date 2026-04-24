@@ -39,7 +39,8 @@ public class ItemInfo : ScriptableObject
         OrangeMushroom,
         Bait,
         LongLastingBait,
-        LongDistanceBait
+        LongDistanceBait,
+        MusicBox
     };
 
     [SerializeField] public ItemType itemType;// type of item

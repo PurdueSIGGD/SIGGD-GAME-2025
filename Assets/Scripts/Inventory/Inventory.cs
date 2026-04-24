@@ -68,14 +68,14 @@ public class Inventory : Singleton<Inventory>, IInventory
     {
         inputActions.InventorySelection.Enable();
         inputActions.InventorySelection.Scroll.performed += OnScroll;
-        inputActions.InventorySelection.NumberKeys.performed += OnNumberKeyInput;
+        //inputActions.InventorySelection.NumberKeys.performed += OnNumberKeyInput;
     }
 
     void OnDisable()
     {
         inputActions.InventorySelection.Disable();
         inputActions.InventorySelection.Scroll.performed -= OnScroll;
-        inputActions.InventorySelection.NumberKeys.performed -= OnNumberKeyInput;
+        //inputActions.InventorySelection.NumberKeys.performed -= OnNumberKeyInput;
     }
 
     private void OnScroll(InputAction.CallbackContext context)
