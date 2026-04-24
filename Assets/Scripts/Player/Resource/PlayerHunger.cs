@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerHunger : MonoBehaviour
 {
@@ -9,11 +10,16 @@ public class PlayerHunger : MonoBehaviour
     [SerializeField] float hungerDamageInterval = 10f; // seconds between starvation damage
     [SerializeField] DamageContext hungerDamageContext;
     [SerializeField] GenericLingeringVignette hungerVignette;
+    [SerializeField] Slider hungerSlider;
     public float MaxHunger => maxHunger;
     public float CurrentHunger
     {
         get => currentHunger;
-        set => currentHunger = Mathf.Clamp(value, 0, maxHunger);
+        set
+        {
+            currentHunger = Mathf.Clamp(value, 0, maxHunger);
+            UpdateSlider();
+        }
     }
 
     private float currentHunger = -1;
@@ -24,16 +30,23 @@ public class PlayerHunger : MonoBehaviour
     {
         if (currentHunger < 0) currentHunger = maxHunger;
         playerHealth = GetComponent<EntityHealthManager>();
+        if (hungerSlider != null)
+        {
+            hungerSlider.minValue = 0f;
+            hungerSlider.maxValue = maxHunger;
+            hungerSlider.value = currentHunger;
+        }
     }
 
     void Update()
     {
-        if (inShipScene == true)
+        if (inShipScene == false)
         {
             //hunger goes down and takes health when starving
             if (currentHunger > 0)
             {
-                currentHunger = Mathf.Max(currentHunger - hungerDecayRate * Time.deltaTime, 0);
+                //currentHunger = Mathf.Max(currentHunger - hungerDecayRate * Time.deltaTime, 0);
+                CurrentHunger -= hungerDecayRate * Time.deltaTime;
                 hungerDamageTimer = 0f; // Reset timer if not starving
             }
             else
@@ -54,14 +67,20 @@ public class PlayerHunger : MonoBehaviour
         hungerVignette?.SetStrength(targetStrength);
     }
 
+    private void UpdateSlider()
+    {
+        if (hungerSlider != null)
+            hungerSlider.value = currentHunger;
+    }
+
     public void UpdateHunger(float ammount)
     {
-        currentHunger += ammount;
+        CurrentHunger += ammount;
     }
 
     public void ResetHunger()
     {
-        currentHunger = maxHunger;
+        CurrentHunger = maxHunger;
     }
 }
 

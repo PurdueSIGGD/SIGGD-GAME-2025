@@ -10,6 +10,7 @@ public class OrangeMushroomItemAction : IPlayerActionStrategy
         Inventory.Instance.Decrement();
         GameObject player = PlayerID.Instance.gameObject;
         player.GetComponent<MonoBehaviour>().StartCoroutine(SpeedUp(player));
+        PlayerID.Instance.GetComponent<PlayerHunger>().UpdateHunger(20);
         Debug.Log("player ate an orange mushroom");
     }
 

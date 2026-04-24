@@ -11,6 +11,7 @@ public class DarkPurpleMushroomItemAction : IPlayerActionStrategy
         Inventory.Instance.Decrement();
         GameObject player = PlayerID.Instance.gameObject;
         player.GetComponent<MonoBehaviour>().StartCoroutine(HealOverTime(player));
+        PlayerID.Instance.GetComponent<PlayerHunger>().UpdateHunger(20);
         Debug.Log("player ate dark purple mushroom");
     }
 
