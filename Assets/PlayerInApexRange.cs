@@ -8,16 +8,8 @@ public class PlayerInApexRange : MonoBehaviour
         if (collider.CompareTag("Apex"))
         {
             Debug.Log("crossfading to apex");
-            MusicManager.Instance.CrossFadeMusic("ApexLurk", 7.5f);
-        }
-    }
-
-    private void OnTriggerStay(Collider collider)
-    {
-        if (collider.CompareTag("Apex"))
-        {
-            
-            MusicManager.Instance.CrossFadeMusic(MusicSceneLink.Instance.sceneMusicKey, 7.5f);
+            MusicManager.Instance.CrossFadeMusic("ApexLurk", 2f);
+            MusicManager.Instance.curMusicState = MusicManager.MusicCycleState.ApexLurk;
         }
     }
 
@@ -27,7 +19,9 @@ public class PlayerInApexRange : MonoBehaviour
         if (collider.CompareTag("Apex"))
         {
             Debug.Log("crossfading to normal music again");
-            MusicManager.Instance.CrossFadeMusic(MusicSceneLink.Instance.sceneMusicKey, 5f);
+
+            MusicManager.Instance.CrossFadeMusic("ForestAmbianceAfterFirstApex", 2f);
+            MusicManager.Instance.curMusicState = MusicManager.MusicCycleState.Playing;
         }
     }
 }

@@ -9,10 +9,15 @@ public class testCombatDrumShift : MonoBehaviour
             Debug.Log("crossfading to new track");
             MusicManager.Instance.CrossFadeMusic("ForestAmbianceAfterFirstApex", 1f);
         }
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            Debug.Log("crossfading to new track");
+            MusicManager.Instance.CrossFadeMusic("MainMenu", 1f);
+        }
         if (Input.GetKeyDown(KeyCode.H))
         {
-            Debug.Log("shifting combat volume");
-            MusicManager.Instance.ToggleComabatVolume();
+            Debug.Log("playing cassette");
+            MusicManager.Instance.playCassette("Cassette5");
         }
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {

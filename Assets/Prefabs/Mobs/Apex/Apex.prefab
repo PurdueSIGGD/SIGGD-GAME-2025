@@ -195,12 +195,14 @@ MonoBehaviour:
   headBone: {fileID: 2461357152135337901}
   lineOfSight: {fileID: 4054441306856076960}
   animator: {fileID: 2770785788879187800}
+  perceptionManager: {fileID: 0}
+  smell: {fileID: 0}
   approachSpeedMulti: 1
   roamSpeedMulti: 0.6
   chaseSpeedMulti: 1.3
   arrivalDistance: 10
-  roamRadius: 12
-  roamPauseDuration: 2
+  roamRadius: {x: 10, y: 90}
+  roamPauseDuration: {x: 2, y: 6}
   roamDuration: 8
   headSweepAngle: 90
   headSweepDuration: 3
@@ -215,6 +217,7 @@ MonoBehaviour:
     victim: {fileID: 0}
     amount: 0
     xxtraContext: 
+  findPathBuffer: 5
   debugLogs: 1
 --- !u!195 &3654695270874870991
 NavMeshAgent:
@@ -481,7 +484,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 50
+  m_Radius: 35
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1136442347371796373
 PrefabInstance:

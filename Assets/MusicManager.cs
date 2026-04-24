@@ -28,9 +28,9 @@ public class MusicManager : Singleton<MusicManager>
     private Coroutine pauseMusicRoutine;
     private Coroutine playMusicRoutine;
 
-    public enum MusicCycleState { Playing, FadingOut, FadingIn, NotPlaying, Combat, Stopped}
+    public enum MusicCycleState { Playing, FadingOut, FadingIn, NotPlaying, Combat, Stopped, ApexLurk}
 
-    [SerializeField] private MusicCycleState curMusicState = MusicCycleState.NotPlaying;
+    public MusicCycleState curMusicState = MusicCycleState.NotPlaying;
 
     // set this to true whenever the player gets into combat
     private bool inCombat = false;
@@ -212,9 +212,7 @@ public class MusicManager : Singleton<MusicManager>
         Debug.Log("crossfading music");
         if (crossFadeRoutine != null)
         {
-            // to avoid crossfades overriding each other we just return if one is already happening
-            return;
-            //StopCoroutine(crossFadeRoutine);
+            StopCoroutine(crossFadeRoutine);
         }
 
         crossFadeRoutine = StartCoroutine(MusicCrossFade(toKey, duration));
@@ -232,6 +230,28 @@ public class MusicManager : Singleton<MusicManager>
         }
 
         activeFadeRoutine = StartCoroutine(FadeCombatVolume());
+    }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public IEnumerator playCassette(string cassetteKey)
+    {
+        cassetteKey = cassetteKey.ToLower();
+
+        EventInstance cassetteEvent = InitalizeMusicNotStart(cassetteKey);
+        cassetteEvent.getDescription(out EventDescription cassetteDescription);
+        cassetteDescription.getLength(out int length);
+
+        float lengthSec = length / 1000;
+
+        curTrack.setPaused(true);
+
+        StartCoroutine(PlayOneShotCoroutine(cassetteKey, PlayerID.Instance.transform.position));
+
+        yield return new WaitForSeconds(lengthSec);
+
+        curTrack.setPaused(false);
     }
 
     #endregion
@@ -318,12 +338,15 @@ public class MusicManager : Singleton<MusicManager>
     }
     private IEnumerator MusicCrossFade(string toKey, float duration)
     {
+        Debug.Log("IN CROSSFADE");
         toKey = toKey.ToLower();
 
         EventInstance to = InitalizeMusicNotStart(toKey);
 
         // we are always crossfading from the current track to something
         EventInstance from = curTrack;
+
+        curTrack = to;
 
         float curTime = 0f;
 
@@ -338,6 +361,7 @@ public class MusicManager : Singleton<MusicManager>
 
         while (curTime < duration)
         {
+            Debug.Log("FADING");
             curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
             float t = curTime / duration;
 
@@ -358,11 +382,9 @@ public class MusicManager : Singleton<MusicManager>
         from.setVolume(0f);
         to.setVolume(1f);
 
-        curTrack = to;
-
         from.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        from.release();
 
+        Debug.Log("setting the routine to null");
         crossFadeRoutine = null;
     }
 
@@ -499,10 +521,10 @@ public class MusicManager : Singleton<MusicManager>
     }
     #endregion
 
-    #region Music Fades During Gameplay
     // this makes sure we can catch whenever the state is changing from combat to non combat and vice versa
     public void GameStateChanged()
     {
+        Debug.Log("game state changed");
         GameStateManager.GameState gameState = GameStateManager.Instance.getGameState();
 
         RuntimeManager.StudioSystem.getParameterByName("Combat Track Volume", out float combatVol);
@@ -524,5 +546,4 @@ public class MusicManager : Singleton<MusicManager>
             // play apex fight music?
         }
     }
-    #endregion
 }
