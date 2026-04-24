@@ -22,5 +22,6 @@ public class PurpleMushroomItemAction : IPlayerActionStrategy
         PlayerID.Instance.GetComponent<EntityHealthManager>().Heal(healContext);
         PlayerID.Instance.GetComponent<PlayerHunger>().UpdateHunger(20);
         Debug.Log("player ate a mushroom");
+        yield return null;
     }
 }
