@@ -77,4 +77,21 @@ public class HealthbarScript : MonoBehaviour
             Canvas.ForceUpdateCanvases();
         }
     }
+
+    void Update()
+    {
+        var ph = PlayerID.Instance.playerHealth;
+        if (ph == null) { Debug.LogError("[Healthbar] playerHealth null"); return; }
+
+        healthSlider.maxValue = ph.MaxHealth;
+        healthSlider.SetValueWithoutNotify(ph.CurrentHealth);
+
+        // direct visual update for circular slider
+        if (fillImage != null)
+        {
+            float percent = ph.MaxHealth > 0 ? ph.CurrentHealth / ph.MaxHealth : 0f;
+            fillImage.fillAmount = Mathf.Clamp01(percent);
+            Canvas.ForceUpdateCanvases();
+        }
+    }
 }

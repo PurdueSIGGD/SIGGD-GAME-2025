@@ -314,7 +314,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inShipScene: 0
   maxHunger: 100
-  hungerDecayRate: 0.333
+  hungerDecayRate: 0.2
   hungerDamageInterval: 10
   hungerDamageContext:
     attacker: {fileID: 4696392301619895344}
@@ -405,6 +405,7 @@ MonoBehaviour:
   playerLandSound: PlayerLand
   playerHeavyLandSound: PlayerLandHeavy
   rb: {fileID: 0}
+  footstepWaitCount: 5
   speedMultiplier: 0
   canMove: 1
 --- !u!114 &5638831800853894958
@@ -547,6 +548,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvas: {fileID: 6243633009948686433}
   hudCanvasGroup: {fileID: 2769247241946904691}
+  maxAlpha: 0.8
   hudFadeDuration: 1
   hudTimeout: 5
 --- !u!114 &3558872390078823171
