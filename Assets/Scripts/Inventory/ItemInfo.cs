@@ -16,7 +16,8 @@ public class ItemInfo : ScriptableObject
         Container,
         Trap,
         Empty, 
-        Keycard
+        Keycard,
+        Utility
     };
 
     public enum ItemName { // All possible names of items
@@ -31,7 +32,15 @@ public class ItemInfo : ScriptableObject
         Keycard,
         Axe,
         Flower,
-        Slimeball
+        Slimeball,
+        GreenMushroom,
+        PurpleMushroom,
+        DarkPurpleMushroom,
+        OrangeMushroom,
+        Bait,
+        LongLastingBait,
+        LongDistanceBait,
+        MusicBox
     };
 
     [SerializeField] public ItemType itemType;// type of item

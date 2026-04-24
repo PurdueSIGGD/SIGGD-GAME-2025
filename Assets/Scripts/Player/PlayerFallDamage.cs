@@ -86,29 +86,47 @@ public class PlayerFallDamage : MonoBehaviour
                 // have they been falling for a long enough time?...
                 if (timeFalling > timeFallingThreshold) {
                     // calculate exact fall damage
-                    if (lastVerticalVelocity >= killVelocity || config_noKillVelocity && lastVerticalVelocity >= maxHurtVelocity) {
-                        if (config_debugMode == true) {
+                    if (lastVerticalVelocity >= killVelocity || config_noKillVelocity && lastVerticalVelocity >= maxHurtVelocity)
+                    {
+                        if (config_debugMode == true)
+                        {
                             print("DEBUG: Fall speed exceeds kill velocity: fallspeed = " + lastVerticalVelocity + ". kill velocity: " + killVelocity);
                         }
 
                         damageRecieved = -1f; // later in the script, this is equal to dealing player's max health as damage (death)
-                    } else if (lastVerticalVelocity >= minHurtVelocity) {
-                        if (config_debugMode) {
+                        AudioManager.Instance.PlayOneShotNoAsync(PlayerID.Instance.playerMovement.playerHeavyLandSound, PlayerID.Instance.gameObject.transform.position);
+                    }
+                    else if (lastVerticalVelocity >= minHurtVelocity)
+                    {
+                        if (config_debugMode)
+                        {
                             print("DEBUG: in damage zone for falling speed: " + lastVerticalVelocity);
                         }
 
                         // gets "precentage" of vertical fall speed according to hurt velocity variables.
                         float fallspeedPrecentage = Mathf.Min((lastVerticalVelocity - minHurtVelocity) / (maxHurtVelocity - minHurtVelocity), 1f);
 
-                        if (config_useFallDamageCurve) {
+                        if (config_useFallDamageCurve)
+                        {
                             fallspeedPrecentage = fallDamageCurve.Evaluate(fallspeedPrecentage);
                         }
 
                         damageRecieved = (maxFallDamage - minFallDamage) * fallspeedPrecentage + minFallDamage;
+                        AudioManager.Instance.PlayOneShotNoAsync(PlayerID.Instance.playerMovement.playerHeavyLandSound, PlayerID.Instance.gameObject.transform.position);
                     }
-                } else if (config_debugMode) {
-                    print("DEBUG: haven't been falling long enough to check for fall damage");
+                    else {
+                        AudioManager.Instance.PlayOneShotNoAsync(PlayerID.Instance.playerMovement.playerLandSound, PlayerID.Instance.gameObject.transform.position);
+                    }
                 }
+                else {
+                    AudioManager.Instance.PlayOneShotNoAsync(PlayerID.Instance.playerMovement.playerLandSound, PlayerID.Instance.gameObject.transform.position);
+                    if (config_debugMode)
+                    {
+
+                        print("DEBUG: haven't been falling long enough to check for fall damage");
+                    }
+                }
+                
 
                 // if damage if negative, 
                 if (damageRecieved < 0f)
@@ -145,6 +163,7 @@ public class PlayerFallDamage : MonoBehaviour
             if (wasFalling == false && rb.linearVelocity.y < 0)
             {
                 wasFalling = true;
+                PlayerID.Instance.playerMovement.SetWasFalling();
                 timeFalling = 0;
                 lastVerticalVelocity = 0;
             }

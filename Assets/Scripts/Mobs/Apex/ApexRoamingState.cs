@@ -1,6 +1,8 @@
 using SIGGD.Mobs.StateMachine;
+using SIGGD.Mobs;
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEditor;
+using System.Collections;
 
 /// <summary>
 /// The Apex moves to a single random roam point (once) around a guard position.
@@ -25,6 +27,9 @@ public class ApexRoamingState : IMobState
     private float stuckElapsedSec;
     private Vector3 lastPosition;
 
+    private IEnumerator idleCoroutine;
+    private bool idling;
+
     public ApexRoamingState(Apex apex)
     {
         this.apex = apex;
@@ -41,9 +46,10 @@ public class ApexRoamingState : IMobState
     {
         hasTarget = false;
         loggedZeroDir = false;
+        idling = false;
 
         // Pick a single roam target on enter. If none found, immediately go back to searching.
-        if (apex.TryGetRoamPoint(guardPosition, apex.RoamRadius, out Vector3 point))
+        if (apex.TryGetRoamPoint(guardPosition, Random.Range(apex.RoamRadius.x, apex.RoamRadius.y), out Vector3 point))
         {
             targetPosition = point;
             hasTarget = true;
@@ -56,25 +62,34 @@ public class ApexRoamingState : IMobState
         else
         {
             apex.ApexLog("RoamingState — no valid roam point found on NavMesh; switching to SearchingState.");
-            apex.StateMachine.ChangeState(apex.SearchingState);
+            //apex.StateMachine.ChangeState(apex.SearchingState);
+            if (idleCoroutine != null)
+            {
+                apex.StopCoroutine(idleCoroutine);
+            }
+            apex.StartCoroutine(idleCoroutine = IdleAtRoamPosition());
         }
     }
 
     public void Update()
     {
         // If we have a target and have reached it, transition to searching.
-        if (hasTarget && apex.IsAtPosition(targetPosition))
+        if (hasTarget && apex.IsAtPosition(targetPosition) && !idling)
         {
             apex.ApexLog("RoamingState — reached single waypoint, switching to SearchingState.");
-            apex.StateMachine.ChangeState(apex.SearchingState);
+            if (idleCoroutine != null)
+            {
+                apex.StopCoroutine(idleCoroutine);
+            }
+            apex.StartCoroutine(idleCoroutine = IdleAtRoamPosition());
         }
     }
 
     public void FixedUpdate()
     {
-        if (!hasTarget) return;
+        if (!hasTarget || idling) return;
 
-        Vector3 dir = apex.GetSteeringTo(targetPosition);
+        Vector3 dir = apex.GetSteeringTo(targetPosition).dir;
 
         // Guard: avoid commanding movement/rotation on an invalid or near-zero direction.
         if (!IsValidDirection(dir))
@@ -91,7 +106,11 @@ public class ApexRoamingState : IMobState
             {
                 apex.ApexLog("RoamingState — no movement detected for timeout, switching to SearchingState.");
                 hasTarget = false;
-                apex.StateMachine.ChangeState(apex.SearchingState);
+                if (idleCoroutine != null)
+                {
+                    apex.StopCoroutine(idleCoroutine);
+                }
+                apex.StartCoroutine(idleCoroutine = IdleAtRoamPosition());
             }
             return;
         }
@@ -106,14 +125,18 @@ public class ApexRoamingState : IMobState
             lastPosition = currentPos;
             stuckElapsedSec = 0f;
         }
-        else
+        else if (!idling)
         {
             stuckElapsedSec += Time.fixedDeltaTime;
             if (stuckElapsedSec >= stuckTimeoutSec)
             {
                 apex.ApexLog("RoamingState — insufficient movement for timeout, switching to SearchingState.");
                 hasTarget = false;
-                apex.StateMachine.ChangeState(apex.SearchingState);
+                if (idleCoroutine != null)
+                {
+                    apex.StopCoroutine(idleCoroutine);
+                }
+                apex.StartCoroutine(idleCoroutine = IdleAtRoamPosition());
             }
         }
     }
@@ -129,13 +152,22 @@ public class ApexRoamingState : IMobState
         return d.sqrMagnitude > 0.0001f;
     }
 
+    private IEnumerator IdleAtRoamPosition()
+    {
+        idling = true;
+        yield return new WaitForSeconds(Random.Range(apex.RoamPauseDuration.x, apex.RoamPauseDuration.y));
+        idling = false;
+        Enter();
+    }
+
     public void OnDrawGizmos()
     {
 #if UNITY_EDITOR
         if (ctx != null && ctx.NavAgent != null)
         {
             Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(guardPosition, apex.RoamRadius);
+            Gizmos.DrawWireSphere(guardPosition, apex.RoamRadius.x);
+            Gizmos.DrawWireSphere(guardPosition, apex.RoamRadius.y);
             if (hasTarget)
             {
                 Gizmos.color = Color.blue;
@@ -144,6 +176,7 @@ public class ApexRoamingState : IMobState
 
             Gizmos.DrawLine(apex.transform.position, targetPosition);
         }
+        Handles.Label(targetPosition, "Apex Roam Target");
 #endif
     }
 }

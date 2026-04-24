@@ -116,7 +116,7 @@ public class CraftingMenu : Singleton<CraftingMenu>
         outputImage.enabled = true;
         craftButton.gameObject.SetActive(true);
         ingredientPanel.gameObject.SetActive(true);
-        outputName.text = recipe.output.itemName.ToString();
+        outputName.text = GetItemName(recipe.output.itemName);
         description.text = recipe.output.description;
         outputImage.sprite = recipe.output.itemImage;
         craftButton.interactable = IsCraftable();
@@ -125,7 +125,7 @@ public class CraftingMenu : Singleton<CraftingMenu>
         // make list of icons and text boxes
         for (int i = 0; i < recipe.ingredients.Count; i++) {
             GameObject ingredientGroup = Instantiate(ingredientTemplate, ingredientPanel);
-            ingredientGroup.transform.Find("Ingredient Name").GetComponent<TMP_Text>().text = recipe.ingredients[i].itemName.ToString();
+            ingredientGroup.transform.Find("Ingredient Name").GetComponent<TMP_Text>().text = GetItemName(recipe.ingredients[i].itemName);
             ingredientGroup.transform.Find("Ingredient Count").GetComponent<TMP_Text>().text = "x " + recipe.counts[i];
             ingredientGroup.transform.Find("Ingredient Image").GetComponent<Image>().sprite = recipe.ingredients[i].itemImage;
             ingredientGroups.Add(ingredientGroup);
@@ -133,15 +133,28 @@ public class CraftingMenu : Singleton<CraftingMenu>
             {
                 TextMeshProUGUI plus = Instantiate(plusTemplate, ingredientPanel);
                 pluses.Add(plus);
+                
             }
         }
         Debug.Log("Selected " + selected.output.itemName);
     }
 
+    private string GetItemName(ItemInfo.ItemName itemName) => itemName switch
+    {
+        ItemInfo.ItemName.DarkPurpleMushroom => "Dark Purple Mushroom",
+        ItemInfo.ItemName.GreenMushroom => "Green Mushroom",
+        ItemInfo.ItemName.OrangeMushroom => "Orange Mushroom",
+        ItemInfo.ItemName.PurpleMushroom => "Purple Mushroom",
+        ItemInfo.ItemName.Bait => "Bait",
+        ItemInfo.ItemName.LongLastingBait => "Chewy Bait",
+        ItemInfo.ItemName.LongDistanceBait => "Enticing Bait",
+        _ => itemName.ToString()
+    };
+
     public void AddRecipe(Recipe recipe) {
         GameObject button = Instantiate(buttonTemplate, contentPanel);
-        button.GetComponentInChildren<TMP_Text>().text = recipe.output.itemName.ToString();
-        button.GetComponentInChildren<Image>().sprite = recipe.output.itemImage;
+        button.GetComponentInChildren<TMP_Text>().text = GetItemName(recipe.output.itemName);
+        button.transform.Find("Image").GetComponent<Image>().sprite = recipe.output.itemImage;
         button.GetComponent<Button>().onClick.AddListener(() => Select(recipe));
     }
 

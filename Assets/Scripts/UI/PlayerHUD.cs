@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public class PlayerHUD : MonoBehaviour
 {
@@ -18,8 +19,16 @@ public class PlayerHUD : MonoBehaviour
     void Awake()
     {
         ShowCanvas();
-        hudCanvasGroup.alpha = 1f;
-        hudEnabled = true;
+        if (SceneManager.GetActiveScene().name == "ShipScene")
+        {
+            hudCanvasGroup.alpha = 0f;
+            hudEnabled = false;
+        }
+        else
+        {
+            hudCanvasGroup.alpha = 1f;
+            hudEnabled = true;
+        }
         lastTime = Time.time;
     }
 
@@ -57,6 +66,8 @@ public class PlayerHUD : MonoBehaviour
 
     public void FadeIn()
     {
+        // Disable HUD in ship scene
+        if (SceneManager.GetActiveScene().name == "ShipScene") return;
         StartFade(1f);
         hudEnabled = true;
     }

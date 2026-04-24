@@ -20,6 +20,8 @@ public class ApexSpawnExternalEvent : ExternalEventTriggerer
     Apex apexScript;
     GameObject spawnedApex = null;
 
+    private static readonly string apexSpawnSound = "ApexOnSpawnPassiveGrow";
+
     public override void TriggerExternalEvent()
     {
         if (spawnedApex != null)
@@ -73,6 +75,9 @@ public class ApexSpawnExternalEvent : ExternalEventTriggerer
         spawnedApex = Instantiate(apexPrefab, spawnPos, transform.rotation);
         apexScript = spawnedApex.GetComponent<Apex>();
         apexScript.InitializeApex(targetPos);
+
+        Debug.Log("Spawned Apex. Playing audio.");
+        AudioManager.Instance.PlayOneShotNoAsync(apexSpawnSound, spawnPos);
 
         if (questEventBroadcaster.conditionStrategy is ApexSpawnConditionStrategy apexSpawnStrategy)
         {

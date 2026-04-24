@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0921de3c6c2e29140a0459e282f3c744, type: 3}
+  m_Name: Bait (Long Distance)
+  m_EditorClassIdentifier: 
+  itemType: 6
+  itemName: 14
+  itemImage: {fileID: 21300000, guid: 3d35db8783ff1a7408e6524eefb5f393, type: 3}
+  isIngredient: 0
+  maxStackCount: 5
+  description: A curious item that distracts the creatures in this world at a long
+    range.
+  playerActionStrategy:
+    rid: 5367245708689932288
+  itemPrefab: {fileID: 0}
+  itemPlacementPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 5367245708689932288
+      type: {class: ThrowBaitAction, ns: , asm: Assembly-CSharp}
+      data:
+        handAnimatorController: {fileID: 22100000, guid: 99a2c1a32e72f434bb9299cead94a6da, type: 2}
+        animationClip: {fileID: 7400000, guid: e267b55f8a3c1a84580fe823dddff5b6, type: 2}
+        specifiedActionDuration: -1
+        projectile: {fileID: 4973638883382474227, guid: e10214e7c8a42ee4a9f293ecc4a25ace, type: 3}
+        throwForce: 15
+        radius: 15
+        duration: 5
+        baitDuration: 3

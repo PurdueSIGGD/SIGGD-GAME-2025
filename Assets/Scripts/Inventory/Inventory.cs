@@ -50,6 +50,13 @@ public class Inventory : Singleton<Inventory>, IInventory
 
         inputActions = new InventoryInputActions();
 
+        hotbarData = new InventorySlot[HotBarLength];
+        inventoryData = new InventorySlot[InventoryLength];
+        allSlots = new InventorySlot[HotBarLength + InventoryLength];
+
+        hotbarUISlots = new UISlot[HotBarLength];
+        inventoryUISlots = new UISlot[InventoryLength];
+
         itemInfos = new();
         foreach (var entry in RecipeInfo.Instance.NamesToItemInfos)
         {
@@ -61,14 +68,14 @@ public class Inventory : Singleton<Inventory>, IInventory
     {
         inputActions.InventorySelection.Enable();
         inputActions.InventorySelection.Scroll.performed += OnScroll;
-        inputActions.InventorySelection.NumberKeys.performed += OnNumberKeyInput;
+        //inputActions.InventorySelection.NumberKeys.performed += OnNumberKeyInput;
     }
 
     void OnDisable()
     {
         inputActions.InventorySelection.Disable();
         inputActions.InventorySelection.Scroll.performed -= OnScroll;
-        inputActions.InventorySelection.NumberKeys.performed -= OnNumberKeyInput;
+        //inputActions.InventorySelection.NumberKeys.performed -= OnNumberKeyInput;
     }
 
     private void OnScroll(InputAction.CallbackContext context)
@@ -96,6 +103,7 @@ public class Inventory : Singleton<Inventory>, IInventory
 
         selected = nextIndex;
         OnHotbarSelectionChanged?.Invoke(selected);
+        PlayerID.Instance.playerHUD.TriggerHUDEvent();
 
         AnimatorOverrideController itemAnimator = GetSlotAnimation(allSlots[selected]);
         if (itemAnimator != null)
@@ -150,6 +158,15 @@ public class Inventory : Singleton<Inventory>, IInventory
         return null;
     }
     #endregion
+
+    /// <summary>
+    /// this update function is literally only to fix the bug where items don't have an animation
+    /// only when entering a scene with a weapon equip.
+    /// </summary>
+    void Update()
+    {
+        Reselect();
+    }
 
     void Start()
     {
@@ -357,11 +374,9 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <summary>
     /// Reselects the currently selected slot. Use this when the tool's animation may have changed.
     /// </summary>
-    public void Reselect()
-    {
+    public void Reselect() {
         AnimatorOverrideController itemAnimator = GetSlotAnimation(allSlots[selected]);
-        if (itemAnimator != null)
-        {
+        if (itemAnimator != null) {
             LoadHandAnimation(itemAnimator);
         }
         else
