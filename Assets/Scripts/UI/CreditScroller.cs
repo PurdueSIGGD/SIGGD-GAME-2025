@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,7 +24,7 @@ public class CreditScroller : MonoBehaviour
         {
             SceneManager.LoadScene("Main Menu");
         }
-        else if (Input.anyKeyDown)
+        else if (!skipShown && Input.anyKeyDown)
         {
             ShowSkipButton();
         }
