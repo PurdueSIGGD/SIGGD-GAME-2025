@@ -7,8 +7,14 @@ using UnityEngine.VFX;
 
 public class RadioactiveVFXManager : MonoBehaviour
 {
+    public static RadioactiveVFXManager Instance;
+
     // How many seconds to wait after Player leaves radiation zone to deactivate the container
-    private const int DISACTIVATE_WAIT_TIME = 5; 
+    [SerializeField]
+    private int DISACTIVATE_WAIT_TIME = 3;
+
+    [SerializeField]
+    private float MAX_OPACITY = 0.7f;
 
     [SerializeField]
     private GameObject container; // container holds VFX, camera, and canvas
@@ -19,17 +25,21 @@ public class RadioactiveVFXManager : MonoBehaviour
     [SerializeField]
     private GameObject VFXGameObject; // Game object with VFX component
 
+
     public Coroutine disableVFXCoroutine = null;
 
     private VisualEffect particlesVFX; // Particles VFX in container
-    private Image renderImage; // Image with render texture inside canvas in container
+    private RawImage renderImage; // Image with render texture inside canvas in container
 
-
+    private void Awake()
+    {
+        Instance = this;
+    }
     private void Start()
     {
         particlesVFX = VFXGameObject.GetComponent<VisualEffect>();
         container.transform.position = spawnLocation;
-        renderImage = imageGameObject.GetComponent<Image>();
+        renderImage = imageGameObject.GetComponent<RawImage>();
         container.SetActive(false);
         particlesVFX.Stop();
     }
@@ -42,7 +52,7 @@ public class RadioactiveVFXManager : MonoBehaviour
         if (IsRunning()) return;
         container.SetActive(true);
         particlesVFX.Play();
-        Debug.Log("Activated VFX container");
+        //Debug.Log("Activated VFX container");
     }
 
     /// <summary>
@@ -53,7 +63,7 @@ public class RadioactiveVFXManager : MonoBehaviour
     {
         if (IsRunning()) {
             Color c = renderImage.color;
-            c.a = percentage;
+            c.a = percentage * MAX_OPACITY;
             renderImage.color = c;
         }
     }
@@ -65,7 +75,7 @@ public class RadioactiveVFXManager : MonoBehaviour
         particlesVFX.Stop();
         container.SetActive(false);
         disableVFXCoroutine = null;
-        Debug.Log("disactivated container for VFX");
+        //Debug.Log("disactivated container for VFX");
     }
 
     public void StopAfterDelay()

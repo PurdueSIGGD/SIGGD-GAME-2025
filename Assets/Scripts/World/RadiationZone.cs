@@ -7,9 +7,9 @@ public class RadiationZone : MonoBehaviour
     [HideInInspector]
     public RadioactiveVFXManager radioactiveVFXManager;
 
-    private void Awake()
+    private void Start()
     {
-        radioactiveVFXManager = gameObject.GetComponent<RadioactiveVFXManager>();
+        radioactiveVFXManager = RadioactiveVFXManager.Instance;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -19,9 +19,6 @@ public class RadiationZone : MonoBehaviour
             PlayerRadiation playerRadiation = (PlayerRadiation) other.gameObject.GetComponent<PlayerRadiation>();
             playerRadiation.InRadiation = true;
             playerRadiation.RadiationZoneLevel = zoneLevel;
-
-
-            playerRadiation.radiationZone = this;
 
             Debug.Log("player entered radiation zone");
 

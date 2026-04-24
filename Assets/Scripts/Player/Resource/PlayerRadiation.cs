@@ -12,8 +12,6 @@ public class PlayerRadiation : MonoBehaviour
     [SerializeField] float[] slimePercent = { .9f, .7f, .5f, .3f, .1f}; // multiplies the builduprate so it's slower
     public float RadiationThreshold => radiationThreshold;
 
-    [HideInInspector]
-    public RadiationZone radiationZone;
     public float CurrentRadiation
     {
         get => currentRadiation;
@@ -52,8 +50,8 @@ public class PlayerRadiation : MonoBehaviour
         //when not in a radiation area, decay the radiation to 0
         //when in a radiation area, buildup the radiation
         //  if the radiation gets to the threshold, start taking damage
-        Debug.Log("current slime: " + SlimeLevel);
-        Debug.Log("current radiation: " + currentRadiation);
+        //Debug.Log("current slime: " + SlimeLevel);
+        //Debug.Log("current radiation: " + currentRadiation);
         if (!inRadiation)
         {
             if (currentRadiation > 0)
@@ -91,19 +89,21 @@ public class PlayerRadiation : MonoBehaviour
 
         }
 
-        if (radiationZone != null)
+        // Update texture opacity
+        if (RadioactiveVFXManager.Instance != null)
         {
             float radiationPercentage = GetRadiationPercent();
             if (radiationPercentage > 0f)
             {
-                radiationZone.radioactiveVFXManager.UpdateOpacity(radiationPercentage);
+                RadioactiveVFXManager.Instance.UpdateOpacity(radiationPercentage);
             }
             else
             {
                 // Set a timer to deactivate the radiation VFX container object after the player has left for some time
-                radiationZone.radioactiveVFXManager.StopAfterDelay();
+                RadioactiveVFXManager.Instance.StopAfterDelay();
             }
         }
+        
     }
 
     public float GetRadiationPercent()
