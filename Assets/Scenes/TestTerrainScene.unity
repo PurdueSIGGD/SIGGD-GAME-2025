@@ -390,7 +390,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
+  m_VoxelSize: 0.33333334
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: d4e886fba03cd4d4baa873e52df35c90, type: 2}
   m_BuildHeightMesh: 0
@@ -2404,6 +2404,10 @@ PrefabInstance:
     - target: {fileID: 6906967935226233989, guid: 0b3def44900d5484ea1a5c9b67e202bc, type: 3}
       propertyPath: m_Name
       value: Apex
+      objectReference: {fileID: 0}
+    - target: {fileID: 6906967935226233989, guid: 0b3def44900d5484ea1a5c9b67e202bc, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9015402322358843304, guid: 0b3def44900d5484ea1a5c9b67e202bc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7584,6 +7588,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4696392301619895344, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
       insertIndex: -1
       addedObject: {fileID: 425215555}
+    - targetCorrespondingSourceObject: {fileID: 4696392301619895344, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 425215556}
   m_SourcePrefab: {fileID: 100100000, guid: 7e297bf350bdd4dc99f6897f7f5b36df, type: 3}
 --- !u!1 &425215554 stripped
 GameObject:
@@ -7633,6 +7640,18 @@ MonoBehaviour:
   - 0.6
   - 0.45
   - 0.3
+--- !u!114 &425215556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425215554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 339df473adcb55e4a974300b5afa7900, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &425345246
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19503,6 +19522,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 518845681}
     - target: {fileID: 6213541389378307349, guid: 79cd81a77463569c894f32f489709205, type: 3}
+      propertyPath: inCombat
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6213541389378307349, guid: 79cd81a77463569c894f32f489709205, type: 3}
       propertyPath: initMusicKey
       value: forestambiancefirst
       objectReference: {fileID: 0}
@@ -24337,6 +24360,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 474820382325767586, guid: 72a4239acf1adcd408c9031ae0c31857, type: 3}
+      propertyPath: managedReferences[5381889050926645331].duration
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 498610064396424665, guid: 72a4239acf1adcd408c9031ae0c31857, type: 3}
       propertyPath: m_LocalPosition.x
       value: 95.6
@@ -24380,6 +24407,10 @@ PrefabInstance:
     - target: {fileID: 7875183222690378620, guid: 72a4239acf1adcd408c9031ae0c31857, type: 3}
       propertyPath: m_Name
       value: Apex Spawner
+      objectReference: {fileID: 0}
+    - target: {fileID: 7875183222690378620, guid: 72a4239acf1adcd408c9031ae0c31857, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -37382,6 +37413,67 @@ MonoBehaviour:
   m_EditMode: 0
   m_FlipNormals: 0
   isOnGrid: 1
+--- !u!1001 &8576500737211025335
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 652211184749560685, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: sceneMusicKey
+      value: ForestAmbianceFirst
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181609609128439145, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 42.38436
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181609609128439145, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 13.889287
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181609609128439145, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 581.41907
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181609609128439145, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181609609128439145, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181609609128439145, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181609609128439145, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181609609128439145, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181609609128439145, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181609609128439145, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6233267131471241584, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
+      propertyPath: m_Name
+      value: Music Scene Link
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ae0b4541f17826c41977c033b937ffe8, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -37392,6 +37484,7 @@ SceneRoots:
   - {fileID: 183246233}
   - {fileID: 9945323}
   - {fileID: 1133959470}
+  - {fileID: 8576500737211025335}
   - {fileID: 1982320324}
   - {fileID: 2064403283}
   - {fileID: 1063778736}
@@ -37426,3 +37519,4 @@ SceneRoots:
   - {fileID: 1812694825}
   - {fileID: 1888779934}
   - {fileID: 510534023}
+  - {fileID: 128304741}
