@@ -258,7 +258,7 @@ namespace SIGGD.Mobs.Hyena
                 if (NavMesh.SamplePosition(awayPoint, out NavMeshHit hit, 3f, navFilter))
                     awayPoint = hit.position;
 
-                Vector3 dir = NavSteering.GetSteeringDirection(agent, awayPoint, rb.position, 0.1f);
+                Vector3 dir = NavSteering.GetSteeringDirection(agent, awayPoint, rb.position, 0.1f).dir;
                 move.MoveTowards(dir, 1.2f);
 
                 yield return new WaitForFixedUpdate();

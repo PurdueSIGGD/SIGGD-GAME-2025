@@ -8,8 +8,10 @@ using UnityEditor;
  */
 public class PlayerID : Singleton<PlayerID>
 {
-    #region GameObject Components 
+    #region GameObject Components
 
+    public static bool isReset = false;
+    
     [Header("Components")]
     [HideInInspector] public FirstPersonCamera cam; // Reference to the main camera in the scene. Can be serialized, but kept it hide for now cus seeing prefab changes in scene is kind of annoying
     [HideInInspector] public Rigidbody rb; // Reference to the Rigidbody component on the same GameObject.
@@ -19,6 +21,7 @@ public class PlayerID : Singleton<PlayerID>
     [HideInInspector] public EntityHealthManager playerHealth;
     [HideInInspector] public PlayerHunger playerHunger;
     [HideInInspector] public PlayerStamina playerStamina;
+    [HideInInspector] public PlayerRadiation playerRadiation;
     [HideInInspector] public PlayerHUD playerHUD;
     public Inventory Inventory => Inventory.Instance;
     [HideInInspector] public PlayerInteractor playerInteractor;
@@ -38,6 +41,7 @@ public class PlayerID : Singleton<PlayerID>
     protected override void Awake()
     {
         base.Awake();
+        Debug.Log("Resetting the player");
         stateMachine = GetComponent<PlayerStateMachine>();
         playerInteractor = GetComponent<PlayerInteractor>();
         playerMovement = GetComponent<PlayerMovement>();
@@ -45,6 +49,7 @@ public class PlayerID : Singleton<PlayerID>
         playerHunger = GetComponent<PlayerHunger>();
         playerStamina = GetComponent<PlayerStamina>();
         playerHUD = GetComponent<PlayerHUD>();
+        playerRadiation = GetComponent<PlayerRadiation>();
 
         rb = GetComponent<Rigidbody>();
 
@@ -56,6 +61,10 @@ public class PlayerID : Singleton<PlayerID>
         cameraMovement = cam.GetComponentInParent<CameraMovement>();
     }
 
+    private void Start() {
+        isReset = true;
+    }
+    
     #endregion
 
     #region Gizmos

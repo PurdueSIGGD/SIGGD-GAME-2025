@@ -75,6 +75,8 @@ namespace SIGGD.Mobs
         /// <param name="turnResponsiveness"></param>
         public void MoveTowards(Vector3 desiredDir, float speedMulti, float turnResponsiveness = 1f, bool moveWithSprint = true)
         {
+            if (desiredDir == Vector3.zero) return;
+
             // Applies sprinting
             if (moveWithSprint && sprintAllowed && sprint != null && sprint.stamina > 0f)
             {
@@ -206,7 +208,7 @@ namespace SIGGD.Mobs
         {
             yield return new WaitUntil(() => ctx != null);
 
-            switch (ctx.type)
+            switch (ctx.Type)
             {
                 case MobType.Hyena:
                     FMODEvents.Instance.GetEventInstance("HyenaFootstep", instance => { footsteps = instance; });

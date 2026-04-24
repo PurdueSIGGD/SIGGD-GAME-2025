@@ -1,5 +1,10 @@
 using System.Collections.Generic;
+using SIGGD.Mobs.StateMachine;
 using UnityEngine;
+using FMOD;
+using FMODUnity;
+using FMOD.Studio;
+using Debug = UnityEngine.Debug;
 
 public class AxeItemStrategy : IPlayerActionStrategy
 {
@@ -53,6 +58,8 @@ public class AxeItemStrategy : IPlayerActionStrategy
 
         base.OnEnter();
         handsTransform = PlayerHands.instance.transform;
+
+        RuntimeManager.PlayOneShot(FMODEvents.Instance.GetEventReferenceNoAsync("AxeSwing"), PlayerID.Instance.transform.position); // play sound for axe
         PlayHandAction(); // plays animation for axe
 
         hitbox_timer = axeAnimation_HitboxDelay + axeAnimation_HitboxDuration;
@@ -117,6 +124,11 @@ public class AxeItemStrategy : IPlayerActionStrategy
                             damageContext.victim = hitObject;
                             damageContext.amount = axeDamage;
                             healthManager.TakeDamage(damageContext);
+                        }
+
+                        if (hitObject.TryGetComponent(out SMHyenaBrain mobBrain))
+                        {
+                            mobBrain.TryParry();
                         }
                     }
                 }

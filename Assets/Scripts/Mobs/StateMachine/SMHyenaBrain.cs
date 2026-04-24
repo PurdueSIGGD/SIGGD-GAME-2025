@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using FMOD;
 using FMOD.Studio;
 using SIGGD.Mobs.Hyena;
@@ -11,19 +13,30 @@ namespace SIGGD.Mobs.StateMachine
     [RequireComponent(typeof(HyenaAttackManager))]
     public class SMHyenaBrain : MobBrainBase
     {
+        public ChasePlayerState ChasePlayer => chasePlayerState;
+        public ChasePreyState ChasePrey => chasePreyState;
+
+        private float knockbackDuration = 2f;
+        private float knockbackForce = 20f;
+        
         private SeekFoodState seekFoodState;
         private ChasePlayerState chasePlayerState;
         private AttackPlayerState attackPlayerState;
         private ChasePreyState chasePreyState;
         private AttackPreyState attackPreyState;
+        private ParriedState parriedState;
 
         [SerializeField] private float hungerThreshold = 50f;
+        [SerializeField] private Animator animator;
+
+        [SerializeField] private GameObject deathModel;
 
         protected override string MobName => "Hyena";
 
         // Audio name
         private readonly string onNoticePlayerSound = "HyenaOnNotice";
         private readonly string passivePantSound = "HyenaPassivePant";
+        private readonly string parrySound = "PlayerDodge";
         private EventInstance passivePantEvent;
 
         protected override MobContext BuildContext()
@@ -40,7 +53,8 @@ namespace SIGGD.Mobs.StateMachine
                 Perception = GetComponent<PerceptionManager>(),
                 AttackManager = GetComponent<HyenaAttackManager>(),
                 Smell = GetComponent<Smell>(),
-                type = MobType.Hyena
+                Type = MobType.Hyena,
+                Animator = animator
             };
         }
 
@@ -51,16 +65,21 @@ namespace SIGGD.Mobs.StateMachine
             attackPlayerState = new AttackPlayerState(ctx);
             chasePreyState = new ChasePreyState(ctx);
             attackPreyState = new AttackPreyState(ctx);
+            parriedState = new ParriedState(ctx, knockbackForce, knockbackDuration);
         }
 
         private void OnEnable()
         {
+            EntityHealthManager.OnDeath += HyenaDeath;
+            
             if (ctx.Perception != null)
                 ctx.Perception.OnPlayerDetected += OnPlayerDetected;
         }
 
         private void OnDisable()
         {
+            EntityHealthManager.OnDeath -= HyenaDeath;
+            
             if (ctx.Perception != null)
                 ctx.Perception.OnPlayerDetected -= OnPlayerDetected;
         }
@@ -68,6 +87,11 @@ namespace SIGGD.Mobs.StateMachine
         protected override void Awake()
         {
             base.Awake();
+        }
+
+        protected override void Start()
+        {
+            base.Start();
             FMODEvents.Instance.GetEventInstance(passivePantSound, instance => { passivePantEvent = instance; });
         }
 
@@ -85,11 +109,56 @@ namespace SIGGD.Mobs.StateMachine
                 passivePantEvent.start();
             }
         }
+        
+        public void TryParry()
+        {
+            if (stateMachine.CurrentState == attackPlayerState && !attackPlayerState.IsAttackFinished)
+            {
+                AudioManager.Instance.PlayOneShotNoAsync(parrySound, PlayerID.Instance.gameObject.transform.position);
+                StartCoroutine(PlayerInvincible(1));
+                parriedState.SetDirection(ctx.Transform.forward);
+                stateMachine.ChangeState(parriedState);
+            }
+        }
+
+        IEnumerator PlayerInvincible(float time)
+        {
+            var playerID = PlayerID.Instance;
+
+            playerID.playerHealth.SetInvincible(true);
+            
+            yield return new WaitForSeconds(time);
+            
+            playerID.playerHealth.SetInvincible(false);
+        }
 
         protected override void EvaluateTransitions()
         {
             var current = stateMachine.CurrentState;
             bool isAttacking = current == attackPlayerState || current == attackPreyState;
+
+            if (current == parriedState)
+            {
+                if (parriedState.finished)
+                {
+                    if (PlayerVisible())
+                        stateMachine.ChangeState(chasePlayerState);
+                    else if (PreyVisible())
+                        stateMachine.ChangeState(chasePreyState);
+                    else
+                        stateMachine.ChangeState(wanderState);
+                }                
+                return;
+            }
+
+            if (current == baitedState)
+            {
+                if (baitedState.returnToSender)
+                {
+                    stateMachine.ChangeState(wanderState);
+                }
+                return;
+            }
 
             // While lunging, do not interrupt the attack
             if (ctx.AttackManager != null && ctx.AttackManager.isLunging)
@@ -233,6 +302,13 @@ namespace SIGGD.Mobs.StateMachine
                           ctx.Perception.preyTargets.Count > 0;
             bool canSmell = ctx.Smell != null && ctx.Smell.ClosestPrey != null;
             return canSee || canSmell;
+        }
+
+        private void HyenaDeath(DamageContext context)
+        {
+            if (context.victim != gameObject) return;
+            
+            Instantiate(deathModel, transform.position, transform.rotation);
         }
     }
 }
