@@ -29,7 +29,9 @@ public class GraveDataSaveModule : ISaveModule
 
     public bool serialize()
     {
-        GameObject graveObj = PlayerID.Instance.GetComponent<ManageRespawn>().GetCurGrave();
+        GameObject graveObj = null;
+        if (PlayerID.Instance) 
+            PlayerID.Instance.GetComponent<ManageRespawn>().GetCurGrave();
         if (graveObj != null)
         {
             graveSaveData.position = graveObj.transform.position;

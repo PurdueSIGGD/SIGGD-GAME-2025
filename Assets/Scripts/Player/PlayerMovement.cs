@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
 
     private EventInstance footsteps;
 
-    private static string jumpSound = "PlayerJump";
+    private static string jumpSound = "Jump";
     private static readonly string[] labScenes = {
         "ShipScene",
         "NathanA0Scene"
@@ -59,6 +59,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+        UnityEngine.Debug.Log("I, PlayerMovement.cs, hereby declare myself AWAKE!!!");
+
         rb = GetComponent<Rigidbody>(); 
         rb = GetComponent<Rigidbody>();
         psm = PlayerID.Instance.stateMachine;

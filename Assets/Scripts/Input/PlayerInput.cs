@@ -26,11 +26,23 @@ public class PlayerInput : Singleton<PlayerInput>
     public bool interactionHeld = false;
     public event Action<InputAction.CallbackContext> OnAction = delegate { };
 
+
+    public void LoadBindingOverrides(string overrides)
+    {
+        inputActions.LoadBindingOverridesFromJson(overrides);
+    }
+
     ////////
     protected override void Awake()
     {
         base.Awake();
+        Debug.Log("I, PlayerInput.cs, hereby declare myself AWAKE!!!");
+
         inputActions = new PlayerInputActions();
+        // inputActions.LoadBindingOverridesFromJson(inputActions.asset.SaveBindingOverridesAsJson());
+
+        // InputOverrideSaveModule.ApplyOverrides(inputActions);
+
         climbingScript = gameObject.GetComponent<ClimbAction>();
         stateMachine = gameObject.GetComponent<PlayerStateMachine>();
     }
@@ -38,6 +50,8 @@ public class PlayerInput : Singleton<PlayerInput>
     ////// when enabled, activate inputs
     private void OnEnable()
     {
+        Debug.Log("I, PlayerInput.cs, hereby declare myself ENABLED!!!");
+
         inputActions.Enable();
 
         inputActions.Player.Move.performed += InputOnMove;

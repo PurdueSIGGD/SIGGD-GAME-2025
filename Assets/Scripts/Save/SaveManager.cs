@@ -24,6 +24,13 @@ public class SaveManager : Singleton<SaveManager>
     public GraveDataSaveModule graveModule = null;
     public bool saveGrave = true;
 
+    public InputOverrideSaveModule inputOverrideSaveModule = null;
+    public bool saveInputOverrides = true;
+
+    public AudioLevelsSaveModule audioLevelsSaveModule = null;
+    public bool saveAudioLevels = true;
+
+
     private ISaveModule[] modules;
 
     protected override void Awake()
@@ -40,6 +47,8 @@ public class SaveManager : Singleton<SaveManager>
         if (saveQuests) questModule = new QuestDataSaveModule();
         if (saveGameProgress) gameProgressModule = new GameProgressDataSaveModule();
         if (saveGrave) graveModule = new GraveDataSaveModule();
+        if (saveInputOverrides) inputOverrideSaveModule = new InputOverrideSaveModule();
+        if (saveAudioLevels) audioLevelsSaveModule = new AudioLevelsSaveModule();
 
         modules = new ISaveModule[] {
             inventoryModule,
@@ -47,7 +56,10 @@ public class SaveManager : Singleton<SaveManager>
             playerModule,
             questModule,
             gameProgressModule,
-            graveModule
+            mobSceneDataSaveModule,
+            graveModule,
+            inputOverrideSaveModule,
+            audioLevelsSaveModule
         };
 
         Debug.Log("Loading on start");
@@ -67,7 +79,7 @@ public class SaveManager : Singleton<SaveManager>
     private void OnApplicationQuit()
     {
         Debug.Log("SaveManager OnApplicationQuit " + GameStateManager.Instance.name);
-        if (GameStateManager.Instance.canSaveGame())
+        if (GameStateManager.Instance == null || GameStateManager.Instance.canSaveGame())
         {
             Debug.Log("Saved on application close");
             Save();
@@ -94,7 +106,8 @@ public class SaveManager : Singleton<SaveManager>
     public bool Save()
     {
         // Save if the game state is peaceful
-        if (!GameStateManager.Instance.canSaveGame() || modules == null)
+
+        if ((GameStateManager.Instance != null && !GameStateManager.Instance.canSaveGame()) || modules == null)
         {
             Debug.Log("Couldn't save game");
             return false;

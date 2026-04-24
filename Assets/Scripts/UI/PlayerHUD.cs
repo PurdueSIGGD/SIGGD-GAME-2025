@@ -7,6 +7,7 @@ public class PlayerHUD : MonoBehaviour
 {
     [SerializeField] Canvas canvas;
     [SerializeField] CanvasGroup hudCanvasGroup;
+    [SerializeField] float maxAlpha = 0.6f;
 
     public float hudFadeDuration = 1f;
     public float hudTimeout = 5f;
@@ -26,10 +27,18 @@ public class PlayerHUD : MonoBehaviour
         }
         else
         {
-            hudCanvasGroup.alpha = 1f;
+            hudCanvasGroup.alpha = maxAlpha;
             hudEnabled = true;
         }
         lastTime = Time.time;
+    }
+
+    void Start()
+    {
+        if (PlayerID.Instance != null)
+        {
+            PlayerID.Instance.playerStamina.OnStaminaDecrease += OnStaminaUse;
+        }
     }
 
     private void Update()
@@ -64,11 +73,19 @@ public class PlayerHUD : MonoBehaviour
         }
     }
 
+    private void OnStaminaUse(float amt)
+    {
+        if (amt != 0)
+        {
+            TriggerHUDEvent();
+        }
+    }
+
     public void FadeIn()
     {
         // Disable HUD in ship scene
         if (SceneManager.GetActiveScene().name == "ShipScene") return;
-        StartFade(1f);
+        StartFade(maxAlpha);
         hudEnabled = true;
     }
 
