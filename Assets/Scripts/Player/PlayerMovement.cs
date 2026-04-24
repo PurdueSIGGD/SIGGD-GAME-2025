@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
 
     private EventInstance footsteps;
 
-    private static string jumpSound = "PlayerJump";
+    private static string jumpSound = "Jump";
     private static readonly string[] labScenes = {
         "ShipScene",
         "NathanA0Scene"
