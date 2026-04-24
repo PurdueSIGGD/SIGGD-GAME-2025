@@ -32,6 +32,14 @@ public class PlayerHUD : MonoBehaviour
         lastTime = Time.time;
     }
 
+    void Start()
+    {
+        if (PlayerID.Instance != null)
+        {
+            PlayerID.Instance.playerStamina.OnStaminaDecrease += OnStaminaUse;
+        }
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.U)) {
@@ -61,6 +69,14 @@ public class PlayerHUD : MonoBehaviour
         lastTime = Time.time;
         if (!hudEnabled) {
             FadeIn();
+        }
+    }
+
+    private void OnStaminaUse(float amt)
+    {
+        if (amt != 0)
+        {
+            TriggerHUDEvent();
         }
     }
 

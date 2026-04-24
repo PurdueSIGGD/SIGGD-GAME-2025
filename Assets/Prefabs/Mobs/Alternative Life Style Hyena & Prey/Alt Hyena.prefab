@@ -249,7 +249,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5264189034830762277}
@@ -274,6 +274,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth:
     value: 100
+  isInvincible: 0
 --- !u!195 &3493779462686176508
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -358,7 +359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454339f393dde5f4cb124a3697745d27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseSpeed: 5
+  baseSpeed: 10
   rotationSpeed: 4
   sprintMultiplier: 2
   sprintAllowed: 0
@@ -423,7 +424,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   preyTargets: []
   predatorTargets: []
-  mobType: 1
 --- !u!114 &226250087848155779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1801,7 +1801,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 570560b50fd47804da49dfd5309f1620, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -3348,7 +3348,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 570560b50fd47804da49dfd5309f1620, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0

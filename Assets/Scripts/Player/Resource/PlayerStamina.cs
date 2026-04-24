@@ -1,4 +1,5 @@
 using SIGGD.Goap;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,13 +8,16 @@ public class PlayerStamina : MonoBehaviour
 {
     [SerializeField] float maxStamina = 100f;
     [SerializeField] float staminaDecayRate = 2f;
+    [SerializeField] float climbingStaminaDecayRate = 2f;
     [SerializeField] float staminaRegenRate = 1f;
     [SerializeField] float jumpCost = 15f;  // when changing jumpcost, remember to update the number in the animator as well
                                             // (prevents jumping below a certain amount of stamina)
     [SerializeField] float climbingGlovesReduction = 0.5f;
-    
+
     [SerializeField] Slider staminaSlider;
     [SerializeField] Image staminaSliderBar;
+
+    public Action<float> OnStaminaDecrease;
 
     private float currentStamina = -1f;
     private bool staminaDisabled = false;
@@ -46,7 +50,7 @@ public class PlayerStamina : MonoBehaviour
     void Start()
     {
         if (currentStamina == -1f) currentStamina = maxStamina;
-        
+
         psm = PlayerID.Instance.stateMachine;
         anim = PlayerID.Instance.GetComponent<Animator>();
 
@@ -90,14 +94,21 @@ public class PlayerStamina : MonoBehaviour
             coroutine = DisableStamina();
             StartCoroutine(coroutine);
         }
-        else if ((isClimbing && !SaveManager.Instance.playerModule.playerData.hasGloves) || isSprinting)
+        else if (isSprinting)
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
+            OnStaminaDecrease?.Invoke(staminaDecayRate * Time.deltaTime);
+        }
+        else if (isClimbing && (SaveManager.Instance.playerModule == null || !SaveManager.Instance.playerModule.playerData.hasGloves))
+        {
+            currentStamina -= climbingStaminaDecayRate * Time.deltaTime;
+            OnStaminaDecrease?.Invoke(climbingStaminaDecayRate * Time.deltaTime);
         }
         else if (isClimbing && SaveManager.Instance.playerModule.playerData.hasGloves)
         {
             Debug.Log("Climbing stamina decay reduced by gloves");
-            currentStamina -= staminaDecayRate * climbingGlovesReduction * Time.deltaTime;
+            currentStamina -= climbingStaminaDecayRate * climbingGlovesReduction * Time.deltaTime;
+            OnStaminaDecrease?.Invoke(climbingStaminaDecayRate * climbingGlovesReduction * Time.deltaTime);
         }
         else if (isGrounded && currentStamina < maxStamina) // stamina regens while on ground & not exerting effort, but can't go over max
         {
@@ -108,6 +119,10 @@ public class PlayerStamina : MonoBehaviour
 
     public void UpdateStamina(float amount)
     {
+        if (amount < 0)
+        {
+            OnStaminaDecrease?.Invoke(-amount);
+        }
         currentStamina += amount;
     }
 

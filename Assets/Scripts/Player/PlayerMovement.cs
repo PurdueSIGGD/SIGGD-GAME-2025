@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
 
     private EventInstance footsteps;
 
-    private static string jumpSound = "PlayerJump";
+    private static string jumpSound = "Jump";
     private static readonly string[] labScenes = {
         "ShipScene",
         "NathanA0Scene"
@@ -81,6 +81,11 @@ public class PlayerMovement : MonoBehaviour
         }
         
         // Set footstep sound to regular Footsteps for all other scenes
+        FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
+    }
+
+    public void MakeFootstepsNormal()
+    {
         FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
     }
 
