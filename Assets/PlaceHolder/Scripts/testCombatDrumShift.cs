@@ -17,7 +17,7 @@ public class testCombatDrumShift : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.H))
         {
             Debug.Log("playing cassette");
-            MusicManager.Instance.playCassette("Cassette5");
+            StartCoroutine(MusicManager.Instance.playCassette("Cassette5"));
         }
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {

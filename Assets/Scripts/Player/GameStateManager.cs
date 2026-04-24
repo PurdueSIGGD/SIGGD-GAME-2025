@@ -15,7 +15,7 @@ public class GameStateManager : Singleton<GameStateManager>
         PURSUED_BY_APEX,    // Player is being actively chased by an Apex
     }
 
-    private GameState currentState = GameState.PEACEFUL;
+    [SerializeField] private GameState currentState = GameState.PEACEFUL;
     protected override void Awake()
     {
         DontDestroyOnLoad(gameObject);

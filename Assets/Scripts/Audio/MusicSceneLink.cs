@@ -21,7 +21,9 @@ public class MusicSceneLink : Singleton<MusicSceneLink>
     {
         yield return new WaitUntil(() => FMODEvents.Instance.Initialized);
 
+        Debug.Log("current track is now " + sceneMusicKey);
         MusicManager.Instance.SetCurTrack(sceneMusicKey);
+        Debug.Log("play music called no fade allowed");
         MusicManager.Instance.PlayMusic(false);
     }
 }
