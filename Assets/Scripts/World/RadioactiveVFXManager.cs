@@ -49,7 +49,7 @@ public class RadioactiveVFXManager : MonoBehaviour
     /// </summary>
     public void Init()
     {
-        if (IsRunning()) return;
+        //if (IsRunning()) return;
         container.SetActive(true);
         particlesVFX.Play();
         //Debug.Log("Activated VFX container");
