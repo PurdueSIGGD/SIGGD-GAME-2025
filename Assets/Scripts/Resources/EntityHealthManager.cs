@@ -15,13 +15,22 @@ public class EntityHealthManager : StatProvider, IHealth
 
     private static string playerDeathSound = "maledeath";
 
+    public bool isInvincible = false;
+
     void Start()
     {
         if (CurrentHealth == 0) CurrentHealth = maxHealth.Value; // start at full health
     }
 
+    public void SetInvincible(bool invincible)
+    {
+        isInvincible = invincible;
+    }
+
     public void TakeDamage(DamageContext damageContext)
     {
+        if (isInvincible) return;
+        
         if (CurrentHealth <= 0) return; // already dead, do nothing
 
         // reduce health but not below zero

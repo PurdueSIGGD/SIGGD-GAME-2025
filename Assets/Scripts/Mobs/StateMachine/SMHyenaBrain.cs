@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using FMOD;
 using FMOD.Studio;
 using SIGGD.Mobs.Hyena;
@@ -112,9 +113,21 @@ namespace SIGGD.Mobs.StateMachine
         {
             if (stateMachine.CurrentState == attackPlayerState && !attackPlayerState.IsAttackFinished)
             {
+                StartCoroutine(PlayerInvincible(1));
                 parriedState.SetDirection(ctx.Transform.forward);
                 stateMachine.ChangeState(parriedState);
             }
+        }
+
+        IEnumerator PlayerInvincible(float time)
+        {
+            var playerID = PlayerID.Instance;
+
+            playerID.playerHealth.SetInvincible(true);
+            
+            yield return new WaitForSeconds(time);
+            
+            playerID.playerHealth.SetInvincible(false);
         }
 
         protected override void EvaluateTransitions()
