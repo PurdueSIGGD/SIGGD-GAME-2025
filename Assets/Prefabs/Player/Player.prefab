@@ -63,6 +63,8 @@ GameObject:
   - component: {fileID: 1124192817399324371}
   - component: {fileID: 1592670451578474407}
   - component: {fileID: 138825461547106168}
+  - component: {fileID: 3542086174207366855}
+  - component: {fileID: 4474341246352226927}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -297,6 +299,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth:
     value: 100
+  isInvincible: 0
 --- !u!114 &6491714649861698900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -599,11 +602,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8510e0712b9cfc48a1139ce09fceb00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shouldPlay: 1
   rainParticles: {fileID: 4277556972423700036, guid: d5cf4ad9c4f11344594c6147e9f9c5e8, type: 3}
   rainInterval: {x: 427.08334, y: 822.9167}
   rainDuration: {x: 127.60417, y: 372.39584}
   rainChanceOnStart: 0.33
   rainHeight: 40
+--- !u!114 &3542086174207366855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696392301619895344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 893b2a3c589aa2b46b096468785a005c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radiationThreshold: 100
+  radiationDecayRate:
+  - 9
+  - 8
+  - 7
+  - 6
+  - 5
+  radiationBuildRate:
+  - 5
+  - 7
+  - 9
+  - 11
+  - 13
+  radiationDamageInterval:
+  - 5
+  - 4.5
+  - 4
+  - 3.5
+  - 3
+  radiationDamageContext:
+    attacker: {fileID: 0}
+    victim: {fileID: 0}
+    amount: 0
+    xxtraContext: 
+  radiationVignette: {fileID: 0}
+  slimePercent:
+  - 0.9
+  - 0.75
+  - 0.6
+  - 0.45
+  - 0.3
+--- !u!114 &4474341246352226927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696392301619895344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 339df473adcb55e4a974300b5afa7900, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4791394868699375998
 GameObject:
   m_ObjectHideFlags: 0
@@ -888,7 +947,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5985992681108908624, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_Size
-      value: 0.9373804
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5985992681108908624, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_Value
