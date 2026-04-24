@@ -61,6 +61,7 @@ GameObject:
   - component: {fileID: 4171266031325082136}
   - component: {fileID: 3558872390078823171}
   - component: {fileID: 1124192817399324371}
+  - component: {fileID: 1592670451578474407}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -210,6 +211,7 @@ MonoBehaviour:
   playerHealth: {fileID: 0}
   playerHunger: {fileID: 0}
   playerStamina: {fileID: 0}
+  playerRadiation: {fileID: 0}
   playerHUD: {fileID: 0}
   playerInteractor: {fileID: 0}
 --- !u!114 &1067857772922756551
@@ -410,8 +412,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd948dd62530ee4b855ff4fe8c17848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damagePulseIntensity: 2.5
-  duration: 0.5
+  damagePulseIntensity: 4
+  duration: 1
 --- !u!114 &8144347535701236505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -569,6 +571,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d61b7a0980126c8448ae5dec0ded0911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1592670451578474407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696392301619895344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c2dd1c954384d0480d76585fd740e52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4791394868699375998
@@ -823,7 +837,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4568006538744203930, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00014844649
+      value: -0.000022739987
       objectReference: {fileID: 0}
     - target: {fileID: 5398268831641293570, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_AnchorMax.x
@@ -839,7 +853,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5985992681108908624, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7627168817080551912, guid: 489d03fcbabb5074abc6779394e78d2a, type: 3}
       propertyPath: m_Name
