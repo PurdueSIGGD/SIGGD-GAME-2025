@@ -40,36 +40,37 @@ public class Effects : MonoBehaviour
 			StopCoroutine(vignetteTask);
 		vignetteTask = StartCoroutine(vignette(intensity, duration));
 	}
-	private IEnumerator vignette(float intensity, float duration)
+
+    private IEnumerator vignette(float intensity, float duration)
     {
-        var startRadius = 10f;
+		var startRadius = 6f;
         var targetRadius = intensity;
-        
+        var resetRadius = 6f;
+
         vignetteMat.SetFloat(_vignettePowerID, startRadius);
-        
+
         float elapsed = 0f;
-		while (elapsed < duration)
-		{
-			elapsed += Time.deltaTime;
-			float t = elapsed / duration;
-			float currentRadius = LerpByFunction(startRadius, targetRadius, t, easeInQuad);
-			vignetteMat.SetFloat(_vignettePowerID, currentRadius);
-			yield return null;
-		}
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            vignetteMat.SetFloat(_vignettePowerID, LerpByFunction(startRadius, targetRadius, t, easeInQuad));
+            yield return null;
+        }
 
-		elapsed = 0f;
-		while (elapsed < duration)
-		{
-			elapsed += Time.deltaTime;
-			float t = elapsed / duration;
-			float currentRadius = LerpByFunction(targetRadius, startRadius, t, easeOutQuad);
-			vignetteMat.SetFloat(_vignettePowerID, currentRadius);
-			yield return null;
-		}
-		
-		vignetteMat.SetFloat(_vignettePowerID, startRadius);
-		vignetteTask = null;
+        elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            vignetteMat.SetFloat(_vignettePowerID, LerpByFunction(targetRadius, resetRadius, t, easeOutQuad));
+            yield return null;
+        }
 
+		resetRadius = 10f;
+
+        vignetteMat.SetFloat(_vignettePowerID, resetRadius);
+        vignetteTask = null;
     }
 
 	public static class SpecialEffects

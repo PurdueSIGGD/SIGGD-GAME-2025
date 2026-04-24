@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using FMOD;
 using FMOD.Studio;
 using SIGGD.Mobs.Hyena;
@@ -12,6 +13,9 @@ namespace SIGGD.Mobs.StateMachine
     [RequireComponent(typeof(HyenaAttackManager))]
     public class SMHyenaBrain : MobBrainBase
     {
+        public ChasePlayerState ChasePlayer => chasePlayerState;
+        public ChasePreyState ChasePrey => chasePreyState;
+
         private float knockbackDuration = 2f;
         private float knockbackForce = 20f;
         
@@ -82,6 +86,11 @@ namespace SIGGD.Mobs.StateMachine
         protected override void Awake()
         {
             base.Awake();
+        }
+
+        protected override void Start()
+        {
+            base.Start();
             FMODEvents.Instance.GetEventInstance(passivePantSound, instance => { passivePantEvent = instance; });
         }
 
@@ -104,9 +113,21 @@ namespace SIGGD.Mobs.StateMachine
         {
             if (stateMachine.CurrentState == attackPlayerState && !attackPlayerState.IsAttackFinished)
             {
+                StartCoroutine(PlayerInvincible(1));
                 parriedState.SetDirection(ctx.Transform.forward);
                 stateMachine.ChangeState(parriedState);
             }
+        }
+
+        IEnumerator PlayerInvincible(float time)
+        {
+            var playerID = PlayerID.Instance;
+
+            playerID.playerHealth.SetInvincible(true);
+            
+            yield return new WaitForSeconds(time);
+            
+            playerID.playerHealth.SetInvincible(false);
         }
 
         protected override void EvaluateTransitions()
