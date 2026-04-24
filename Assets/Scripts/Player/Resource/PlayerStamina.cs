@@ -14,7 +14,7 @@ public class PlayerStamina : MonoBehaviour
     
     [SerializeField] Slider staminaSlider;
     [SerializeField] Image staminaSliderBar;
-    
+
     private float currentStamina = -1f;
     private bool staminaDisabled = false;
 
@@ -62,6 +62,10 @@ public class PlayerStamina : MonoBehaviour
 
     void Update()
     {
+        if(currentStamina > PlayerID.Instance.playerHunger.CurrentHunger)
+        {
+            currentStamina = PlayerID.Instance.playerHunger.CurrentHunger;
+        }
         anim.SetFloat("stamina", CurrentStamina);
 
         staminaSlider.value = currentStamina / maxStamina;

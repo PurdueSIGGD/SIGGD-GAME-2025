@@ -40,7 +40,7 @@ public class PlayerHunger : MonoBehaviour
 
     void Update()
     {
-        if (inShipScene == true)
+        if (inShipScene == false)
         {
             //hunger goes down and takes health when starving
             if (currentHunger > 0)
