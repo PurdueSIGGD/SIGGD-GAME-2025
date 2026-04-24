@@ -11,6 +11,9 @@ public class PlayerRadiation : MonoBehaviour
     [SerializeField] GenericLingeringVignette radiationVignette;
     [SerializeField] float[] slimePercent = { .9f, .7f, .5f, .3f, .1f}; // multiplies the builduprate so it's slower
     public float RadiationThreshold => radiationThreshold;
+
+    [HideInInspector]
+    public RadiationZone radiationZone;
     public float CurrentRadiation
     {
         get => currentRadiation;
@@ -19,15 +22,15 @@ public class PlayerRadiation : MonoBehaviour
 
     //these are updated from the radiation zone object
     private bool inRadiation = false;
-    private int radiationZone = 0; // indicates what level the radiation zone is; use as the index for the arrays
+    private int radiationZoneLevel = 0; // indicates what level the radiation zone is; use as the index for the arrays
     public bool InRadiation {
         get => inRadiation;
         set => inRadiation = value;
     }
-    public int RadiationZone
+    public int RadiationZoneLevel
     {
-        get => radiationZone;
-        set => radiationZone = value;
+        get => radiationZoneLevel;
+        set => radiationZoneLevel = value;
     }
 
     public int SlimeLevel => SaveManager.Instance.playerModule.playerData.slimeLevel;
@@ -55,7 +58,7 @@ public class PlayerRadiation : MonoBehaviour
         {
             if (currentRadiation > 0)
             {
-                currentRadiation = Mathf.Max(currentRadiation - radiationDecayRate[radiationZone] * (2 - slimePercent[SlimeLevel]) * Time.deltaTime, 0); // decay the radiation, but not below 0
+                currentRadiation = Mathf.Max(currentRadiation - radiationDecayRate[radiationZoneLevel] * (2 - slimePercent[SlimeLevel]) * Time.deltaTime, 0); // decay the radiation, but not below 0
             }
             else
             {
@@ -69,23 +72,43 @@ public class PlayerRadiation : MonoBehaviour
             if (currentRadiation < radiationThreshold) // radiation isn't at the threshold
             {
                 // buildup
-                currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate[radiationZone] * slimePercent[SlimeLevel] * Time.deltaTime, radiationThreshold); // don't go over threshold
+                currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate[radiationZoneLevel] * slimePercent[SlimeLevel] * Time.deltaTime, radiationThreshold); // don't go over threshold
             }
             else // radiation is at the threshold -> take rad damage
             { 
                 radiationDamageTimer += Time.deltaTime;
 
-                if (radiationDamageTimer >= radiationDamageInterval[radiationZone])
+                if (radiationDamageTimer >= radiationDamageInterval[radiationZoneLevel])
                 {
                     radiationDamageTimer = 0f; // Reset timer
                     playerHealth.TakeDamage(radiationDamageContext);
                     //Debug.Log("Radiation - Took damage");
                 }
             }
-            float radiationPercent = CurrentRadiation / RadiationThreshold;
+            float radiationPercent = GetRadiationPercent();
             float targetStrength = (1 - radiationPercent) * 1.5f;
             radiationVignette?.SetStrength(targetStrength);
+
         }
+
+        if (radiationZone != null)
+        {
+            float radiationPercentage = GetRadiationPercent();
+            if (radiationPercentage > 0f)
+            {
+                radiationZone.radioactiveVFXManager.UpdateOpacity(radiationPercentage);
+            }
+            else
+            {
+                // Set a timer to deactivate the radiation VFX container object after the player has left for some time
+                radiationZone.radioactiveVFXManager.StopAfterDelay();
+            }
+        }
+    }
+
+    public float GetRadiationPercent()
+    {
+        return CurrentRadiation / RadiationThreshold;
     }
 
     public void UpdateRadiation(float amount)
@@ -96,6 +119,7 @@ public class PlayerRadiation : MonoBehaviour
     public void ResetRadiation()
     {
         currentRadiation = 0f;
+
     }
 
     public void IncrementSlimeLevel()
