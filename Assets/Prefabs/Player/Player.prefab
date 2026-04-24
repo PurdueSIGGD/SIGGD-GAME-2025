@@ -210,6 +210,7 @@ MonoBehaviour:
   playerHealth: {fileID: 0}
   playerHunger: {fileID: 0}
   playerStamina: {fileID: 0}
+  playerRadiation: {fileID: 0}
   playerHUD: {fileID: 0}
   playerInteractor: {fileID: 0}
 --- !u!114 &1067857772922756551
@@ -396,6 +397,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveData: {fileID: 11400000, guid: c44b423fe1edd40eb9acc6075047a3e1, type: 2}
   rb: {fileID: 0}
+  speedMultiplier: 0
   canMove: 1
 --- !u!114 &5638831800853894958
 MonoBehaviour:
@@ -552,9 +554,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStamina: 100
-  staminaDecayRate: 8
-  staminaRegenRate: 10
-  jumpCost: 15
+  staminaDecayRate: 7
+  climbingStaminaDecayRate: 16
+  staminaRegenRate: 30
+  jumpCost: 10
   climbingGlovesReduction: 0.5
   staminaSlider: {fileID: 8131535977890595846}
   staminaSliderBar: {fileID: 4503848958787865837}
