@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEditor;
 using Sirenix.OdinInspector;
+using CrashKonijn.Goap.Runtime;
 
 /// <summary>
 /// Brain for the Apex predator, built on <see cref="MobBrainBase"/>.
@@ -162,6 +163,7 @@ public class Apex : MobBrainBase
 
     private readonly string apexOnNoticePlayerSound = "ApexOnNotice";
     private static readonly string apexLosePlayerSound = "ApexOnLosePlayer";
+    private static readonly string apexDamagePlayerSound = "ApexOnDamagePlayer";
 
     protected override MobContext BuildContext()
     {
@@ -234,12 +236,16 @@ public class Apex : MobBrainBase
             var current = stateMachine.CurrentState;
             if (current is not ApexChasingState && current is not ApexAttackingState)
             {
+                if (target.gameObject == PlayerID.Instance.gameObject && !PlayerID.Instance.IsAlive)
+                {
+                    return;
+                }
                 ApexLog($"EvaluateTransitions — spotted '{target.gameObject.name}', switching to ChasingState.");
                 chasingState.SetTarget(target);
                 stateMachine.ChangeState(chasingState);
 
                 // play apex notice player sound
-                if (target.gameObject == PlayerID.Instance.gameObject)
+                if (target.gameObject == PlayerID.Instance.gameObject && PlayerID.Instance.IsAlive)
                 {
                     AudioManager.Instance.PlayOneShotNoAsync(apexOnNoticePlayerSound, transform.position);
                 }
@@ -256,6 +262,7 @@ public class Apex : MobBrainBase
                 ApexTarget target = perceptionManager.PlayerTarget.GetComponent<ApexTarget>();
                 if (target != null)
                 {
+                    Debug.Log("saw player");
                     return target;
                 }
                 else
@@ -391,6 +398,8 @@ public class Apex : MobBrainBase
     /// </summary>
     public void DoAttack()
     {
+        AudioManager.Instance.PlayOneShotNoAsync("ApexLung1", transform.position);
+        
         Collider[] hits = Physics.OverlapSphere(transform.position, attackRange, attackLayerMask);
         foreach (Collider col in hits)
         {
@@ -402,6 +411,16 @@ public class Apex : MobBrainBase
             dmgCtx.attacker = gameObject;
             dmgCtx.victim = col.gameObject;
             dmgCtx.amount = health.MaxHealth;
+            if (dmgCtx.victim == PlayerID.Instance.gameObject) {
+                if (PlayerID.Instance.IsAlive)
+                {
+                    AudioManager.Instance.PlayOneShotNoAsync(apexDamagePlayerSound, PlayerID.Instance.gameObject.transform.position);
+                }
+                else
+                {
+                    continue;
+                }
+            }
             health.TakeDamage(dmgCtx);
             ApexLog($"Attacked {col.gameObject.name} for {dmgCtx.amount} damage.");
         }
@@ -411,6 +430,7 @@ public class Apex : MobBrainBase
     {
         if (context.victim == PlayerID.Instance.gameObject && context.attacker == gameObject)
         {
+            Debug.Log("Making apex lose aggro");
             GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, PlayerID.Instance.gameObject);
             if (stateMachine.CurrentState is ApexChasingState)
             {
@@ -418,11 +438,13 @@ public class Apex : MobBrainBase
                 ChasingState.chasingPlayer = false;
                 RoamingState.SetGuardPosition(transform.position);
                 stateMachine.ChangeState(RoamingState);
+                Debug.Log("Setting apex to roaming from chasing");
             }
             if (stateMachine.CurrentState is ApexAttackingState)
             {
                 RoamingState.SetGuardPosition(transform.position);
                 stateMachine.ChangeState(RoamingState);
+                Debug.Log("Setting apex to roaming from attacking");
             }
         }
     }

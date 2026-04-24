@@ -97,7 +97,7 @@ namespace MobCensus
         /// </summary>
         public void EmmigrateFromPandora()
         {
-            census.RemoveCitizen(citizenDataReference);
+            if (citizenDataReference != null) census.RemoveCitizen(citizenDataReference);
             citizenDataReference = null;
         }
 

@@ -37,6 +37,7 @@ namespace SIGGD.Goap
                 return;
             }
             // nutrition check either here or in hunger behaviour
+            // TODO: Play eat sound
             data.HungerBehaviour.ReduceHunger(60);
             GameObject.Destroy(transformTarget.Transform.gameObject);
     }

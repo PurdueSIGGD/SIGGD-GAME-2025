@@ -49,11 +49,13 @@ public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
         {
             Debug.Log("Shopkeeper: Player interacted with ShopKeeper while holding Music Box. Triggering slime out.");
             SlimeOutPlayer();
+            ui.DeactivateUI();
             return;
         }
         
         if (CraftingMenu.Instance)
         {
+            AudioManager.Instance.PlayOneShotNoAsync(Interactable.interactSound, PlayerID.Instance.gameObject.transform.position);
             CraftingMenu.Instance.ShowCraftingMenu(true);
         }
         else

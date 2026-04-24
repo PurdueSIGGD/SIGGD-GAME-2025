@@ -63,6 +63,10 @@ public class PlayerStamina : MonoBehaviour
 
     void Update()
     {
+        if(currentStamina > PlayerID.Instance.playerHunger.CurrentHunger)
+        {
+            currentStamina = PlayerID.Instance.playerHunger.CurrentHunger;
+        }
         anim.SetFloat("stamina", CurrentStamina);
 
         staminaSlider.value = currentStamina / maxStamina;

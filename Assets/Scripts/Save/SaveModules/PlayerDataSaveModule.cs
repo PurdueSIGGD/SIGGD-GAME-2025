@@ -12,6 +12,7 @@ public class PlayerDataSaveModule : ISaveModule
     private EntityHealthManager health;
     private PlayerStamina stamina;
     private ManageRespawn respawnManager;
+    private PlayerRadiation radiation;
 
     public bool deserialize()
     {
@@ -26,6 +27,7 @@ public class PlayerDataSaveModule : ISaveModule
         if (!hunger) hunger = PlayerID.Instance.playerHunger;
         if (!stamina) stamina = PlayerID.Instance.playerStamina;
         if (!respawnManager) respawnManager = PlayerID.Instance.GetComponent<ManageRespawn>();
+        if (!radiation) radiation = PlayerID.Instance.playerRadiation;
         playerData ??= new PlayerSaveData();
 
         if (!FileManager.Instance.FileExists(savePath)) return false;
@@ -39,6 +41,7 @@ public class PlayerDataSaveModule : ISaveModule
         stamina.CurrentStamina = playerData.curStamina;
         stamina.StaminaDisabled = playerData.staminaDisabled;
         respawnManager.respawnPoint = playerData.RespawnPosition;
+        radiation.CurrentRadiation = playerData.radiationLevel;
 
         Debug.Log($"Deserialized stamina {stamina.CurrentStamina} {stamina.StaminaDisabled}");
 
@@ -78,6 +81,7 @@ public class PlayerDataSaveModule : ISaveModule
         playerData.curStamina = stamina.CurrentStamina;
         playerData.staminaDisabled = stamina.StaminaDisabled;
         playerData.RespawnPosition = respawnManager.respawnPoint;
+        playerData.radiationLevel = radiation.CurrentRadiation;
 
         byte[] bytes = SerializationUtility.SerializeValue(playerData, DataFormat.Binary);
         FileManager.Instance.WriteFile(savePath, bytes);
