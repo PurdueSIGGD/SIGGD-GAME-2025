@@ -10,13 +10,17 @@ public class RadioactiveVFXManager : MonoBehaviour
     [SerializeField]
     private Vector3 spawnLocation; // where container will spawn
     [SerializeField]
-    private RenderTexture renderTexture; // render texture in container
+    private Canvas renderTextureCanvas; // Canvas with render texture in container
     [SerializeField]
     private GameObject VFXGameObject; // Game object with VFX component
 
 
     private VisualEffect particlesVFX; // Particles VFX in container
 
+    private void Awake()
+    {
+        container.SetActive(false);
+    }
     private void Start()
     {
         particlesVFX = VFXGameObject.GetComponent<VisualEffect>();
@@ -34,12 +38,13 @@ public class RadioactiveVFXManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Update the opacity of the render texture based on percent
+    /// Update the opacity of the render texture canvas based on percent
     /// </summary>
     /// <param name="percentage"></param>
     public void UpdateOpacity(float percentage)
     {
-        Debug.Log("update opacity todo " + percentage);
+        Debug.Log("TODO");
+
     }
 
     // Remove container

@@ -4,6 +4,13 @@ public class RadiationZone : MonoBehaviour
 {
     [SerializeField] int zoneLevel = 0; // 0 is least dangerous, 4 is most
 
+    private RadioactiveVFXManager radioactiveVFXManager;
+
+    private void Awake()
+    {
+        radioactiveVFXManager = GetComponent<RadioactiveVFXManager>();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
