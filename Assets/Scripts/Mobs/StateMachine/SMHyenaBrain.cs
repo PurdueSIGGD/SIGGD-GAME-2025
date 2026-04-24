@@ -35,6 +35,7 @@ namespace SIGGD.Mobs.StateMachine
         // Audio name
         private readonly string onNoticePlayerSound = "HyenaOnNotice";
         private readonly string passivePantSound = "HyenaPassivePant";
+        private readonly string parrySound = "PlayerDodge";
         private EventInstance passivePantEvent;
 
         protected override MobContext BuildContext()
@@ -112,6 +113,7 @@ namespace SIGGD.Mobs.StateMachine
         {
             if (stateMachine.CurrentState == attackPlayerState && !attackPlayerState.IsAttackFinished)
             {
+                AudioManager.Instance.PlayOneShotNoAsync(parrySound, PlayerID.Instance.gameObject.transform.position);
                 parriedState.SetDirection(ctx.Transform.forward);
                 stateMachine.ChangeState(parriedState);
             }

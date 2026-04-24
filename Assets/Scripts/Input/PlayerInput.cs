@@ -165,7 +165,7 @@ public class PlayerInput : Singleton<PlayerInput>
 
     //// interact, attack inputs
     private void InputInteract(InputAction.CallbackContext callbackValue) {
-        Debug.Log("Interact input detected " + callbackValue.performed);
+        Debug.Log("Interact input detected");
         if (callbackValue.performed) {
             interactionHeld = true;
         } else if (callbackValue.canceled) {
