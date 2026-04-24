@@ -461,7 +461,7 @@ public class ClimbAction : MonoBehaviour
     private void DetachHand(Hand handToDetach) {
         int handIndex = (int)handToDetach;
         if (attachedHands[handIndex]) {
-            if (SaveManager.Instance.playerModule.playerData.hasGloves) AudioManager.Instance.PlayOneShotNoAsync(climbReleaseUpgradedSound, PlayerID.Instance.gameObject.transform.position);
+            if (SaveManager.Instance.playerModule != null && SaveManager.Instance.playerModule.playerData.hasGloves) AudioManager.Instance.PlayOneShotNoAsync(climbReleaseUpgradedSound, PlayerID.Instance.gameObject.transform.position);
             else AudioManager.Instance.PlayOneShotNoAsync(climbReleaseSound, PlayerID.Instance.gameObject.transform.position);
         }
         attachedHands[handIndex] = false;
@@ -563,7 +563,7 @@ public class ClimbAction : MonoBehaviour
                     Vector3 hitOrientation = hit.normal;
                     Quaternion hitRotation = Quaternion.LookRotation(hitOrientation);
                     AttachHand(handToFire, hitPosition, hitRotation);
-                    if (SaveManager.Instance.playerModule.playerData.hasGloves) AudioManager.Instance.PlayOneShotNoAsync(climbGrabUpgradedSound, hitPosition);
+                    if (SaveManager.Instance.playerModule != null && SaveManager.Instance.playerModule.playerData.hasGloves) AudioManager.Instance.PlayOneShotNoAsync(climbGrabUpgradedSound, hitPosition);
                     else AudioManager.Instance.PlayOneShotNoAsync(climbGrabSound, hitPosition);
                 } else { 
                     // player is trying to climb on something not climbable
