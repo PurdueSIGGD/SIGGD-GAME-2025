@@ -13,6 +13,7 @@ public class OrangeMushroomItemAction : IPlayerActionStrategy
         AudioManager.Instance.PlayOneShotNoAsync(eatSound, PlayerID.Instance.gameObject.transform.position);
         GameObject player = PlayerID.Instance.gameObject;
         player.GetComponent<MonoBehaviour>().StartCoroutine(SpeedUp(player));
+        PlayerID.Instance.GetComponent<PlayerHunger>().UpdateHunger(20);
         Debug.Log("player ate an orange mushroom");
     }
 

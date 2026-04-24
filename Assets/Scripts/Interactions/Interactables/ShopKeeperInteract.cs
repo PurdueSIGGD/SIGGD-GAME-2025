@@ -49,6 +49,7 @@ public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
         {
             Debug.Log("Shopkeeper: Player interacted with ShopKeeper while holding Music Box. Triggering slime out.");
             SlimeOutPlayer();
+            ui.DeactivateUI();
             return;
         }
         
