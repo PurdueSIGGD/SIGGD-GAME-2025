@@ -22,9 +22,13 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector] public Rigidbody rb;
 
-    private int footstepWaitCount = 5;
+    #region Footstep Sound Attributes
+
+    [SerializeField] private int footstepWaitCount = 5;
     private int footstepSprintWaitCount;
     private int footstepDelayCount = 0;
+
+    #endregion
 
     #region Movement Attributes
     private bool IsMoving => PlayerID.Instance.stateMachine.IsMoving;

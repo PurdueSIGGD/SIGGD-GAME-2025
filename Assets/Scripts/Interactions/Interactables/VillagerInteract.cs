@@ -48,6 +48,7 @@ public class VillagerInteract : MonoBehaviour, IInteractable<IInteractor>
         // Check player has a flower selected
         if (Inventory.Instance.GetSelectedItem()?.itemName == ItemInfo.ItemName.Flower)
         {
+            AudioManager.Instance.PlayOneShotNoAsync(Interactable.interactSound, PlayerID.Instance.gameObject.transform.position);
             Inventory.Instance.Decrement();
             ItemInfo slimeball = RecipeInfo.Instance.NamesToItemInfos[ItemInfo.ItemName.Slimeball];
             Inventory.Instance.AddItem(slimeball, 1);
