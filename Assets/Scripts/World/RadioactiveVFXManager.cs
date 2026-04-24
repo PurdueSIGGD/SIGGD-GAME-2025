@@ -15,18 +15,21 @@ public class RadioactiveVFXManager : MonoBehaviour
     [SerializeField]
     private Vector3 spawnLocation; // where container will spawn
     [SerializeField]
-    private Image renderImage; // Image with render texture inside canvas in container
+    private GameObject imageGameObject; // UI elemenet with render texture image
     [SerializeField]
     private GameObject VFXGameObject; // Game object with VFX component
 
     public Coroutine disableVFXCoroutine = null;
 
     private VisualEffect particlesVFX; // Particles VFX in container
+    private Image renderImage; // Image with render texture inside canvas in container
+
 
     private void Start()
     {
         particlesVFX = VFXGameObject.GetComponent<VisualEffect>();
         container.transform.position = spawnLocation;
+        renderImage = imageGameObject.GetComponent<Image>();
         container.SetActive(false);
         particlesVFX.Stop();
     }
