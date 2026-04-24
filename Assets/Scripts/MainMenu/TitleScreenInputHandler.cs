@@ -5,6 +5,7 @@ public class TitleScreenInputHandler : MonoBehaviour
 {
     public string defaultSceneName;
     public GameObject loadingPanel;
+    public GameObject settingsPanel;
     [SerializeField] OverrideStartMusic titleMusic;
 
     // AsyncOperation loadScene;
@@ -12,6 +13,7 @@ public class TitleScreenInputHandler : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        loadingPanel.SetActive(false);
         // loadScene = SceneManager.LoadSceneAsync(mainSceneName, LoadSceneMode.Additive);
         // loadScene.allowSceneActivation = false;
         Cursor.lockState = CursorLockMode.None;
@@ -50,4 +52,12 @@ public class TitleScreenInputHandler : MonoBehaviour
     {
         SceneManager.LoadScene("Credtis", LoadSceneMode.Single);
     }
+
+    public void ShowCursor()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+    }
+
+
 }
