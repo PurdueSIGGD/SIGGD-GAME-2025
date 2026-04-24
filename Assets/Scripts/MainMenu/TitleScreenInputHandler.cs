@@ -45,4 +45,9 @@ public class TitleScreenInputHandler : MonoBehaviour
         // not awaiting this because we don't need to
         // _ = SceneManager.UnloadSceneAsync("Assets/UI/titlescreen.unity");
     }
+    
+    public void LoadCredits()
+    {
+        SceneManager.LoadScene("Credtis", LoadSceneMode.Single);
+    }
 }
