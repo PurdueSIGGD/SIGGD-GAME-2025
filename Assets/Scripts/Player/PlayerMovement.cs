@@ -82,6 +82,11 @@ public class PlayerMovement : MonoBehaviour
         FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
     }
 
+    public void MakeFootstepsNormal()
+    {
+        FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
+    }
+
     private void Update()
     {
         CalculateGravity();

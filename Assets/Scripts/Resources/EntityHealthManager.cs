@@ -79,6 +79,7 @@ public class EntityHealthManager : StatProvider, IHealth
 
     public void Die(DamageContext damageContext)
     {
+        //OnDeath?.Invoke(damageContext);
         // TODO: Add death logic here, for now just destroying game object
         Debug.Log($"{gameObject.name} has died.");
         OnDeath?.Invoke(damageContext);
@@ -87,6 +88,8 @@ public class EntityHealthManager : StatProvider, IHealth
         if (gameObject != PlayerID.Instance.gameObject)
         {
             // Attempt to change to peaceful if pursuer died
+
+            //Destroy(gameObject);
 
             if (GameStateManager.Instance) GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
 
