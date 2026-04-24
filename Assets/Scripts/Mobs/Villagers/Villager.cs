@@ -41,12 +41,12 @@ public class Villager : MonoBehaviour {
         navAgent = GetComponent<NavMeshAgent>();
         navAgent.stoppingDistance = stoppingDistance;
 
-        FMODEvents.Instance.GetEventInstance("SlugWalk", instance => { footsteps = instance; });
     }
 
     private void Start()
     {
         PickNewDestination();
+        FMODEvents.Instance.GetEventInstance("SlugWalk", instance => { footsteps = instance; });
     }
 
     void OnEnable()

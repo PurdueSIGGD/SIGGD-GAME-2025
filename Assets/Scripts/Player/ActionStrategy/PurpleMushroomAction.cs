@@ -10,11 +10,11 @@ public class PurpleMushroomItemAction : IPlayerActionStrategy
         Inventory.Instance.Decrement();
         AudioManager.Instance.PlayOneShotNoAsync(eatSound, PlayerID.Instance.gameObject.transform.position);
         GameObject player = PlayerID.Instance.gameObject;
-        player.GetComponent<MonoBehaviour>().StartCoroutine(HealOverTime(player));
+        HealOverTime(player);
         Debug.Log("player ate purple mushroom");
     }
 
-    private IEnumerator HealOverTime(GameObject player)
+    private void HealOverTime(GameObject player)
     {
         DamageContext healContext = new DamageContext();
         healContext.attacker = healContext.victim = PlayerID.Instance.gameObject;

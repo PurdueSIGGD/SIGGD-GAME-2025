@@ -6,17 +6,18 @@ public class SettingsMenu : Singleton<SettingsMenu>
 
     public GameObject initialPanel;
 
-    private GameObject canvas;
+    private Canvas canvas;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        canvas = gameObject;
+        canvas = GetComponent<Canvas>();
         Show(false);
 
         // This is used to load the currently used input overrides
-        SaveManager.Instance.Load();
+        if (SaveManager.Instance)
+            SaveManager.Instance.Load();
 
         OpenPanel(initialPanel);
     }
@@ -26,7 +27,10 @@ public class SettingsMenu : Singleton<SettingsMenu>
         // Will doing this be too slow?
         if (!enabled)
         {
-            SaveManager.Instance.Save();
+            if (SaveManager.Instance)
+            {
+                SaveManager.Instance.Save();
+            }
         }
 
         if (previousView)
@@ -37,10 +41,11 @@ public class SettingsMenu : Singleton<SettingsMenu>
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            PlayerInput.Instance.DebugToggleInput(false);
+            if (PlayerInput.Instance)
+                PlayerInput.Instance.DebugToggleInput(false);
         }
 
-        canvas.SetActive(enabled);
+        canvas.enabled = enabled;
     }
 
     public void ResetPlayerInputs()
