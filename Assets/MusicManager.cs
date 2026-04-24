@@ -72,7 +72,7 @@ public class MusicManager : Singleton<MusicManager>
         }
         base.OnDestroy();
     }
-
+    
     #region Scene Management and Game State Management
     private void OnEnable()
     {
