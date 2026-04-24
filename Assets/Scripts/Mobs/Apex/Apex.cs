@@ -391,6 +391,8 @@ public class Apex : MobBrainBase
     /// </summary>
     public void DoAttack()
     {
+        AudioManager.Instance.PlayOneShotNoAsync("ApexLung1", transform.position);
+        
         Collider[] hits = Physics.OverlapSphere(transform.position, attackRange, attackLayerMask);
         foreach (Collider col in hits)
         {
