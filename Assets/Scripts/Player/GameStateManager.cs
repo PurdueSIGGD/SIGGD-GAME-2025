@@ -15,7 +15,7 @@ public class GameStateManager : Singleton<GameStateManager>
         PURSUED_BY_APEX,    // Player is being actively chased by an Apex
     }
 
-    private GameState currentState = GameState.PEACEFUL;
+    [SerializeField] private GameState currentState = GameState.PEACEFUL;
     protected override void Awake()
     {
         DontDestroyOnLoad(gameObject);
@@ -43,6 +43,7 @@ public class GameStateManager : Singleton<GameStateManager>
     /// <returns></returns>
     public bool attemptSetState(GameState state, GameObject initiator)
     {
+        GameState prevState = currentState;
         // A way to keep track of all the pursuers
 
         switch (state)
@@ -92,6 +93,12 @@ public class GameStateManager : Singleton<GameStateManager>
 #endif
                 }
                 break;
+        }
+
+        if (currentState != prevState)
+        {
+            Debug.Log("game states are changing???");
+            MusicManager.Instance.GameStateChanged();
         }
 
         return true;
