@@ -22,8 +22,16 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
         if (Physics.SphereCast(playerID.cam.transform.position, 0.1f, 
                 playerID.cam.transform.forward, out RaycastHit hit, interactionDistance))
         {
-            if (hit.collider.TryGetComponent<IInteractable<IInteractor>>(out var interactable))
+            var interactable = hit.collider.GetComponentInParent<IInteractable<IInteractor>>();
+            if (interactable != null)
             {
+                if (interactable is MonoBehaviour mb && mb.enabled == false) // added check to avoid interacting with disabled interactables
+                {
+                    Interactable?.OnHoverExit(interactableUI);
+                    Interactable = null;
+                    return;
+                }
+
                 if ((Interactable == null || !Interactable.Equals(interactable)) && !ObjectPlacer.Instance.InPlacementMode &&
                     PlayerID.Instance.IsAlive)
                 {

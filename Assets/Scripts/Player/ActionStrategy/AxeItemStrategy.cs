@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SIGGD.Mobs.StateMachine;
 using UnityEngine;
 
 public class AxeItemStrategy : IPlayerActionStrategy
@@ -117,6 +118,11 @@ public class AxeItemStrategy : IPlayerActionStrategy
                             damageContext.victim = hitObject;
                             damageContext.amount = axeDamage;
                             healthManager.TakeDamage(damageContext);
+                        }
+
+                        if (hitObject.TryGetComponent(out SMHyenaBrain mobBrain))
+                        {
+                            mobBrain.TryParry();
                         }
                     }
                 }

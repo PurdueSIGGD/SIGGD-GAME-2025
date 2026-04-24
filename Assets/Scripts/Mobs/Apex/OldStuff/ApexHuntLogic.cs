@@ -160,7 +160,7 @@ public class ApexHuntLogic : MonoBehaviour
 
     private void ChaseTarget(Vector3 worldPos)
     {
-        Vector3 dir = NavSteering.GetSteeringDirection(agent, worldPos, 0.1f);
+        Vector3 dir = NavSteering.GetSteeringDirection(agent, worldPos, 0.1f).dir;
         move.MoveTowards(dir, 1f);
     }
 
@@ -173,7 +173,7 @@ public class ApexHuntLogic : MonoBehaviour
             roamTimer = 0f;
             if (roamTarget != Pathfinding.ERR_VECTOR)
             {
-                Vector3 dir = NavSteering.GetSteeringDirection(agent, roamTarget, 0.1f);
+                Vector3 dir = NavSteering.GetSteeringDirection(agent, roamTarget, 0.1f).dir;
                 move.MoveTowards(dir, roamSpeedMulti);
             }
         }

@@ -1,3 +1,4 @@
+using FMOD.Studio;
 using SIGGD.Mobs.StateMachine;
 using UnityEngine;
 
@@ -18,6 +19,10 @@ public class ApexSearchingState : IMobState
     private Quaternion sweepStartRotation;
     private Quaternion sweepEndRotation;
 
+    private static readonly string apexSonarSound = "ApexSonar";
+
+    private EventInstance sonarSound;
+
     public ApexSearchingState(Apex apex)
     {
         this.apex = apex;
@@ -29,6 +34,7 @@ public class ApexSearchingState : IMobState
         sweepDirection = 1;
         BeginSweep();
         apex.ApexLog($"Entering SearchingState — will perform {apex.SweepsBeforeRoam} sweep(s).");
+        sonarSound = AudioManager.Instance.PlayOneShotStoppableNoAsync(apexSonarSound, apex.gameObject.transform.position);
     }
 
     public void Update()
@@ -43,6 +49,12 @@ public class ApexSearchingState : IMobState
     {
         apex.LineOfSight?.ResetRotation();
         apex.ApexLog("Exiting SearchingState.");
+        if (sonarSound.isValid())
+        {
+            Debug.Log("stopped apex sonar sound early");
+            sonarSound.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            sonarSound.release();
+        }
     }
 
     #region Sweep
