@@ -1,4 +1,5 @@
 using SIGGD.Goap;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,8 @@ public class PlayerStamina : MonoBehaviour
 
     [SerializeField] Slider staminaSlider;
     [SerializeField] Image staminaSliderBar;
+
+    public Action<float> OnStaminaDecrease;
 
     private float currentStamina = -1f;
     private bool staminaDisabled = false;
@@ -94,15 +97,18 @@ public class PlayerStamina : MonoBehaviour
         else if (isSprinting)
         {
             currentStamina -= staminaDecayRate * Time.deltaTime;
+            OnStaminaDecrease?.Invoke(staminaDecayRate * Time.deltaTime);
         }
         else if (isClimbing && (SaveManager.Instance.playerModule == null || !SaveManager.Instance.playerModule.playerData.hasGloves))
         {
             currentStamina -= climbingStaminaDecayRate * Time.deltaTime;
+            OnStaminaDecrease?.Invoke(climbingStaminaDecayRate * Time.deltaTime);
         }
         else if (isClimbing && SaveManager.Instance.playerModule.playerData.hasGloves)
         {
             Debug.Log("Climbing stamina decay reduced by gloves");
             currentStamina -= climbingStaminaDecayRate * climbingGlovesReduction * Time.deltaTime;
+            OnStaminaDecrease?.Invoke(climbingStaminaDecayRate * climbingGlovesReduction * Time.deltaTime);
         }
         else if (isGrounded && currentStamina < maxStamina) // stamina regens while on ground & not exerting effort, but can't go over max
         {
@@ -113,6 +119,10 @@ public class PlayerStamina : MonoBehaviour
 
     public void UpdateStamina(float amount)
     {
+        if (amount < 0)
+        {
+            OnStaminaDecrease?.Invoke(-amount);
+        }
         currentStamina += amount;
     }
 
