@@ -25,6 +25,7 @@ public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
     {
         Debug.Log("Grave interacted");
         inventoryObj.LoadInventory(info, count);
+        AudioManager.Instance.PlayOneShotNoAsync(InteractableItem.itemPickupSound, PlayerID.Instance.gameObject.transform.position);
         Destroy(this.gameObject); // Remove the item from the scene
     }
     public void FillGrave(Inventory inv)

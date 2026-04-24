@@ -37,7 +37,8 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
                 {
                     Interactable?.OnHoverExit(interactableUI);
                     Interactable = interactable;
-                    Interactable.OnHoverEnter(interactableUI);
+                    Debug.Log(Interactable);
+                    Interactable?.OnHoverEnter(interactableUI);
                 }
                 else if (Interactable != null && (ObjectPlacer.Instance.InPlacementMode || !PlayerID.Instance.IsAlive))
                 { // Disable interactable UI if entered placement mode
@@ -63,6 +64,7 @@ public class PlayerInteractor : MonoBehaviour, IInteractor
         if (context.performed && Interactable != null)
         {
             Interact(Interactable);
+            // TODO: Play Interact sound
         }
     }
 

@@ -11,13 +11,24 @@ public class PlayerMovement : MonoBehaviour
 
     private EventInstance footsteps;
 
-    private static readonly string jumpSound = "Jump";
-    private static readonly string[] labFootstepScenes = {
+    private static string jumpSound = "PlayerJump";
+    private static readonly string[] labScenes = {
         "ShipScene",
         "NathanA0Scene"
     };
 
+    public string playerLandSound = "PlayerLand";
+    public string playerHeavyLandSound = "PlayerLandHeavy";
+
     [HideInInspector] public Rigidbody rb;
+
+    #region Footstep Sound Attributes
+
+    [SerializeField] private int footstepWaitCount = 5;
+    private int footstepSprintWaitCount;
+    private int footstepDelayCount = 0;
+
+    #endregion
 
     #region Movement Attributes
     private bool IsMoving => PlayerID.Instance.stateMachine.IsMoving;
@@ -41,6 +52,9 @@ public class PlayerMovement : MonoBehaviour
     private bool isFalling;
     public bool canMove = true;
 
+    private int wasFalling;
+    private int justJumped;
+
     #endregion
 
     private void Start()
@@ -50,10 +64,16 @@ public class PlayerMovement : MonoBehaviour
         psm = PlayerID.Instance.stateMachine;
         speedMultiplier = 1f;
 
+        footstepSprintWaitCount = 0;// use default footstep sound timing for sprinting
         // Set footstep sound to LabFootsteps if it is one of the prologue scenes
-        foreach (string scene in labFootstepScenes) {
+        foreach (string scene in labScenes) {
             if (SceneManager.GetActiveScene().name == scene) {
                 FMODEvents.Instance.GetEventInstance("LabFootsteps", instance => { footsteps = instance; });
+                jumpSound = "LabJump";
+                playerLandSound = "LabLandFromJump";
+                playerHeavyLandSound = "LabLandFromJump";
+                footstepWaitCount *= 2; // double wait count for lab footsteps since they are shorter
+                footstepSprintWaitCount = footstepWaitCount / 2;
                 return;
             }
         }
@@ -172,6 +192,7 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = rb.linearVelocity.SetY(0);
         rb.AddForce(Vector3.up * force, ForceMode.Impulse);
         GetComponent<PlayerStamina>().StaminaJump();  // decrease stamina
+        SetJustJumped();
         AudioManager.Instance.PlayOneShotNoAsync(jumpSound, PlayerID.Instance.gameObject.transform.position);
     }
 
@@ -221,6 +242,15 @@ public class PlayerMovement : MonoBehaviour
     {
         if ((rb.linearVelocity.magnitude >= 1) && (isGrounded))
         {
+            // Don't play footsteps if player jumps or lands for 5 times
+            if (wasFalling > 0) {
+                wasFalling--;
+                return;
+            }
+            if (justJumped > 0) {
+                justJumped--;
+                return;
+            }
             // NOTE: 3d attributes need to be set in order to play instances in 3d
             //ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(rb.position, rb.linearVelocity, rb.linearVelocity / rb.linearVelocity.magnitude, rb.transform.up);
             ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(rb.position, rb.linearVelocity, transform.forward, Vector3.up);
@@ -228,10 +258,24 @@ public class PlayerMovement : MonoBehaviour
 
             PLAYBACK_STATE playbackState;
             footsteps.getPlaybackState(out playbackState);
-
             if (playbackState.Equals(PLAYBACK_STATE.STOPPED))
             {
-                footsteps.start();
+                if (footstepDelayCount > 0)
+                {
+                    footstepDelayCount--;
+                }
+                else {
+                    footsteps.start();
+                    if (isSprinting)
+                    {
+                        footstepDelayCount = footstepSprintWaitCount;
+                    }
+                    else
+                    {
+                        footstepDelayCount = footstepWaitCount;
+                    }
+                }
+                
             }
         }
         else
@@ -240,14 +284,26 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void SetWasFalling() {
+        wasFalling = 5;
+    }
+    public void SetJustJumped() {
+        justJumped = 5;
+    }
+
     /**
      * <summary>
      * Switches the footstep sound to the regular footsteps audio
      * </summary>
      */
     public void SwitchFootstepSound() {
-        UnityEngine.Debug.Log("Switching footstep sound");
+        UnityEngine.Debug.Log("Switching footstep and jump sound");
         FMODEvents.Instance.GetEventInstance("Footsteps", instance => { footsteps = instance; });
+        jumpSound = "PlayerJump";
+        playerLandSound = "PlayerLand";
+        playerHeavyLandSound = "PlayerLandHeavy";
+        footstepWaitCount /= 2; // divide by 2 to reset
+        footstepSprintWaitCount = 0;
     }
 
     #endregion

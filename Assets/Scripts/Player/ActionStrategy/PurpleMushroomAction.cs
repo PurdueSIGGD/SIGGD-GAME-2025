@@ -3,10 +3,19 @@ using System.Collections;
 
 public class PurpleMushroomItemAction : IPlayerActionStrategy
 {
+    private static readonly string eatSound = "PlayerConsume";
     protected override void OnEnter()
     {
         base.OnEnter();
         Inventory.Instance.Decrement();
+        AudioManager.Instance.PlayOneShotNoAsync(eatSound, PlayerID.Instance.gameObject.transform.position);
+        GameObject player = PlayerID.Instance.gameObject;
+        player.GetComponent<MonoBehaviour>().StartCoroutine(HealOverTime(player));
+        Debug.Log("player ate purple mushroom");
+    }
+
+    private IEnumerator HealOverTime(GameObject player)
+    {
         DamageContext healContext = new DamageContext();
         healContext.attacker = healContext.victim = PlayerID.Instance.gameObject;
         healContext.amount = -20;

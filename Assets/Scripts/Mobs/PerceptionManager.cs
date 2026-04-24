@@ -40,7 +40,7 @@ public class PerceptionManager : MonoBehaviour
         foreach (var target in seen)
         {
             if (target != null) {
-                if (target.CompareTag("Player")) {
+                if (target.CompareTag("Player") && PlayerID.Instance.IsAlive) {
                     tempSeePlayer = true;
                     PlayerTarget = fov.PlayerTarget?.transform;
                     if (!CanSeePlayer)
