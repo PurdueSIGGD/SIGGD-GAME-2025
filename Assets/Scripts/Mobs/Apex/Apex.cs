@@ -27,6 +27,8 @@ public class Apex : MobBrainBase
     [SerializeField] private PerceptionManager perceptionManager;
     [SerializeField] private Smell smell;
 
+    [SerializeField] private GameObject lungeModel;
+
     #endregion
 
     #region Movement Settings
@@ -191,6 +193,8 @@ public class Apex : MobBrainBase
 
     protected override void Start()
     {
+        lungeModel.SetActive(false);
+        
         // Don't call base — the Apex doesn't start in WanderState.
         // Initial state is set by InitializeApex(), called by ApexSpawnSystem
         // between Awake() and Start().
@@ -368,7 +372,8 @@ public class Apex : MobBrainBase
     }
 
     public void SetAttacking(bool isAttacking) {
-        animator.SetBool(AttackingHash, isAttacking);
+        lungeModel.SetActive(isAttacking);
+        animator.gameObject.SetActive(!isAttacking);
     }
 
     public void UpdateAnimParam()
