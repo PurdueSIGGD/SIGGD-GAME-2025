@@ -10,13 +10,15 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
     private bool interactable = true;
     private InteractableUI currentUi;
 
+    public static readonly string interactSound = "PlayerExamine";
+
     public void OnHoverEnter(InteractableUI ui)
     {
         if (interactable)
         {
             ui.ActivateUI(this);
             currentUi = ui;
-            //Debug.Log($"Hovering over item: {itemInfo.itemName}");
+            Debug.Log($"Hovering over item: {itemInfo.itemName}");
         }
     }
 
@@ -24,7 +26,7 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
     {
         ui.DeactivateUI();
         currentUi = null;
-        //Debug.Log($"Stopped hovering over item: {itemInfo.itemName}");
+        Debug.Log($"Stopped hovering over item: {itemInfo.itemName}");
     }
 
     public void OnInteract(IInteractor interactor)
@@ -32,10 +34,26 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
         if (interactable)
         {
             Debug.Log($"Item {itemInfo.itemName} interacted up by interactor.");
-            OnItemInteract?.Invoke(itemInfo, interactor);
+            //OnItemInteract?.Invoke(itemInfo, interactor);
+            try
+            {
+                OnItemInteract?.Invoke(itemInfo, interactor);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error during OnItemInteract: {e}");
+            }
             interactable = false;
             if (currentUi) currentUi.DeactivateUI();
-            if (destroyAfterPickup) Destroy(this.gameObject); // Remove the item from the scene
+            if (destroyAfterPickup)
+            {
+                AudioManager.Instance.PlayOneShotNoAsync(InteractableItem.itemPickupSound, PlayerID.Instance.gameObject.transform.position);
+                Destroy(this.gameObject); // Remove the item from the scene
+            }
+            else
+            {
+                AudioManager.Instance.PlayOneShotNoAsync(interactSound, PlayerID.Instance.gameObject.transform.position);
+            }
         }
     }
 }

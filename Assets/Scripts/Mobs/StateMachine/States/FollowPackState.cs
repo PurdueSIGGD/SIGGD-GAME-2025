@@ -34,7 +34,7 @@ namespace SIGGD.Mobs.StateMachine.States
             if (dist < 3f) return;
 
             Vector3 dir = NavSteering.GetSteeringDirection(
-                ctx.NavAgent, ctx.Rigidbody.position, alphaPos, 0.1f);
+                ctx.NavAgent, ctx.Rigidbody.position, alphaPos, 0.1f).dir;
             ctx.Movement.MoveTowards(dir, 1.0f, 3f, false);
         }
 

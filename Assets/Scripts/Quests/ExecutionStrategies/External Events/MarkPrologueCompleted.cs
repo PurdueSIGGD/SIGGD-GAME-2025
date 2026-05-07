@@ -10,6 +10,6 @@ public class MarkPrologueCompleted : ExternalEventTriggerer
             SaveManager.Instance.gameProgressModule.CompletePrologue();
             SaveManager.Instance.Save();
         }
-        SceneManager.LoadScene("TestTerrainScene");
+        SceneManager.LoadScene("NathanA0Scene");
     }
 }

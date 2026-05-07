@@ -16,9 +16,22 @@ namespace MobCensus
 
         void Start()
         {
-            census = FindFirstObjectByType<MobCensusManager>();
             healthManager = GetComponent<EntityHealthManager>();
             agentData = GetComponent<AgentData>();
+        }
+
+        public void SetMobCensusReference(MobCensusManager census)
+        {
+            this.census = census;
+        }
+
+        void OnEnable()
+        {
+            EntityHealthManager.OnDeath += HandleOnDeath;
+        }
+        void OnDisable()
+        {
+            EntityHealthManager.OnDeath -= HandleOnDeath;
         }
 
         public void SetCitizenDataReference(MobCitizenData reference)
@@ -70,16 +83,21 @@ namespace MobCensus
             if (healthManager != null)
             {
                 healthManager.CurrentHealth = rawData.GetHealth();
-            }        
+            }
         }
 
+        public void HandleOnDeath(DamageContext context)
+        {
+            if (context.victim != null && context.victim.gameObject == gameObject)
+                EmmigrateFromPandora();
+        }
         /// <summary>
         /// Remotely removes this mob's citizen data from the census
         /// Should only be called when the mob is dead/destroyed/permanently removed from the world
         /// </summary>
         public void EmmigrateFromPandora()
         {
-            census.RemoveCitizen(citizenDataReference);
+            if (citizenDataReference != null) census.RemoveCitizen(citizenDataReference);
             citizenDataReference = null;
         }
 

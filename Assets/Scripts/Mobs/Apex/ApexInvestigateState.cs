@@ -1,4 +1,5 @@
 using SIGGD.Mobs.StateMachine;
+using SIGGD.Mobs;
 using UnityEngine;
 
 /// <summary>
@@ -34,12 +35,14 @@ public class ApexInvestigateState : IMobState
     {
         if (!hasTarget)
         {
-            apex.ApexLog("InvestigateState entered without a target — switching to SearchingState.");
-            apex.StateMachine.ChangeState(apex.SearchingState);
+            apex.ApexLog("InvestigateState - entered without a target, switching to SearchingState.");
+            //apex.StateMachine.ChangeState(apex.SearchingState);
+            apex.RoamingState.SetGuardPosition(apex.transform.position);
+            apex.StateMachine.ChangeState(apex.RoamingState);
             return;
         }
 
-        apex.ApexLog($"InvestigateState — moving to investigation point {investigatePosition}.");
+        apex.ApexLog($"InvestigateState - moving to investigation point {investigatePosition}.");
     }
 
     public void Update()
@@ -48,9 +51,10 @@ public class ApexInvestigateState : IMobState
 
         if (apex.IsAtPosition(investigatePosition))
         {
-            apex.ApexLog("InvestigateState — arrived at investigate point, switching to SearchingState.");
+            apex.ApexLog("InvestigateState - arrived at investigate point, switching to SearchingState.");
             hasTarget = false;
-            apex.StateMachine.ChangeState(apex.SearchingState);
+            apex.RoamingState.SetGuardPosition(apex.transform.position);
+            apex.StateMachine.ChangeState(apex.RoamingState);
         }
     }
 
@@ -58,16 +62,24 @@ public class ApexInvestigateState : IMobState
     {
         if (!hasTarget) return;
 
-        Vector3 dir = apex.GetSteeringTo(investigatePosition);
+        var (dir, status, pathLength) = apex.GetSteeringTo(investigatePosition);
 
-        // Defensive: avoid commanding movement on invalid/near-zero directions
-        if (!IsValidDirection(dir))
+        // if status is partial and near the end of path, switch to roaming state
+        if (status != UnityEngine.AI.NavMeshPathStatus.PathComplete && pathLength < 5f)
         {
-            if (!loggedZeroDir)
-            {
-                apex.ApexLog($"InvestigateState.FixedUpdate: invalid steering dir toward {investigatePosition}. Skipping movement this frame.");
-                loggedZeroDir = true;
-            }
+            apex.ApexLog("InvestigateState - path to investigate point is partial and near, switching to RoamingState.");
+            hasTarget = false;
+            apex.StateMachine.ChangeState(apex.RoamingState);
+            return;
+        }
+
+        float shortestDist = Vector3.Distance(apex.transform.position, investigatePosition);
+
+        if (pathLength - shortestDist < -1f) // if the path length is significantly shorter than the straight line distance, navmesh is tripping
+        {
+            apex.ApexLog("InvestigateState - most likely no complete path to target, abandoning path");
+            hasTarget = false;
+            apex.StateMachine.ChangeState(apex.RoamingState);
             return;
         }
 
@@ -84,5 +96,19 @@ public class ApexInvestigateState : IMobState
     {
         if (float.IsNaN(d.x) || float.IsNaN(d.y) || float.IsNaN(d.z)) return false;
         return d.sqrMagnitude > 0.0001f;
+    }
+
+    public void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(investigatePosition, 10f);
+        Gizmos.DrawLine(apex.transform.position, investigatePosition);
+
+        var (dir, path) = NavSteering.GetSteeringDirection(ctx.NavAgent, apex.transform.position, investigatePosition, 0.01f, true);
+        for (int i = 0; i < path.corners.Length - 1; i++)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(path.corners[i], path.corners[i + 1]);
+        }
     }
 }

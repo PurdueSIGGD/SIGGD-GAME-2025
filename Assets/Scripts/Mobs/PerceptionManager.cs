@@ -15,6 +15,7 @@ public class PerceptionManager : MonoBehaviour
     public event Action<Transform> OnPlayerDetected;
     public Transform PlayerTarget { get; private set; }
     public bool CanSeePlayer { get; private set; }
+
     void Start()
     {
         smell = GetComponent<Smell>();
@@ -39,7 +40,7 @@ public class PerceptionManager : MonoBehaviour
         foreach (var target in seen)
         {
             if (target != null) {
-                if (target.CompareTag("Player")) {
+                if (target.CompareTag("Player") && PlayerID.Instance.IsAlive) {
                     tempSeePlayer = true;
                     PlayerTarget = fov.PlayerTarget?.transform;
                     if (!CanSeePlayer)

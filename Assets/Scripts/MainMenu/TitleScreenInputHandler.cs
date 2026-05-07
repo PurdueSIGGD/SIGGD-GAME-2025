@@ -3,8 +3,9 @@ using UnityEngine.SceneManagement;
 
 public class TitleScreenInputHandler : MonoBehaviour
 {
-    public string mainSceneName;
+    public string defaultSceneName;
     public GameObject loadingPanel;
+    public GameObject settingsPanel;
     [SerializeField] OverrideStartMusic titleMusic;
 
     // AsyncOperation loadScene;
@@ -12,6 +13,7 @@ public class TitleScreenInputHandler : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        loadingPanel.SetActive(false);
         // loadScene = SceneManager.LoadSceneAsync(mainSceneName, LoadSceneMode.Additive);
         // loadScene.allowSceneActivation = false;
         Cursor.lockState = CursorLockMode.None;
@@ -29,10 +31,33 @@ public class TitleScreenInputHandler : MonoBehaviour
         // await loadScene; // Make sure we've actually loaded the scene at this point
         loadingPanel.SetActive(true);
         titleMusic.StopActiveMusic();
-        SceneManager.LoadScene(mainSceneName, LoadSceneMode.Single);
+        string sceneName = SceneSaveManager.Instance.sceneName;
+        if (sceneName.Length == 0)
+        {
+            Debug.Log("Scene save manager has no saved scene. Loading default scene: " + defaultSceneName);
+            SceneManager.LoadScene(defaultSceneName, LoadSceneMode.Single);
+        }
+        else {
+            Debug.Log("Loading " + sceneName + " from scene save");
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+        }
+        
         //Debug.Log("Loading save on start");
         //SaveManager.Instance.Load();
         // not awaiting this because we don't need to
         // _ = SceneManager.UnloadSceneAsync("Assets/UI/titlescreen.unity");
     }
+    
+    public void LoadCredits()
+    {
+        SceneManager.LoadScene("Credtis", LoadSceneMode.Single);
+    }
+
+    public void ShowCursor()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+    }
+
+
 }

@@ -25,18 +25,20 @@ public class GraveInteract : MonoBehaviour, IInteractable<IInteractor>
     {
         Debug.Log("Grave interacted");
         inventoryObj.LoadInventory(info, count);
+        AudioManager.Instance.PlayOneShotNoAsync(InteractableItem.itemPickupSound, PlayerID.Instance.gameObject.transform.position);
         Destroy(this.gameObject); // Remove the item from the scene
     }
     public void FillGrave(Inventory inv)
     {
         Debug.Log("grave filled");
         inventoryObj = inv;
-        info = new ItemInfo[inventoryObj.GetInventory().Length];
-        count = new int[inventoryObj.GetInventory().Length];
+        InventorySlot[] slots = inventoryObj.GetInventory();
+        info = new ItemInfo[slots.Length];
+        count = new int[slots.Length];
         for (int i = 0; i < info.Length; i++)
         {
-            info[i] = inventoryObj.GetInventory()[i].itemInfo;
-            count[i] = inventoryObj.GetInventory()[i].count;
+            info[i] = slots[i].itemInfo;
+            count[i] = slots[i].count;
         }
         inventoryObj.RemoveInventory();
     }

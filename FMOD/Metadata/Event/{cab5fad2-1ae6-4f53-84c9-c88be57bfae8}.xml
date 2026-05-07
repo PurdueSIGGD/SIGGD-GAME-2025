@@ -8,7 +8,7 @@
 			<value>1</value>
 		</property>
 		<relationship name="folder">
-			<destination>{94799302-c027-4149-ba2a-d2fd74f3b9f1}</destination>
+			<destination>{38ff5751-f60b-4bcf-878b-b71204d546ab}</destination>
 		</relationship>
 		<relationship name="mixer">
 			<destination>{877dc0d7-409f-47de-96a9-e908cfff18ce}</destination>
@@ -46,6 +46,7 @@
 			<destination>{0ffdf609-bdb3-4f07-b5c6-e4f6c5a167f8}</destination>
 			<destination>{75ef8f0a-fd33-41ce-94d4-0a23a8eff478}</destination>
 			<destination>{86ef4d0a-5e72-4910-b32c-cb32bf733e97}</destination>
+			<destination>{6f7bc75a-f110-478e-8134-17878892e646}</destination>
 		</relationship>
 		<relationship name="modules">
 			<destination>{85412c29-1223-48d9-a3a7-2e6a2ea93875}</destination>
@@ -94,6 +95,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{d87b55df-218a-4b3d-afe9-7dfe11360baf}">
+		<relationship name="automators">
+			<destination>{f08358bf-b002-4a97-91aa-2c461e4c4e92}</destination>
+		</relationship>
 		<relationship name="effectChain">
 			<destination>{59060ddb-41f8-4d61-b230-e31378d9d991}</destination>
 		</relationship>
@@ -122,6 +126,11 @@
 	<object class="AutomationTrack" id="{86ef4d0a-5e72-4910-b32c-cb32bf733e97}">
 		<relationship name="automator">
 			<destination>{425ce7df-3f50-44de-810f-422fccadbb2d}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationTrack" id="{6f7bc75a-f110-478e-8134-17878892e646}">
+		<relationship name="automator">
+			<destination>{f08358bf-b002-4a97-91aa-2c461e4c4e92}</destination>
 		</relationship>
 	</object>
 	<object class="EventSound" id="{85412c29-1223-48d9-a3a7-2e6a2ea93875}">
@@ -226,6 +235,11 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{c086a619-74a5-46b1-8b73-7ba1e7337b3f}" />
+	<object class="Automator" id="{f08358bf-b002-4a97-91aa-2c461e4c4e92}">
+		<property name="nameOfPropertyBeingAutomated">
+			<value>volume</value>
+		</property>
+	</object>
 	<object class="MixerBusEffectChain" id="{59060ddb-41f8-4d61-b230-e31378d9d991}">
 		<relationship name="effects">
 			<destination>{e9766f4d-714c-4e66-8493-ccd18535571a}</destination>

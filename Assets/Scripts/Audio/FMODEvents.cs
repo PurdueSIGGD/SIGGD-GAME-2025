@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using FMOD.Studio;
 using System.Collections;
 using System;
+using Sirenix.OdinInspector;
 
 /// <summary>
 /// Handles loading FMOD banks and allows accessing FMOD events through string names
@@ -16,7 +17,7 @@ public class FMODEvents : Singleton<FMODEvents>
     [Tooltip("Toggle to print to console each audio as they are loaded")]
     [SerializeField] bool logAudioNameOnLoad;
 
-    [SerializeField] public Dictionary<string, EventReference> soundEvents = new();
+    [ShowInInspector, ReadOnly] public Dictionary<string, EventReference> soundEvents = new();
     private Coroutine loadroutine;
 
     protected override void Awake()
@@ -90,18 +91,45 @@ public class FMODEvents : Singleton<FMODEvents>
 
         foreach (string name in bankNames)
         {
-            string filePath = "bank:/" + name.Replace(".bank", "");
-            RuntimeManager.StudioSystem.getBank(filePath, out Bank bank);
-
-            bank.getEventList(out EventDescription[] eventDescriptions);
-            foreach (EventDescription description in eventDescriptions)
+            if (name == "Music")
             {
-                description.getPath(out string eventPath);
+                string filePath = "bank:/" + name.Replace(".bank", "");
+                RuntimeManager.StudioSystem.getBank(filePath, out Bank bank);
 
-                EventReference eventRef = RuntimeManager.PathToEventReference(eventPath);
+                bank.getEventList(out EventDescription[] eventDescriptions);
+                foreach (EventDescription description in eventDescriptions)
+                {
+                    description.getPath(out string eventPath);
 
-                soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1).ToLower(), eventRef); // the replace just makes the names a little nicer
-                if (logAudioNameOnLoad) Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
+                    EventInstance eventInst = RuntimeManager.CreateInstance(RuntimeManager.PathToEventReference(eventPath));
+
+                    if (MusicManager.Instance.musicEventInstances.ContainsKey(eventPath.Substring(eventPath.LastIndexOf("/") + 1).ToLower()))
+                    {
+                        Debug.LogWarning("FMODEvents: Music event with name " + eventPath.Substring(eventPath.LastIndexOf("/") + 1) + " already exists in MusicManager, skipping");
+                        continue;
+                    }
+                    MusicManager.Instance.musicEventInstances.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1).ToLower(), eventInst); // the replace just makes the names a little nicer
+                    if (logAudioNameOnLoad) Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
+                }
+            }
+            else
+            {
+                string filePath = "bank:/" + name.Replace(".bank", "");
+                RuntimeManager.StudioSystem.getBank(filePath, out Bank bank);
+
+                bank.getEventList(out EventDescription[] eventDescriptions);
+                foreach (EventDescription description in eventDescriptions)
+                {
+                    description.getPath(out string eventPath);
+
+                    EventReference eventRef = RuntimeManager.PathToEventReference(eventPath);
+
+                    if (!soundEvents.ContainsKey(eventPath.Substring(eventPath.LastIndexOf("/") + 1).ToLower()))
+                    {
+                        soundEvents.Add(eventPath.Substring(eventPath.LastIndexOf("/") + 1).ToLower(), eventRef); // the replace just makes the names a little nicer
+                        if (logAudioNameOnLoad) Debug.Log("Loading in to audio event: " + eventPath.Substring(eventPath.LastIndexOf("/") + 1));
+                    }
+                }
             }
         }
 

@@ -8,23 +8,29 @@ public class EscapeMenu : MonoBehaviour
     [SerializeField] private Button inventoryButton;
     [SerializeField] private Button craftingButton;
     [SerializeField] private Button viewAudioLogsButton;
+    [SerializeField] private Button settingsButton;
     [SerializeField] private Canvas canvas;
     private bool isEnabled;
 
     void Start()
     {
         quitButton.onClick.AddListener(LoadMainMenu);
-        inventoryButton.onClick.AddListener(() => {
+        inventoryButton.onClick.AddListener(() =>
+        {
             ShowInventory(true);
         });
         craftingButton.onClick.AddListener(() =>
         {
             ShowCraftingMenu(true);
         });
-        viewAudioLogsButton.onClick.AddListener(() =>
+        settingsButton.onClick.AddListener(() =>
         {
-            ShowAudioLogMenu(true);
+            ShowSettingsMenu(true);
         });
+        //viewAudioLogsButton.onClick.AddListener(() =>
+        //{
+        //    ShowAudioLogMenu(true);
+        //});
         canvas.enabled = false;
     }
 
@@ -41,6 +47,7 @@ public class EscapeMenu : MonoBehaviour
         // Hide other menus for both cases
         ShowInventory(false);
         ShowCraftingMenu(false);
+        ShowSettingsMenu(false);
         if (enable)
         {
             Cursor.lockState = CursorLockMode.Confined;
@@ -96,6 +103,18 @@ public class EscapeMenu : MonoBehaviour
         if (AudioLogMenu.Instance)
         {
             AudioLogMenu.Instance.ShowAudioLogMenu(enabled);
+            if (enabled)
+            {
+                canvas.enabled = false;
+            }
+        }
+    }
+
+    public void ShowSettingsMenu(bool enabled)
+    {
+        if (SettingsMenu.Instance)
+        {
+            SettingsMenu.Instance.Show(enabled);
             if (enabled)
             {
                 canvas.enabled = false;

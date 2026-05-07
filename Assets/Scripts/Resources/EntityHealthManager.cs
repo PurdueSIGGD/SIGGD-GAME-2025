@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using FMODUnity;
 
 public class EntityHealthManager : StatProvider, IHealth
 {
@@ -13,13 +14,24 @@ public class EntityHealthManager : StatProvider, IHealth
     public static Action<DamageContext> OnHealthChanged;
     public static Action<DamageContext> OnDeath;
 
+    private static string playerDeathSound = "maledeath";
+
+    public bool isInvincible = false;
+
     void Start()
     {
         if (CurrentHealth == 0) CurrentHealth = maxHealth.Value; // start at full health
     }
 
+    public void SetInvincible(bool invincible)
+    {
+        isInvincible = invincible;
+    }
+
     public void TakeDamage(DamageContext damageContext)
     {
+        if (isInvincible) return;
+        
         if (CurrentHealth <= 0) return; // already dead, do nothing
 
         // reduce health but not below zero
@@ -33,20 +45,41 @@ public class EntityHealthManager : StatProvider, IHealth
         {
             Die(damageContext);
         }
+
+        if (gameObject == PlayerID.Instance.gameObject)
+        {
+            // damage noises
+            if (damageContext.amount >= 15)
+            {
+                RuntimeManager.PlayOneShot(FMODEvents.Instance.GetEventReferenceNoAsync("HeavyDamage"), PlayerID.Instance.transform.position);
+            }
+            else
+            {
+                RuntimeManager.PlayOneShot(FMODEvents.Instance.GetEventReferenceNoAsync("LightDamage"), PlayerID.Instance.transform.position);
+            }
+        }
     }
 
     public void Heal(DamageContext healContext)
     {
         if (CurrentHealth <= 0) return; // prob a design thing, maybe ability to revive dead creatures in the future?
 
+        if (healContext.amount > 0)
+        {
+            Debug.LogWarning("Healing should be negative damage");
+            return;
+        }
+        float healAmount = healContext.amount * -1; // healing is negative damage
+
         // increase health but not above max, maybe change in future to allow overheal?
-        CurrentHealth = Mathf.Min(CurrentHealth + healContext.amount, maxHealth.value);
+        CurrentHealth = Mathf.Min(CurrentHealth + healAmount, maxHealth.value);
 
         OnHealthChanged?.Invoke(healContext);
     }
 
     public void Die(DamageContext damageContext)
     {
+        //OnDeath?.Invoke(damageContext);
         // TODO: Add death logic here, for now just destroying game object
         Debug.Log($"{gameObject.name} has died.");
         OnDeath?.Invoke(damageContext);
@@ -56,6 +89,8 @@ public class EntityHealthManager : StatProvider, IHealth
         {
             // Attempt to change to peaceful if pursuer died
 
+            //Destroy(gameObject);
+
             if (GameStateManager.Instance) GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
 
             Destroy(gameObject);
@@ -64,6 +99,7 @@ public class EntityHealthManager : StatProvider, IHealth
             // Change state of player to peaceful
 
             if (GameStateManager.Instance) GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, gameObject);
+            RuntimeManager.PlayOneShot(FMODEvents.Instance.GetEventReferenceNoAsync("Death"), PlayerID.Instance.transform.position);
         }
     }
 

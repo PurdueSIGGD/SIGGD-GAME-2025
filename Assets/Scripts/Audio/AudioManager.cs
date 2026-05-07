@@ -10,21 +10,15 @@ using Debug = UnityEngine.Debug;
 
 public class AudioManager : Singleton<AudioManager>
 {
-    [Header("If we should keep level music or ambiance on player entering this scene")]
-    [SerializeField] bool initLevelMusic;
+    [Header("If we should keep ambiance on player entering this scene")]
     [SerializeField] bool initRandomAmbience;
 
     private List<StudioEventEmitter> eventEmitters;
-    public EventInstance levelMusic;
-    private bool pauseMusic;
 
     [Header("Random Ambiance Settings")]
-    [SerializeField, MinMaxSlider(1, 20)] private Vector2 ambianceInterval = new(1, 20);
+    [SerializeField, MinMaxSlider(1, 60)] private Vector2 ambianceInterval = new(1, 20);
     [SerializeField, MinMaxSlider(0, 30)] private Vector2 ambianceSpawnDist = new(0, 30);
     private RandomAmbiancePlayer ambiancePlayer;
-
-    public Dictionary<string, EventInstance> musicEventInstances = new();
-    private bool crossfading = false;
 
     protected override void Awake()
     {
@@ -36,28 +30,14 @@ public class AudioManager : Singleton<AudioManager>
         else
         {
             // Pass the new manager's serializefields to the existing one
-            _instance.UpdateManagerParam(initLevelMusic, initRandomAmbience, ambianceInterval, ambianceSpawnDist);
+            _instance.UpdateManagerParam(initRandomAmbience, ambianceInterval, ambianceSpawnDist);
             Destroy(gameObject);
         }
     }
 
     private void Start()
     {
-        InitMusicOnStart();
         InitAmbience();
-    }
-
-    private void Update()
-    {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            pauseMusic = !pauseMusic;
-            Debug.Log("toggle music: " + pauseMusic);
-
-            levelMusic.setPaused(pauseMusic);
-        }
-#endif
     }
 
     protected override void OnDestroy()
@@ -79,17 +59,6 @@ public class AudioManager : Singleton<AudioManager>
     #region Public Methods
 
     /// <summary>
-    /// Change level music to a different region's
-    /// </summary>
-    public void SetMusicArea(MusicArea area)
-    {
-        // TODO change is abrupt rn. Need to update to use Multi-instrument and crossfade
-        // between tracks in FMOD : )
-        levelMusic.setParameterByName("area", (int)area);
-        Debug.Log("setting music area to " + area);
-    }
-
-    /// <summary>
     /// Play a one shot track. Will wait until banks are loaded prior to playing. Suited for
     /// tracks like music tracks.
     /// </summary>
@@ -103,15 +72,42 @@ public class AudioManager : Singleton<AudioManager>
     /// <summary>
     /// Play one shot track. Suited for tracks that are better voided rather than delayed, like sfx
     /// </summary>
-    public void PlayOneShotNoAsync(string name, Vector3 worldPos = default)
+    /// <param name="chance">Chance between 0 and 1 for the sound to play. Useful for sounds that are played frequently, like mob sfx</param>
+    public void PlayOneShotNoAsync(string name, Vector3 worldPos = default, float chance = 1f)
     {
+        if (Random.value > chance) return;
+
         name = name.ToLower();
 
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
+        Debug.Log($"playing audio {name} {eventRef}");
         if (!eventRef.IsNull)
         {
             RuntimeManager.PlayOneShot(eventRef, worldPos);
         }
+    }
+
+    /// <summary>
+    /// Play one shot track that can be stopped midway through. Suited for tracks that are better voided rather than delayed, like sfx
+    /// </summary>
+    public EventInstance PlayOneShotStoppableNoAsync(string name, Vector3 worldPos = default)
+    {
+        name = name.ToLower();
+
+        EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
+        if (eventRef.IsNull) return default;
+
+        EventInstance instance = RuntimeManager.CreateInstance(eventRef);
+
+        if (worldPos != default)
+        {
+            instance.set3DAttributes(RuntimeUtils.To3DAttributes(worldPos));
+        }
+
+        Debug.Log($"playing stoppable audio {name} {eventRef}");
+        instance.start();
+
+        return instance;
     }
 
     /// <summary>
@@ -157,14 +153,8 @@ public class AudioManager : Singleton<AudioManager>
     /// <summary>
     /// Allows us to update fields between scene to scene
     /// </summary>
-    public void UpdateManagerParam(bool initLevelMusic, bool initRandomAmbience, Vector2 ambianceInterval, Vector2 ambianceSpawnDist)
+    public void UpdateManagerParam(bool initRandomAmbience, Vector2 ambianceInterval, Vector2 ambianceSpawnDist)
     {
-        if (this.initLevelMusic != initLevelMusic)
-        {
-            this.initLevelMusic = initLevelMusic;
-            InitMusicOnStart();
-        }
-
         this.initRandomAmbience = initRandomAmbience;
         this.ambianceInterval = ambianceInterval;
         this.ambianceSpawnDist = ambianceSpawnDist;
@@ -185,34 +175,6 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
-    private void InitMusicOnStart()
-    {
-        if (initLevelMusic)
-        {
-            if (musicEventInstances.TryGetValue("LevelMusic", out var eventInstance))
-            {
-                levelMusic = eventInstance;
-                levelMusic.start();
-            }
-            else
-            {
-                FMODEvents.Instance.GetEventInstance("LevelMusic", instance => {
-                    levelMusic = instance;
-                    musicEventInstances.Add("LevelMusic", levelMusic);
-                    levelMusic.start();
-                });
-
-            }
-        }
-        else
-        {
-            if (levelMusic.isValid())
-            {
-                levelMusic.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-            }
-        }
-    }
-
     private IEnumerator PlayOneShotCoroutine(string name, Vector3 pos = default)
     {
         yield return new WaitUntil(() => FMODEvents.Instance.Initialized);
@@ -220,6 +182,7 @@ public class AudioManager : Singleton<AudioManager>
         name = name.ToLower();
 
         EventReference eventRef = FMODEvents.Instance.GetEventReferenceNoAsync(name);
+        
         if (!eventRef.IsNull)
         {
             if (pos != default)
@@ -230,73 +193,6 @@ public class AudioManager : Singleton<AudioManager>
             {
                 RuntimeManager.PlayOneShot(eventRef);
             }
-        }
-    }
-
-    public IEnumerator MusicCrossFade(string toKey, string fromKey, float duration)
-    {
-        // dictioary holding all event instances
-        if (crossfading == false)
-        {
-            toKey = toKey.ToLower();
-            fromKey = fromKey.ToLower();
-
-            EventInstance to = InitalizeMusicNotStart(toKey);
-            EventInstance from = InitalizeMusicNotStart(fromKey);
-
-            crossfading = true;
-            float curTime = 0f;
-
-            // if to isnt already playing play it
-            to.getPlaybackState(out PLAYBACK_STATE state);
-            if (state != PLAYBACK_STATE.PLAYING)
-            {
-                to.start();
-            }
-
-            // resetting vals to make sure it transfers right
-            from.setVolume(1f);
-            to.setVolume(0f);
-
-            while (curTime < duration)
-            {
-                curTime += Time.deltaTime; // because its framebased it could cause issues but that fine for now
-                float t = curTime / duration;
-
-                //Debug.Log("CurTime: " + curTime + " t: " + t);
-
-                from.setVolume(1f - t); // decrease
-                to.setVolume(t); // increase
-
-                yield return null; // wait for a frame in between loop runs
-            }
-
-            from.setVolume(0f);
-            to.setVolume(1f);
-
-            from.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-            from.release();
-            crossfading = false;
-        }
-    }
-
-    // also checks to see if that music event is already in the dict
-    private EventInstance InitalizeMusicNotStart(string key)
-    {
-        key = key.ToLower();
-
-        if (musicEventInstances.TryGetValue(key, out var eventInstance))
-        {
-            EventInstance tempInstance = eventInstance;
-            return tempInstance;
-        }
-        else
-        {
-            EventInstance tempInstance = FMODEvents.Instance.GetEventInstanceNoAsync(key);
-
-            musicEventInstances.Add(key, tempInstance);
-
-            return tempInstance;
         }
     }
     #endregion

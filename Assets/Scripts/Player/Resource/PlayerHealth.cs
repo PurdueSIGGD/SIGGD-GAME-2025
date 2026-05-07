@@ -6,6 +6,8 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] float damagePulseIntensity;
     [SerializeField] private float duration = 1f;
 
+    private static readonly string healSound = "PlayerHeal";
+
     void OnEnable()
     {
         EntityHealthManager.OnHealthChanged += TriggerOnDamagePulse;
@@ -19,7 +21,13 @@ public class PlayerHealth : MonoBehaviour
     private void TriggerOnDamagePulse(DamageContext context)
     {
         if (context.victim != PlayerID.Instance.gameObject) return;
-        if (context.amount <= 0) return;
+        if (context.amount == 0) return;
+        if (context.amount < 0)
+        {
+            AudioManager.Instance.PlayOneShotNoAsync(healSound, PlayerID.Instance.gameObject.transform.position);
+            return;
+        }
         SpecialEffects.VignetteEffect(damagePulseIntensity, duration);
+        PlayerID.Instance.playerHUD.TriggerHUDEvent();
     }
 }

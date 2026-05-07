@@ -1,10 +1,15 @@
+using FMOD;
+using FMOD.Studio;
+using SIGGD.Mobs.StateMachine;
+using Sirenix.OdinInspector;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 using Utility;
-using Sirenix.OdinInspector;
 
 namespace SIGGD.Mobs
 {
+
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(StaminaBehaviour))]
@@ -15,6 +20,9 @@ namespace SIGGD.Mobs
         [SerializeField] private float baseSpeed = 12f;
         [SerializeField] private float rotationSpeed = 25f;
         [SerializeField] private float sprintMultiplier = 1.5f;
+
+        private MobContext ctx;
+        private EventInstance footsteps;
 
         private StaminaBehaviour sprint;
         public bool sprintAllowed;
@@ -46,11 +54,19 @@ namespace SIGGD.Mobs
             facing = transform.forward;
             facing.y = 0f;
             if (facing.sqrMagnitude < 0.001f) facing = Vector3.forward;
+
+            StartCoroutine(FindCorrectFootstepSound());
         }
         private void Start()
         {
             navFilter = agentData.filter;
         }
+
+        private void FixedUpdate()
+        {
+            HandleFootstepSound();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -59,6 +75,8 @@ namespace SIGGD.Mobs
         /// <param name="turnResponsiveness"></param>
         public void MoveTowards(Vector3 desiredDir, float speedMulti, float turnResponsiveness = 1f, bool moveWithSprint = true)
         {
+            if (desiredDir == Vector3.zero) return;
+
             // Applies sprinting
             if (moveWithSprint && sprintAllowed && sprint != null && sprint.stamina > 0f)
             {
@@ -180,5 +198,51 @@ namespace SIGGD.Mobs
 
         public void EnableSprint() => sprintAllowed = true;
         public void DisableSprint() => sprintAllowed = false;
+
+        public void InitializeMobContext(MobContext ctx)
+        {
+            this.ctx = ctx;
+        }
+
+        private IEnumerator FindCorrectFootstepSound()
+        {
+            yield return new WaitUntil(() => ctx != null);
+
+            switch (ctx.Type)
+            {
+                case MobType.Hyena:
+                    FMODEvents.Instance.GetEventInstance("HyenaFootstep", instance => { footsteps = instance; });
+                    break;
+                case MobType.Apex:
+                    FMODEvents.Instance.GetEventInstance("ApexFootstep", instance => { footsteps = instance; });
+                    break;
+                default:
+                    yield return null;
+                    break;
+            }
+        }
+
+        private void HandleFootstepSound()
+        {
+            if (!footsteps.isValid()) return;
+
+            if ((rb.linearVelocity.magnitude >= 1))
+            {
+                ATTRIBUTES_3D attr = AudioManager.Instance.ConfigAttributes3D(rb.position, rb.linearVelocity, transform.forward, Vector3.up);
+                footsteps.set3DAttributes(attr);
+
+                PLAYBACK_STATE playbackState;
+                footsteps.getPlaybackState(out playbackState);
+
+                if (playbackState.Equals(PLAYBACK_STATE.STOPPED))
+                {
+                    footsteps.start();
+                }
+            }
+            else
+            {
+                footsteps.stop(STOP_MODE.IMMEDIATE);
+            }
+        }
     }
 }

@@ -23,6 +23,7 @@ namespace SIGGD.Mobs.StateMachine.States
 
             ctx.AttackManager.SetTarget(new TransformTarget(player));
             ctx.AttackManager.StartAttackSequence(null);
+            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PURSUED, ctx.AgentData.gameObject);
         }
 
         public void Update() { }
@@ -31,6 +32,7 @@ namespace SIGGD.Mobs.StateMachine.States
 
         public void Exit()
         {
+            GameStateManager.Instance.attemptSetState(GameStateManager.GameState.PEACEFUL, ctx.AgentData.gameObject);
             ctx.Movement.DisableSprint();
         }
 

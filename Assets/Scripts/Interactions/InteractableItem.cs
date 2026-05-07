@@ -9,6 +9,8 @@ public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
 
     InteractableUI ui;
 
+    public static readonly string itemPickupSound = "ItemPickup";
+
 
     public void OnHoverEnter(InteractableUI ui)
     {
@@ -27,6 +29,7 @@ public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
     public void OnInteract(IInteractor interactor)
     {
         int leftover = interactor.Inventory.AddItem(itemInfo, 1);
+        AudioManager.Instance.PlayOneShotNoAsync(itemPickupSound, PlayerID.Instance.gameObject.transform.position);
         if (leftover > 0)
         { // Don't do anything if there is no inventory space
             Debug.Log($"Out of inventory space. Unable to pick up {itemInfo.itemName}.");
@@ -35,6 +38,10 @@ public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
         else
         {
             Debug.Log($"Item {itemInfo.itemName} picked up by interactor.");
+
+            // DEBUG
+            Debug.Log(OnItemPickUp == null ? "No APPLE listeners" : "APPLE Listeners found");
+
             OnItemPickUp?.Invoke(itemInfo, interactor);
             Destroy(this.gameObject); // Remove the item from the scene
         }
