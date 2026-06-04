@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class AmbientMovement : MonoBehaviour
@@ -5,8 +6,7 @@ public class AmbientMovement : MonoBehaviour
 
     public float moveSpeed = 1.0f; // Speed of the ambient movement 
     public float rotationRate = 5f;
-    public Vector3 moveDirection = Vector3.right; // Direction of the ambient movement
-
+    
     float timeOffset;
 
     void Start()
@@ -21,9 +21,10 @@ public class AmbientMovement : MonoBehaviour
 
         timeOffset += Time.deltaTime;
 
-        if (timeOffset > rotationRate) // Change direction every 5 seconds
+        if (timeOffset > rotationRate) 
         {
-            transform.Rotate(0, 5, 0); // Rotate the object to face the opposite direction
+            Int32 rotateStrength = UnityEngine.Random.Range(1, 3);
+            transform.Rotate(0, rotateStrength, 0); 
             timeOffset = 0.0f; // Reset the time offset
         }
     }
