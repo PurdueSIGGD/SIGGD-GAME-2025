@@ -23,6 +23,7 @@ public class SceneFader : Singleton<SceneFader>
 
     private void Update()
     {
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.K))
         {
             Debug.Log("Pressed K " + isTransitioning);
@@ -30,6 +31,7 @@ public class SceneFader : Singleton<SceneFader>
                 StartCoroutine(Fade(1f - fadeImage.color.a));
             }
         }
+#endif
     }
 
     public void FadeToScene(string sceneName, Transform newPosition)
