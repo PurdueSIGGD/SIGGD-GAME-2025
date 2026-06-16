@@ -105,15 +105,37 @@ public class SaveManager : Singleton<SaveManager>
 
     public bool Save()
     {
-        // Save if the game state is peaceful
+        return Save(ignoreGameStateRestriction: false);
+    }
 
-        if ((GameStateManager.Instance != null && !GameStateManager.Instance.canSaveGame()) || modules == null)
+    public bool SaveForSceneTransition()
+    {
+        return Save(ignoreGameStateRestriction: true);
+    }
+
+    public bool Save(bool ignoreGameStateRestriction)
+    {
+        if (modules == null)
         {
-            Debug.Log("Couldn't save game");
+            Debug.LogWarning("SaveManager: save skipped because save modules are not initialized yet.");
             return false;
         }
 
-        Debug.Log("SaveManager : Game was saved.");
+        bool canSaveInCurrentState = GameStateManager.Instance == null || GameStateManager.Instance.canSaveGame();
+        if (!ignoreGameStateRestriction && !canSaveInCurrentState)
+        {
+            Debug.LogWarning(
+                $"SaveManager: save blocked by game state '{GameStateManager.Instance.getGameState()}'.");
+            return false;
+        }
+
+        if (ignoreGameStateRestriction && !canSaveInCurrentState)
+        {
+            Debug.Log(
+                $"SaveManager: forcing transition save while game state is '{GameStateManager.Instance.getGameState()}'.");
+        }
+
+        Debug.Log("SaveManager: game was saved.");
 
         foreach (var module in modules)
         {
