@@ -158,6 +158,12 @@ public class PlayerStamina : MonoBehaviour
     public bool HasStaminaForJump() {
         return !StaminaDisabled && currentStamina >= jumpCost;
     }
+
+    public void DisableSprint()
+    {
+        staminaDisabled = true;
+        anim.SetBool("hasStamina", false);
+    }
 }
 
 
