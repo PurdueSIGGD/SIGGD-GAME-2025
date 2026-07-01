@@ -12,7 +12,22 @@ public class SceneFader : Singleton<SceneFader>
 
     override protected void Awake()
     {
-        base.Awake();
+        if (_instance == null)
+        {
+            base.Awake();
+        }
+        else if (_instance != this)
+        {
+            SceneFader existing = _instance as SceneFader;
+            if (existing != null && existing.fadeImage == null && fadeImage != null)
+            {
+                existing.fadeImage = fadeImage;
+            }
+
+            Destroy(gameObject);
+            return;
+        }
+
         DontDestroyOnLoad(gameObject);
     }
 
@@ -39,6 +54,70 @@ public class SceneFader : Singleton<SceneFader>
         Debug.Log("Fading to scene " + sceneName);
         if (!isTransitioning)
             StartCoroutine(TransitionRoutine(sceneName, newPosition));
+    }
+
+    public IEnumerator FadeToBlack()
+    {
+        if (isTransitioning)
+        {
+            yield break;
+        }
+
+        isTransitioning = true;
+        yield return StartCoroutine(Fade(1f));
+        isTransitioning = false;
+    }
+
+    public IEnumerator FadeFromBlack()
+    {
+        if (isTransitioning)
+        {
+            yield break;
+        }
+
+        isTransitioning = true;
+        yield return StartCoroutine(Fade(0f));
+        isTransitioning = false;
+    }
+
+    public void SetBlackImmediate()
+    {
+        if (!HasFadeImage()) return;
+        SetAlpha(1f);
+    }
+
+    public void LoadSceneAndFadeFromBlack(string sceneName)
+    {
+        StartCoroutine(LoadSceneAndFadeFromBlackRoutine(sceneName));
+    }
+
+    private IEnumerator LoadSceneAndFadeFromBlackRoutine(string sceneName)
+    {
+        if (isTransitioning)
+        {
+            yield break;
+        }
+
+        isTransitioning = true;
+
+        AsyncOperation loadOperation = SceneManager.LoadSceneAsync(sceneName);
+        while (loadOperation != null && !loadOperation.isDone)
+        {
+            yield return null;
+        }
+
+        // Let scene UI initialize before fading back in.
+        yield return null;
+        yield return null;
+        Canvas.ForceUpdateCanvases();
+
+        if (HasFadeImage())
+        {
+            SetBlackImmediate();
+            yield return StartCoroutine(Fade(0f));
+        }
+
+        isTransitioning = false;
     }
 
     IEnumerator TransitionRoutine(string sceneName, Transform newPosition) {
@@ -100,6 +179,8 @@ public class SceneFader : Singleton<SceneFader>
 
     IEnumerator Fade(float targetAlpha)
     {
+        if (!HasFadeImage()) yield break;
+
         Debug.Log("Fading to " + targetAlpha);
         float startAlpha = fadeImage.color.a;
         float time = 0f;
@@ -128,5 +209,22 @@ public class SceneFader : Singleton<SceneFader>
         Color c = fadeImage.color;
         c.a = a;
         fadeImage.color = c;
+    }
+
+    private bool HasFadeImage()
+    {
+        if (fadeImage != null)
+        {
+            return true;
+        }
+
+        fadeImage = GetComponentInChildren<Image>(true);
+        if (fadeImage == null)
+        {
+            Debug.LogWarning("SceneFader: fadeImage is missing. Assign it on SceneFader.");
+            return false;
+        }
+
+        return true;
     }
 }
