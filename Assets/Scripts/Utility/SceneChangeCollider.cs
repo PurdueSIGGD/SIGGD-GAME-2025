@@ -10,7 +10,7 @@ public class SceneChangeCollider : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            SaveManager.Instance.Save();   
+            SaveManager.Instance.SaveForSceneTransition();
             Debug.Log("Scene change collided");
             SceneFader.Instance.FadeToScene(targetSceneName, newPosition);
         }

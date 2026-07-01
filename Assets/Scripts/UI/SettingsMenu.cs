@@ -16,8 +16,8 @@ public class SettingsMenu : Singleton<SettingsMenu>
         Show(false);
 
         // This is used to load the currently used input overrides
-        if (SaveManager.Instance)
-            SaveManager.Instance.Load();
+        //if (SaveManager.Instance)
+        //    SaveManager.Instance.Load();
 
         OpenPanel(initialPanel);
     }

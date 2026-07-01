@@ -54,6 +54,7 @@ public class AudioLogManager : MonoBehaviour
         {
             StopCurrentAudio();
         }
+        subtitles.text = "";
     }
 
     void Start()
@@ -119,16 +120,20 @@ public class AudioLogManager : MonoBehaviour
                 logSoundEvent.setPaused(false);
                 subtitles.enabled = true;
             }
-
-            anim.SetBool("LeftVisible", line.isFromRadio || line.isIntoRadio);
-            if (line.isFromRadio || line.isIntoRadio)
+            
+            if (anim != null)
             {
-                anim.Play("PlayerHand_Left_Idle");
+                anim.SetBool("LeftVisible", line.isFromRadio || line.isIntoRadio);
+                if (line.isFromRadio || line.isIntoRadio)
+                {
+                    anim.Play("PlayerHand_Left_Idle");
+                }
             }
 
-            RuntimeManager.StudioSystem.setParameterByName("RadioVoice", line.isFromRadio ? 1 : 0);
-
+            Debug.Log("Subtitles: " + line.line);
             subtitles.text = line.line;
+
+            RuntimeManager.StudioSystem.setParameterByName("RadioVoice", line.isFromRadio ? 1 : 0);
 
             prevWasFromRadio = line.isFromRadio;
             prevWasIntoRadio = line.isIntoRadio;
@@ -199,7 +204,11 @@ public class AudioLogManager : MonoBehaviour
         RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
 
         // run all the normal stop stuff including stopping audio
-        anim.SetBool("LeftVisible", false);
+        if (anim != null)
+        {
+            anim.SetBool("LeftVisible", false);
+        }
+        
         logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         logSoundEvent.release(); // stops the now unused event from floating around not doing anything
         isPlaying = false;

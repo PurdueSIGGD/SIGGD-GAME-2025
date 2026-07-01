@@ -21,10 +21,10 @@ public class SceneSaveManager : Singleton<SceneSaveManager>
 
     public void Load()
     {
-        sceneModule.deserialize();
+        sceneModule?.deserialize();
     }
 
     public void Save() {
-        sceneModule.serialize();
+        sceneModule?.serialize();
     }
 }
