@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5828462956170744770}
   - component: {fileID: 7759295905940745973}
   - component: {fileID: 5942530477189433589}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Fire VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,11 +50,32 @@ VisualEffect:
   m_ResourceVersion: 1
   m_PropertySheet:
     m_Float:
-      m_Array: []
+      m_Array:
+      - m_Value: 3.71
+        m_Name: Fire Particle Size
+        m_Overridden: 0
+      - m_Value: 1
+        m_Name: Min Start Speed
+        m_Overridden: 0
+      - m_Value: 0.63
+        m_Name: Spawn Radius
+        m_Overridden: 1
+      - m_Value: 2.76
+        m_Name: Min Lifetime
+        m_Overridden: 0
+      - m_Value: 6.81
+        m_Name: Max Lifetime
+        m_Overridden: 0
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 1.65, y: 3.43, z: 1.77}
+        m_Name: RandomVelocity
+        m_Overridden: 0
+      - m_Value: {x: 1.19, y: 206.3, z: 0}
+        m_Name: ForceMult
+        m_Overridden: 0
     m_Vector4f:
       m_Array: []
     m_Uint:
@@ -123,7 +144,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6383788529389608447}
-  m_Layer: 0
+  - component: {fileID: 7924561043925640668}
+  - component: {fileID: 9145663595044730806}
+  m_Layer: 11
   m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,3 +169,37 @@ Transform:
   - {fileID: 5828462956170744770}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7924561043925640668
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8900574663950146027}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 576
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.33, y: 1.38, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &9145663595044730806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8900574663950146027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c315e9c95892db2408413f0c7c05b201, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  COLLIDER_HEIGHT: 3

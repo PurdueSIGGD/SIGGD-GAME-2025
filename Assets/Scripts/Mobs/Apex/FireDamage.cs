@@ -1,44 +1,88 @@
+using System.Collections;
+using System.Transactions;
 using UnityEngine;
 
 [RequireComponent (typeof(EntityHealthManager))]
 public class FireDamage : MonoBehaviour
 {
-    public const float DAMAGE_PER_TIME_INTERVAL = 2.5f;
-    public const float TIME_INTERVAL = 1.0f;
+    public float INITIAL_WAIT_BEFORE_DAMAGE = 0.5f; // Seconds in fire before entity takes damage
+    public float DAMAGE_PER_TIME_INTERVAL = 2.5f;
+    public float DAMAGE_TIME_INTERVAL = 1.0f; // after initial delay, this is interval between successive damages
 
     private EntityHealthManager healthManager;
+    private Coroutine damageCoroutine;
 
-    private bool firePresent = true; // Whether we should check for fire damage, set to only true for now
 
     void Start()
     {
         healthManager = GetComponent<EntityHealthManager>();
-        InvokeRepeating("CheckFireDamage", 0, TIME_INTERVAL);
     }
 
-    /// <summary>
-    /// If fire is present and game object is in fire, deal damage
-    /// </summary>
-    void CheckFireDamage()
+    private void OnTriggerEnter(Collider other)
     {
-        if (firePresent && IsInFire())
+        if (other.gameObject.layer == LayerMask.NameToLayer("FireVFX"))
         {
-            // deal damage
-            DamageContext context = new DamageContext();
-            context.attacker = gameObject;
-            context.victim = gameObject;
-            context.amount = DAMAGE_PER_TIME_INTERVAL;
-            context.xxtraContext = "Fire Damage";
+            StartFireDamage(other.gameObject);
         }
     }
 
-    private bool IsInFire()
+    private void OnTriggerExit(Collider other)
     {
-        
+        if (other.gameObject.layer == LayerMask.NameToLayer("FireVFX"))
+        {
+            StopFireDamage();
+        }
     }
 
-    private void SetFirePresent(bool firePresent)
+    /// <summary>
+    /// Deals appropriate fire damage when given a health manager
+    /// </summary>
+    /// <param name="healthManager"></param>
+    private IEnumerator DealFireDamage(GameObject fireGameObject)
     {
-        this.firePresent = firePresent;
+        // Initial delay
+
+        Debug.Log("in fire waiting");
+        yield return new WaitForSeconds(INITIAL_WAIT_BEFORE_DAMAGE);
+
+        while (true)
+        {
+            // Deal damage
+
+            DamageContext context = new DamageContext();
+            context.attacker = fireGameObject;
+            context.victim = this.gameObject;
+            context.amount = DAMAGE_PER_TIME_INTERVAL;
+            context.xxtraContext = "Fire Damage";
+
+            healthManager.TakeDamage(context);
+
+            // Delay
+
+            yield return new WaitForSeconds(DAMAGE_TIME_INTERVAL);
+
+        }
     }
+
+    /// <summary>
+    /// Start the fire damage coroutine
+    /// </summary>
+    /// <param name="fireGameObject"></param>
+    private void StartFireDamage(GameObject fireGameObject)
+    {
+        if (damageCoroutine == null)
+        {
+            damageCoroutine = StartCoroutine(DealFireDamage(fireGameObject));
+        }
+    }
+
+    private void StopFireDamage()
+    {
+        if (damageCoroutine != null)
+        {
+            StopCoroutine(damageCoroutine);
+            damageCoroutine = null;
+        }
+    }
+
 }
