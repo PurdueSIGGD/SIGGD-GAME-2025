@@ -1,4 +1,5 @@
 using System;
+using SIGGD.Save;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -50,7 +51,7 @@ public class InputRebinder : MonoBehaviour
                 text.text = GetActionString();
                 button.interactable = true;
 
-                SaveManager.Instance.Save();
+                SaveManager.Instance?.SaveSettings();
 
                 Debug.Log($"After: {actionRef.asset.SaveBindingOverridesAsJson()}");
                 // InputOverrideSaveModule.SaveOverride(actionRef);

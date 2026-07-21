@@ -1,3 +1,5 @@
+using SIGGD.Save;
+using SIGGD.Save.Modules;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,7 +12,8 @@ public class LoadPrologue : MonoBehaviour
 
     void Start()
     {
-        if (SaveManager.Instance.gameProgressModule.saveData.hasCompletedPrologue)
+        var progress = SaveManager.Instance?.Get<GameProgressModule>();
+        if (progress != null && progress.HasCompletedPrologue)
         {
             SceneManager.LoadScene(mainMenuName);
         }

@@ -1,3 +1,5 @@
+using SIGGD.Save;
+using SIGGD.Save.Modules;
 using UnityEngine;
 using UnityEditor;
 
@@ -62,6 +64,13 @@ public class PlayerID : Singleton<PlayerID>
     }
 
     private void Start() {
+        // Push any saved player state onto our components now that every player Awake has finished.
+        var save = SaveManager.Instance;
+        if (save != null)
+        {
+            save.WhenGameplayReady(() => save.Apply<PlayerModule>());
+        }
+
         isReset = true;
     }
     

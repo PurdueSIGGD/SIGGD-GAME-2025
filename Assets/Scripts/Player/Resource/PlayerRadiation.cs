@@ -1,5 +1,7 @@
 using FMOD.Studio;
 using FMODUnity;
+using SIGGD.Save;
+using SIGGD.Save.Modules;
 using System.Collections;
 using System.Diagnostics;
 using UnityEngine;
@@ -44,7 +46,7 @@ public class PlayerRadiation : MonoBehaviour
     private bool inRadiationDamage = false;
     private EventInstance radiationSound;
 
-    public int SlimeLevel => SaveManager.Instance.playerModule.playerData.slimeLevel;
+    public int SlimeLevel => SaveManager.Instance?.Get<PlayerModule>()?.SlimeLevel ?? 4;
 
 
     private float currentRadiation = 0f;
@@ -200,9 +202,10 @@ public class PlayerRadiation : MonoBehaviour
 
     public void IncrementSlimeLevel()
     {
-        if (SaveManager.Instance.playerModule.playerData.slimeLevel < 4)
+        var player = SaveManager.Instance?.Get<PlayerModule>();
+        if (player != null && player.SlimeLevel < 4)
         {
-            SaveManager.Instance.playerModule.playerData.slimeLevel++;
+            player.SlimeLevel++;
         }
     }
 }

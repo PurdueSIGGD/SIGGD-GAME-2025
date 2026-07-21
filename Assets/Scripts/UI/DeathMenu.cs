@@ -1,3 +1,4 @@
+using SIGGD.Save;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -26,7 +27,7 @@ public class DeathMenu : MonoBehaviour
             respawnManager.RespawnPlayer();
             ShowDeathMenu(false);
             Debug.Log("Going to main menu");
-            SaveManager.Instance.Save();
+            SaveManager.Instance?.SaveGameplay(SaveTrigger.SceneExit);
             SceneManager.LoadScene("Main Menu");
             Debug.Log($"Current Scene: {SceneManager.GetActiveScene()}");
         });
