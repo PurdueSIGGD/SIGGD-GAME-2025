@@ -65,6 +65,7 @@ GameObject:
   - component: {fileID: 138825461547106168}
   - component: {fileID: 3542086174207366855}
   - component: {fileID: 4474341246352226927}
+  - component: {fileID: 8033951001226885700}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -669,6 +670,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339df473adcb55e4a974300b5afa7900, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8033951001226885700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696392301619895344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8260dccbe99c4524eb961765c15f7091, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  INITIAL_WAIT_BEFORE_DAMAGE: 1
+  DAMAGE_PER_TIME_INTERVAL: 2.5
+  DAMAGE_TIME_INTERVAL: 1
 --- !u!1 &4791394868699375998
 GameObject:
   m_ObjectHideFlags: 0
@@ -1119,8 +1135,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 386615957715104347, guid: 7bd825be611554127960116d5da99b42, type: 3}
+      propertyPath: m_Size
+      value: 0.414
+      objectReference: {fileID: 0}
+    - target: {fileID: 386615957715104347, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 395092588017753937, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_Enabled
@@ -1200,7 +1220,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1451587491326760673, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1466649155227705146, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1496,11 +1516,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5526350285862674533, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.14785714
       objectReference: {fileID: 0}
     - target: {fileID: 5526350285862674533, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6263391565142722032, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_AnchorMax.y
