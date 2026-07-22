@@ -1,3 +1,5 @@
+using SIGGD.Save;
+using SIGGD.Save.Modules;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -31,10 +33,10 @@ public class TitleScreenInputHandler : MonoBehaviour
         // await loadScene; // Make sure we've actually loaded the scene at this point
         loadingPanel.SetActive(true);
         titleMusic.StopActiveMusic();
-        string sceneName = SceneSaveManager.Instance.sceneName;
-        if (sceneName.Length == 0)
+        string sceneName = SaveManager.Instance?.Get<LastSceneModule>()?.SceneName ?? string.Empty;
+        if (string.IsNullOrEmpty(sceneName))
         {
-            Debug.Log("Scene save manager has no saved scene. Loading default scene: " + defaultSceneName);
+            Debug.Log("Save manager has no saved scene. Loading default scene: " + defaultSceneName);
             SceneManager.LoadScene(defaultSceneName, LoadSceneMode.Single);
         }
         else {

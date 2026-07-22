@@ -1,6 +1,8 @@
 
 using System.Collections;
 using FMOD.Studio;
+using SIGGD.Save;
+using SIGGD.Save.Modules;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
@@ -8,10 +10,14 @@ public class MarkPrologueCompleted : ExternalEventTriggerer
 {
     public override void TriggerExternalEvent()
     {
-        if (SaveManager.Instance != null)
+        var save = SaveManager.Instance;
+        if (save != null)
         {
-            SaveManager.Instance.gameProgressModule.CompletePrologue();
-            SaveManager.Instance.Save();
+            save.Get<GameProgressModule>()?.CompletePrologue();
+            save.SaveSettings();
+            // Also flush gameplay so leaving the prologue keeps the player's progress even if a
+            // pursued state would normally block a gated save — this is a scene exit, req. 5.
+            save.SaveGameplay(SaveTrigger.SceneExit);
         }
 
         StartCoroutine(PlayExitSequenceAndLoadScene());

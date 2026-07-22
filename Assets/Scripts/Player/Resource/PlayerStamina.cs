@@ -99,16 +99,20 @@ public class PlayerStamina : MonoBehaviour
             currentStamina -= staminaDecayRate * Time.deltaTime;
             OnStaminaDecrease?.Invoke(staminaDecayRate * Time.deltaTime);
         }
-        else if (isClimbing && (SaveManager.Instance.playerModule == null || !SaveManager.Instance.playerModule.playerData.hasGloves))
+        else if (isClimbing)
         {
-            currentStamina -= climbingStaminaDecayRate * Time.deltaTime;
-            OnStaminaDecrease?.Invoke(climbingStaminaDecayRate * Time.deltaTime);
-        }
-        else if (isClimbing && SaveManager.Instance.playerModule.playerData.hasGloves)
-        {
-            Debug.Log("Climbing stamina decay reduced by gloves");
-            currentStamina -= climbingStaminaDecayRate * climbingGlovesReduction * Time.deltaTime;
-            OnStaminaDecrease?.Invoke(climbingStaminaDecayRate * climbingGlovesReduction * Time.deltaTime);
+            bool hasGloves = SIGGD.Save.SaveManager.Instance?.Get<SIGGD.Save.Modules.PlayerModule>()?.HasGloves ?? false;
+            if (hasGloves)
+            {
+                Debug.Log("Climbing stamina decay reduced by gloves");
+                currentStamina -= climbingStaminaDecayRate * climbingGlovesReduction * Time.deltaTime;
+                OnStaminaDecrease?.Invoke(climbingStaminaDecayRate * climbingGlovesReduction * Time.deltaTime);
+            }
+            else
+            {
+                currentStamina -= climbingStaminaDecayRate * Time.deltaTime;
+                OnStaminaDecrease?.Invoke(climbingStaminaDecayRate * Time.deltaTime);
+            }
         }
         else if (isGrounded && currentStamina < maxStamina) // stamina regens while on ground & not exerting effort, but can't go over max
         {

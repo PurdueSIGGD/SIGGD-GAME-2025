@@ -1,3 +1,5 @@
+using SIGGD.Save;
+using SIGGD.Save.Modules;
 using UnityEngine;
 
 public class SettingsMenu : Singleton<SettingsMenu>
@@ -27,10 +29,8 @@ public class SettingsMenu : Singleton<SettingsMenu>
         // Will doing this be too slow?
         if (!enabled)
         {
-            if (SaveManager.Instance)
-            {
-                SaveManager.Instance.Save();
-            }
+            // Closing settings — persist volume/rebind changes.
+            SaveManager.Instance?.SaveSettings();
         }
 
         if (previousView)
@@ -50,7 +50,7 @@ public class SettingsMenu : Singleton<SettingsMenu>
 
     public void ResetPlayerInputs()
     {
-        SaveManager.Instance.inputOverrideSaveModule.ResetPlayerInputs();
+        SaveManager.Instance?.Get<InputOverrideModule>()?.ResetPlayerInputs();
         foreach (var rebinder in FindObjectsByType<InputRebinder>(FindObjectsSortMode.None))
         {
             rebinder.Restart();
@@ -59,7 +59,7 @@ public class SettingsMenu : Singleton<SettingsMenu>
 
     public void ResetAudioLevels()
     {
-        SaveManager.Instance.audioLevelsSaveModule.ResetAudioLevels();
+        SaveManager.Instance?.Get<AudioLevelsModule>()?.ResetAudioLevels();
         foreach (var vcaController in FindObjectsByType<ControllerVca>(FindObjectsSortMode.None))
         {
             vcaController.Restart();
