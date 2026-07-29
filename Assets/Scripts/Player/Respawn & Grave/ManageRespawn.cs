@@ -1,4 +1,6 @@
 using System.Collections;
+using SIGGD.Save;
+using SIGGD.Save.Modules;
 using UnityEngine;
 
 public class ManageRespawn : MonoBehaviour
@@ -98,6 +100,13 @@ public class ManageRespawn : MonoBehaviour
         stamina = PlayerID.Instance.playerStamina;
         radiation = PlayerID.Instance.playerRadiation;
         playerCollider = PlayerID.Instance.GetComponent<Collider>();
+
+        // Re-spawn any grave that was persisted for this scene.
+        var save = SaveManager.Instance;
+        if (save != null)
+        {
+            save.WhenGameplayReady(() => save.Apply<GraveModule>());
+        }
     }
 
     void Update()

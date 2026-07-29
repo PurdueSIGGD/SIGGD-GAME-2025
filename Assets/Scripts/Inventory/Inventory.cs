@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using SIGGD.Save;
+using SIGGD.Save.Modules;
 using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.UI;
@@ -218,40 +220,14 @@ public class Inventory : Singleton<Inventory>, IInventory
             inventorySlots[i].onClick.AddListener(() => DebugOnInvSlotSelected(slot));
         }
 
-        // Load from save or initialise empty
-        if (InventoryDataSaveModule.inventoryData.inventory != null)
+        // Initialise every slot to Empty defaults; saved contents (if any) are pushed in below via SaveManager.
+        selected = 0;
+        for (int i = 0; i < allSlots.Length; i++)
         {
-            Debug.Log("Initializing inventory from save");
-            selected = InventoryDataSaveModule.inventoryData.selected;
-            for (int i = 0; i < InventoryDataSaveModule.inventoryData.inventory.Length; i++)
-            {
-                allSlots[i].index = i;
-                allSlots[i].count = InventoryDataSaveModule.inventoryData.inventory[i].count;
-                string name = InventoryDataSaveModule.inventoryData.inventory[i].name;
-                if (allSlots[i].count > 0)
-                {
-                    allSlots[i].itemInfo = itemInfos[name];
-                    Debug.Log($"Name from save ({name}): {allSlots[i].itemInfo.itemName}");
-                }
-                else
-                {
-                    Debug.Log("Inventory slot is empty from save");
-                    allSlots[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
-                }
-                allSlots[i].UpdateSlot();
-            }
-        }
-        else
-        {
-            selected = 0;
-            Debug.Log("Initializing empty inventory");
-            for (int i = 0; i < allSlots.Length; i++)
-            {
-                allSlots[i].index = i;
-                allSlots[i].count = 0;
-                allSlots[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
-                allSlots[i].UpdateSlot();
-            }
+            allSlots[i].index = i;
+            allSlots[i].count = 0;
+            allSlots[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+            allSlots[i].UpdateSlot();
         }
 
         for (int i = 0; i < InventoryLength; i++)
@@ -262,7 +238,47 @@ public class Inventory : Singleton<Inventory>, IInventory
         }
         PrintInventory();
 
-        // Fire initial HUD update now that all slots are ready
+        // Fire initial HUD update now that all slots are ready.
+        OnHotbarContentsChanged?.Invoke();
+        OnHotbarSelectionChanged?.Invoke(selected);
+
+        // Pull saved inventory data (if any). WhenGameplayReady guarantees the module has been
+        // deserialised even if we entered the scene before SaveManager finished its scene-load pass.
+        var save = SaveManager.Instance;
+        if (save != null)
+        {
+            save.WhenGameplayReady(() => save.Apply<InventoryModule>());
+        }
+    }
+
+    /// <summary>
+    /// Rebuild the live inventory from a save-data POCO. Called by <see cref="InventoryModule.Apply"/>.
+    /// Idempotent: calling it repeatedly with the same data leaves the inventory unchanged.
+    /// </summary>
+    public void LoadFromSaveData(InventorySaveData data)
+    {
+        if (data == null || data.inventory == null) return;
+
+        Debug.Log("Initializing inventory from save");
+        selected = data.selected;
+
+        int len = Mathf.Min(data.inventory.Length, allSlots.Length);
+        for (int i = 0; i < len; i++)
+        {
+            allSlots[i].index = i;
+            allSlots[i].count = data.inventory[i].count;
+            string name = data.inventory[i].name;
+            if (allSlots[i].count > 0 && itemInfos.TryGetValue(name, out var info))
+            {
+                allSlots[i].itemInfo = info;
+            }
+            else
+            {
+                allSlots[i].itemInfo = itemInfos[ItemInfo.ItemName.Empty.ToString()];
+            }
+            allSlots[i].UpdateSlot();
+        }
+
         OnHotbarContentsChanged?.Invoke();
         OnHotbarSelectionChanged?.Invoke(selected);
     }

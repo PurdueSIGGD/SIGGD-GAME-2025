@@ -1,3 +1,4 @@
+using SIGGD.Save;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,7 +11,9 @@ public class SceneChangeCollider : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            SaveManager.Instance.SaveForSceneTransition();
+            // Forced scene-exit save (req. 5): captures inventory/quests/player/grave/scene
+            // even if GameStateManager would normally block the save.
+            SaveManager.Instance?.SaveGameplay(SaveTrigger.SceneExit);
             Debug.Log("Scene change collided");
             SceneFader.Instance.FadeToScene(targetSceneName, newPosition);
         }

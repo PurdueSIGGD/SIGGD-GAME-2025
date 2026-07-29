@@ -1,3 +1,4 @@
+using SIGGD.Save;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,7 +12,8 @@ public class CheckpointScript : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             respawnLogic.UpdateSpawnPoint(transform);
-            SaveManager.Instance.Save(); // Save
+            // Checkpoint save: gated by GameStateManager (req. 1) — no need to force through a chase.
+            SaveManager.Instance?.SaveGameplay(SaveTrigger.Checkpoint);
             Debug.Log("Reached checkpoint, respawnPoint set at " + transform.position);
         }
     }

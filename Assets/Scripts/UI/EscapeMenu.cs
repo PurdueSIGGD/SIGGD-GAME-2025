@@ -1,3 +1,4 @@
+using SIGGD.Save;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -70,7 +71,8 @@ public class EscapeMenu : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        SaveManager.Instance.Save();
+        // Leaving a gameplay scene → forced save (req. 5), then go to menu.
+        SaveManager.Instance?.SaveGameplay(SaveTrigger.SceneExit);
         SceneManager.LoadScene("Main Menu");
     }
 

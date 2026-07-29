@@ -1,4 +1,6 @@
 using System.Collections;
+using SIGGD.Save;
+using SIGGD.Save.Modules;
 using UnityEngine;
 
 public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
@@ -97,7 +99,8 @@ public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
 
         
         Debug.Log("Shopkeeper: Increasing player's slime level and triggering slimed out effect.");
-        SaveManager.Instance.playerModule.playerData.slimeLevel = Mathf.Clamp(SaveManager.Instance.playerModule.playerData.slimeLevel + 1, 0, 4);
+        var player = SaveManager.Instance?.Get<PlayerModule>();
+        if (player != null) player.SlimeLevel++;
         
         Debug.Log("Shopkeeper: Sliming out");
         SlimedOut.Instance.TriggerSlimedOut();
