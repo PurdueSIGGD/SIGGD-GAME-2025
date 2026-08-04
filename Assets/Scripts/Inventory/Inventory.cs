@@ -84,7 +84,7 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     private void OnScroll(InputAction.CallbackContext context)
     {
-        Camera.main.fieldOfView = 60f;
+        CameraZoomController.Instance.ResetFOV();
         if (ObjectPlacer.Instance.InPlacementMode) return;
         float scrollValue = context.ReadValue<float>();
         if (scrollValue == 0) return;
