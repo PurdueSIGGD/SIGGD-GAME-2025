@@ -28,18 +28,18 @@ public class CameraMovement : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            followPlayer = !followPlayer;
-
-            if (followPlayer)
-                Debug.Log("camera set to follow player");
-            else
-            {
-                fixedPos = transform.position;
-                Debug.Log("camera set to fixed position");
-            }
-        }
+        //if (Input.GetKeyDown(KeyCode.C))
+        //{
+         //   followPlayer = !followPlayer;
+//
+         //   if (followPlayer)
+         //       Debug.Log("camera set to follow player");
+         //   else
+          //  {
+         //       fixedPos = transform.position;
+                //Debug.Log("camera set to fixed position");
+          //  }
+       // }
     }
 
     void LateUpdate()
