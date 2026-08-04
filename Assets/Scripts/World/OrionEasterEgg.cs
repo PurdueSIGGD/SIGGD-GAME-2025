@@ -1,29 +1,29 @@
+using System;
 using System.IO;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class OrionEasterEgg : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    string filePath = "Assets/Resources/OrionEasterEgg.txt";
+    string filePath;
 
-   
-
-void Start()
+    void Start()
     {
+        filePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "Echoes of Isovios",
+            "save.json"
+        );
+
         if (File.Exists(filePath))
         {
-            Debug.LogError("file exists somehow");
+            Debug.Log("Echoes of Isovios save found!");
+            
         }
         else
         {
-            Debug.LogError("File not found: " + filePath);
+            Debug.Log("Save file not found: " + filePath);
+            //Destroy(gameObject);
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
