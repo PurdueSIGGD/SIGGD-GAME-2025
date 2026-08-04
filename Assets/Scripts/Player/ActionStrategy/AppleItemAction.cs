@@ -32,18 +32,17 @@ public class AppleItem : IPlayerActionStrategy
         Debug.Log("player ate an apple");
         Debug.Log("jasen made a change");
         //Camera.main.fieldOfView = 30;
-
-
-        float currentFOV = Camera.main.fieldOfView;
-
-        if (currentFOV > 40f)
+        
+        isOn = !isOn;
+        if (isOn)
         {
-            CameraZoomController.Instance.SetFOV(30f);
+            Camera.main.fieldOfView = 30;
         }
         else
         {
-            CameraZoomController.Instance.SetFOV(60f);
+            Camera.main.fieldOfView = 60;
         }
+
     }
 
     protected override void OnUpdate()
