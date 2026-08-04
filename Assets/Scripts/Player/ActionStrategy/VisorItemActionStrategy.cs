@@ -19,7 +19,7 @@ public class VisorItem : IPlayerActionStrategy
 
         if (currentFOV > 40f)
         {
-            CameraZoomController.Instance.SetFOV(30f);
+            CameraZoomController.Instance.SetFOV(15f);
         }
         else
         {
