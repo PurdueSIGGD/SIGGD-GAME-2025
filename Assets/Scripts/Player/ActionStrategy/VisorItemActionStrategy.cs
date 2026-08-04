@@ -13,13 +13,13 @@ public class VisorItem : IPlayerActionStrategy
     {
         base.OnEnter();
         PlayHandAction(); // plays animation for apple, but this is instant rn so it does nothing
-        //AudioManager.Instance.PlayOneShotNoAsync(eatSound, PlayerID.Instance.gameObject.transform.position);
+        AudioManager.Instance.PlayOneShotNoAsync(eatSound, PlayerID.Instance.gameObject.transform.position);
 
         float currentFOV = Camera.main.fieldOfView;
 
         if (currentFOV > 40f)
         {
-            CameraZoomController.Instance.SetFOV(15f);
+            CameraZoomController.Instance.SetFOV(30f);
         }
         else
         {
