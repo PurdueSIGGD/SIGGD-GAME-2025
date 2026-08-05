@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2757101940440192518}
+  - component: {fileID: 6935010813587325863}
+  - component: {fileID: 2668011539989049244}
   m_Layer: 0
   m_Name: Stun Trap Prefab
   m_TagString: Untagged
@@ -32,6 +34,40 @@ Transform:
   - {fileID: 3021522686698149088}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6935010813587325863
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2462697391540016860}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.8610954, y: 0.48597574, z: 0.87601763}
+  m_Center: {x: -0.029922485, y: 0.8721515, z: -0.0020945966}
+--- !u!114 &2668011539989049244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2462697391540016860}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ed209f11a88c9049aef4f7996af8c0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bounceForce: 10
 --- !u!1 &7639829996370718814
 GameObject:
   m_ObjectHideFlags: 0
@@ -46,6 +82,7 @@ GameObject:
   - component: {fileID: 6436074740007321417}
   - component: {fileID: 1846832742333772356}
   - component: {fileID: 375990050143223203}
+  - component: {fileID: 4095603339537499994}
   m_Layer: 0
   m_Name: Stun Trap
   m_TagString: Untagged
@@ -167,3 +204,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemInfo: {fileID: 11400000, guid: 67d2d9be08b716d45801adf3498e6f46, type: 2}
+--- !u!114 &4095603339537499994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7639829996370718814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ed209f11a88c9049aef4f7996af8c0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bounceForce: 10
