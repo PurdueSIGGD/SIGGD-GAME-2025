@@ -12,7 +12,7 @@ public class VisorItem : IPlayerActionStrategy
     protected override void OnEnter()
     {
         base.OnEnter();
-        PlayHandAction(); // plays animation for apple, but this is instant rn so it does nothing
+        //PlayHandAction(); // plays animation for apple, but this is instant rn so it does nothing
         AudioManager.Instance.PlayOneShotNoAsync(eatSound, PlayerID.Instance.gameObject.transform.position);
 
         float currentFOV = Camera.main.fieldOfView;
