@@ -17,14 +17,9 @@ public class FlashlightItem : IPlayerActionStrategy
 
         float currentFOV = Camera.main.fieldOfView;
 
-        if (currentFOV > 40f)
-        {
-            CameraZoomController.Instance.SetFOV(15f);
-        }
-        else
-        {
-            CameraZoomController.Instance.SetFOV(60f);
-        }
+
+        FlashlightController.Instance.ToggleFlashlight();
+
     }
 
     protected override void OnUpdate()
