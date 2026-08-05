@@ -16,6 +16,9 @@ public class AxeColorDecider : MonoBehaviour
     {
         Inventory.OnHotbarSelectionChanged += AxeColor;
         Inventory.OnHotbarContentsChanged += OnHotbarContentsChanged;
+
+        // Ensure correct material immediately when this component becomes enabled
+        UpdateAxeMaterial();
     }
 
     private void OnDisable()
@@ -62,6 +65,9 @@ public class AxeColorDecider : MonoBehaviour
         if (cachedRenderer == null) return;
 
         var selectedItem = Inventory.Instance.GetSelectedItem();
+        int selIndex = Inventory.Instance.GetSelected();
+        Debug.Log($"AxeColorDecider: UpdateAxeMaterial selectedIndex={selIndex}, selectedItem={(selectedItem == null ? "null" : selectedItem.itemName.ToString())}");
+
         if (selectedItem == null || selectedItem.itemName == ItemInfo.ItemName.Empty)
         {
             if (axeDefaultMaterial != null)
@@ -80,6 +86,12 @@ public class AxeColorDecider : MonoBehaviour
             case ItemInfo.ItemName.RockSpear:
                 if (Material2 != null) cachedRenderer.material = Material2;
                 Debug.Log("AxeColorDecider: applied rock spear material");
+                break;
+
+            default:
+                // For any other item, explicitly revert to default to avoid leaving a stale material
+                if (axeDefaultMaterial != null) cachedRenderer.material = axeDefaultMaterial;
+                Debug.Log("AxeColorDecider: selected item not handled -> using default material");
                 break;
         }
     }
