@@ -1,11 +1,16 @@
+using System.Collections;
 using UnityEngine;
 
 public class AxeColorDecider : MonoBehaviour
 {
+    [Tooltip("Number of frames to wait after a hotbar content change before updating material.")]
+    [SerializeField] private int delayFrames = 5;
+
     public Material axeDefaultMaterial;
     public Material Material2;
 
     private Renderer cachedRenderer;
+    private Coroutine pendingUpdate;
 
     private void OnEnable()
     {
@@ -30,14 +35,26 @@ public class AxeColorDecider : MonoBehaviour
 
     private void AxeColor(int hotbarslot)
     {
-        // Selection index changed -> update material for newly selected item
+        // Selection index changed -> update material immediately
         UpdateAxeMaterial();
     }
 
     private void OnHotbarContentsChanged()
     {
-        // Hotbar contents changed (swap/add/remove) -> re-check the currently selected item
+        // Content changes may trigger multiple internal re-packs / selection adjustments
+        // and other subscribers (UI) may mutate state over frames. Wait a small number
+        // of frames so Inventory's internal mutations settle and the selected slot is stable.
+        if (pendingUpdate != null) StopCoroutine(pendingUpdate);
+        pendingUpdate = StartCoroutine(DelayedUpdateFrames(Mathf.Max(0, delayFrames)));
+    }
+
+    private IEnumerator DelayedUpdateFrames(int frames)
+    {
+        for (int i = 0; i < frames; i++)
+            yield return null;
+
         UpdateAxeMaterial();
+        pendingUpdate = null;
     }
 
     private void UpdateAxeMaterial()
@@ -47,14 +64,12 @@ public class AxeColorDecider : MonoBehaviour
         var selectedItem = Inventory.Instance.GetSelectedItem();
         if (selectedItem == null || selectedItem.itemName == ItemInfo.ItemName.Empty)
         {
-            // No selected item -> choose a fallback (use default material)
             if (axeDefaultMaterial != null)
                 cachedRenderer.material = axeDefaultMaterial;
             Debug.Log("AxeColorDecider: no selected item or empty -> using default material");
             return;
         }
 
-        // Update material based on item type
         switch (selectedItem.itemName)
         {
             case ItemInfo.ItemName.Axe:
@@ -66,20 +81,12 @@ public class AxeColorDecider : MonoBehaviour
                 if (Material2 != null) cachedRenderer.material = Material2;
                 Debug.Log("AxeColorDecider: applied rock spear material");
                 break;
-
-            //default:
-                // Unknown item -> fallback to default
-               // if (axeDefaultMaterial != null) cachedRenderer.material = axeDefaultMaterial;
-               // Debug.Log("AxeColorDecider: applied fallback/default material");
-               // break;
         }
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // Ensure correct material at start
     void Start()
     {
-        // Ensure material state is correct at start
         UpdateAxeMaterial();
     }
-
 }
