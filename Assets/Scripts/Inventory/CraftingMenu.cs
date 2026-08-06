@@ -63,6 +63,7 @@ public class CraftingMenu : Singleton<CraftingMenu>
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
         PlayerInput.Instance.DebugToggleInput(true);
+        description.text = "This villager observes your bag closely. It seems he's taken some interest with the things you have and could be willing to trade.";
     }
 
     public void Disable()
@@ -126,7 +127,7 @@ public class CraftingMenu : Singleton<CraftingMenu>
         for (int i = 0; i < recipe.ingredients.Count; i++) {
             GameObject ingredientGroup = Instantiate(ingredientTemplate, ingredientPanel);
             ingredientGroup.transform.Find("Ingredient Name").GetComponent<TMP_Text>().text = GetItemName(recipe.ingredients[i].itemName);
-            ingredientGroup.transform.Find("Ingredient Count").GetComponent<TMP_Text>().text = "x " + recipe.counts[i];
+            ingredientGroup.transform.Find("Ingredient Count").GetComponent<TMP_Text>().text = "x" + recipe.counts[i];
             ingredientGroup.transform.Find("Ingredient Image").GetComponent<Image>().sprite = recipe.ingredients[i].itemImage;
             ingredientGroups.Add(ingredientGroup);
             if (i != recipe.ingredients.Count - 1) 
@@ -141,13 +142,15 @@ public class CraftingMenu : Singleton<CraftingMenu>
 
     private string GetItemName(ItemInfo.ItemName itemName) => itemName switch
     {
-        ItemInfo.ItemName.DarkPurpleMushroom => "Dark Purple Mushroom",
-        ItemInfo.ItemName.GreenMushroom => "Green Mushroom",
+        //if we have trades with Dark Purple or Green Mushrooms we'll need to add enums in the ItemName enum so that the two baits will actually function but this is fine for now.
+        //ItemInfo.ItemName.DarkPurpleMushroom => "Dark Purple Mushroom",
+        //ItemInfo.ItemName.GreenMushroom => "Green Mushroom",
         ItemInfo.ItemName.OrangeMushroom => "Orange Mushroom",
         ItemInfo.ItemName.PurpleMushroom => "Purple Mushroom",
         ItemInfo.ItemName.Bait => "Bait",
-        ItemInfo.ItemName.LongLastingBait => "Chewy Bait",
-        ItemInfo.ItemName.LongDistanceBait => "Enticing Bait",
+        ItemInfo.ItemName.GreenMushroom => "Chewy Bait",
+        ItemInfo.ItemName.DarkPurpleMushroom => "Enticing Bait",
+        ItemInfo.ItemName.StunTrap => "Bouncy Trap",
         _ => itemName.ToString()
     };
 
