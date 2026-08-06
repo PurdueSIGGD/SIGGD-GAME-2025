@@ -54,7 +54,7 @@ public class DarkPurpleMushroomItemAction : IPlayerActionStrategy
             globalVolumeObj.GetComponent<Transform>().GetChild(1).gameObject.SetActive(false);
             DamageContext healContext = new DamageContext();
             healContext.attacker = healContext.victim = player;
-            healContext.amount = 20;
+            healContext.amount = -20;
             PlayerID.Instance.GetComponent<EntityHealthManager>().Heal(healContext);
             PlayerID.Instance.GetComponent<PlayerHunger>().UpdateHunger(20);
             yield return new WaitForSeconds(interval);
