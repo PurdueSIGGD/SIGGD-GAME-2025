@@ -144,12 +144,12 @@ public class CraftingMenu : Singleton<CraftingMenu>
     {
         //if we have trades with Dark Purple or Green Mushrooms we'll need to add enums in the ItemName enum so that the two baits will actually function but this is fine for now.
         //ItemInfo.ItemName.DarkPurpleMushroom => "Dark Purple Mushroom",
-        //ItemInfo.ItemName.GreenMushroom => "Green Mushroom",
+        ItemInfo.ItemName.GreenMushroom => "Green Mushroom",
         ItemInfo.ItemName.OrangeMushroom => "Orange Mushroom",
         ItemInfo.ItemName.PurpleMushroom => "Purple Mushroom",
         ItemInfo.ItemName.Bait => "Bait",
-        ItemInfo.ItemName.GreenMushroom => "Chewy Bait",
-        ItemInfo.ItemName.DarkPurpleMushroom => "Enticing Bait",
+        ItemInfo.ItemName.LongLastingBait => "Chewy Bait",
+        ItemInfo.ItemName.LongDistanceBait => "Enticing Bait",
         ItemInfo.ItemName.StunTrap => "Bouncy Trap",
         _ => itemName.ToString()
     };
