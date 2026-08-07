@@ -25,6 +25,10 @@ public class BreakableObjectEffects : MonoBehaviour
         if (breakParticles != null)
             Instantiate(breakParticles, transform.position, Quaternion.identity);
 
-        RuntimeManager.PlayOneShot(breakSound, transform.position);
+        
+        if (breakSound.IsNull)
+            return;
+        else
+            RuntimeManager.PlayOneShot(breakSound, transform.position);
     }
 }
