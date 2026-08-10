@@ -40,7 +40,13 @@ public class ItemInfo : ScriptableObject
         Bait,
         LongLastingBait,
         LongDistanceBait,
-        MusicBox
+        MusicBox,
+        BlueMushroom,
+        YellowMushroom,
+        LightTrap,
+        LogTrap,
+        UmbrellaTrap,
+        Placeholder
     };
 
     [SerializeField] public ItemType itemType;// type of item
