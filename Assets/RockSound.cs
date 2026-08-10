@@ -23,6 +23,6 @@ public class RockSound : MonoBehaviour
                 //This should call the mob code that tells them to move to this objects location
             }
         }
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 }
