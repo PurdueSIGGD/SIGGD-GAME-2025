@@ -15,4 +15,15 @@ public class ShipSceneSprintOverride : MonoBehaviour
             stamina.DisableSprint();
         }
     }
+
+#if UNITY_EDITOR
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            Debug.Log("Ship skipped!");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("NathanA0Scene");
+        }
+    }
+#endif
 }

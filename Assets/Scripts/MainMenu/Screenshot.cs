@@ -14,7 +14,10 @@ public class Screenshot : MonoBehaviour
         image = GetComponent<Image>();
 
         string path = SaveManager.Instance?.Get<ScreenshotModule>()?.ScreenshotFilePath;
-        if (string.IsNullOrEmpty(path) || !File.Exists(path)) return;
+        if (string.IsNullOrEmpty(path) || !File.Exists(path))
+        {
+            image.color = Color.clear;
+        }
 
         Texture2D texture = new(2, 2);
         if (texture.LoadImage(File.ReadAllBytes(path)))
