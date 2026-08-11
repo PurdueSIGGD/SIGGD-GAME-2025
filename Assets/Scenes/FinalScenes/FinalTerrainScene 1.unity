@@ -19816,6 +19816,7 @@ GameObject:
   m_Component:
   - component: {fileID: 385208196}
   - component: {fileID: 385208197}
+  - component: {fileID: 385208198}
   m_Layer: 0
   m_Name: Recievers
   m_TagString: Untagged
@@ -19861,6 +19862,29 @@ MonoBehaviour:
       type: {class: AudioLogExecutionStrategy, ns: , asm: Assembly-CSharp}
       data:
         audioObject: {fileID: 11400000, guid: c0a736da5ebcef44a844f9b263903dc1, type: 2}
+--- !u!114 &385208198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 385208195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56f95ac11603413f81dd0374fa57c154, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  receiverType: 0
+  questOutcome: {fileID: 11400000, guid: b73adef9790f8e445a5324c0561ee6cf, type: 2}
+  executionStrategy:
+    rid: 614739419943403523
+  references:
+    version: 2
+    RefIds:
+    - rid: 614739419943403523
+      type: {class: AudioLogExecutionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        audioObject: {fileID: 11400000, guid: 63f561dbfef96984ea88906e0ef95cf6, type: 2}
 --- !u!1 &385249044
 GameObject:
   m_ObjectHideFlags: 0
@@ -48206,6 +48230,8 @@ GameObject:
   m_Component:
   - component: {fileID: 961976926}
   - component: {fileID: 961976927}
+  - component: {fileID: 961976929}
+  - component: {fileID: 961976928}
   m_Layer: 0
   m_Name: GlovesPickup
   m_TagString: Untagged
@@ -48221,13 +48247,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 961976925}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0.35259756, z: -0, w: 0.9357751}
+  m_LocalPosition: {x: 816, y: -52.08, z: 537.38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1263496813}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -41.293, z: 0}
 --- !u!114 &961976927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48240,17 +48266,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af569df637aa4208a730abcf22e46b70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectiveKey: {fileID: 0}
+  objectiveKey: {fileID: 11400000, guid: 6fc55a2145a9dfb4d940b26486f1b5bc, type: 2}
   conditionStrategy:
-    rid: 614739398675923035
+    rid: 614739419943403521
   references:
     version: 2
     RefIds:
-    - rid: 614739398675923035
-      type: {class: ItemPickupConditionStrategy, ns: , asm: Assembly-CSharp}
+    - rid: 614739419943403521
+      type: {class: TriggerEnterConditionStrategy, ns: , asm: Assembly-CSharp}
       data:
-        interactable: {fileID: 0}
-        targetItemName: 
+        triggerListener: {fileID: 961976929}
+        deactivateOnExit: 1
+        inverse: 0
+--- !u!65 &961976928
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 961976925}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 12, y: 6, z: 6}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &961976929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 961976925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fadc1ba187c54cf8a0cf573df9cbe287, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &962234656 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2632378288798226372, guid: 8972462414fa7284582bf5ba126e75db, type: 3}
