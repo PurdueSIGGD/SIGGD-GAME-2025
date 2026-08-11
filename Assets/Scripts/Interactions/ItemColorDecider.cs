@@ -1,5 +1,5 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;   
 
 public class ItemColorDecider : MonoBehaviour
 {
@@ -37,7 +37,7 @@ public class ItemColorDecider : MonoBehaviour
         cachedRenderer = GetComponent<Renderer>();
         if (cachedRenderer == null)
         {
-            Debug.LogWarning("AxeColorDecider: no Renderer found on GameObject.");
+            Debug.LogWarning("ItemColorDecider: no Renderer found on GameObject.");
         }
     }
 
@@ -69,15 +69,24 @@ public class ItemColorDecider : MonoBehaviour
     {
         if (cachedRenderer == null) return;
 
-        var selectedItem = Inventory.Instance.GetSelectedItem();
-        int selIndex = Inventory.Instance.GetSelected();
-        Debug.Log($"AxeColorDecider: UpdateAxeMaterial selectedIndex={selIndex}, selectedItem={(selectedItem == null ? "null" : selectedItem.itemName.ToString())}");
+        // Guard Inventory.Instance in case initialization hasn't happened yet or player isn't holding anything.
+        var inv = Inventory.Instance;
+        if (inv == null)
+        {
+            if (itemDefaultMaterial != null) cachedRenderer.material = itemDefaultMaterial;
+            Debug.Log("ItemColorDecider: Inventory.Instance is null -> using default material");
+            return;
+        }
+
+        var selectedItem = inv.GetSelectedItem();
+        int selIndex = inv.GetSelected();
+        Debug.Log($"ItemColorDecider: UpdateAxeMaterial selectedIndex={selIndex}, selectedItem={(selectedItem == null ? "null" : selectedItem.itemName.ToString())}");
 
         if (selectedItem == null || selectedItem.itemName == ItemInfo.ItemName.Empty)
         {
             if (itemDefaultMaterial != null)
                 cachedRenderer.material = itemDefaultMaterial;
-            Debug.Log("AxeColorDecider: no selected item or empty -> using default material");
+            Debug.Log("ItemColorDecider: no selected item or empty -> using default material");
             return;
         }
 
@@ -85,24 +94,24 @@ public class ItemColorDecider : MonoBehaviour
         {
             case ItemInfo.ItemName.Bait:
                 if (itemDefaultMaterial != null) cachedRenderer.material = itemDefaultMaterial;
-                Debug.Log("AxeColorDecider: applied axe material");
+                Debug.Log("ItemColorDecider: applied default bait material");
                 break;
 
             case ItemInfo.ItemName.LongDistanceBait:
                 if (Material2 != null) cachedRenderer.material = Material2;
-                Debug.Log("AxeColorDecider: applied rock spear material");
+                Debug.Log("ItemColorDecider: applied long distance bait material");
                 break;
 
             case ItemInfo.ItemName.LongLastingBait:
-                if (Material2 != null) cachedRenderer.material = Material3;
-                Debug.Log("AxeColorDecider: applied rock spear material");
+                if (Material3 != null) cachedRenderer.material = Material3;
+                Debug.Log("ItemColorDecider: applied long lasting bait material");
                 break;
 
 
             default:
                 // For any other item, explicitly revert to default to avoid leaving a stale material
                 if (itemDefaultMaterial != null) cachedRenderer.material = itemDefaultMaterial;
-                Debug.Log("AxeColorDecider: selected item not handled -> using default material");
+                Debug.Log("ItemColorDecider: selected item not handled -> using default material");
                 break;
         }
     }

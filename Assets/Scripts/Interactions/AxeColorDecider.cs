@@ -64,8 +64,17 @@ public class AxeColorDecider : MonoBehaviour
     {
         if (cachedRenderer == null) return;
 
-        var selectedItem = Inventory.Instance.GetSelectedItem();
-        int selIndex = Inventory.Instance.GetSelected();
+        // Guard Inventory.Instance in case initialization hasn't happened yet or player isn't holding anything.
+        var inv = Inventory.Instance;
+        if (inv == null)
+        {
+            if (axeDefaultMaterial != null) cachedRenderer.material = axeDefaultMaterial;
+            Debug.Log("AxeColorDecider: Inventory.Instance is null -> using default material");
+            return;
+        }
+
+        var selectedItem = inv.GetSelectedItem();
+        int selIndex = inv.GetSelected();
         Debug.Log($"AxeColorDecider: UpdateAxeMaterial selectedIndex={selIndex}, selectedItem={(selectedItem == null ? "null" : selectedItem.itemName.ToString())}");
 
         if (selectedItem == null || selectedItem.itemName == ItemInfo.ItemName.Empty)

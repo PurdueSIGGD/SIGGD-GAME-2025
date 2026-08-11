@@ -37,7 +37,7 @@ public class MushroomColorDecider : MonoBehaviour
         cachedRenderer = GetComponent<Renderer>();
         if (cachedRenderer == null)
         {
-            Debug.LogWarning("AxeColorDecider: no Renderer found on GameObject.");
+            Debug.LogWarning("MushroomColorDecider: no Renderer found on GameObject.");
         }
     }
 
@@ -69,15 +69,24 @@ public class MushroomColorDecider : MonoBehaviour
     {
         if (cachedRenderer == null) return;
 
-        var selectedItem = Inventory.Instance.GetSelectedItem();
-        int selIndex = Inventory.Instance.GetSelected();
-        Debug.Log($"AxeColorDecider: UpdateAxeMaterial selectedIndex={selIndex}, selectedItem={(selectedItem == null ? "null" : selectedItem.itemName.ToString())}");
+        // Guard Inventory.Instance in case initialization hasn't happened yet or player isn't holding anything.
+        var inv = Inventory.Instance;
+        if (inv == null)
+        {
+            if (itemDefaultMaterial != null) cachedRenderer.material = itemDefaultMaterial;
+            Debug.Log("MushroomColorDecider: Inventory.Instance is null -> using default material");
+            return;
+        }
+
+        var selectedItem = inv.GetSelectedItem();
+        int selIndex = inv.GetSelected();
+        Debug.Log($"MushroomColorDecider: UpdateAxeMaterial selectedIndex={selIndex}, selectedItem={(selectedItem == null ? "null" : selectedItem.itemName.ToString())}");
 
         if (selectedItem == null || selectedItem.itemName == ItemInfo.ItemName.Empty)
         {
             if (itemDefaultMaterial != null)
                 cachedRenderer.material = itemDefaultMaterial;
-            Debug.Log("AxeColorDecider: no selected item or empty -> using default material");
+            Debug.Log("MushroomColorDecider: no selected item or empty -> using default material");
             return;
         }
 
@@ -85,24 +94,24 @@ public class MushroomColorDecider : MonoBehaviour
         {
             case ItemInfo.ItemName.DarkPurpleMushroom:
                 if (itemDefaultMaterial != null) cachedRenderer.material = itemDefaultMaterial;
-                Debug.Log("AxeColorDecider: dark purple mush material applied");
+                Debug.Log("MushroomColorDecider: dark purple mush material applied");
                 break;
 
             case ItemInfo.ItemName.BlueMushroom:
                 if (Material2 != null) cachedRenderer.material = Material2;
-                Debug.Log("AxeColorDecider: blue mush material applied");
+                Debug.Log("MushroomColorDecider: blue mush material applied");
                 break;
 
             case ItemInfo.ItemName.YellowMushroom:
-                if (Material2 != null) cachedRenderer.material = Material3;
-                Debug.Log("AxeColorDecider: yellow mush material applied");
+                if (Material3 != null) cachedRenderer.material = Material3;
+                Debug.Log("MushroomColorDecider: yellow mush material applied");
                 break;
 
 
             default:
                 // For any other item, explicitly revert to default to avoid leaving a stale material
                 if (itemDefaultMaterial != null) cachedRenderer.material = itemDefaultMaterial;
-                Debug.Log("AxeColorDecider: selected item not handled -> using default material");
+                Debug.Log("MushroomColorDecider: selected item not handled -> using default material");
                 break;
         }
     }
