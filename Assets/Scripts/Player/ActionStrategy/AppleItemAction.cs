@@ -3,6 +3,12 @@ using UnityEngine;
 public class AppleItem : IPlayerActionStrategy
 {
     private static readonly string eatSound = "Eating";
+    private bool isOn = false;
+
+    
+
+
+
     protected override void OnEnter()
     {
         base.OnEnter();
@@ -11,9 +17,32 @@ public class AppleItem : IPlayerActionStrategy
         AudioManager.Instance.PlayOneShotNoAsync(eatSound, PlayerID.Instance.gameObject.transform.position);
         DamageContext healContext = new DamageContext();
         healContext.attacker = healContext.victim = PlayerID.Instance.gameObject;
-        healContext.amount = -20;
+        healContext.amount = -40;
         PlayerID.Instance.GetComponent<EntityHealthManager>().Heal(healContext);
         PlayerID.Instance.GetComponent<PlayerHunger>().UpdateHunger(20);
         Debug.Log("player ate an apple");
+       
+        
+
+
     }
+
+    protected override void OnUpdate()
+    {
+        base.OnUpdate();
+        //Camera.main.fieldOfView = 30;
+    }
+
+    protected override void OnExit()
+    {
+        base.OnExit();
+        //Camera.main.fieldOfView = 60;
+
+
+    }
+
+   
+
+
+
 }

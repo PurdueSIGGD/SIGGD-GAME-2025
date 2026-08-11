@@ -44,6 +44,8 @@ public class Inventory : Singleton<Inventory>, IInventory
     /// <summary>Fired whenever the selected hotbar index changes. Passes the new index.</summary>
     public static event Action<int> OnHotbarSelectionChanged;
 
+    
+
     protected override void Awake()
     {
         base.Awake();
@@ -82,6 +84,7 @@ public class Inventory : Singleton<Inventory>, IInventory
 
     private void OnScroll(InputAction.CallbackContext context)
     {
+        CameraZoomController.Instance.ResetFOV();
         if (ObjectPlacer.Instance.InPlacementMode) return;
         float scrollValue = context.ReadValue<float>();
         if (scrollValue == 0) return;

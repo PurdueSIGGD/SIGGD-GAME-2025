@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0921de3c6c2e29140a0459e282f3c744, type: 3}
+  m_Name: AxeItemRed
+  m_EditorClassIdentifier: 
+  itemType: 0
+  itemName: 2
+  itemImage: {fileID: 21300000, guid: 68506f071d063034680358718d16768e, type: 3}
+  isIngredient: 0
+  maxStackCount: 1
+  description: You swing it and explode mobs
+  playerActionStrategy:
+    rid: 614739264465797253
+  itemPrefab: {fileID: 0}
+  itemPlacementPrefab: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 614739264465797253
+      type: {class: AxeItemStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        handAnimatorController: {fileID: 22100000, guid: 86ddcd968247cc24abe00a8e75a1d935, type: 2}
+        animationClip: {fileID: 7400000, guid: 6b726eea15d73b0459fe3691013e1f7a, type: 2}
+        specifiedActionDuration: -1
+        axeDamage: 60
+        axeAnimation_HitboxDelay: 0.2
+        axeAnimation_HitboxDuration: 0.2
+        raycastMagnitude: 2
+        raycastConeAngle: 60
+        raycastRingSubsections: 9
+        raycastRingRays: 20
+        validRaycastLayers:
+          serializedVersion: 2
+          m_Bits: 512
