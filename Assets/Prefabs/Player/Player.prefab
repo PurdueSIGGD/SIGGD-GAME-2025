@@ -65,7 +65,6 @@ GameObject:
   - component: {fileID: 138825461547106168}
   - component: {fileID: 3542086174207366855}
   - component: {fileID: 4474341246352226927}
-  - component: {fileID: 8033951001226885700}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -362,14 +361,14 @@ MonoBehaviour:
   enableWalljumpFatigue: 1
   clampWalljumpVelocity: 1
   leaningMagnitude: 1.25
-  grabRange: 2.25
+  grabRange: 3
   raycastRadius: 0.1
-  handToPlayerDistance: 1.75
+  handToPlayerDistance: 2.25
   reachingLeaningMagnitude: 0.5
   groundedBufferTime: 0.05
   handTransformPrefab: {fileID: 5504605571512396031, guid: 060a9b5e789a1bb44a1b565191cbdb7e, type: 3}
   climbingVelocityGain: 1.75
-  maxClimbingVelocity: 2.5
+  maxClimbingVelocity: 3.25
   forceGain: 17.5
   maxClimbingForce: 30
   oneHandedSpeedPenalty: 0.8
@@ -452,14 +451,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   config_usePrecentageDamage: 0
-  config_noKillVelocity: 0
+  config_noKillVelocity: 1
   config_useFallDamageCurve: 1
   config_roundDamage: 1
   config_debugMode: 0
-  timeFallingThreshold: 0.3
-  minHurtVelocity: 15
-  maxHurtVelocity: 30
-  killVelocity: 35
+  timeFallingThreshold: 0.6
+  minHurtVelocity: 20
+  maxHurtVelocity: 35
+  killVelocity: 40
   fallDamageCurve:
     serializedVersion: 2
     m_Curve:
@@ -494,7 +493,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   minFallDamage: 1
-  maxFallDamage: 50
+  maxFallDamage: 35
   minFallDamage_Precent: 0.2
   maxFallDamage_Precent: 0.8
 --- !u!114 &8883527331259138025
@@ -566,10 +565,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStamina: 100
-  staminaDecayRate: 8
-  climbingStaminaDecayRate: 16
+  staminaDecayRate: 6
+  climbingStaminaDecayRate: 8
   staminaRegenRate: 35
-  jumpCost: 10
+  jumpCost: 1
   climbingGlovesReduction: 0.5
   staminaSlider: {fileID: 8131535977890595846}
   staminaSliderBar: {fileID: 4503848958787865837}
@@ -670,21 +669,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339df473adcb55e4a974300b5afa7900, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8033951001226885700
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4696392301619895344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8260dccbe99c4524eb961765c15f7091, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  INITIAL_WAIT_BEFORE_DAMAGE: 1
-  DAMAGE_PER_TIME_INTERVAL: 2.5
-  DAMAGE_TIME_INTERVAL: 1
 --- !u!1 &4791394868699375998
 GameObject:
   m_ObjectHideFlags: 0
@@ -1136,7 +1120,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 386615957715104347, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_Size
-      value: 0.414
+      value: 0.942
       objectReference: {fileID: 0}
     - target: {fileID: 386615957715104347, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_Value
@@ -1516,7 +1500,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5526350285862674533, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_Size
-      value: 0.14785714
+      value: 0.33642858
       objectReference: {fileID: 0}
     - target: {fileID: 5526350285862674533, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_Value
