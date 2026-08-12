@@ -151,6 +151,7 @@ public class CraftingMenu : Singleton<CraftingMenu>
         ItemInfo.ItemName.LongLastingBait => "Chewy Bait",
         ItemInfo.ItemName.LongDistanceBait => "Enticing Bait",
         ItemInfo.ItemName.StunTrap => "Bouncy Trap",
+        ItemInfo.ItemName.LogTrap => "Log Bridge",
         _ => itemName.ToString()
     };
 
