@@ -46,7 +46,11 @@ public class ItemInfo : ScriptableObject
         LightTrap,
         LogTrap,
         UmbrellaTrap,
-        Placeholder
+        Placeholder,
+        MusicBox2,
+        MusicBox3,
+        MusicBox4,
+        MusicBox5,
     };
 
     [SerializeField] public ItemType itemType;// type of item
