@@ -1,15 +1,15 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using FMODUnity;
+
 
 public class VillageDestructionExternalEvent : ExternalEventTriggerer
 {
     public GameObject village;
     public GameObject destroyedVillage;
+    [SerializeField] private EventReference explosionSound;
 
-    public GameObject villageQuests;
-    public GameObject destroyedVillageQuests;
 
-    public GameObject[] Villagers; 
 
     public override void TriggerExternalEvent()
     {
@@ -20,17 +20,17 @@ public class VillageDestructionExternalEvent : ExternalEventTriggerer
             village.SetActive(false);
             destroyedVillage.SetActive(true);
 
+            if (explosionSound.IsNull)
+                return;
+            else
+                RuntimeManager.PlayOneShot(explosionSound, transform.position);
 
 
             //We don't actually have to kill the villagers we can just spawn in some corpses as part of the destroyed village prefab. 
             //Instead just delete them
 
-            
-            foreach (GameObject villager in Villagers)
-            {
-                villager.SetActive(false);
-                
-            }
+
+
 
         }
         else
