@@ -17,6 +17,7 @@ public class ConsoleInteract : MonoBehaviour, IInteractable<IInteractor>
     {
         Debug.Log("Broke this console");
         AudioManager.Instance.PlayOneShotNoAsync(ConsoleBroken, transform.position);
+        consolesBroken++;
         Destroy(this.gameObject);
     }
 }

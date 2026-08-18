@@ -28,6 +28,7 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
         {
             timer += Time.deltaTime;
             fadeOut.color = Color.Lerp(new Color(0, 0, 0, 0), new Color(0, 0, 0, 1), timer / fadeOutTime);
+            Debug.Log(fadeOut.color.a);
             if (timer >= fadeOutTime)
             {
                 StartCoroutine(FadeOut());
@@ -49,7 +50,6 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
             Debug.Log("Broke this console");
             fadingout = true;
             AudioManager.Instance.PlayOneShotNoAsync(Explosion, transform.position);
-            Destroy(this.gameObject);
         }
         
     }
