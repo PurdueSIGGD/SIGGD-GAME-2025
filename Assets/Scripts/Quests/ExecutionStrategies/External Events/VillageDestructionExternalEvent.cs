@@ -7,7 +7,8 @@ public class VillageDestructionExternalEvent : ExternalEventTriggerer
 {
     public GameObject village;
     public GameObject destroyedVillage;
-    [SerializeField] private EventReference explosionSound;
+    //[SerializeField] private EventReference explosionSound;
+    public static readonly string ConsoleBroken = "ConsoleDamaged";
 
 
 
@@ -20,11 +21,14 @@ public class VillageDestructionExternalEvent : ExternalEventTriggerer
             village.SetActive(false);
             destroyedVillage.SetActive(true);
 
-            if (explosionSound.IsNull)
-                return;
-            else
-                RuntimeManager.PlayOneShot(explosionSound, transform.position);
-
+            //if (explosionSound.IsNull)
+            //    return;
+            //else
+                //RuntimeManager.PlayOneShot(explosionSound, transform.position);
+                
+            
+            AudioManager.Instance.PlayOneShotNoAsync(ConsoleBroken, transform.position);
+            
 
             //We don't actually have to kill the villagers we can just spawn in some corpses as part of the destroyed village prefab. 
             //Instead just delete them
