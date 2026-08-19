@@ -94,77 +94,79 @@ public class PlayerRadiation : MonoBehaviour
         } 
         else // inside radiation area
         {
-            //*doesn't take damage on the frame you reach the threshold
-            if (currentRadiation < radiationThreshold || radiationZoneLevel < SlimeLevel) // radiation isn't at the threshold
+            if (radiationZoneLevel < SlimeLevel)
             {
-                // buildup
-                currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate[radiationZoneLevel] * slimePercent[SlimeLevel] * Time.deltaTime, radiationThreshold); // don't go over threshold
-                inRadiationDamage = false;
-                if (!inRadiationNoDamage) 
-                {    
-                    if (!radiationNoDamageRef.IsNull)
-                    {
-                        inRadiationNoDamage = true;
-                        UnityEngine.Debug.Log("Start playing radiation no damage sound " + radiationNoDamageRef);
-                        if (radiationSound.isValid())
-                        {
-                            radiationSound.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                            radiationSound.release();
-                        }
-                        radiationSound = AudioManager.Instance.CreateEventInstance(radiationNoDamageRef);
-                        RuntimeManager.AttachInstanceToGameObject(
-                            radiationSound,
-                            PlayerID.Instance.transform,
-                            PlayerID.Instance.GetComponent<Rigidbody>()
-                        );
-                        radiationSound.start();
-                    }
-                    else
-                    {
-                        UnityEngine.Debug.Log("radiationNoDamageRef not found");
-                    }
-                    
-                }
-            }
-            else // radiation is at the threshold -> take rad damage
-            { 
-                radiationDamageTimer += Time.deltaTime;
-
-                if (radiationDamageTimer >= radiationDamageInterval[radiationZoneLevel])
+                //*doesn't take damage on the frame you reach the threshold
+                if (currentRadiation < radiationThreshold) // radiation isn't at the threshold
                 {
-                    radiationDamageTimer = 0f; // Reset timer
-                    playerHealth.TakeDamage(radiationDamageContext);
-                    UnityEngine.Debug.Log("Radiation - Took damage");
-                }
-                inRadiationNoDamage = false;
-                if (!inRadiationDamage) {
-                    if (!radiationDamageRef.IsNull) {
-                        inRadiationDamage = true;
-                        UnityEngine.Debug.Log("Start playing radiation damage sound " + radiationDamageRef);
-                        if (radiationSound.isValid())
+                    // buildup
+                    currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate[radiationZoneLevel] * slimePercent[SlimeLevel] * Time.deltaTime, radiationThreshold); // don't go over threshold
+                    inRadiationDamage = false;
+                    if (!inRadiationNoDamage) 
+                    {    
+                        if (!radiationNoDamageRef.IsNull)
                         {
-                            radiationSound.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                            radiationSound.release();
+                            inRadiationNoDamage = true;
+                            UnityEngine.Debug.Log("Start playing radiation no damage sound " + radiationNoDamageRef);
+                            if (radiationSound.isValid())
+                            {
+                                radiationSound.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                                radiationSound.release();
+                            }
+                            radiationSound = AudioManager.Instance.CreateEventInstance(radiationNoDamageRef);
+                            RuntimeManager.AttachInstanceToGameObject(
+                                radiationSound,
+                                PlayerID.Instance.transform,
+                                PlayerID.Instance.GetComponent<Rigidbody>()
+                            );
+                            radiationSound.start();
                         }
-                        radiationSound = AudioManager.Instance.CreateEventInstance(radiationDamageRef);
-                        RuntimeManager.AttachInstanceToGameObject(
-                            radiationSound,
-                            PlayerID.Instance.transform,
-                            PlayerID.Instance.GetComponent<Rigidbody>()
-                        );
-                        radiationSound.start();
-                    }
-                    else
-                    {
-                        UnityEngine.Debug.Log("radiationDamageRef not found");
+                        else
+                        {
+                            UnityEngine.Debug.Log("radiationNoDamageRef not found");
+                        }
+                        
                     }
                 }
+                else // radiation is at the threshold -> take rad damage
+                { 
+                    radiationDamageTimer += Time.deltaTime;
 
+                    if (radiationDamageTimer >= radiationDamageInterval[radiationZoneLevel])
+                    {
+                        radiationDamageTimer = 0f; // Reset timer
+                        playerHealth.TakeDamage(radiationDamageContext);
+                        UnityEngine.Debug.Log("Radiation - Took damage");
+                    }
+                    inRadiationNoDamage = false;
+                    if (!inRadiationDamage) {
+                        if (!radiationDamageRef.IsNull) {
+                            inRadiationDamage = true;
+                            UnityEngine.Debug.Log("Start playing radiation damage sound " + radiationDamageRef);
+                            if (radiationSound.isValid())
+                            {
+                                radiationSound.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+                                radiationSound.release();
+                            }
+                            radiationSound = AudioManager.Instance.CreateEventInstance(radiationDamageRef);
+                            RuntimeManager.AttachInstanceToGameObject(
+                                radiationSound,
+                                PlayerID.Instance.transform,
+                                PlayerID.Instance.GetComponent<Rigidbody>()
+                            );
+                            radiationSound.start();
+                        }
+                        else
+                        {
+                            UnityEngine.Debug.Log("radiationDamageRef not found");
+                        }
+                    }
+
+                }
+                float radiationPercent = GetRadiationPercent();
+                float targetStrength = (1 - radiationPercent) * 1.5f;
+                radiationVignette?.SetStrength(targetStrength);
             }
-            float radiationPercent = GetRadiationPercent();
-            float targetStrength = (1 - radiationPercent) * 1.5f;
-            radiationVignette?.SetStrength(targetStrength);
-
         }
 
         // Update texture opacity
