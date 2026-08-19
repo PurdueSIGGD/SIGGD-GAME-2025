@@ -95,7 +95,7 @@ public class PlayerRadiation : MonoBehaviour
         else // inside radiation area
         {
             //*doesn't take damage on the frame you reach the threshold
-            if (currentRadiation < radiationThreshold) // radiation isn't at the threshold
+            if (currentRadiation < radiationThreshold || radiationZoneLevel < SlimeLevel) // radiation isn't at the threshold
             {
                 // buildup
                 currentRadiation = Mathf.Min(currentRadiation + radiationBuildRate[radiationZoneLevel] * slimePercent[SlimeLevel] * Time.deltaTime, radiationThreshold); // don't go over threshold
