@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using SIGGD.Save;
 using SIGGD.Save.Modules;
 using UnityEngine;
@@ -47,7 +48,11 @@ public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
 
     public void OnInteract(IInteractor interactor)
     {
-        if (PlayerID.Instance.stateMachine.GetEquippedItem()?.itemName == ItemInfo.ItemName.MusicBox)
+        if (PlayerID.Instance.stateMachine.GetEquippedItem()?.itemName == ItemInfo.ItemName.MusicBox || 
+            PlayerID.Instance.stateMachine.GetEquippedItem()?.itemName == ItemInfo.ItemName.MusicBox2 ||
+            PlayerID.Instance.stateMachine.GetEquippedItem()?.itemName == ItemInfo.ItemName.MusicBox3 ||
+            PlayerID.Instance.stateMachine.GetEquippedItem()?.itemName == ItemInfo.ItemName.MusicBox4 ||
+            PlayerID.Instance.stateMachine.GetEquippedItem()?.itemName == ItemInfo.ItemName.MusicBox5)
         {
             Debug.Log("Shopkeeper: Player interacted with ShopKeeper while holding Music Box. Triggering slime out.");
             SlimeOutPlayer();
