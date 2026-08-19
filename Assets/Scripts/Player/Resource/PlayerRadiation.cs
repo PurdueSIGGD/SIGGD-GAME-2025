@@ -5,6 +5,7 @@ using SIGGD.Save.Modules;
 using System.Collections;
 using System.Diagnostics;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public class PlayerRadiation : MonoBehaviour
 {
@@ -94,6 +95,8 @@ public class PlayerRadiation : MonoBehaviour
         } 
         else // inside radiation area
         {
+            Debug.Log("Slive level: " + SlimeLevel);
+            Debug.Log("radiation lvl: " + radiationZoneLevel);
             if (radiationZoneLevel > SlimeLevel)
             {
                 //*doesn't take damage on the frame you reach the threshold
