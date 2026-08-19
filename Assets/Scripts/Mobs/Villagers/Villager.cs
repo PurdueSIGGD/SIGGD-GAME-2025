@@ -94,7 +94,7 @@ public class Villager : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        UpdateFootstepSound();
+        //UpdateFootstepSound();
     }
 
     private void PickNewDestination()
