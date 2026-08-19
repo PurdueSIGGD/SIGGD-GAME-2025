@@ -94,7 +94,7 @@ public class PlayerRadiation : MonoBehaviour
         } 
         else // inside radiation area
         {
-            if (radiationZoneLevel < SlimeLevel)
+            if (radiationZoneLevel > SlimeLevel)
             {
                 //*doesn't take damage on the frame you reach the threshold
                 if (currentRadiation < radiationThreshold) // radiation isn't at the threshold
