@@ -406,7 +406,6 @@ Transform:
   - {fileID: 1152621933}
   - {fileID: 773459390}
   - {fileID: 1575452750}
-  - {fileID: 535510243}
   - {fileID: 1854292145}
   - {fileID: 1797604832}
   - {fileID: 818097454}
@@ -414,6 +413,7 @@ Transform:
   - {fileID: 2110605963}
   - {fileID: 713771328}
   - {fileID: 826609680}
+  - {fileID: 535510243}
   - {fileID: 993751750}
   - {fileID: 1826692036}
   - {fileID: 912740484}
@@ -7304,6 +7304,26 @@ PrefabInstance:
     - target: {fileID: 1520391066114175378, guid: f41b6a3b5c29b8249bd5e14d44fdfcc7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7657923952734997676, guid: f41b6a3b5c29b8249bd5e14d44fdfcc7, type: 3}
+      propertyPath: m_TreeDistance
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 7657923952734997676, guid: f41b6a3b5c29b8249bd5e14d44fdfcc7, type: 3}
+      propertyPath: m_SplatMapDistance
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 7657923952734997676, guid: f41b6a3b5c29b8249bd5e14d44fdfcc7, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7657923952734997676, guid: f41b6a3b5c29b8249bd5e14d44fdfcc7, type: 3}
+      propertyPath: m_HeightmapPixelError
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7657923952734997676, guid: f41b6a3b5c29b8249bd5e14d44fdfcc7, type: 3}
+      propertyPath: m_TreeBillboardDistance
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8094008904644815404, guid: f41b6a3b5c29b8249bd5e14d44fdfcc7, type: 3}
       propertyPath: m_Name
@@ -16309,6 +16329,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 9945323}
     m_Modifications:
+    - target: {fileID: 3448246175596231529, guid: 5050417f124e611468b917c45e80cd61, type: 3}
+      propertyPath: m_TreeDistance
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 3448246175596231529, guid: 5050417f124e611468b917c45e80cd61, type: 3}
+      propertyPath: m_DrawInstanced
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3448246175596231529, guid: 5050417f124e611468b917c45e80cd61, type: 3}
+      propertyPath: m_SplatMapDistance
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3448246175596231529, guid: 5050417f124e611468b917c45e80cd61, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3448246175596231529, guid: 5050417f124e611468b917c45e80cd61, type: 3}
+      propertyPath: m_HeightmapPixelError
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3448246175596231529, guid: 5050417f124e611468b917c45e80cd61, type: 3}
+      propertyPath: m_TreeBillboardDistance
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 7399415438163889021, guid: 5050417f124e611468b917c45e80cd61, type: 3}
       propertyPath: m_LocalPosition.x
       value: 905
@@ -18881,7 +18925,7 @@ Terrain:
   m_HeightmapMaximumLOD: 0
   m_ShadowCastingMode: 2
   m_DrawHeightmap: 1
-  m_DrawInstanced: 0
+  m_DrawInstanced: 1
   m_DrawTreesAndFoliage: 1
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
@@ -70100,6 +70144,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7996640545008843645, guid: 06803b8a94f07a44fbd23d21ce323199, type: 3}
+      propertyPath: m_TreeDistance
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 7996640545008843645, guid: 06803b8a94f07a44fbd23d21ce323199, type: 3}
+      propertyPath: m_SplatMapDistance
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 7996640545008843645, guid: 06803b8a94f07a44fbd23d21ce323199, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7996640545008843645, guid: 06803b8a94f07a44fbd23d21ce323199, type: 3}
+      propertyPath: m_HeightmapPixelError
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7996640545008843645, guid: 06803b8a94f07a44fbd23d21ce323199, type: 3}
+      propertyPath: m_TreeBillboardDistance
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -98355,6 +98419,30 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8599462445990060193, guid: b2654344894487a43ac23477f68cb630, type: 3}
+      propertyPath: m_TreeDistance
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 8599462445990060193, guid: b2654344894487a43ac23477f68cb630, type: 3}
+      propertyPath: m_DrawInstanced
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8599462445990060193, guid: b2654344894487a43ac23477f68cb630, type: 3}
+      propertyPath: m_SplatMapDistance
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 8599462445990060193, guid: b2654344894487a43ac23477f68cb630, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8599462445990060193, guid: b2654344894487a43ac23477f68cb630, type: 3}
+      propertyPath: m_HeightmapPixelError
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8599462445990060193, guid: b2654344894487a43ac23477f68cb630, type: 3}
+      propertyPath: m_TreeBillboardDistance
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -109363,7 +109451,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2142436348
 Transform:
   m_ObjectHideFlags: 0
@@ -112085,6 +112173,38 @@ PrefabInstance:
     - target: {fileID: 375465664708960425, guid: 9283031d141afca4ebcc8a90ef7400f3, type: 3}
       propertyPath: m_Name
       value: MountainCrash
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704652535194911090, guid: 9283031d141afca4ebcc8a90ef7400f3, type: 3}
+      propertyPath: m_TreeDistance
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704652535194911090, guid: 9283031d141afca4ebcc8a90ef7400f3, type: 3}
+      propertyPath: m_DrawInstanced
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704652535194911090, guid: 9283031d141afca4ebcc8a90ef7400f3, type: 3}
+      propertyPath: m_SplatMapDistance
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704652535194911090, guid: 9283031d141afca4ebcc8a90ef7400f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704652535194911090, guid: 9283031d141afca4ebcc8a90ef7400f3, type: 3}
+      propertyPath: m_DrawTreesAndFoliage
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704652535194911090, guid: 9283031d141afca4ebcc8a90ef7400f3, type: 3}
+      propertyPath: m_HeightmapPixelError
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704652535194911090, guid: 9283031d141afca4ebcc8a90ef7400f3, type: 3}
+      propertyPath: m_DetailObjectDistance
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704652535194911090, guid: 9283031d141afca4ebcc8a90ef7400f3, type: 3}
+      propertyPath: m_BakeLightProbesForTrees
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7251492281152605060, guid: 9283031d141afca4ebcc8a90ef7400f3, type: 3}
       propertyPath: m_LocalPosition.x
