@@ -106,6 +106,12 @@ public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
         Debug.Log("Shopkeeper: Increasing player's slime level and triggering slimed out effect.");
         var player = SaveManager.Instance?.Get<PlayerModule>();
         if (player != null) player.SlimeLevel++;
+
+        if (player != null && player.SlimeLevel >= 1)
+        {
+            Debug.Log("Play first time slimed dialogue");
+
+        }
         
         Debug.Log("Shopkeeper: Sliming out");
         SlimedOut.Instance.TriggerSlimedOut();
