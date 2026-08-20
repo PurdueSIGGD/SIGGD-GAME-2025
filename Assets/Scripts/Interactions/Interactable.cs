@@ -18,7 +18,7 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
         {
             ui.ActivateUI(this);
             currentUi = ui;
-            Debug.Log($"Hovering over item: {itemInfo.itemName}");
+            //Debug.Log($"Hovering over item: {itemInfo.itemName}");
         }
     }
 
@@ -33,7 +33,7 @@ public class Interactable : MonoBehaviour, IInteractable<IInteractor>
     {
         if (interactable)
         {
-            Debug.Log($"Item {itemInfo.itemName} interacted up by interactor.");
+            //Debug.Log($"Item {itemInfo.itemName} interacted up by interactor.");
             //OnItemInteract?.Invoke(itemInfo, interactor);
             try
             {
