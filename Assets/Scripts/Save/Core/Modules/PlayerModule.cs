@@ -50,7 +50,7 @@ namespace SIGGD.Save.Modules
         public int SlimeLevel
         {
             get => Data.slimeLevel;
-            set => Data.slimeLevel = Mathf.Clamp(value, 0, 4);
+            set => Data.slimeLevel = Mathf.Clamp(value, 0, 5);
         }
 
         public void Capture()
