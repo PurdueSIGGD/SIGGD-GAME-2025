@@ -110,7 +110,7 @@ public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
         if (player != null && player.SlimeLevel >= 1)
         {
             Debug.Log("Play first time slimed dialogue");
-
+            
         }
         
         Debug.Log("Shopkeeper: Sliming out");
