@@ -1,3 +1,4 @@
+using FMODUnity;
 using SIGGD.Save;
 using SIGGD.Save.Modules;
 using UnityEngine;
@@ -13,10 +14,11 @@ public class SlimeLevelCheck : MonoBehaviour
         var player = SaveManager.Instance?.Get<PlayerModule>();
         //if (player != null) player.SlimeLevel++;
 
-        if (player != null && player.SlimeLevel >= 1)
+        if (player != null && player.SlimeLevel >= 5)
         {
             Debug.Log("Play first time slimed dialogue");
-            AudioLogManager.Instance.PlayAudioLog(audioObject.audioName, PlayerID.Instance.gameObject);
+            //AudioLogManager.Instance.PlayAudioLog(audioObject.audioName, PlayerID.Instance.gameObject);
+            RuntimeManager.PlayOneShot("VILLAGE TAPES - SPAT ON");
             Debug.Log($"Playing audio log with ID: {audioObject.audioName}");
             SphereCollider collider = GetComponent<SphereCollider>();
 
