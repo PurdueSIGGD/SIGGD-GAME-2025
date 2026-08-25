@@ -109,36 +109,36 @@ public class ExcitedFireflyPath : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        if (!started) {
-            Gizmos.color = Color.cyan;
-            for (int i = 0; i < goPath.transform.childCount - 1; i++)
-            {
-                Gizmos.DrawLine(goPath.transform.GetChild(i).position, goPath.transform.GetChild(i + 1).position);
-            }
-            Gizmos.DrawLine(transform.position, goPath.transform.GetChild(0).position);
-            Gizmos.color = Color.yellow;
-            for (int i = 0; i < exitPath.transform.childCount - 1; i++)
-            {
-                Gizmos.DrawLine(exitPath.transform.GetChild(i).position, exitPath.transform.GetChild(i + 1).position);
-            }
-            Gizmos.DrawLine(goPath.transform.GetChild(goPath.transform.childCount - 1).position, exitPath.transform.GetChild(0).position);
-        }
-        else
-        {
-            Gizmos.color = Color.cyan;
-            for (int i = 0; i < goPathVec.Count - 1; i++)
-            {
-                Gizmos.DrawLine(goPathVec[i], goPathVec[i + 1]);
-            }
-            Gizmos.DrawLine(start, goPathVec[0]);
-            Gizmos.color = Color.yellow;
-            for (int i = 0; i < exitPathVec.Count - 1; i++)
-            {
-                Gizmos.DrawLine(exitPathVec[i], exitPathVec[i + 1]);
-            }
-            Gizmos.DrawLine(goPathVec[goPathVec.Count - 1], exitPathVec[0]);
-        }
-    }
+    //private void OnDrawGizmos()
+    //{
+    //    if (!started) {
+    //        Gizmos.color = Color.cyan;
+    //        for (int i = 0; i < goPath.transform.childCount - 1; i++)
+    //        {
+    //            Gizmos.DrawLine(goPath.transform.GetChild(i).position, goPath.transform.GetChild(i + 1).position);
+    //        }
+    //        Gizmos.DrawLine(transform.position, goPath.transform.GetChild(0).position);
+    //        Gizmos.color = Color.yellow;
+    //        for (int i = 0; i < exitPath.transform.childCount - 1; i++)
+    //        {
+    //            Gizmos.DrawLine(exitPath.transform.GetChild(i).position, exitPath.transform.GetChild(i + 1).position);
+    //        }
+    //        Gizmos.DrawLine(goPath.transform.GetChild(goPath.transform.childCount - 1).position, exitPath.transform.GetChild(0).position);
+    //    }
+    //    else
+    //    {
+    //        Gizmos.color = Color.cyan;
+    //        for (int i = 0; i < goPathVec.Count - 1; i++)
+    //        {
+    //            Gizmos.DrawLine(goPathVec[i], goPathVec[i + 1]);
+    //        }
+    //        Gizmos.DrawLine(start, goPathVec[0]);
+    //        Gizmos.color = Color.yellow;
+    //        for (int i = 0; i < exitPathVec.Count - 1; i++)
+    //        {
+    //            Gizmos.DrawLine(exitPathVec[i], exitPathVec[i + 1]);
+    //        }
+    //        Gizmos.DrawLine(goPathVec[goPathVec.Count - 1], exitPathVec[0]);
+    //    }
+    //}
 }
