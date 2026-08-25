@@ -462,7 +462,7 @@ public class ClimbAction : MonoBehaviour
         int handIndex = (int)handToDetach;
         if (attachedHands[handIndex]) {
             bool hasGloves = SIGGD.Save.SaveManager.Instance?.Get<SIGGD.Save.Modules.PlayerModule>()?.HasGloves ?? false;
-            if (hasGloves) AudioManager.Instance.PlayOneShotNoAsync(climbReleaseUpgradedSound, PlayerID.Instance.gameObject.transform.position);
+            if (hasGloves) AudioManager.Instance.PlayOneShotNoAsync(climbReleaseSound, PlayerID.Instance.gameObject.transform.position);
             else AudioManager.Instance.PlayOneShotNoAsync(climbReleaseSound, PlayerID.Instance.gameObject.transform.position);
         }
         attachedHands[handIndex] = false;
@@ -565,7 +565,7 @@ public class ClimbAction : MonoBehaviour
                     Quaternion hitRotation = Quaternion.LookRotation(hitOrientation);
                     AttachHand(handToFire, hitPosition, hitRotation);
                     bool hasGloves = SIGGD.Save.SaveManager.Instance?.Get<SIGGD.Save.Modules.PlayerModule>()?.HasGloves ?? false;
-                    if (hasGloves) AudioManager.Instance.PlayOneShotNoAsync(climbGrabUpgradedSound, hitPosition);
+                    if (hasGloves) AudioManager.Instance.PlayOneShotNoAsync(climbGrabSound, hitPosition);
                     else AudioManager.Instance.PlayOneShotNoAsync(climbGrabSound, hitPosition);
                 } else { 
                     // player is trying to climb on something not climbable
