@@ -595,7 +595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: a7d8620dd8d7f9143bc16f3bcada8d15, type: 2}
   m_Color: {r: 0.5529412, g: 0.7137255, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1850,7 +1850,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6493266054118845524, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 179.99994
+      value: 279.99994
       objectReference: {fileID: 0}
     - target: {fileID: 6631052282998075997, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2174,7 +2174,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8981388687516178970, guid: 7bd825be611554127960116d5da99b42, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 179.99994
+      value: 279.99994
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2676,6 +2676,7 @@ GameObject:
   - component: {fileID: 949430631}
   - component: {fileID: 949430630}
   - component: {fileID: 949430629}
+  - component: {fileID: 949430633}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2773,6 +2774,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &949430633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949430628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 748fa8c9dbeed4ec4841775a8421a0a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1006791021
 GameObject:
   m_ObjectHideFlags: 0
@@ -2907,6 +2920,7 @@ GameObject:
   - component: {fileID: 1027984262}
   - component: {fileID: 1027984261}
   - component: {fileID: 1027984264}
+  - component: {fileID: 1027984265}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -3002,7 +3016,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: a7d8620dd8d7f9143bc16f3bcada8d15, type: 2}
   m_Color: {r: 0.42988798, g: 0.7183616, b: 0.9559748, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -3073,6 +3087,20 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &1027984265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027984259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 024a6722d90a0344db46fcbd4bed6ae9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  customReductionScale: 0.004
+  img: {fileID: 0}
 --- !u!1001 &1057079590
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3293,6 +3321,7 @@ GameObject:
   - component: {fileID: 1101127313}
   - component: {fileID: 1101127312}
   - component: {fileID: 1101127311}
+  - component: {fileID: 1101127315}
   m_Layer: 5
   m_Name: Button (1)
   m_TagString: Untagged
@@ -3433,7 +3462,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: a7d8620dd8d7f9143bc16f3bcada8d15, type: 2}
   m_Color: {r: 0.5503144, g: 0.712838, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -3459,6 +3488,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1101127309}
   m_CullTransparentMesh: 1
+--- !u!114 &1101127315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101127309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 024a6722d90a0344db46fcbd4bed6ae9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  customReductionScale: 0.004
+  img: {fileID: 0}
 --- !u!1001 &1157669282
 PrefabInstance:
   m_ObjectHideFlags: 0
