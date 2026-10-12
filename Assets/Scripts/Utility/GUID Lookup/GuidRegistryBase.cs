@@ -5,6 +5,14 @@ using UnityEngine;
 public abstract class GuidRegistryBase : ScriptableObject
 {
     public abstract void BuildLookup();
+
+#if UNITY_EDITOR
+    /// <summary>
+    /// Makes the registry list every asset of its type in the project. Returns true if the list changed.
+    /// Called by AutoGuidProcessor; a GUID can only be loaded from a save if its asset is listed here.
+    /// </summary>
+    public abstract bool EditorSyncItems();
+#endif
 }
 
 public abstract class GuidRegistry<T> : GuidRegistryBase
@@ -92,4 +100,35 @@ public abstract class GuidRegistry<T> : GuidRegistryBase
     }
 
     public IReadOnlyList<T> Items => items;
+
+#if UNITY_EDITOR
+    public override bool EditorSyncItems()
+    {
+        // FindAssets matches derived types too, so a QuestObjective registry also lists every QuestOutcome
+        List<string> paths = new();
+        foreach (string assetGuid in UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
+        {
+            paths.Add(UnityEditor.AssetDatabase.GUIDToAssetPath(assetGuid));
+        }
+        paths.Sort(System.StringComparer.Ordinal); // stable order keeps the asset diff small
+
+        List<T> found = new(paths.Count);
+        foreach (string path in paths)
+        {
+            T asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
+            if (asset != null) found.Add(asset);
+        }
+
+        bool same = found.Count == items.Count;
+        for (int i = 0; same && i < found.Count; i++)
+        {
+            same = found[i] == items[i];
+        }
+        if (same) return false;
+
+        items = found;
+        lookup = null;
+        return true;
+    }
+#endif
 }

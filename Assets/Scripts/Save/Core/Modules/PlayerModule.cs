@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Sirenix.Serialization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -51,6 +52,26 @@ namespace SIGGD.Save.Modules
         {
             get => Data.slimeLevel;
             set => Data.slimeLevel = value;
+        }
+
+        /// <summary>Whether the village has been destroyed in this run.</summary>
+        public bool VillageDestroyed
+        {
+            get => Data.villageDestroyed;
+            set => Data.villageDestroyed = value;
+        }
+
+        /// <summary>Whether the one-off pickup with this item name has already been taken in this run.</summary>
+        public bool IsPickupCollected(string itemName)
+        {
+            return Data.collectedPickups != null && Data.collectedPickups.Contains(itemName);
+        }
+
+        /// <summary>Records a one-off pickup as taken. Caller is responsible for triggering a save.</summary>
+        public void MarkPickupCollected(string itemName)
+        {
+            Data.collectedPickups ??= new List<string>();
+            if (!Data.collectedPickups.Contains(itemName)) Data.collectedPickups.Add(itemName);
         }
 
         public void Capture()

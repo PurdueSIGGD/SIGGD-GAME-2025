@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -21,4 +22,10 @@ public class PlayerSaveData
     public Vector3 RespawnPosition = new(480.5f, 7.2f, -4.1f);
     public int slimeLevel = 0;
     public float radiationLevel = 0f;
+
+    // World progression flags. Like hasGloves/slimeLevel these are edited directly by gameplay
+    // scripts and are scene-agnostic.
+    public bool villageDestroyed = false;
+    // Item names of the one-off pickups (music boxes) already taken, so a reload does not respawn them.
+    public List<string> collectedPickups = new();
 }

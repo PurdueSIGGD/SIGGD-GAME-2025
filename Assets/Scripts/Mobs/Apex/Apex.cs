@@ -355,14 +355,17 @@ public class Apex : MobBrainBase
     /// </summary>
     public bool TryGetRoamPoint(Vector3 origin, float radius, out Vector3 result)
     {
+        // roam points and the path check must use the Apex's own NavMesh, not the default agent type's
+        NavMeshQueryFilter filter = NavSteering.AgentFilter(ctx.NavAgent);
+        cachedPath ??= new NavMeshPath();
         for (int i = 0; i < 30; i++)
         {
             Vector3 candidate = origin + UnityEngine.Random.insideUnitSphere * radius;
             candidate.y = origin.y;
-            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, radius * 0.5f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, radius * 0.5f, filter))
             {
                 result = hit.position;
-                NavMesh.CalculatePath(ctx.Rigidbody.position, result, NavMesh.AllAreas, cachedPath);
+                NavMesh.CalculatePath(ctx.Rigidbody.position, result, filter, cachedPath);
                 if (cachedPath.status == NavMeshPathStatus.PathComplete && Vector3.Distance(ctx.Rigidbody.position, result) > 5f)
                 {
                     return true;

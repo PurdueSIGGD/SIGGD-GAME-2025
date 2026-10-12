@@ -1,4 +1,6 @@
 using System;
+using SIGGD.Save;
+using SIGGD.Save.Modules;
 using UnityEngine;
 
 public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
@@ -11,6 +13,24 @@ public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
 
     public static readonly string itemPickupSound = "ItemPickup";
 
+    // Music boxes are one-off pickups: once taken they are recorded in the save so reloading does not respawn them
+    private bool IsOneOffPickup => itemInfo != null && itemInfo.IsMusicBox;
+
+    private void Start()
+    {
+        if (!IsOneOffPickup) return;
+
+        SaveManager.Instance?.WhenGameplayReady(() =>
+        {
+            if (this == null) return;
+            var player = SaveManager.Instance.Get<PlayerModule>();
+            if (player != null && player.IsPickupCollected(itemInfo.itemName.ToString()))
+            {
+                Debug.Log($"Item {itemInfo.itemName} was already collected in this save, removing it from the scene.");
+                Destroy(gameObject);
+            }
+        });
+    }
 
     public void OnHoverEnter(InteractableUI ui)
     {
@@ -43,6 +63,10 @@ public class InteractableItem : MonoBehaviour, IInteractable<IInteractor>
             Debug.Log(OnItemPickUp == null ? "No APPLE listeners" : "APPLE Listeners found");
 
             OnItemPickUp?.Invoke(itemInfo, interactor);
+            if (IsOneOffPickup)
+            {
+                SaveManager.Instance?.Get<PlayerModule>()?.MarkPickupCollected(itemInfo.itemName.ToString());
+            }
             Destroy(this.gameObject); // Remove the item from the scene
         }
     }

@@ -134,8 +134,30 @@ public class ApexAttackingState : IMobState
         rb.isKinematic = true;
         rb.useGravity = false;
         apex.SetAttacking(false);
+        ReturnToNavMesh();
         apex.ApexLog("Exiting AttackingState.");
 
+    }
+
+    // The lunge is a physics arc, so it can end in the air or off the NavMesh, where the Apex can no longer
+    // path or move. Put it back on the nearest walkable point before any other state takes over.
+    private void ReturnToNavMesh()
+    {
+        const float maxSnapDistance = 20f;
+        NavMeshQueryFilter filter = new NavMeshQueryFilter
+        {
+            agentTypeID = agent != null ? agent.agentTypeID : 0,
+            areaMask = NavMesh.AllAreas
+        };
+        if (!NavMesh.SamplePosition(rb.position, out NavMeshHit hit, maxSnapDistance, filter)) return;
+
+        rb.position = hit.position;
+        apex.transform.position = hit.position;
+        if (agent != null)
+        {
+            agent.Warp(hit.position);
+            agent.nextPosition = hit.position;
+        }
     }
 
     private void Attack()

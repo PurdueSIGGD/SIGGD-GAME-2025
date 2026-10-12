@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Extensions.EventBus;
 using SIGGD.Save;
 using SIGGD.Save.Modules;
 using UnityEngine;
@@ -17,6 +18,9 @@ public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
     [SerializeField] private GameObject slimeObject;
 
     [SerializeField] private Transform startPoint;
+
+    [Header("Quest objective completed the first time the shopkeeper spits on the player")]
+    [SerializeField] private QuestObjective spatOnObjective;
 
     private bool playerIsLooking = false;
     private Transform playerTransform;
@@ -39,24 +43,23 @@ public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
     public void OnHoverEnter(InteractableUI ui)
     {
         ui.ActivateUI(this);
-    }                         
+        this.ui = ui;
+    }
 
     public void OnHoverExit(InteractableUI ui)
     {
         ui.DeactivateUI();
+        this.ui = null;
     }
 
     public void OnInteract(IInteractor interactor)
     {
-        if (PlayerID.Instance.stateMachine.GetEquippedItem()?.itemName == ItemInfo.ItemName.MusicBox || 
-            PlayerID.Instance.stateMachine.GetEquippedItem()?.itemName == ItemInfo.ItemName.MusicBox2 ||
-            PlayerID.Instance.stateMachine.GetEquippedItem()?.itemName == ItemInfo.ItemName.MusicBox3 ||
-            PlayerID.Instance.stateMachine.GetEquippedItem()?.itemName == ItemInfo.ItemName.MusicBox4 ||
-            PlayerID.Instance.stateMachine.GetEquippedItem()?.itemName == ItemInfo.ItemName.MusicBox5)
+        ItemInfo equipped = PlayerID.Instance.stateMachine.GetEquippedItem();
+        if (equipped != null && equipped.IsMusicBox)
         {
             Debug.Log("Shopkeeper: Player interacted with ShopKeeper while holding Music Box. Triggering slime out.");
             SlimeOutPlayer();
-            ui.DeactivateUI();
+            if (ui) ui.DeactivateUI();
             return;
         }
         
@@ -107,14 +110,26 @@ public class ShopKeeperInteract : MonoBehaviour, IInteractable<IInteractor>
         var player = SaveManager.Instance?.Get<PlayerModule>();
         if (player != null) player.SlimeLevel++;
 
-        if (player != null && player.SlimeLevel >= 1)
-        {
-            Debug.Log("Play first time slimed dialogue");
-            
-        }
-        
+        BroadcastSpatOn();
+
         Debug.Log("Shopkeeper: Sliming out");
         SlimedOut.Instance.TriggerSlimedOut();
         Destroy(slime);
+    }
+
+    // Completes the spat on objective, which plays the spat on dialogue through its quest receiver.
+    // The objective can only be completed once, so the dialogue only plays for the first trade.
+    private void BroadcastSpatOn()
+    {
+        if (spatOnObjective == null)
+        {
+            Debug.LogWarning("Shopkeeper: spat on objective is not assigned, dialogue will not play.");
+            return;
+        }
+
+        if (QuestManager.Instance.GetOrCreateInstance(spatOnObjective).MarkConditionsMet())
+        {
+            EventBus<QuestBroadcastEvent>.Raise(new QuestBroadcastEvent(spatOnObjective, () => true));
+        }
     }
 }

@@ -20,6 +20,19 @@ public abstract class IQuestExecutionStrategy
      */
     protected virtual void OnInitialize() { }
     
+    public void Restore(QuestEventReceiver receiver)
+    {
+        questEventReceiver = receiver;
+        OnRestore();
+    }
+
+    /**
+     * Called instead of OnInitialize when the scene loads and this outcome was already executed earlier
+     * (before a reload, or in a saved game). Override to put back any lasting change to the scene, without
+     * the one-off effects like sounds. Does nothing by default.
+     */
+    protected virtual void OnRestore() { }
+
     public void Update() => OnUpdate();
     
     /**

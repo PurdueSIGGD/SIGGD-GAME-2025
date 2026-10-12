@@ -38,17 +38,15 @@ public class FireManager : MonoBehaviour
         radiusAdjusted = fireVFX.GetFloat(SPAWN_RADIUS_PROPERTY) + 0.5f * fireVFX.GetFloat(PARTICLE_SIZE_PROPERTY);
         float len = radiusAdjusted * SQRT2; // largest square in a circle
         boxCollider.size = new Vector3(len, COLLIDER_HEIGHT, len);
-        boxCollider.center = new Vector3(
-            gameObject.transform.position.x,
-            gameObject.transform.position.y + 0.5f * COLLIDER_HEIGHT,
-            gameObject.transform.position.z
-        );
+        // center is in the collider's local space, so the box sits on the fire with its base at the fire's origin
+        boxCollider.center = new Vector3(0f, 0.5f * COLLIDER_HEIGHT, 0f);
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         UnityEditor.Handles.DrawWireDisc(gameObject.transform.position, Vector3.up, radiusAdjusted);
     }
-
+#endif
 }

@@ -37,10 +37,19 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
         }
     }
 
+    private void Awake()
+    {
+        // static counter survives scene reloads, so start every attempt at the boss from zero
+        ConsoleInteract.consolesBroken = 0;
+    }
+
     IEnumerator FadeOut()
     {
         yield return new WaitForSeconds(waitTime);
-        SceneFader.Instance.FadeToScene("Credtis", PlayerID.Instance.rb.transform);
+        // Credits has no player, so it cannot go through FadeToScene (which waits for the player to load).
+        // The screen is already black from our own fade, so hand over to the fader and let it fade in the credits.
+        SceneFader.Instance.SetBlackImmediate();
+        SceneFader.Instance.LoadSceneAndFadeFromBlack("Credtis");
     }
 
     public void OnInteract(IInteractor interactor)

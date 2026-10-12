@@ -11,6 +11,13 @@ public class RemoveObjectExecutionStrategy : IQuestExecutionStrategy
         Debug.Log("hihihihihyayayayayaayayhihi");
     }
 
+    protected override void OnRestore()
+    {
+        base.OnRestore();
+        // the object was already removed before the scene reloaded, keep it removed
+        if (destructable != null) UnityEngine.Object.Destroy(destructable);
+    }
+
     public override string ToString()
     {
         return "Test Execution Strategy";

@@ -31,7 +31,15 @@ public class QuestEventReceiver : MonoBehaviour
 
     private void Start()
     {
-        TryTrigger();        
+        TryTrigger();
+
+        // Already executed before this scene load (earlier in the session or in the loaded save): it will not
+        // execute again, so let the strategy put its lasting changes back into the freshly loaded scene.
+        if (!isTriggered && receiverType == ReceiverType.TriggerOnceAlways && questOutcome != null
+            && QuestManager.Instance.GetOrCreateInstance(questOutcome).totalCompletions > 0)
+        {
+            executionStrategy?.Restore(this);
+        }
     }
 
     private void OnEnable()

@@ -20,5 +20,8 @@ public class SmiteSelf : MonoBehaviour
         {
             Directory.Delete(mainDirectory, true);
         }
+
+        // quest progress also lives in memory for the whole session, so it has to be wiped with the files
+        QuestManager.Instance.ResetAll();
     }
 }

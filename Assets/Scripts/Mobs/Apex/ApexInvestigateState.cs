@@ -69,6 +69,7 @@ public class ApexInvestigateState : IMobState
         {
             apex.ApexLog("InvestigateState - path to investigate point is partial and near, switching to RoamingState.");
             hasTarget = false;
+            apex.RoamingState.SetGuardPosition(apex.transform.position);
             apex.StateMachine.ChangeState(apex.RoamingState);
             return;
         }
@@ -79,6 +80,7 @@ public class ApexInvestigateState : IMobState
         {
             apex.ApexLog("InvestigateState - most likely no complete path to target, abandoning path");
             hasTarget = false;
+            apex.RoamingState.SetGuardPosition(apex.transform.position);
             apex.StateMachine.ChangeState(apex.RoamingState);
             return;
         }

@@ -7,7 +7,7 @@ public class AudioLogExecutionStrategy : IQuestExecutionStrategy
     protected override void OnInitialize()
     {
         base.OnInitialize();
-        AudioLogManager.Instance.PlayAudioLog(audioObject.audioName, PlayerID.Instance.gameObject);
+        AudioLogManager.Instance.PlayAudioLog(audioObject, PlayerID.Instance.gameObject);
         Debug.Log($"Playing audio log with ID: {audioObject.audioName}");
     }
 
