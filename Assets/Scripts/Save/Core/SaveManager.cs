@@ -358,6 +358,8 @@ namespace SIGGD.Save
             if (!forced && !CanSaveGameplay())
             {
                 Debug.Log($"SaveManager: gameplay save ({trigger}) skipped — GameStateManager blocks it.");
+                // Quitting must always keep hunger, even when the rest of the save is blocked.
+                if (trigger == SaveTrigger.ApplicationExit) SaveHungerOnly();
                 return false;
             }
 
@@ -374,6 +376,36 @@ namespace SIGGD.Save
                 SaveScreenshot();
             }
             return true;
+        }
+
+        /// <summary>
+        /// Writes the player's current hunger into the player save file and nothing else. The rest of the
+        /// file is re-read from disk, so position, stats and progress stay exactly as the last full save
+        /// left them (the in-memory module cannot be used: gameplay edits some of its fields directly).
+        /// </summary>
+        private void SaveHungerOnly()
+        {
+            try
+            {
+                var live = Get<Modules.PlayerModule>();
+                var hunger = PlayerID.Instance != null ? PlayerID.Instance.playerHunger : null;
+                if (live == null || hunger == null) return;
+                if (!IsModuleEnabledInActiveScene(live)) return;
+
+                var onDisk = new Modules.PlayerModule();
+                if (SaveFileIO.Read(live.Scope, live.Key, out byte[] payload, out int version))
+                {
+                    onDisk.Deserialize(payload, version);
+                }
+
+                onDisk.Data.curHunger = hunger.CurrentHunger;
+                SaveFileIO.Write(live.Scope, live.Key, live.Version, onDisk.Serialize());
+                Debug.Log($"SaveManager: kept hunger ({hunger.CurrentHunger}) from a blocked exit save.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"SaveManager: hunger-only save failed: {e}");
+            }
         }
 
         /// <summary>Persist every <see cref="SaveScope.Screenshot"/> module. Used by manual save UI.</summary>

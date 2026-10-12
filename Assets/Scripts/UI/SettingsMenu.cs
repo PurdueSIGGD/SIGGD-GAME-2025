@@ -15,7 +15,9 @@ public class SettingsMenu : Singleton<SettingsMenu>
     void Start()
     {
         canvas = GetComponent<Canvas>();
-        Show(false);
+        // Hiding the menu on startup must not touch the cursor: nothing was opened, and in the main menu
+        // locking it here races the title screen unlocking it
+        Show(false, false);
 
         // This is used to load the currently used input overrides
         //if (SaveManager.Instance)
@@ -25,6 +27,11 @@ public class SettingsMenu : Singleton<SettingsMenu>
     }
 
     public void Show(bool enabled)
+    {
+        Show(enabled, true);
+    }
+
+    private void Show(bool enabled, bool updateCursor)
     {
         // Will doing this be too slow?
         if (!enabled)
@@ -37,7 +44,7 @@ public class SettingsMenu : Singleton<SettingsMenu>
         {
             previousView.SetActive(!enabled);
         }
-        else if (!enabled)
+        else if (!enabled && updateCursor)
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;

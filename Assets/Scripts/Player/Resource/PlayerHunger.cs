@@ -38,9 +38,18 @@ public class PlayerHunger : MonoBehaviour
         }
     }
 
+    // The prologue has no hunger. The ship scene uses the shared player prefab, where inShipScene is off,
+    // so the scene name is checked as well.
+    private bool HungerPaused => inShipScene || gameObject.scene.name == "ShipScene";
+
     void Update()
     {
-        if (inShipScene == false)
+        if (HungerPaused)
+        {
+            // stay full so the prologue never hands a drained value to the next scene
+            if (currentHunger < maxHunger) CurrentHunger = maxHunger;
+        }
+        else
         {
             //hunger goes down and takes health when starving
             if (currentHunger > 0)

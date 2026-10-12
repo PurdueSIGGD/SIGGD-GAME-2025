@@ -135,12 +135,13 @@ namespace SIGGD.Save.Modules
             var radiation = pid.playerRadiation;
             var respawn = pid.GetComponent<ManageRespawn>();
 
-            // Stats persist across scenes.
-            if (health != null) health.CurrentHealth = Data.curHealth;
-            if (hunger != null) hunger.CurrentHunger = Data.curHunger;
+            // Stats persist across scenes. A negative value means it was never recorded, so the component
+            // keeps its own starting value instead of being clamped to zero.
+            if (health != null && Data.curHealth >= 0) health.CurrentHealth = Data.curHealth;
+            if (hunger != null && Data.curHunger >= 0) hunger.CurrentHunger = Data.curHunger;
             if (stamina != null)
             {
-                stamina.CurrentStamina = Data.curStamina;
+                if (Data.curStamina >= 0) stamina.CurrentStamina = Data.curStamina;
                 stamina.StaminaDisabled = Data.staminaDisabled;
             }
             if (radiation != null) radiation.CurrentRadiation = Data.radiationLevel;
