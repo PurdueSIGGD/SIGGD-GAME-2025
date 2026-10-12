@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 2629199180172452178}
   - component: {fileID: 824296624737473361}
   - component: {fileID: 7852867220381958944}
+  - component: {fileID: 7606077567708386639}
   m_Layer: 9
   m_Name: Alt Prey
   m_TagString: Prey
@@ -62,6 +63,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth:
     value: 100
+  isInvincible: 0
 --- !u!114 &935154526049956516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,7 +284,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   preyTargets: []
   predatorTargets: []
-  mobType: 2
 --- !u!114 &6471975599104645498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,6 +397,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e97ee299f0f7604aa38f1564ba29e67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7606077567708386639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5495394095841355305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de9d714b7ff08c14e80a1b77d2ed2a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  breakParticles: {fileID: 6762931959695765462, guid: 88531e7dd1297b140b76566e3235b767, type: 3}
+  breakSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
 --- !u!1001 &7135641614424817716
 PrefabInstance:
   m_ObjectHideFlags: 0
