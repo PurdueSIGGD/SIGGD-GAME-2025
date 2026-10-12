@@ -1,16 +1,26 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using FMODUnity;
+using SIGGD.Save;
+using SIGGD.Save.Modules;
 
 
 public class VillageDestructionExternalEvent : ExternalEventTriggerer
 {
     public GameObject village;
     public GameObject destroyedVillage;
+
+    public static VillageDestructionExternalEvent Instance;
+    
     //[SerializeField] private EventReference explosionSound;
     public static readonly string ConsoleBroken = "ConsoleDamaged";
 
 
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     public override void TriggerExternalEvent()
     {
@@ -20,6 +30,7 @@ public class VillageDestructionExternalEvent : ExternalEventTriggerer
         {
             village.SetActive(false);
             destroyedVillage.SetActive(true);
+            SaveManager.Instance.Get<SceneItemsModule>().VillageDestroyed = true;
 
             //if (explosionSound.IsNull)
             //    return;
@@ -41,5 +52,11 @@ public class VillageDestructionExternalEvent : ExternalEventTriggerer
         {
             Debug.LogWarning("Village or destroyed village GameObject is not assigned.");
         }
+    }
+
+    public void AlreadyDestroy()
+    {
+        village.SetActive(false);
+        destroyedVillage.SetActive(true);
     }
 }

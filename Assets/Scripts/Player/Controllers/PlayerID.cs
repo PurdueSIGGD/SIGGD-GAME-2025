@@ -69,6 +69,7 @@ public class PlayerID : Singleton<PlayerID>
         if (save != null)
         {
             save.WhenGameplayReady(() => save.Apply<PlayerModule>());
+            save.WhenGameplayReady(() => save.Apply<SceneItemsModule>());
         }
 
         isReset = true;
