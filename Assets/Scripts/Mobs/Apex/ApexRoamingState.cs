@@ -49,7 +49,17 @@ public class ApexRoamingState : IMobState
         idling = false;
 
         // Pick a single roam target on enter. If none found, immediately go back to searching.
-        if (apex.TryGetRoamPoint(guardPosition, Random.Range(apex.RoamRadius.x, apex.RoamRadius.y), out Vector3 point))
+        // If nothing around the guard position is reachable (e.g. it was never set, or the target was somewhere
+        // the Apex cannot path to), roam around where the Apex is standing instead of idling forever.
+        float radius = Random.Range(apex.RoamRadius.x, apex.RoamRadius.y);
+        bool foundPoint = apex.TryGetRoamPoint(guardPosition, radius, out Vector3 point);
+        if (!foundPoint)
+        {
+            guardPosition = apex.transform.position;
+            foundPoint = apex.TryGetRoamPoint(guardPosition, radius, out point);
+        }
+
+        if (foundPoint)
         {
             targetPosition = point;
             hasTarget = true;
@@ -143,6 +153,13 @@ public class ApexRoamingState : IMobState
 
     public void Exit()
     {
+        // an idle pause left running would re-enter this state later, while another state is in control
+        if (idleCoroutine != null)
+        {
+            apex.StopCoroutine(idleCoroutine);
+            idleCoroutine = null;
+        }
+        idling = false;
         apex.ApexLog("Exiting RoamingState.");
     }
 

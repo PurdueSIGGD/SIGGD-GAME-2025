@@ -72,7 +72,11 @@ public class ItemInfo : ScriptableObject
     public GameObject itemPrefab; // prefab for the item in the world
     public GameObject itemPlacementPrefab; // prefab for the item placement variant when previewing placement
 
-    public void log() { 
+    // Each music box exists exactly once in the world
+    public bool IsMusicBox => itemName == ItemName.MusicBox || itemName == ItemName.MusicBox2 || itemName == ItemName.MusicBox3
+        || itemName == ItemName.MusicBox4 || itemName == ItemName.MusicBox5;
+
+    public void log() {
         Debug.Log("Item Type: " +  itemType);
         Debug.Log("Item Name: " + itemName);
         Debug.Log("Is Ingredient: " + isIngredient);

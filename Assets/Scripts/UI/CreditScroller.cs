@@ -15,6 +15,8 @@ public class CreditScroller : MonoBehaviour
 
     private void Awake()
     {
+        // the scroll runs on scaled time, so make sure a paused game cannot freeze the credits
+        Time.timeScale = 1f;
         skipButton.alpha = 0f;
     }
 

@@ -46,6 +46,19 @@ namespace SIGGD.Save.Modules
             set => Data.villageDestroyed = value;
         }
 
+        /// <summary>Whether the music box with this item name has already been picked up in this run.</summary>
+        public bool IsMusicBoxCollected(string itemName)
+        {
+            return Data.collectedMusicBoxes != null && Data.collectedMusicBoxes.Contains(itemName);
+        }
+
+        /// <summary>Records a music box as picked up. Caller is responsible for triggering a save.</summary>
+        public void MarkMusicBoxCollected(string itemName)
+        {
+            Data.collectedMusicBoxes ??= new System.Collections.Generic.List<string>();
+            if (!Data.collectedMusicBoxes.Contains(itemName)) Data.collectedMusicBoxes.Add(itemName);
+        }
+
         public void Capture()
         {
             Data.sceneName = SceneManager.GetActiveScene().name;
@@ -59,19 +72,10 @@ namespace SIGGD.Save.Modules
                 return;
             }
 
-            int? slimeLevel = SaveManager.Instance?.Get<PlayerModule>()?.SlimeLevel;
+            // Music boxes that were already picked up remove themselves (InteractableItem.Start), keyed by
+            // which box was taken. This replaces removing the first N boxes by slime level, which removed
+            // the wrong boxes: slime level also rises from other sources and says nothing about which box.
 
-            Debug.Log("Slime:" + slimeLevel);
-            
-            for (int i = 0; i < slimeLevel; i++)
-            {
-                if (MusicBoxIndex.musicBoxes[i] != null)
-                {
-                    Debug.Log("Try Used index" + i);
-                    MusicBoxIndex.musicBoxes[i].Used();
-                }
-            }
-            
             // Position / rotation / respawn are scene-scoped. Only push them onto the live player
             // when the save was taken in the currently active scene — otherwise let the scene
             // itself (or SceneFader.TransitionRoutine) dictate where the player starts.

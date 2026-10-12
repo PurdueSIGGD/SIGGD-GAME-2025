@@ -15,27 +15,12 @@ public class ManageRespawn : MonoBehaviour
     [SerializeField] private GameObject deathMenu;
 
     public Vector3 respawnPoint;
-    public GameObject graveObj;
-    GameObject curGrave = null;
 
     private Collider playerCollider;
 
     public void UpdateSpawnPoint(Transform spawnPoint)
     {
         respawnPoint = spawnPoint.position;
-    }
-
-    public void CreateGrave()
-    {
-        if (curGrave)
-        {
-            Destroy(curGrave);
-        }
-        if (!inv.IsInventoryEmpty())
-        {
-            curGrave = Instantiate(graveObj, transform.position, transform.rotation);
-            curGrave.GetComponent<GraveInteract>().FillGrave(inv);
-        }
     }
 
     public void RespawnPlayer()
@@ -72,7 +57,7 @@ public class ManageRespawn : MonoBehaviour
             Time.timeScale = 0f;
             PlayerID.Instance.IsAlive = false;
             playerCollider.enabled = false;
-            CreateGrave();
+            // the player keeps their inventory through death and respawn
             deathMenu.GetComponent<DeathMenu>().ShowDeathMenu(true);
             health.ResetHealth();
             hunger.ResetHunger();
@@ -100,13 +85,6 @@ public class ManageRespawn : MonoBehaviour
         stamina = PlayerID.Instance.playerStamina;
         radiation = PlayerID.Instance.playerRadiation;
         playerCollider = PlayerID.Instance.GetComponent<Collider>();
-
-        // Re-spawn any grave that was persisted for this scene.
-        var save = SaveManager.Instance;
-        if (save != null)
-        {
-            save.WhenGameplayReady(() => save.Apply<GraveModule>());
-        }
     }
 
     void Update()
@@ -117,16 +95,5 @@ public class ManageRespawn : MonoBehaviour
             RespawnPlayer();
         }
 #endif
-    }
-
-    public GameObject GetCurGrave() {
-        return curGrave;
-    }
-
-    public void CreateGrave(Vector3 position, Quaternion rotation, string[] names, int[] count) {
-        Debug.Log("Instantiating grave from save");
-        inv = PlayerID.Instance.Inventory;
-        curGrave = Instantiate(graveObj, position, rotation);
-        curGrave.GetComponent<GraveInteract>().FillGrave(inv, names, count);
     }
 }

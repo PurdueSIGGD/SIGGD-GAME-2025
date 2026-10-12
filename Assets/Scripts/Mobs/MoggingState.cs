@@ -39,19 +39,20 @@ public class MoggingState : IMobState
         ctx.Animator.SetTrigger("Return to Idle");
         ctx.Rigidbody.linearVelocity = Vector3.zero;
         path = new NavMeshPath();
+        timeWaited = 0f;
     }
-    
+
     public void Update()
     {
         // continuously check if path is available to target, if so, return to previous state
         if (timeWaited < waitTime)
         {
-            timeWaited += waitTime;
+            timeWaited += Time.deltaTime;
 
             // recalculate path
             if (possibleTarget.IsT0)
             {
-                NavMesh.CalculatePath(ctx.Transform.position, possibleTarget.AsT0.position, NavMesh.AllAreas, path);
+                NavMesh.CalculatePath(ctx.Transform.position, possibleTarget.AsT0.position, SIGGD.Mobs.NavSteering.AgentFilter(ctx.NavAgent), path);
                 if (path != null && path.status == NavMeshPathStatus.PathComplete)
                 {
                     HandleFallback();
@@ -59,7 +60,7 @@ public class MoggingState : IMobState
             }
             else if (possibleTarget.IsT1)
             {
-                NavMesh.CalculatePath(ctx.Transform.position, possibleTarget.AsT1, NavMesh.AllAreas, path);
+                NavMesh.CalculatePath(ctx.Transform.position, possibleTarget.AsT1, SIGGD.Mobs.NavSteering.AgentFilter(ctx.NavAgent), path);
                 if (path != null && path.status == NavMeshPathStatus.PathComplete)
                 {
                     HandleFallback();
@@ -70,7 +71,8 @@ public class MoggingState : IMobState
         {
             if (mob is Apex apex)
             {
-                apex = mob as Apex;
+                // gave up waiting, roam around where we are standing
+                apex.RoamingState.SetGuardPosition(apex.transform.position);
                 apex.StateMachine.ChangeState(apex.RoamingState);
             }
             else
