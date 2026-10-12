@@ -39,9 +39,9 @@ public class FireManager : MonoBehaviour
         float len = radiusAdjusted * SQRT2; // largest square in a circle
         boxCollider.size = new Vector3(len, COLLIDER_HEIGHT, len);
         boxCollider.center = new Vector3(
-            gameObject.transform.position.x,
-            gameObject.transform.position.y + 0.5f * COLLIDER_HEIGHT,
-            gameObject.transform.position.z
+            0,
+            0.5f * COLLIDER_HEIGHT,
+            0
         );
     }
 
