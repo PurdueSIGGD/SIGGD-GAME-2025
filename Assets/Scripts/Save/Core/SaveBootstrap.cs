@@ -37,6 +37,7 @@ namespace SIGGD.Save
             manager.Register(new QuestModule());
             manager.Register(new GraveModule());
             manager.Register(new LastSceneModule());
+            manager.Register(new SceneItemsModule());
 
             // Screenshot module: never auto-loaded, written on explicit "save game" requests.
             manager.Register(new ScreenshotModule());

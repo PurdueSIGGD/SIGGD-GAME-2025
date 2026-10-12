@@ -100,6 +100,8 @@ namespace SIGGD.Save.Modules
                 return;
             }
 
+            Debug.Log("EEEEEEEEEEEEEE");
+            
             var pid = PlayerID.Instance;
             if (pid == null)
             {
