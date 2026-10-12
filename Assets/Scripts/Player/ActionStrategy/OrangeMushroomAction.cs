@@ -3,7 +3,7 @@ using System.Collections;
 
 public class OrangeMushroomItemAction : IPlayerActionStrategy
 {
-    [SerializeField] private float speedMultiplier = 5f;
+    [SerializeField] private float speedMultiplier = 2f;
 
     private static readonly string eatSound = "PlayerConsume";
     protected override void OnEnter()
@@ -13,7 +13,7 @@ public class OrangeMushroomItemAction : IPlayerActionStrategy
         AudioManager.Instance.PlayOneShotNoAsync(eatSound, PlayerID.Instance.gameObject.transform.position);
         GameObject player = PlayerID.Instance.gameObject;
         player.GetComponent<MonoBehaviour>().StartCoroutine(SpeedUp(player));
-        PlayerID.Instance.GetComponent<PlayerHunger>().UpdateHunger(20);
+        PlayerID.Instance.GetComponent<PlayerHunger>().UpdateHunger(5);
         Debug.Log("player ate an orange mushroom");
     }
 
