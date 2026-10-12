@@ -23,7 +23,7 @@ public class CraftingMenu : Singleton<CraftingMenu>
     public const int SPACING_DISTRIBUTION = 300;
 
     private Recipe selected;
-    public static readonly string AlienTalk = "AlienTalk";
+    public static readonly string AlienTalk = "AilenTalk";
     [SerializeField] private EventReference tradeSound;
 
 
@@ -107,7 +107,8 @@ public class CraftingMenu : Singleton<CraftingMenu>
         if (craftButton.interactable) {
             Debug.Log("Crafting " + selected.output.itemName);
             Inventory.Instance.Craft(selected);
-            RuntimeManager.PlayOneShot(tradeSound, transform.position);
+            //RuntimeManager.PlayOneShot(tradeSound, transform.position);
+            RuntimeManager.PlayOneShot("AilenTalk");
             // update whether the button is interactable since inventory was updated
             craftButton.interactable = IsCraftable();
         }
