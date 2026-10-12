@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using FMODUnity;
 
 public class CraftingMenu : Singleton<CraftingMenu>
 {
@@ -22,6 +23,9 @@ public class CraftingMenu : Singleton<CraftingMenu>
     public const int SPACING_DISTRIBUTION = 300;
 
     private Recipe selected;
+    public static readonly string AlienTalk = "AlienTalk";
+    [SerializeField] private EventReference tradeSound;
+
 
 
     protected override void Awake()
@@ -103,6 +107,7 @@ public class CraftingMenu : Singleton<CraftingMenu>
         if (craftButton.interactable) {
             Debug.Log("Crafting " + selected.output.itemName);
             Inventory.Instance.Craft(selected);
+            RuntimeManager.PlayOneShot(tradeSound, transform.position);
             // update whether the button is interactable since inventory was updated
             craftButton.interactable = IsCraftable();
         }
