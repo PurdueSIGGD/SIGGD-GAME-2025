@@ -14,7 +14,7 @@ public class VillageDestructionExternalEvent : ExternalEventTriggerer
     public static VillageDestructionExternalEvent Instance;
     
     //[SerializeField] private EventReference explosionSound;
-    public static readonly string ConsoleBroken = "ConsoleDamaged";
+    public static readonly string VillageExplosion = "VillageExplosion";
 
 
     private void Awake()
@@ -38,7 +38,10 @@ public class VillageDestructionExternalEvent : ExternalEventTriggerer
                 //RuntimeManager.PlayOneShot(explosionSound, transform.position);
                 
             
-            AudioManager.Instance.PlayOneShotNoAsync(ConsoleBroken, transform.position);
+            // The village is far from where the player is when this fires, so play the explosion at the
+            // player instead of at the village to make sure it is heard
+            Vector3 soundPos = PlayerID.Instance != null ? PlayerID.Instance.transform.position : transform.position;
+            AudioManager.Instance.PlayOneShotNoAsync(VillageExplosion, soundPos);
             
 
             //We don't actually have to kill the villagers we can just spawn in some corpses as part of the destroyed village prefab. 

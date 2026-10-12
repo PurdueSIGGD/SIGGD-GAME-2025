@@ -9,6 +9,19 @@ namespace SIGGD.Mobs
         private static readonly Dictionary<int, Vector3> smoothTargets = new();
         private static readonly Dictionary<int, float> nextUpdate = new();
 
+        /// <summary>
+        /// Query filter for the NavMesh this agent actually walks on. Each agent type has its own NavMesh, and a
+        /// query without the agent type runs on the default one, which gives paths this agent cannot follow.
+        /// </summary>
+        public static NavMeshQueryFilter AgentFilter(NavMeshAgent agent)
+        {
+            return new NavMeshQueryFilter
+            {
+                agentTypeID = agent.agentTypeID,
+                areaMask = agent.areaMask
+            };
+        }
+
         private static float CalculatePathDistance(Vector3 currentPos, Vector3[] corners)
         {
             if (corners == null || corners.Length < 2) return 0f;
@@ -57,7 +70,7 @@ namespace SIGGD.Mobs
                 // Try to compute a path directly using NavMesh.CalculatePath as a fallback.
                 // This helps when agent.path hasn't been populated yet or agent has updatePosition = false.
                 var calcPath = new NavMeshPath();
-                bool calcSuccess = NavMesh.CalculatePath(currentPos, destination, NavMesh.AllAreas, calcPath);
+                bool calcSuccess = NavMesh.CalculatePath(currentPos, destination, AgentFilter(agent), calcPath);
                 if (calcSuccess && (calcPath.status == NavMeshPathStatus.PathComplete || calcPath.status == NavMeshPathStatus.PathPartial) && calcPath.corners != null && calcPath.corners.Length >= 2)
                 {
                     raw = calcPath.corners[1];
@@ -114,11 +127,6 @@ namespace SIGGD.Mobs
                 }
             }
 
-            if (agent.path.status == NavMeshPathStatus.PathComplete)
-            {
-                Debug.Log("w");
-            }
-
             Vector3 raw = Vector3.zero;
             NavMeshPathStatus currentStatus = NavMeshPathStatus.PathInvalid;
             float pathLength = 0f;
@@ -135,7 +143,7 @@ namespace SIGGD.Mobs
                 // Try to compute a path directly using NavMesh.CalculatePath as a fallback.
                 // This helps when agent.path hasn't been populated yet or agent has updatePosition = false.
                 var calcPath = new NavMeshPath();
-                bool calcSuccess = NavMesh.CalculatePath(currentPos, destination, NavMesh.AllAreas, calcPath);
+                bool calcSuccess = NavMesh.CalculatePath(currentPos, destination, AgentFilter(agent), calcPath);
                 if (calcSuccess && (calcPath.status == NavMeshPathStatus.PathComplete || calcPath.status == NavMeshPathStatus.PathPartial) && calcPath.corners != null && calcPath.corners.Length >= 2)
                 {
                     raw = calcPath.corners[1];
@@ -198,7 +206,7 @@ namespace SIGGD.Mobs
             else
             {
                 var calcPath = new NavMeshPath();
-                bool calcSuccess = NavMesh.CalculatePath(agent.transform.position, destination, NavMesh.AllAreas, calcPath);
+                bool calcSuccess = NavMesh.CalculatePath(agent.transform.position, destination, AgentFilter(agent), calcPath);
                 if (calcSuccess && (calcPath.status == NavMeshPathStatus.PathComplete || calcPath.status == NavMeshPathStatus.PathPartial) && calcPath.corners != null && calcPath.corners.Length >= 2)
                 {
                     raw = calcPath.corners[1];

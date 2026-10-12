@@ -14,6 +14,15 @@ public class ApexInvestigateState : IMobState
     private bool hasTarget;
     private bool loggedZeroDir;
 
+    private const float NoPathGraceSec = 1f;
+    private const float StuckTimeoutSec = 5f;
+    private const float StuckMoveThreshold = 0.5f;
+    private Vector3 lastProgressPosition;
+    private float stuckElapsed;
+    private bool waiting;
+    private float waitElapsed;
+    private float noPathElapsed;
+
     public ApexInvestigateState(Apex apex)
     {
         this.apex = apex;
@@ -29,6 +38,9 @@ public class ApexInvestigateState : IMobState
         investigatePosition = position;
         hasTarget = true;
         loggedZeroDir = false;
+        waiting = false;
+        waitElapsed = 0f;
+        noPathElapsed = 0f;
     }
 
     public void Enter()
@@ -42,6 +54,8 @@ public class ApexInvestigateState : IMobState
             return;
         }
 
+        lastProgressPosition = ctx.Rigidbody.position;
+        stuckElapsed = 0f;
         apex.ApexLog($"InvestigateState - moving to investigation point {investigatePosition}.");
     }
 
@@ -62,28 +76,68 @@ public class ApexInvestigateState : IMobState
     {
         if (!hasTarget) return;
 
+        // Standing at the closest spot it could reach: wait a while, then go back to roaming.
+        if (waiting)
+        {
+            waitElapsed += Time.fixedDeltaTime;
+            if (waitElapsed >= apex.FindPathBuffer)
+            {
+                apex.ApexLog("InvestigateState - could not reach investigate point, done waiting, switching to RoamingState.");
+                hasTarget = false;
+                apex.RoamingState.SetGuardPosition(apex.transform.position);
+                apex.StateMachine.ChangeState(apex.RoamingState);
+            }
+            return;
+        }
+
         var (dir, status, pathLength) = apex.GetSteeringTo(investigatePosition);
 
-        // if status is partial and near the end of path, switch to roaming state
-        if (status != UnityEngine.AI.NavMeshPathStatus.PathComplete && pathLength < 5f)
+        // The investigate point is often somewhere the Apex cannot walk to (its NavMesh is split into
+        // regions). Follow the partial path as far as it goes, then wait there.
+        if (status == UnityEngine.AI.NavMeshPathStatus.PathPartial && pathLength < 5f)
         {
-            apex.ApexLog("InvestigateState - path to investigate point is partial and near, switching to RoamingState.");
-            hasTarget = false;
-            apex.StateMachine.ChangeState(apex.RoamingState);
+            apex.ApexLog("InvestigateState - reached the end of a partial path, waiting before roaming.");
+            StartWaiting();
             return;
         }
 
-        float shortestDist = Vector3.Distance(apex.transform.position, investigatePosition);
-
-        if (pathLength - shortestDist < -1f) // if the path length is significantly shorter than the straight line distance, navmesh is tripping
+        // No path at all. The first frames after a new destination can report this before the path is
+        // ready, so only give up once it has stayed that way.
+        if (status == UnityEngine.AI.NavMeshPathStatus.PathInvalid)
         {
-            apex.ApexLog("InvestigateState - most likely no complete path to target, abandoning path");
-            hasTarget = false;
-            apex.StateMachine.ChangeState(apex.RoamingState);
+            noPathElapsed += Time.fixedDeltaTime;
+            if (noPathElapsed >= NoPathGraceSec)
+            {
+                apex.ApexLog("InvestigateState - no path to investigate point, waiting before roaming.");
+                StartWaiting();
+            }
             return;
         }
+        noPathElapsed = 0f;
 
         ctx.Movement.MoveTowards(dir, apex.ApproachSpeedMulti, 0.1f, false);
+
+        // Not getting anywhere (blocked, or steering has nowhere to go): treat it like an unreachable point.
+        if (Vector3.Distance(ctx.Rigidbody.position, lastProgressPosition) > StuckMoveThreshold)
+        {
+            lastProgressPosition = ctx.Rigidbody.position;
+            stuckElapsed = 0f;
+        }
+        else
+        {
+            stuckElapsed += Time.fixedDeltaTime;
+            if (stuckElapsed >= StuckTimeoutSec)
+            {
+                apex.ApexLog("InvestigateState - no progress towards investigate point, waiting before roaming.");
+                StartWaiting();
+            }
+        }
+    }
+
+    private void StartWaiting()
+    {
+        waiting = true;
+        waitElapsed = 0f;
     }
 
     public void Exit()

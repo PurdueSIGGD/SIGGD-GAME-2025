@@ -39,7 +39,7 @@ public class ApexSpawnExternalEvent : ExternalEventTriggerer
         Vector3 spawnPos = Pathfinding.ERR_VECTOR;
         if (possibleSpawnPoints == null || possibleSpawnPoints.Length == 0)
         {
-            Debug.LogError("ApexSpawnExternalEvent: no spawn points provided — populate list of spawn points in editor");
+            Debug.LogError("ApexSpawnExternalEvent: no spawn points provided ï¿½ populate list of spawn points in editor");
             return;
         }
 
@@ -53,12 +53,21 @@ public class ApexSpawnExternalEvent : ExternalEventTriggerer
             return;
         }
 
+        // Each creature type has its own NavMesh. The spawn point has to be on the Apex's, otherwise the
+        // Apex is created somewhere it cannot stand and removes itself straight away.
+        var apexAgent = apexPrefab.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        var apexNavFilter = new UnityEngine.AI.NavMeshQueryFilter
+        {
+            agentTypeID = apexAgent != null ? apexAgent.agentTypeID : 0,
+            areaMask = UnityEngine.AI.NavMesh.AllAreas
+        };
+
         foreach (var sp in orderedSpawns)
         {
             Vector3 candidate = sp.position;
 
             // Ensure position exists on navmesh
-            candidate = Pathfinding.ShiftTargetToNavMesh(candidate, 5f);
+            candidate = Pathfinding.ShiftTargetToNavMesh(candidate, apexNavFilter, 5f);
             if (candidate == Pathfinding.ERR_VECTOR) continue;
 
             spawnPos = candidate;

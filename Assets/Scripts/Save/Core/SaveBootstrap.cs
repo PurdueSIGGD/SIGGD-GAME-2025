@@ -35,7 +35,6 @@ namespace SIGGD.Save
             manager.Register(new PlayerModule());
             manager.Register(new InventoryModule());
             manager.Register(new QuestModule());
-            manager.Register(new GraveModule());
             manager.Register(new LastSceneModule());
             manager.Register(new SceneItemsModule());
 

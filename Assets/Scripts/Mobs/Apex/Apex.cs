@@ -26,6 +26,8 @@ public class Apex : MobBrainBase
     [SerializeField] private ApexLineOfSight lineOfSight;
     [SerializeField] private Animator animator;
     [SerializeField] private PerceptionManager perceptionManager;
+    [Tooltip("The Apex notices a player within this distance in any direction, even from behind.")]
+    [SerializeField] private float closeNoticeDistance = 10f;
     [SerializeField] private Smell smell;
 
     [SerializeField] private GameObject lungeModel;
@@ -82,7 +84,7 @@ public class Apex : MobBrainBase
     [SerializeField] private float windupTime = 0.15f;
     [SerializeField] private LayerMask attackLayerMask;
     [SerializeField] private DamageContext attackContext;
-    [Tooltip("Time to wait and mog at target before giving up attack, if attack cannot reach")]
+    [Tooltip("Time to wait and mog at target before giving up attack, if attack cannot reach. Also how long the Apex waits when it cannot reach the spot it is investigating, before it goes back to roaming")]
     [SerializeField] private float findPathBuffer = 5f;
 
     #endregion
@@ -123,6 +125,8 @@ public class Apex : MobBrainBase
     public float WindupTime => windupTime;
     public LayerMask AttackLayerMask => attackLayerMask;
     public DamageContext AttackContext => attackContext;
+    /// <summary>How long the Apex waits at a spot it cannot get past before it goes back to roaming.</summary>
+    public float FindPathBuffer => findPathBuffer;
 
     #endregion
 
@@ -255,6 +259,15 @@ public class Apex : MobBrainBase
 
     private ApexTarget HasVisibleTarget()
     {
+        // A player this close is noticed whichever way the Apex is facing. Checked every frame: the smell
+        // check only runs twice a second, which a walking Apex can outpace.
+        if (PlayerID.Instance != null && PlayerID.Instance.IsAlive
+            && Vector3.Distance(transform.position, PlayerID.Instance.transform.position) <= closeNoticeDistance)
+        {
+            ApexTarget closeTarget = PlayerID.Instance.GetComponent<ApexTarget>();
+            if (closeTarget != null) return closeTarget;
+        }
+
         if (perceptionManager != null)
         {
             if (perceptionManager.CanSeePlayer && perceptionManager.PlayerTarget != null)
@@ -355,14 +368,17 @@ public class Apex : MobBrainBase
     /// </summary>
     public bool TryGetRoamPoint(Vector3 origin, float radius, out Vector3 result)
     {
+        // roam points and the path check must use the Apex's own NavMesh, not the default agent type's
+        NavMeshQueryFilter filter = NavSteering.AgentFilter(ctx.NavAgent);
+        cachedPath ??= new NavMeshPath();
         for (int i = 0; i < 30; i++)
         {
             Vector3 candidate = origin + UnityEngine.Random.insideUnitSphere * radius;
             candidate.y = origin.y;
-            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, radius * 0.5f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, radius * 0.5f, filter))
             {
                 result = hit.position;
-                NavMesh.CalculatePath(ctx.Rigidbody.position, result, NavMesh.AllAreas, cachedPath);
+                NavMesh.CalculatePath(ctx.Rigidbody.position, result, filter, cachedPath);
                 if (cachedPath.status == NavMeshPathStatus.PathComplete && Vector3.Distance(ctx.Rigidbody.position, result) > 5f)
                 {
                     return true;
