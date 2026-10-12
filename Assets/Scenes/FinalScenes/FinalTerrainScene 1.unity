@@ -16823,6 +16823,8 @@ GameObject:
   - component: {fileID: 385208196}
   - component: {fileID: 385208197}
   - component: {fileID: 385208198}
+  - component: {fileID: 385208200}
+  - component: {fileID: 385208199}
   m_Layer: 0
   m_Name: Recievers
   m_TagString: Untagged
@@ -16891,6 +16893,52 @@ MonoBehaviour:
       type: {class: AudioLogExecutionStrategy, ns: , asm: Assembly-CSharp}
       data:
         audioObject: {fileID: 11400000, guid: 63f561dbfef96984ea88906e0ef95cf6, type: 2}
+--- !u!114 &385208199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 385208195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56f95ac11603413f81dd0374fa57c154, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  receiverType: 0
+  questOutcome: {fileID: 11400000, guid: b982e96dd147ff945b3dc767971d9f20, type: 2}
+  executionStrategy:
+    rid: 379556098724069473
+  references:
+    version: 2
+    RefIds:
+    - rid: 379556098724069473
+      type: {class: AudioLogExecutionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        audioObject: {fileID: 11400000, guid: 386c089ec3839c942a66038a8cbdb1cc, type: 2}
+--- !u!114 &385208200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 385208195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56f95ac11603413f81dd0374fa57c154, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  receiverType: 0
+  questOutcome: {fileID: 11400000, guid: e66717484b934954b9f8fd1f735457a0, type: 2}
+  executionStrategy:
+    rid: 379556098724069472
+  references:
+    version: 2
+    RefIds:
+    - rid: 379556098724069472
+      type: {class: AudioLogExecutionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        audioObject: {fileID: 11400000, guid: ce01d3ed7820d844fb99a0d55aad33b4, type: 2}
 --- !u!1 &385249044
 GameObject:
   m_ObjectHideFlags: 0
@@ -53907,6 +53955,8 @@ Transform:
   - {fileID: 385208196}
   - {fileID: 164058198}
   - {fileID: 961976926}
+  - {fileID: 1854296749}
+  - {fileID: 1631080342}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1264662088
@@ -70406,6 +70456,97 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7e6166ceea137a24091a959765a86df0, type: 3}
   m_PrefabInstance: {fileID: 1631051681}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1631080341
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1631080342}
+  - component: {fileID: 1631080345}
+  - component: {fileID: 1631080344}
+  - component: {fileID: 1631080343}
+  m_Layer: 0
+  m_Name: GiveObjective
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1631080342
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1631080341}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.27745372, z: -0, w: 0.960739}
+  m_LocalPosition: {x: -4.5, y: -55.92, z: -9.7}
+  m_LocalScale: {x: 1, y: 1, z: 2.5312}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1263496813}
+  m_LocalEulerAnglesHint: {x: 0, y: 32.217, z: 0}
+--- !u!65 &1631080343
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1631080341}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 106.13976, y: 39.280113, z: 1}
+  m_Center: {x: 14.275897, y: 1.9232378, z: -0.000015088655}
+--- !u!114 &1631080344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1631080341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fadc1ba187c54cf8a0cf573df9cbe287, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1631080345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1631080341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af569df637aa4208a730abcf22e46b70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectiveKey: {fileID: 11400000, guid: 5fa34b64ca2a5b14a9921fdfd820cbe4, type: 2}
+  conditionStrategy:
+    rid: 379556098724069471
+  references:
+    version: 2
+    RefIds:
+    - rid: 379556098724069471
+      type: {class: TriggerEnterConditionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        triggerListener: {fileID: 1631080344}
+        deactivateOnExit: 1
+        inverse: 0
 --- !u!4 &1632422945 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5877805804871181993, guid: 6eff34fa631c3ce4ca56109a242112b4, type: 3}
@@ -79760,6 +79901,97 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!1 &1854296748
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1854296749}
+  - component: {fileID: 1854296750}
+  - component: {fileID: 1854296752}
+  - component: {fileID: 1854296751}
+  m_Layer: 0
+  m_Name: SeeMountain
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1854296749
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854296748}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.3202335, z: -0, w: 0.9473387}
+  m_LocalPosition: {x: -14.58, y: -28.41, z: -44.02}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1263496813}
+  m_LocalEulerAnglesHint: {x: 0, y: 37.354, z: 0}
+--- !u!114 &1854296750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854296748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af569df637aa4208a730abcf22e46b70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectiveKey: {fileID: 11400000, guid: 302c542b136091e4ab97848a45bc084a, type: 2}
+  conditionStrategy:
+    rid: 379556098724069471
+  references:
+    version: 2
+    RefIds:
+    - rid: 379556098724069471
+      type: {class: TriggerEnterConditionStrategy, ns: , asm: Assembly-CSharp}
+      data:
+        triggerListener: {fileID: 1854296752}
+        deactivateOnExit: 1
+        inverse: 0
+--- !u!65 &1854296751
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854296748}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 47.44182, y: 25.658089, z: 1}
+  m_Center: {x: 2.2935257, y: 8.734261, z: -0.000012552548}
+--- !u!114 &1854296752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854296748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fadc1ba187c54cf8a0cf573df9cbe287, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1857074388 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 526756457666581592, guid: 8fd6d639c1b67be4ba50e2783ef800be, type: 3}
