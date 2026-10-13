@@ -299,8 +299,8 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
     private IEnumerator WaitUntilCreditsBop(float time)
     {
         yield return new WaitForSeconds(time);
-        MusicManager.Instance.PlayMusic(true);
         RequestMusic(endingMusicKey);
+        MusicManager.Instance.PlayMusic(false);
     }
 
     // Once the screen is black the player stays where they are until the credits load.
