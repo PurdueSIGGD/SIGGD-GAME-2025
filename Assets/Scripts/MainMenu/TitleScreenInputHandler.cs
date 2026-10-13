@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class TitleScreenInputHandler : MonoBehaviour
 {
     public string defaultSceneName;
+    public string restartSceneName;
     public GameObject loadingPanel;
     public GameObject settingsPanel;
     [SerializeField] OverrideStartMusic titleMusic;
@@ -48,6 +49,12 @@ public class TitleScreenInputHandler : MonoBehaviour
         //SaveManager.Instance.Load();
         // not awaiting this because we don't need to
         // _ = SceneManager.UnloadSceneAsync("Assets/UI/titlescreen.unity");
+    }
+
+    public void RestartGame()
+    {
+        SaveManager.Instance.ResetGameplay();
+        SceneManager.LoadScene(restartSceneName, LoadSceneMode.Single);
     }
     
     public void LoadCredits()
