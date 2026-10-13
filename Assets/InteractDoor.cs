@@ -5,12 +5,14 @@ public class InteractDoor : MonoBehaviour, IInteractable<IInteractor>
 {
     public Action<ItemInfo, IInteractor> OnItemInteract;
 
+    public bool locked = false;
     private bool interactable = true;
     private InteractableUI currentUi;
     private Animator animator;
     private MeshCollider[] colliders;
 
     private static readonly string openDoorSound = "HeavySpaceDoorOpen";
+    private static readonly string lockedDoorSound = "AccessDeniedSpaceDoor";
     private static readonly string interactSound = "PlayerExamine";
 
     public void Start()
@@ -36,8 +38,16 @@ public class InteractDoor : MonoBehaviour, IInteractable<IInteractor>
 
     public void OnInteract(IInteractor interactor)
     {
+
+
         if (interactable)
         {
+            if (locked)
+            {
+                AudioManager.Instance.PlayOneShotNoAsync(lockedDoorSound, PlayerID.Instance.gameObject.transform.position);
+                if (currentUi) currentUi.DeactivateUI();
+                return;
+            }
             animator.SetTrigger("door_open");
             AudioManager.Instance.PlayOneShotNoAsync(interactSound, PlayerID.Instance.gameObject.transform.position);
             AudioManager.Instance.PlayOneShotNoAsync(openDoorSound, transform.position);
