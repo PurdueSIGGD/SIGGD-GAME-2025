@@ -55,6 +55,11 @@ public class AudioLogManager : MonoBehaviour
             StopCurrentAudio();
         }
         subtitles.text = "";
+        if ( PlayerHands.instance.TryGetComponent(out Animator anima))
+        {
+            Debug.Log("Got animator yipeee");
+            anim = anima;
+        }
     }
 
     void Start()
@@ -121,6 +126,7 @@ public class AudioLogManager : MonoBehaviour
                 subtitles.enabled = true;
             }
             
+            Debug.Log("Anim exits: " + (anim != null));
             if (anim != null)
             {
                 anim.SetBool("LeftVisible", line.isFromRadio || line.isIntoRadio);
