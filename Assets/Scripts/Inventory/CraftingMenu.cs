@@ -108,7 +108,8 @@ public class CraftingMenu : Singleton<CraftingMenu>
             Debug.Log("Crafting " + selected.output.itemName);
             Inventory.Instance.Craft(selected);
             //RuntimeManager.PlayOneShot(tradeSound, transform.position);
-            RuntimeManager.PlayOneShot("AilenTalk");
+            //RuntimeManager.PlayOneShot("AilenTalk");
+            AudioManager.Instance.PlayOneShotNoAsync(AlienTalk, PlayerID.Instance.gameObject.transform.position);
             // update whether the button is interactable since inventory was updated
             craftButton.interactable = IsCraftable();
         }
