@@ -36,6 +36,12 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
     [SerializeField] private float waitAfterDestroyOwnRadioLog = 1f;
     [SerializeField] private float waitBeforeCredits = 2f;
 
+    [Header("Music (FMOD music event names)")]
+    [SerializeField] private string sceneMusicKey = "ForestAmbianceAfterVillageDestroyed";
+    [SerializeField] private string bossMusicKey = "ApexFinalBoss";
+    [SerializeField] private string endingMusicKey = "Monologue&Credits";
+    [SerializeField] private float musicCrossfadeDuration = 2f;
+
     public static readonly string Explosion = "FinalBossExplosion";
     public static readonly string RadioDestroyed = "PlayerLandHeavy";
     private const string CreditsScene = "Credtis";
@@ -52,6 +58,9 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
     private InteractableUI currentUi;
     private readonly System.Collections.Generic.Queue<AudioLogObject> lineQueue = new();
     private Coroutine lineRunner;
+    private string pendingMusicKey;
+    private Coroutine musicRunner;
+    private bool musicRequested;
 
     /// <summary>The consoles can be broken from the moment the reactor is started until the ending starts.</summary>
     public bool ConsolesUsable => reactorStarted && !endingStarted;
@@ -77,6 +86,49 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
         {
             Debug.LogWarning("NuclearReactorInteract: no ApexSpawnExternalEvent in the scene, the Apex cannot be spawned.");
         }
+
+        StartCoroutine(StartSceneMusic());
+    }
+
+    // Same steps MusicSceneLink uses to start a scene's music; this scene has no MusicSceneLink of its own
+    private IEnumerator StartSceneMusic()
+    {
+        yield return new WaitUntil(() => FMODEvents.Instance != null && FMODEvents.Instance.Initialized);
+        yield return null;
+        if (MusicManager.Instance == null || string.IsNullOrEmpty(sceneMusicKey) || musicRequested) yield break;
+
+        Debug.Log($"[BossSequence] Starting scene music '{sceneMusicKey}'.");
+        MusicManager.Instance.SetCurTrack(sceneMusicKey);
+        // a track that was crossfaded away earlier in the session is left at volume 0
+        MusicManager.Instance.curTrack.setVolume(1f);
+        MusicManager.Instance.PlayMusic(false);
+    }
+
+    // Crossfades to a music track. MusicManager ignores a crossfade asked for while another is running, so
+    // the latest request is held until it can be started.
+    private void RequestMusic(string key)
+    {
+        if (string.IsNullOrEmpty(key)) return;
+
+        musicRequested = true;
+        pendingMusicKey = key;
+        if (musicRunner == null) musicRunner = StartCoroutine(RunMusicRequests());
+    }
+
+    private IEnumerator RunMusicRequests()
+    {
+        while (pendingMusicKey != null)
+        {
+            while (MusicManager.Instance != null && MusicManager.Instance.IsCrossFading) yield return null;
+            if (MusicManager.Instance == null) break;
+
+            string key = pendingMusicKey;
+            pendingMusicKey = null;
+            Debug.Log($"[BossSequence] Music changes to '{key}'.");
+            MusicManager.Instance.CrossFadeMusic(key, musicCrossfadeDuration);
+            yield return null;
+        }
+        musicRunner = null;
     }
 
     private void OnDestroy()
@@ -187,6 +239,8 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
 
         // Fade to black while the Apex is drawn to the reactor. The screen stays black until the credits.
         KeepSubtitlesAboveFade();
+        // the ending track starts as the fade begins and carries on into the credits
+        RequestMusic(endingMusicKey);
         float elapsed = 0f;
         while (elapsed < fadeOutTime)
         {
@@ -229,6 +283,8 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
         yield return new WaitForSeconds(waitBeforeCredits);
 
         Debug.Log("[BossSequence] Loading the credits.");
+        // keep the ending track playing through the scene change, in place of the credits scene's own music
+        if (MusicManager.Instance != null) MusicManager.Instance.KeepTrackThroughNextSceneLoad();
 
         // Credits has no player, so it cannot go through FadeToScene (which waits for the player to load).
         // The screen is already black from our own fade, so hand over to the fader and let it fade in the credits.
@@ -309,6 +365,8 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
 
             AudioLogObject log = lineQueue.Dequeue();
             Debug.Log($"[BossSequence] Playing audio log '{log.audioName}'.");
+            // the boss music comes in with the line that announces the Apex
+            if (log == apexSpawnsLog && !endingStarted) RequestMusic(bossMusicKey);
             PlayLog(log);
             yield return WaitForLogToFinish(LogLength(log) + LogTimeoutMargin);
         }

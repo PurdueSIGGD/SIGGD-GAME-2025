@@ -21,6 +21,13 @@ public class MusicSceneLink : Singleton<MusicSceneLink>
     {
         yield return new WaitUntil(() => FMODEvents.Instance.Initialized);
 
+        // a track carried over from the previous scene keeps playing instead of this scene's music
+        if (MusicManager.Instance.ConsumeSkipSceneMusic())
+        {
+            Debug.Log("scene music skipped, a track was carried over from the previous scene");
+            yield break;
+        }
+
         Debug.Log("current track is now " + sceneMusicKey);
         MusicManager.Instance.SetCurTrack(sceneMusicKey);
         Debug.Log("play music called no fade allowed");

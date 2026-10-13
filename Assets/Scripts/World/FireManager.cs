@@ -44,11 +44,11 @@ public class FireManager : MonoBehaviour
             0
         );
     }
-
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         UnityEditor.Handles.DrawWireDisc(gameObject.transform.position, Vector3.up, radiusAdjusted);
     }
-
+#endif
 }

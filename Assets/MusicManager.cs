@@ -25,6 +25,8 @@ public class MusicManager : Singleton<MusicManager>
     [ShowInInspector, ReadOnly] public Dictionary<string, EventInstance> musicEventInstances = new();
     
     private Coroutine crossFadeRoutine;
+    private bool keepTrackThroughNextSceneLoad;
+    private bool skipSceneMusicOnce;
     private Coroutine activeFadeRoutine;
     private Coroutine pauseMusicRoutine;
     private Coroutine playMusicRoutine;
@@ -86,6 +88,15 @@ public class MusicManager : Singleton<MusicManager>
            
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (keepTrackThroughNextSceneLoad)
+        {
+            // the track was asked to carry over into this scene, so it also replaces the scene's own music
+            keepTrackThroughNextSceneLoad = false;
+            skipSceneMusicOnce = true;
+            return;
+        }
+        skipSceneMusicOnce = false;
+
         // Stop the current track so we don't have overlapping music
         if (curTrack.isValid())
         {
@@ -119,6 +130,31 @@ public class MusicManager : Singleton<MusicManager>
             this.initLevelMusic = initLevelMusic;
             InitMusicOnStart();
         }
+    }
+
+    /// <summary>
+    /// True while one track is fading into another. A new crossfade asked for during this time is ignored.
+    /// </summary>
+    public bool IsCrossFading => crossFadeRoutine != null;
+
+    /// <summary>
+    /// Lets the current track keep playing through the next scene load instead of being stopped, and
+    /// stops that scene from starting its own music over it. Applies to one scene load only.
+    /// </summary>
+    public void KeepTrackThroughNextSceneLoad()
+    {
+        keepTrackThroughNextSceneLoad = true;
+    }
+
+    /// <summary>
+    /// Asked by the scene's music link before it starts the scene music. Returns true once after a track
+    /// was carried over into the scene, meaning the scene music should not start.
+    /// </summary>
+    public bool ConsumeSkipSceneMusic()
+    {
+        bool skip = skipSceneMusicOnce;
+        skipSceneMusicOnce = false;
+        return skip;
     }
 
     /// <summary>
