@@ -13866,6 +13866,82 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1917091162058840536, guid: 768dbe85597090745aeabe88a05691be, type: 3}
   m_PrefabInstance: {fileID: 715627431}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &279054162
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 279054163}
+  - component: {fileID: 279054165}
+  - component: {fileID: 279054164}
+  m_Layer: 0
+  m_Name: VillageDestroyedMusic
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &279054163
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279054162}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.033416692, z: -0, w: 0.9994415}
+  m_LocalPosition: {x: 32.01251, y: 6.7447166, z: 20.093315}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2117976300}
+  m_LocalEulerAnglesHint: {x: 0, y: 32.999, z: 0}
+--- !u!114 &279054164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279054162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03a2fcfc6eba834fa9529f5066163d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enterMusicKey: ForestAmbianceAfterVillageDestroyed
+  exitMusicKey: ForestAmbianceAfterVillageDestroyed
+  crossfadeDuration: 6
+  onlyPlayer: 1
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!65 &279054165
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279054162}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 86.47592, y: 51.220146, z: 91.74318}
+  m_Center: {x: 3.0287247, y: 16.826946, z: -0.7350006}
 --- !u!1001 &279115506
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17570,6 +17646,82 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 973836219005971061, guid: 100be88d6b60bf24d88734097bfeafb4, type: 3}
   m_PrefabInstance: {fileID: 350536179}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &352646130
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 352646131}
+  - component: {fileID: 352646133}
+  - component: {fileID: 352646132}
+  m_Layer: 0
+  m_Name: VillageMusic
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &352646131
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 352646130}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.033416703, z: -0, w: 0.9994415}
+  m_LocalPosition: {x: 32.01251, y: 6.7447166, z: 20.093315}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 372884599}
+  m_LocalEulerAnglesHint: {x: 0, y: 32.999, z: 0}
+--- !u!114 &352646132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 352646130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03a2fcfc6eba834fa9529f5066163d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enterMusicKey: TribeTheme
+  exitMusicKey: ForestAmbianceAfterFirstApex
+  crossfadeDuration: 4
+  onlyPlayer: 1
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!65 &352646133
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 352646130}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 86.47592, y: 51.220146, z: 91.74318}
+  m_Center: {x: 3.0287247, y: 16.826946, z: -0.7350006}
 --- !u!1001 &354030637
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24073,6 +24225,43 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5838213889256817869, guid: f353347346e4a5e4fb0700c869589eca, type: 3}
   m_PrefabInstance: {fileID: 488875400}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &490305371
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 490305372}
+  m_Layer: 0
+  m_Name: MusicTriggers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &490305372
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 490305371}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1215.5261, y: 275.14197, z: 1440.0127}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 921944788}
+  - {fileID: 1578514010}
+  - {fileID: 1237697152}
+  - {fileID: 2070685060}
+  - {fileID: 764981931}
+  - {fileID: 2068681016}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &490713583
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37955,6 +38144,82 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f353347346e4a5e4fb0700c869589eca, type: 3}
+--- !u!1 &764981930
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 764981931}
+  - component: {fileID: 764981933}
+  - component: {fileID: 764981932}
+  m_Layer: 0
+  m_Name: Oasis (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &764981931
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764981930}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 84, y: -245.7, z: 313.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 490305372}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &764981932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764981930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03a2fcfc6eba834fa9529f5066163d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enterMusicKey: OasisPOI
+  exitMusicKey: ForestAmbianceAfterFirstApex
+  crossfadeDuration: 4
+  onlyPlayer: 1
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!65 &764981933
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764981930}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 40.624146, y: 28.773561, z: 46.99463}
+  m_Center: {x: 4.4784546, y: -7.7621584, z: 3.7260742}
 --- !u!1001 &765441741
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -44743,6 +45008,82 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fa0923c112506d4b89a5525c39a5859, type: 3}
+--- !u!1 &921944787
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 921944788}
+  - component: {fileID: 921944790}
+  - component: {fileID: 921944789}
+  m_Layer: 0
+  m_Name: Oasis
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &921944788
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 921944787}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -35.34, y: -247.16, z: 87.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 490305372}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &921944789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 921944787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03a2fcfc6eba834fa9529f5066163d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enterMusicKey: OasisPOI
+  exitMusicKey: ForestAmbianceAfterFirstApex
+  crossfadeDuration: 4
+  onlyPlayer: 1
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!65 &921944790
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 921944787}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 49.980103, y: 28.773561, z: 49.031006}
+  m_Center: {x: 3.816101, y: -7.7621584, z: 1.0949707}
 --- !u!1001 &923801549
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -58126,6 +58467,82 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 9016327257871127913, guid: 4cd035a45b4bfef45aa3f2f824b74a92, type: 3}
   m_PrefabInstance: {fileID: 1524598775}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1227087914
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1227087915}
+  - component: {fileID: 1227087917}
+  - component: {fileID: 1227087916}
+  m_Layer: 0
+  m_Name: VillageShopMusic
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1227087915
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1227087914}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.033416703, z: -0, w: 0.9994415}
+  m_LocalPosition: {x: 52.515472, y: 2.504696, z: 9.377263}
+  m_LocalScale: {x: 0.12899072, y: 0.12899072, z: 0.12899072}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 372884599}
+  m_LocalEulerAnglesHint: {x: 0, y: 32.999, z: 0}
+--- !u!114 &1227087916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1227087914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03a2fcfc6eba834fa9529f5066163d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enterMusicKey: TribeShop
+  exitMusicKey: TribeTheme
+  crossfadeDuration: 2
+  onlyPlayer: 1
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!65 &1227087917
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1227087914}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 95.02542, y: 65.546165, z: 120.549355}
+  m_Center: {x: -1.2460539, y: 9.663937, z: -1.2611476}
 --- !u!114 &1227790587 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2072560994260641711, guid: 5df23e85ac70847a080e008d5d98a4e8, type: 3}
@@ -58603,6 +59020,82 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 973836219005971061, guid: 100be88d6b60bf24d88734097bfeafb4, type: 3}
   m_PrefabInstance: {fileID: 1235611435}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1237697151
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1237697152}
+  - component: {fileID: 1237697154}
+  - component: {fileID: 1237697153}
+  m_Layer: 0
+  m_Name: Oasis (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1237697152
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1237697151}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -316.5, y: -206, z: 466}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 490305372}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1237697153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1237697151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03a2fcfc6eba834fa9529f5066163d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enterMusicKey: OasisPOI
+  exitMusicKey: ForestAmbianceAfterFirstApex
+  crossfadeDuration: 4
+  onlyPlayer: 1
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!65 &1237697154
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1237697151}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 52.889587, y: 28.773561, z: 51.85193}
+  m_Center: {x: 2.3613586, y: -7.7621584, z: -0.78704834}
 --- !u!4 &1239009483 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9016327257871127913, guid: 4cd035a45b4bfef45aa3f2f824b74a92, type: 3}
@@ -72854,6 +73347,82 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5838213889256817869, guid: ab0ba08f739f30a4189329e0d5de0ec5, type: 3}
   m_PrefabInstance: {fileID: 1577338652}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1578514009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1578514010}
+  - component: {fileID: 1578514012}
+  - component: {fileID: 1578514011}
+  m_Layer: 0
+  m_Name: Oasis (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1578514010
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1578514009}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -204, y: -225.94, z: 64.6}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 490305372}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1578514011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1578514009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03a2fcfc6eba834fa9529f5066163d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enterMusicKey: OasisPOI
+  exitMusicKey: ForestAmbianceAfterFirstApex
+  crossfadeDuration: 4
+  onlyPlayer: 1
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!65 &1578514012
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1578514009}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 47.483643, y: 28.773561, z: 52.61267}
+  m_Center: {x: 5.064331, y: -7.7621584, z: -6.49469}
 --- !u!1 &1578952306
 GameObject:
   m_ObjectHideFlags: 0
@@ -98558,6 +99127,82 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionalMobOverride: {fileID: 0}
+--- !u!1 &2068681015
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2068681016}
+  - component: {fileID: 2068681018}
+  - component: {fileID: 2068681017}
+  m_Layer: 0
+  m_Name: Oasis (5)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2068681016
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068681015}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 285.75, y: -222.11, z: 171.12}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 490305372}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2068681017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068681015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03a2fcfc6eba834fa9529f5066163d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enterMusicKey: OasisPOI
+  exitMusicKey: ForestAmbianceAfterFirstApex
+  crossfadeDuration: 4
+  onlyPlayer: 1
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!65 &2068681018
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068681015}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 43.672363, y: 28.773561, z: 41.70288}
+  m_Center: {x: 1.8765869, y: -7.7621584, z: -0.76782227}
 --- !u!1001 &2068962341
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -98841,6 +99486,82 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 973836219005971061, guid: 100be88d6b60bf24d88734097bfeafb4, type: 3}
   m_PrefabInstance: {fileID: 2070289747}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2070685059
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2070685060}
+  - component: {fileID: 2070685062}
+  - component: {fileID: 2070685061}
+  m_Layer: 0
+  m_Name: Oasis (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2070685060
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070685059}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.5, y: -188, z: 525.32}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 490305372}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2070685061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070685059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03a2fcfc6eba834fa9529f5066163d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enterMusicKey: OasisPOI
+  exitMusicKey: ForestAmbianceAfterFirstApex
+  crossfadeDuration: 4
+  onlyPlayer: 1
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!65 &2070685062
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070685059}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 50.976685, y: 28.773561, z: 51.85193}
+  m_Center: {x: -0.69781494, y: -7.7621584, z: -0.78704834}
 --- !u!1 &2070737119
 GameObject:
   m_ObjectHideFlags: 0
@@ -104198,6 +104919,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 261572013255158183, guid: 04f56febd303b69438335a57416dc38f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2099685995}
+    - targetCorrespondingSourceObject: {fileID: 261572013255158183, guid: 04f56febd303b69438335a57416dc38f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 352646131}
+    - targetCorrespondingSourceObject: {fileID: 261572013255158183, guid: 04f56febd303b69438335a57416dc38f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1227087915}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6834919335355549046, guid: 04f56febd303b69438335a57416dc38f, type: 3}
       insertIndex: -1
@@ -104704,6 +105431,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1621681329736024586, guid: e3d17f8d9831b7244b44f95f9d65f539, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1399007503}
+    - targetCorrespondingSourceObject: {fileID: 1621681329736024586, guid: e3d17f8d9831b7244b44f95f9d65f539, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 279054163}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e3d17f8d9831b7244b44f95f9d65f539, type: 3}
 --- !u!114 &4794000540217353230 stripped
@@ -105755,3 +106485,4 @@ SceneRoots:
   - {fileID: 1253502353}
   - {fileID: 303154629}
   - {fileID: 1340264689}
+  - {fileID: 490305372}
