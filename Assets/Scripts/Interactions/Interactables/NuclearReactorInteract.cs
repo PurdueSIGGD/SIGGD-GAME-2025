@@ -237,10 +237,11 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
             apexStart = spawnedApex.transform.position;
         }
 
+        MusicManager.Instance.PauseMusic(true);
+        
         // Fade to black while the Apex is drawn to the reactor. The screen stays black until the credits.
         KeepSubtitlesAboveFade();
         // the ending track starts as the fade begins and carries on into the credits
-        RequestMusic(endingMusicKey);
         float elapsed = 0f;
         while (elapsed < fadeOutTime)
         {
@@ -269,14 +270,17 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
         yield return PlaySoundAndWait(Explosion, listenerPos);
         Debug.Log($"[BossSequence] Explosion finished, waiting {waitAfterExplosion}s.");
         yield return new WaitForSeconds(waitAfterExplosion);
-
+        
+        
+        
         yield return PlayLogAndWait(apexDeathLog);
         Debug.Log($"[BossSequence] Waiting {waitAfterApexDeathLog}s.");
         yield return new WaitForSeconds(waitAfterApexDeathLog);
+        StartCoroutine(WaitUntilCreditsBop(5f));
         yield return PlayLogAndWait(destroyOwnRadioLog);
         Debug.Log($"[BossSequence] Waiting {waitAfterDestroyOwnRadioLog}s.");
         yield return new WaitForSeconds(waitAfterDestroyOwnRadioLog);
-
+        
         Debug.Log($"[BossSequence] Playing {RadioDestroyed}, then waiting {waitBeforeCredits}s.");
         listenerPos = PlayerID.Instance != null ? PlayerID.Instance.transform.position : transform.position;
         AudioManager.Instance.PlayOneShotNoAsync(RadioDestroyed, listenerPos);
@@ -290,6 +294,13 @@ public class NuclearReactorInteract : MonoBehaviour, IInteractable<IInteractor>
         // The screen is already black from our own fade, so hand over to the fader and let it fade in the credits.
         SceneFader.Instance.SetBlackImmediate();
         SceneFader.Instance.LoadSceneAndFadeFromBlack(CreditsScene);
+    }
+
+    private IEnumerator WaitUntilCreditsBop(float time)
+    {
+        yield return new WaitForSeconds(time);
+        MusicManager.Instance.PlayMusic(true);
+        RequestMusic(endingMusicKey);
     }
 
     // Once the screen is black the player stays where they are until the credits load.
