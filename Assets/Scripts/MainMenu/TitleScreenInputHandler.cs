@@ -1,5 +1,6 @@
 using SIGGD.Save;
 using SIGGD.Save.Modules;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,6 +11,7 @@ public class TitleScreenInputHandler : MonoBehaviour
     public GameObject loadingPanel;
     public GameObject settingsPanel;
     [SerializeField] OverrideStartMusic titleMusic;
+    [SerializeField] TMP_Text RestartText;
 
     // AsyncOperation loadScene;
 
@@ -53,6 +55,11 @@ public class TitleScreenInputHandler : MonoBehaviour
 
     public void RestartGame()
     {
+        if (RestartText.text != "Sure?")
+        {
+            RestartText.text = "Sure?";
+            return;
+        }
         SaveManager.Instance.ResetGameplay();
         SceneManager.LoadScene(restartSceneName, LoadSceneMode.Single);
     }
