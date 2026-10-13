@@ -67,6 +67,7 @@ GameObject:
   - component: {fileID: 4474341246352226927}
   - component: {fileID: 5699880708143891099}
   - component: {fileID: 5799625181150592433}
+  - component: {fileID: 2810250486838590146}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -512,7 +513,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathMenu: {fileID: 0}
   respawnPoint: {x: 249.77, y: 7.2, z: 191.93}
-  graveObj: {fileID: 5559485195172781043, guid: 8ddbf044fd303cd4980d8961ca654920, type: 3}
 --- !u!114 &2382692356741175953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -759,6 +759,21 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &2810250486838590146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696392301619895344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8260dccbe99c4524eb961765c15f7091, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  INITIAL_WAIT_BEFORE_DAMAGE: 0.5
+  DAMAGE_PER_TIME_INTERVAL: 2.5
+  DAMAGE_TIME_INTERVAL: 1
 --- !u!1 &4791394868699375998
 GameObject:
   m_ObjectHideFlags: 0
