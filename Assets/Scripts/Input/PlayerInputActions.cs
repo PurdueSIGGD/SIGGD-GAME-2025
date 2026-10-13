@@ -589,6 +589,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""c8fe846a-68ba-49e8-b738-cc16c3ed99b7"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""28934f04-740a-4b5f-a2a3-8f6591812c2e"",
                     ""path"": ""<Keyboard>/r"",
                     ""interactions"": """",
