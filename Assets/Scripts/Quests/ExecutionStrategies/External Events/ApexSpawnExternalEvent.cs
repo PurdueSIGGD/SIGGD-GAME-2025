@@ -88,7 +88,8 @@ public class ApexSpawnExternalEvent : ExternalEventTriggerer
         Debug.Log("Spawned Apex. Playing audio.");
         AudioManager.Instance.PlayOneShotNoAsync(apexSpawnSound, spawnPos);
 
-        if (questEventBroadcaster.conditionStrategy is ApexSpawnConditionStrategy apexSpawnStrategy)
+        // the timer broadcaster is optional: a scene can spawn the Apex some other way and leave it unassigned
+        if (questEventBroadcaster != null && questEventBroadcaster.conditionStrategy is ApexSpawnConditionStrategy apexSpawnStrategy)
         {
             apexSpawnStrategy.SetSpawnedApex(spawnedApex);
         }

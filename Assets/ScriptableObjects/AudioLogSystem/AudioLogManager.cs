@@ -153,16 +153,41 @@ public class AudioLogManager : MonoBehaviour
         StopCurrentAudio();
     }
 
+    /// <summary>The on-screen subtitle text.</summary>
+    public TextMeshProUGUI Subtitles => subtitles;
+
+    /// <summary>True while an audio log (voice and subtitles) is playing.</summary>
+    public bool IsPlaying => isPlaying;
+
     public void PlayAudioLog(string audioName, GameObject player) // using a full game object because we need access to the rigidbody on the player
     {
-        // the most recently called audio log will take priority over the ones called before it 
+        if (audioNameToLogs.TryGetValue(audioName, out var foundAudio))
+        {
+            PlayAudioLog(foundAudio, player);
+        }
+        else
+        {
+            Debug.LogWarning("Audio name not in dictionarty: " + audioName);
+        }
+    }
+
+    // Plays the given log directly, so a log does not have to be registered in the logs list to be played
+    public void PlayAudioLog(AudioLogObject foundAudio, GameObject player)
+    {
+        if (foundAudio == null || player == null)
+        {
+            Debug.LogWarning("AudioLogManager: missing audio log or player, nothing played");
+            return;
+        }
+
+        // the most recently called audio log will take priority over the ones called before it
         if (lastStarted != null)
         {
             StopCoroutine(lastStarted);
             StopCurrentAudio();
         }
 
-        if (audioNameToLogs.TryGetValue(audioName, out var foundAudio) && !isPlaying)
+        if (!isPlaying)
         {
             // SIMON PLEASE
             // WHYYYY
@@ -170,7 +195,7 @@ public class AudioLogManager : MonoBehaviour
             isPlaying = true;
             playerRb = curPlayer.GetComponent<Rigidbody>();
 
-            audioName = audioName.ToLower();
+            string audioName = foundAudio.audioName.ToLower();
 
             // get the sound event from our dictionary and store it
             if (FMODEvents.Instance.soundEvents.TryGetValue(audioName, out EventReference eventRef))
@@ -183,10 +208,6 @@ public class AudioLogManager : MonoBehaviour
             // DEBUG
             UnityEngine.Debug.Log("Audio Played");
 
-        }
-        else
-        {
-            Debug.LogWarning("Audio name not in dictionarty: " + audioName);
         }
     }
 

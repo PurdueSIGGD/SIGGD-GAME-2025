@@ -7705,7 +7705,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &199619732
 Transform:
   m_ObjectHideFlags: 0
@@ -7714,13 +7714,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 199619731}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -136.08, y: 51.074, z: 39.152}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: 0.32473353, z: -0, w: 0.9458056}
+  m_LocalPosition: {x: -94.43, y: 54.566, z: 85.06}
+  m_LocalScale: {x: 31.083975, y: 5.3988, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 14117231}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 37.899, z: 0}
 --- !u!65 &199619733
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7736,12 +7736,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4.105835, y: 2.5878716, z: 1}
-  m_Center: {x: 0.0058288574, y: -0.7939358, z: 0}
+  m_Size: {x: 1.7000644, y: 2.441953, z: 44.26541}
+  m_Center: {x: 0.35003275, y: -0.7209741, z: -5.270119}
 --- !u!114 &199619734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29144,7 +29144,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeOut: {fileID: 64708721}
   fadeOutTime: 0.5
-  waitTime: 1
+  startReactorLog: {fileID: 11400000, guid: 239441c08a1afac4eb505d535ccf7ba8, type: 2}
+  waitAfterStartReactorLog: 5
+  apexSpawnsLog: {fileID: 11400000, guid: e99d17a143ceb0a4491e52b9f6efd2e0, type: 2}
+  waitAfterApexSpawnsLog: 2
+  firstSwitchLog: {fileID: 11400000, guid: e92311d0a26f2c7439acb7a3fe8c520c, type: 2}
+  secondSwitchLog: {fileID: 11400000, guid: 92908d48431406c4596c0b9e17c3df3a, type: 2}
+  lastSwitchLog: {fileID: 11400000, guid: 785a4c449df4eb243b14c1ecf79b47c4, type: 2}
+  waitForLastSwitchLog: 1
+  waitAfterExplosion: 2
+  apexDeathLog: {fileID: 11400000, guid: 6601c9afc6d2e694fa9c78b2432521a0, type: 2}
+  waitAfterApexDeathLog: 1
+  destroyOwnRadioLog: {fileID: 11400000, guid: 7c879d9ea33c79f40b82dbdacfa2d042, type: 2}
+  waitBeforeCredits: 2
 --- !u!64 &806879697
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -41975,84 +41987,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 022b2ed2adba535418687296653b6df1, type: 3}
---- !u!1 &1179059771
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1179059774}
-  - component: {fileID: 1179059773}
-  - component: {fileID: 1179059772}
-  m_Layer: 0
-  m_Name: ApexSpawnTrigger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1179059772
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1179059771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af569df637aa4208a730abcf22e46b70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectiveKey: {fileID: 11400000, guid: 8c386d0eb496ef94b93de7a90b1184a3, type: 2}
-  conditionStrategy:
-    rid: 1302968992274841688
-  references:
-    version: 2
-    RefIds:
-    - rid: 1302968992274841688
-      type: {class: TriggerEnterConditionStrategy, ns: , asm: Assembly-CSharp}
-      data:
-        triggerListener: {fileID: 0}
-        deactivateOnExit: 1
-        inverse: 0
---- !u!65 &1179059773
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1179059771}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 7.6393127, y: 21.988781, z: 20.167969}
-  m_Center: {x: 3.3196564, y: -5.615736, z: 1.3054199}
---- !u!4 &1179059774
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1179059771}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 422.69, y: 13.17, z: 2489.49}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1183168468
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -45691,7 +45625,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 639425504066811598, guid: 7fa0923c112506d4b89a5525c39a5859, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 27.55
+      value: 19.31
       objectReference: {fileID: 0}
     - target: {fileID: 639425504066811598, guid: 7fa0923c112506d4b89a5525c39a5859, type: 3}
       propertyPath: m_LocalPosition.z
@@ -50896,6 +50830,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3261621519307352602, guid: 72a4239acf1adcd408c9031ae0c31857, type: 3}
+      propertyPath: questEventBroadcaster
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3261621519307352602, guid: 72a4239acf1adcd408c9031ae0c31857, type: 3}
       propertyPath: possibleSpawnPoints.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -50911,7 +50849,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Apex Spawner
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 474820382325767586, guid: 72a4239acf1adcd408c9031ae0c31857, type: 3}
+    - {fileID: 7010719076726088822, guid: 72a4239acf1adcd408c9031ae0c31857, type: 3}
     m_RemovedGameObjects:
     - {fileID: 6564674664253990387, guid: 72a4239acf1adcd408c9031ae0c31857, type: 3}
     - {fileID: 8735782787935590141, guid: 72a4239acf1adcd408c9031ae0c31857, type: 3}
@@ -77564,7 +77504,6 @@ SceneRoots:
   - {fileID: 150472186}
   - {fileID: 1499198308}
   - {fileID: 262038897}
-  - {fileID: 1179059774}
   - {fileID: 14117231}
   - {fileID: 923309327}
   - {fileID: 311706861}

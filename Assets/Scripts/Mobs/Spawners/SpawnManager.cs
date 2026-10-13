@@ -21,9 +21,11 @@ public class SpawnManager : MonoBehaviour
 
     public void Start()
     {
-        mobCensus.InitializeSpawnRegionsForNewGame();
+        if(mobCensus != null)
+        {
+            mobCensus.InitializeSpawnRegionsForNewGame();
+        }
     }
-
     public GameObject SpawnMobNew(GameObject mobPrefab, Vector3 spawnPosition, Boundary boundary)
     {
         GameObject mobObject = Instantiate(mobPrefab, spawnPosition, Quaternion.identity);
