@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlaySFX : MonoBehaviour
@@ -5,10 +6,12 @@ public class PlaySFX : MonoBehaviour
     [SerializeField] private string sound;
     [SerializeField] private bool destroyObjectOnLeave;
     [SerializeField] private GameObject prefab;
+    [SerializeField] private float time;
     
-    void Start()
+    private IEnumerator Start()
     {
-        AudioManager.Instance.PlayOneShot(sound);
+        yield return new WaitForSeconds(time);
+        AudioManager.Instance.PlayOneShotNoAsync(sound);
     }
 
     private void OnDestroy()
