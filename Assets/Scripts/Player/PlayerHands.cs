@@ -2,19 +2,23 @@ using UnityEngine;
 
 /*
  * HOW TO USE IN SCRIPTING
- * 
+ *
  * PlayerHands playerHandScript = PlayerHands.instance;  <-- this will reference the script.
- * 
+ *
  * playerHandScript.PlayAction();  <-- this will play the currently loaded tool animation.
- * 
+ *
  * playerHandScript.ToggleRightArm(bool toggle);  <-- toggles the right hand, which only carrys tools.
  * playerHandScript.ToggleLeftArm(bool toggle);  <-- toggles the left hand, which only carrys the radio.
  * playerHandScript.DisableArms(bool isDisabled); <-- use to disable/reenable arms publically for whatever reason.
- * 
+ *
  * SetOverrideController(AnimatorOverrideController newController)  <-- sets the override controller to something new. A new animation set for tools.
- * SetOverrideController()  <-- reverts back to the original override controller.\
- * 
+ * SetOverrideController()  <-- reverts back to the original override controller.
+ *
  * These arms will automatically hide itself when climbing.
+ *
+ * PlayerHands is the ONLY script that should set the hand animator's bools (IsVisible / LeftVisible / RightVisible).
+ * Other scripts should go through ToggleLeftArm / ToggleRightArm / DisableArms so the state can be restored
+ * after an override controller swap.
  */
 
 /*
@@ -51,15 +55,19 @@ public class PlayerHands : MonoBehaviour
     [Tooltip("The children of this socket will be disabled when changing the override controller")]
     [SerializeField] private Transform rightHandSocket;
 
-    [Tooltip("These bones will have their position and rotation reset when changing the override animator controller")]
+    [Tooltip("These bones will have their LOCAL position and rotation reset when changing the override animator controller")]
     [SerializeField] private Transform[] armatureTransforms;
-    private Vector3[] armaturePositions;
-    private Quaternion[] armatureRotations;
+    private Vector3[] armaturePositions;    // local space (relative to parent bone / camera)
+    private Quaternion[] armatureRotations; // local space
 
     private ClimbAction climbScript;
     private Animator handAnimator;
     private bool showHands = true; // if true, player hands will be visible. If false, hands will be offscreen.
     private bool handsDisabled = false; // disable hands if true, not as important as show hands.
+
+    // last values written to the animator, so they can be restored after a controller swap
+    // (assigning runtimeAnimatorController rebinds the animator and resets every parameter)
+    private bool leftVisible = false;
     #endregion
 
     #region Start and Awake Methods
@@ -71,12 +79,23 @@ public class PlayerHands : MonoBehaviour
             Debug.LogError("ERROR! TWO MAIN CAMERA OBJECTS ARE IN GAME");
         }
 
+        handAnimator = GetComponent<Animator>();
+
+        // Cache the rest pose in LOCAL space. The arm is parented to the camera, so a world-space
+        // pose would be wrong as soon as the player moved or turned.
         armaturePositions = new Vector3[armatureTransforms.Length];
         armatureRotations = new Quaternion[armatureTransforms.Length];
 
         for (int i = 0; i < armatureTransforms.Length; i++) {
-            armaturePositions[i] = armatureTransforms[i].position;
-            armatureRotations[i] = armatureTransforms[i].rotation;
+            armaturePositions[i] = armatureTransforms[i].localPosition;
+            armatureRotations[i] = armatureTransforms[i].localRotation;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this) {
+            instance = null;
         }
     }
 
@@ -84,9 +103,9 @@ public class PlayerHands : MonoBehaviour
     {
         // retrieve essential objects
         UpdateClimbScript();
-        UpdateHandAnimator();
 
-        SetOverrideController();
+        // apply the default controller right away (not queued) so the first frame is correct
+        ApplyOverrideController(defaultOverrideController);
 
         // show the hands
         ToggleLeftArm(CONFIG_ShowLeftHand);
@@ -100,6 +119,12 @@ public class PlayerHands : MonoBehaviour
     #endregion
 
     void Update() {
+        // apply the most recent queued override controller, rate limited
+        if (hasPendingController && Time.time - lastOverrideChange >= OverrideSwitchDelay) {
+            hasPendingController = false;
+            ApplyOverrideController(pendingController);
+        }
+
         // don't show hands while climbing
         bool isClimbing = false;
         if (climbScript != null) {
@@ -144,50 +169,51 @@ public class PlayerHands : MonoBehaviour
     [Tooltip("Min time between switching override controller. Will buffer to most recently set controller. If too low, switching quickly causes lag.")]
     [SerializeField] float OverrideSwitchDelay = 0.5f;
     private float lastOverrideChange = -100f;
-    private bool delayedOverrideSet = false;
-    private AnimatorOverrideController mostRecentlySetController;
-    // switching the override controller too much causes frame drops. So instead, it is delayed
+
+    private AnimatorOverrideController pendingController;
+    private bool hasPendingController = false;
+
+    /// <summary>
+    /// Queues a new override controller. Switching the controller too often causes frame drops, so the
+    /// request is applied in Update, at most once every OverrideSwitchDelay seconds. The most recent
+    /// request always wins.
+    /// </summary>
     public void SetOverrideController(AnimatorOverrideController newController) {
-        if (mostRecentlySetController == newController) {
-            return;
-        }
-
-        mostRecentlySetController = newController;
-
-        if (delayedOverrideSet == true) {
-            return;
-        } if (Time.time - lastOverrideChange < OverrideSwitchDelay) {
-            delayedOverrideSet = true;
-            Invoke("DelayedSetOverrideController", OverrideSwitchDelay - (Time.time - lastOverrideChange));
-        }
-
-        // do nothing if there was no override change
-        if (newController == handAnimator.runtimeAnimatorController) {
-            return;
-        }
-
-        lastOverrideChange = Time.time;
-
-        UpdateHandAnimator();
-        handAnimator.runtimeAnimatorController = newController;
-
-        UpdateClimbScript();
-        UpdateHandAnimator();
-        DisableHandSocketChildren();
-        RefreshArmTransforms();
-
-        ToggleRightArm(newController != defaultOverrideController && !DEBUG_ManualShowHands);
-    }
-
-    // should only be invoked by the above function
-    private void DelayedSetOverrideController() {
-        delayedOverrideSet = false;
-        SetOverrideController(mostRecentlySetController);
+        pendingController = newController;
+        hasPendingController = true;
     }
 
     public void SetOverrideController()
     {
         SetOverrideController(defaultOverrideController);
+    }
+
+    /// <summary>
+    /// Actually swaps the controller. Only called from Start and Update.
+    /// </summary>
+    private void ApplyOverrideController(AnimatorOverrideController newController) {
+        if (newController == null || newController == handAnimator.runtimeAnimatorController) {
+            return;
+        }
+
+        lastOverrideChange = Time.time;
+
+        DisableHandSocketChildren();
+
+        // Reset the bones BEFORE swapping. Assigning runtimeAnimatorController rebinds the animator,
+        // and with Write Defaults on, the rebind records the current pose as the default pose.
+        // Resetting first means the default is the clean rest pose, not a mid-swing one.
+        RefreshArmTransforms();
+        handAnimator.runtimeAnimatorController = newController;
+
+        // the rebind reset every parameter, so restore them
+        handAnimator.SetBool("IsVisible", showHands);
+        ToggleLeftArm(leftVisible);
+        if (DEBUG_ManualShowHands) {
+            ToggleRightArm(CONFIG_ShowRightHand);
+        } else {
+            ToggleRightArm(newController != defaultOverrideController);
+        }
     }
     #endregion
 
@@ -204,21 +230,20 @@ public class PlayerHands : MonoBehaviour
 
 
     /// <summary>
-    /// resets the armature bones to their original position and rotation
+    /// resets the armature bones to their original LOCAL position and rotation
     /// </summary>
-    private void RefreshArmTransforms() { 
+    private void RefreshArmTransforms() {
         for (int i = 0; i < armatureTransforms.Length; i++) {
-            armatureTransforms[i].position = armaturePositions[i];
-            armatureTransforms[i].rotation = armatureRotations[i];
+            armatureTransforms[i].localPosition = armaturePositions[i];
+            armatureTransforms[i].localRotation = armatureRotations[i];
         }
     }
 
-    // updates references that get de reff'd for some reason (idk why its evil)
+    // the climb script lives on the player, which may not exist yet when this object wakes up
     private void UpdateClimbScript() {
-        climbScript = PlayerID.Instance.gameObject.GetComponent<ClimbAction>();
-    }
-    private void UpdateHandAnimator() {
-        handAnimator = GetComponent<Animator>();
+        if (PlayerID.Instance != null) {
+            climbScript = PlayerID.Instance.gameObject.GetComponent<ClimbAction>();
+        }
     }
     #endregion
 
@@ -229,7 +254,7 @@ public class PlayerHands : MonoBehaviour
     /// </summary>
     /// <param name="toggle"></param>
     public void ToggleLeftArm(bool toggle) {
-        UpdateHandAnimator();
+        leftVisible = toggle;
         handAnimator.SetBool("LeftVisible", toggle);
     }
 
@@ -239,7 +264,6 @@ public class PlayerHands : MonoBehaviour
     /// </summary>
     /// <param name="toggle"></param>
     public void ToggleRightArm(bool toggle) {
-        UpdateHandAnimator();
         handAnimator.SetBool("RightVisible", toggle);
     }
 
@@ -260,7 +284,6 @@ public class PlayerHands : MonoBehaviour
     /// <param name="toggle"></param>
     private void ToggleArms(bool toggle)
     {
-        UpdateHandAnimator();
         handAnimator.SetBool("IsVisible", toggle);
     }
     #endregion

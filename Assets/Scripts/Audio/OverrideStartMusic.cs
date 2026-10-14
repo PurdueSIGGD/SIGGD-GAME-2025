@@ -13,16 +13,27 @@ public class OverrideStartMusic : MonoBehaviour
         musicInstance.start();
     }
 
+    /// <summary>
+    /// Stops and frees the title music. Safe to call more than once.
+    /// </summary>
     public bool StopActiveMusic()
     {
-        PLAYBACK_STATE state;
-        musicInstance.getPlaybackState(out state);
-        if (state == PLAYBACK_STATE.PLAYING)
+        // checking for PLAYING missed the STARTING state, and a stopped-but-unreleased instance leaked
+        if (!musicInstance.isValid())
         {
-            musicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-            musicInstance.release();
-            return true;
+            return false;
         }
-        return false;
+
+        musicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        musicInstance.release();
+        musicInstance = default;
+        return true;
+    }
+
+    // An FMOD EventInstance is not tied to this GameObject, so without this it keeps playing after the
+    // menu scene unloads by any path that doesn't call StopActiveMusic (new game, credits...)
+    void OnDestroy()
+    {
+        StopActiveMusic();
     }
 }

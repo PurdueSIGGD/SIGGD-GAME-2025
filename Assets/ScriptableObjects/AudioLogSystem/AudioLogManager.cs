@@ -14,7 +14,6 @@ public class AudioLogManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI subtitles;
     private Coroutine lastStarted = null;
 
-    [SerializeField] private Animator anim;
     public static AudioLogManager Instance { get; set; }
 
     private EventInstance logSoundEvent;
@@ -55,10 +54,15 @@ public class AudioLogManager : MonoBehaviour
             StopCurrentAudio();
         }
         subtitles.text = "";
-        if ( PlayerHands.instance.TryGetComponent(out Animator anima))
+    }
+
+    // The radio arm is driven through PlayerHands so it is the only script writing the hand animator's
+    // bools (it restores them after a tool switch). PlayerHands may not exist in every scene.
+    private void SetRadioArmVisible(bool visible)
+    {
+        if (PlayerHands.instance != null)
         {
-            Debug.Log("Got animator yipeee");
-            anim = anima;
+            PlayerHands.instance.ToggleLeftArm(visible);
         }
     }
 
@@ -126,15 +130,8 @@ public class AudioLogManager : MonoBehaviour
                 subtitles.enabled = true;
             }
             
-            Debug.Log("Anim exits: " + (anim != null));
-            if (anim != null)
-            {
-                anim.SetBool("LeftVisible", line.isFromRadio || line.isIntoRadio);
-                if (line.isFromRadio || line.isIntoRadio)
-                {
-                    anim.Play("PlayerHand_Left_Idle");
-                }
-            }
+            // the LeftVisible transition moves the arm into Left_Idle on its own
+            SetRadioArmVisible(line.isFromRadio || line.isIntoRadio);
 
             Debug.Log("Subtitles: " + line.line);
             subtitles.text = line.line;
@@ -231,10 +228,7 @@ public class AudioLogManager : MonoBehaviour
         RuntimeManager.StudioSystem.setParameterByName("RadioVoice", 0);
 
         // run all the normal stop stuff including stopping audio
-        if (anim != null)
-        {
-            anim.SetBool("LeftVisible", false);
-        }
+        SetRadioArmVisible(false);
         
         logSoundEvent.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         logSoundEvent.release(); // stops the now unused event from floating around not doing anything

@@ -35,7 +35,7 @@ public class TitleScreenInputHandler : MonoBehaviour
         // loadScene.allowSceneActivation = true;
         // await loadScene; // Make sure we've actually loaded the scene at this point
         loadingPanel.SetActive(true);
-        titleMusic.StopActiveMusic();
+        if (titleMusic != null) titleMusic.StopActiveMusic();
         string sceneName = SaveManager.Instance?.Get<LastSceneModule>()?.SceneName ?? string.Empty;
         if (string.IsNullOrEmpty(sceneName))
         {
@@ -60,12 +60,14 @@ public class TitleScreenInputHandler : MonoBehaviour
             RestartText.text = "Sure?";
             return;
         }
+        if (titleMusic != null) titleMusic.StopActiveMusic();
         SaveManager.Instance.ResetGameplay();
         SceneManager.LoadScene(restartSceneName, LoadSceneMode.Single);
     }
     
     public void LoadCredits()
     {
+        if (titleMusic != null) titleMusic.StopActiveMusic();
         SceneManager.LoadScene("Credtis", LoadSceneMode.Single);
     }
 

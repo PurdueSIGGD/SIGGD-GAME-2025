@@ -49,7 +49,7 @@ public class MusicManager : Singleton<MusicManager>
         else
         {
             // Pass the new manager's serializefields to the existing one
-            _instance.UpdateManagerParam(initLevelMusic);
+            _instance.UpdateManagerParam(initLevelMusic, initMusicKey);
             Destroy(gameObject);
         }
     }
@@ -97,12 +97,46 @@ public class MusicManager : Singleton<MusicManager>
         }
         skipSceneMusicOnce = false;
 
-        // Stop the current track so we don't have overlapping music
-        if (curTrack.isValid())
+        // a crossfade from the old scene would keep pushing volume on a track we are about to stop
+        if (crossFadeRoutine != null)
+        {
+            StopCoroutine(crossFadeRoutine);
+            crossFadeRoutine = null;
+        }
+
+        // Stop EVERY music track, not just curTrack. A track that stopped being curTrack without being
+        // stopped (replaced by SetCurTrack, the init music, a cassette...) would otherwise keep playing
+        // forever and stack with the next scene's music.
+        StopAllMusic();
+        curMusicState = MusicCycleState.Stopped;
+    }
+
+    /// <summary>
+    /// Stops every cached music instance. Instances stay in the dictionary so they can be started again.
+    /// </summary>
+    private void StopAllMusic()
+    {
+        foreach (var instance in musicEventInstances.Values)
+        {
+            if (instance.isValid())
+            {
+                instance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Makes the given instance the current track, stopping the previous one if it is a different track.
+    /// Every place that replaces curTrack outside of a crossfade should go through this, otherwise the
+    /// old track is orphaned: still playing, but no longer reachable through curTrack to stop it.
+    /// </summary>
+    private void SwitchCurTrack(EventInstance next)
+    {
+        if (curTrack.isValid() && curTrack.handle != next.handle)
         {
             curTrack.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-            curMusicState = MusicCycleState.Stopped;
         }
+        curTrack = next;
     }
 
     #endregion
@@ -123,8 +157,12 @@ public class MusicManager : Singleton<MusicManager>
     /// <summary>
     /// Allows us to update fields between scene to scene
     /// </summary>
-    public void UpdateManagerParam(bool initLevelMusic)
+    public void UpdateManagerParam(bool initLevelMusic, string initMusicKey)
     {
+        // take the new scene's key too, otherwise the init music would replay the key from whichever
+        // scene the game was first launched in (e.g. main menu music starting inside the game)
+        this.initMusicKey = initMusicKey;
+
         if (this.initLevelMusic != initLevelMusic)
         {
             this.initLevelMusic = initLevelMusic;
@@ -163,7 +201,7 @@ public class MusicManager : Singleton<MusicManager>
     public void SetCurTrack(string key)
     {
         Debug.Log("Cur Track is " + key);
-        curTrack = InitalizeMusicNotStart(key);
+        SwitchCurTrack(InitalizeMusicNotStart(key));
     }
 
     /// <summary>
@@ -470,10 +508,17 @@ public class MusicManager : Singleton<MusicManager>
 
         if (initLevelMusic)
         {
-            if (musicEventInstances.TryGetValue(initMusicKey, out var eventInstance))
+            if (!string.IsNullOrEmpty(initMusicKey) && musicEventInstances.TryGetValue(initMusicKey.ToLower(), out var eventInstance))
             {
-                curTrack = eventInstance;
-                curTrack.start();
+                SwitchCurTrack(eventInstance);
+
+                // the scene's MusicSceneLink may have already started this same track; don't restart it
+                curTrack.getPlaybackState(out PLAYBACK_STATE state);
+                if (state != PLAYBACK_STATE.PLAYING && state != PLAYBACK_STATE.STARTING)
+                {
+                    curTrack.start();
+                }
+                curTrack.setPaused(false);
                 curMusicState = MusicCycleState.Playing;
                 Debug.Log("cur track playing");
             }
